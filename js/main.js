@@ -83,3 +83,6 @@ console.log("Starting server, listening on " + node_port);
 http.createServer(app).listen(node_port);
 
 
+var DeviceServer = require("spark-protocol").DeviceServer;
+var server = new DeviceServer();
+server.start();
