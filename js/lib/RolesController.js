@@ -16,6 +16,7 @@ RolesController.prototype = {
     users: null,
     usersByToken: null,
     usersByUsername: null,
+    tokens: null,
 
 
     init: function () {
@@ -28,14 +29,19 @@ RolesController.prototype = {
 
         if (userObj.access_token) {
             this.usersByToken[userObj.access_token] = userObj;
+            this.tokens.push({
+                user_id: userObj._id,
+                expires: userObj.access_token_expires_at
+            });
         }
 
         for (var i = 0; i < userObj.access_tokens.length; i++) {
             var token = userObj.access_tokens[i];
             this.usersByToken[ token ] = userObj;
+            this.tokens[token.token] = token;
         }
     },
-    destroyAccessToken: function(access_token) {
+    destroyAccessToken: function (access_token) {
         var userObj = this.usersByToken[access_token];
         if (!userObj) {
             return true;
@@ -52,18 +58,33 @@ RolesController.prototype = {
 
         this.saveUser();
     },
+    addAccessToken: function(accessToken, clientId, userId, expires) {
+        var userObj = this.getUserByUserid(userId);
+        this.usersByToken[accessToken] = userObj;
+        userObj.access_tokens.push({
+            user_id: userId,
+            client_id: clientId,
+            token: accessToken,
+            expires_at: expires,
+            _id: token
+        });
+        this.saveUser(userObj);
 
-    saveUser: function(userObj) {
+        return when.resolve();
+    },
+
+
+    saveUser: function (userObj) {
         var userFile = path.join(settings.userDataDir, userObj.username);
         var userJson = JSON.stringify(userObj);
         fs.writeFileSync(userFile, userJson);
-
     },
 
     _loadAndCacheUsers: function () {
         this.users = [];
         this.usersByToken = {};
         this.usersByUsername = {};
+        this.tokens = {};
 
 
         // list files, load all user objects, index by access_tokens and usernames
@@ -88,6 +109,18 @@ RolesController.prototype = {
 
     getUserByName: function (username) {
         return this.usersByUsername(username);
+    },
+    getTokenInfoByToken: function (token) {
+        return this.tokens[token];
+    },
+    getUserByUserid: function(userid) {
+        for(var i=0;i<this.users.length;i++) {
+            var user = this.users[i];
+            if (user._id == userid) {
+                return user;
+            }
+        }
+        return null;
     },
 
 
