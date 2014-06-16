@@ -6,6 +6,7 @@ var pipeline = require('when/pipeline');
 var PasswordHasher = require('./PasswordHasher.js');
 var roles = require('./RolesController.js');
 var settings = require('../settings.js');
+var logger = require('./logger.js');
 
 
 function RolesController() {
@@ -89,7 +90,16 @@ RolesController.prototype = {
 
         // list files, load all user objects, index by access_tokens and usernames
 
+        if (!fs.existsSync(settings.userDataDir)) {
+            fs.mkdirSync(settings.userDataDir);
+        }
+
+
         var files = fs.readdirSync(settings.userDataDir);
+        if (!files || (files.length == 0)) {
+            logger.error( [ "-------", "No users exist, you should create some users!", "-------", ].join("\n") );
+        }
+
         for (var i = 0; i < files.length; i++) {
             try {
                 var filename = files[i];
