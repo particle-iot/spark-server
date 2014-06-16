@@ -10,9 +10,9 @@ var settings = require('../settings.js');
 
 function RolesController() {
     this.init();
-}
+};
 
-module.exports = that = {
+RolesController.prototype = {
     users: null,
     usersByToken: null,
     usersByUsername: null,
@@ -120,6 +120,4 @@ module.exports = that = {
         return this.validateHashPromise(userObj, password);
     },
 };
-
-var obj = new RolesController();
-module.exports = global.roles = obj;
+module.exports = global.roles = new RolesController();
