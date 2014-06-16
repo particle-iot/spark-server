@@ -105,7 +105,6 @@ AccessTokenViews.prototype = {
                     userObj.access_tokens.splice(idx, 1);
                 }
 
-
                 try {
                     //save user
                     var userJson = JSON.stringify(userObj);

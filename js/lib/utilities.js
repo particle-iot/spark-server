@@ -4,7 +4,8 @@ var extend = require('xtend');
 var path = require('path');
 var fs = require('fs');
 
-module.exports = {
+var that;
+module.exports = that = {
 
     /**
      * ensures the function in the provided scope
@@ -96,8 +97,43 @@ module.exports = {
                         deferred.reject();
                     }
 
-                    if (callback(data)) {
-                        deferred.resolve();
+                    try {
+                        if (callback(data)) {
+                            deferred.resolve();
+                        }
+                    }
+                    catch(ex) {
+                        deferred.reject(ex);
+                    }
+
+                });
+            }
+        });
+        return deferred;
+    },
+
+    promiseGetJsonFile: function (filename) {
+        var deferred = when.defer();
+
+        fs.exists(filename, function (exists) {
+            if (!exists) {
+                logger.error("File: " + filename + " doesn't exist.");
+                deferred.reject();
+            }
+            else {
+                fs.readFile(filename, function (err, data) {
+                    if (err) {
+                        logger.error("error reading " + filename, err);
+                        deferred.reject();
+                    }
+
+                    try {
+                        var obj = JSON.parse(data);
+                        deferred.resolve(obj);
+                    }
+                    catch(ex) {
+                        logger.error("Error parsing " + filename + " " + ex);
+                        deferred.reject(ex);
                     }
                 });
             }
@@ -209,17 +245,19 @@ module.exports = {
         }
     },
 
-    contains: function (arr, val) {
+    indexOf: function (arr, val) {
         if (!arr || (arr.length == 0)) {
-            return false;
+            return -1;
         }
         for (var i = 0; i < arr.length; i++) {
             if (arr[i] == val) {
-                logger.log('utilities.contains found ', val, ' at index ', i);
-                return true;
+                return i;
             }
         }
-        return false;
+        return -1;
+    },
+    contains: function (arr, val) {
+        return (that.indexOf(arr, val) !== -1);
     },
     pipeDeferred: function(left, right) {
         when(left).then(function() {

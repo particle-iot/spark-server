@@ -1,3 +1,6 @@
+var path = require('path');
+
 module.exports = {
-    baseUrl: "http://localhost"
+    baseUrl: "http://localhost",
+    userDataDir: path.join(__dirname, "users")
 };
