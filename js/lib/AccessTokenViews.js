@@ -4,7 +4,7 @@ var when = require('when');
 var sequence = require('when/sequence');
 var pipeline = require('when/pipeline');
 var PasswordHasher = require('./PasswordHasher.js');
-
+var roles = require('./RolesController.js');
 
 var AccessTokenViews = function (options) {
     this.options = options;
@@ -24,36 +24,17 @@ AccessTokenViews.prototype = {
             });
         }
 
-        pipeline([
+        //if successful, should return something like:
+        //  [ { token: d.token, expires_at: d.expires_at, client: d.client_id } ]
 
-            //grab and parse the user file
-            function () {
-                var userFile = path.join(settings.userDataDir, credentials.username);
-                return utilities.promiseGetJsonFile(userFile);
-            },
-
-            //do hash / compare
+        when(roles.validateLogin(credentials.username, credentials.password))
+            .then(
             function (userObj) {
-                var tmp = when.defer();
-
-                PasswordHasher.hash(credentials.password, user.salt, function (err, hash) {
-                    if (err) {
-                        tmp.reject(err);
-                        return res.json(400, { ok: false, errors: [err] });
-                    }
-                    else if (hash === userObj.password_hash) {
-
-                        //  [ { token: d.token, expires_at: d.expires_at, client: d.client_id } ]
-                        return res.json(userObj.access_tokens);
-                    }
-                    else {
-                        return res.json(401, { ok: false, errors: ['Bad password']});
-                    }
-                });
-
-                return tmp.promise;
-            }
-        ]);
+                res.json(userObj.access_tokens);
+            },
+            function () {
+                res.json(401, { ok: false, errors: ['Bad password']});
+            });
     },
 
     destroy: function (req, res) {
@@ -65,62 +46,21 @@ AccessTokenViews.prototype = {
             });
         }
 
-        var userFile = path.join(settings.userDataDir, credentials.username);
-
-        pipeline([
-
-            //grab and parse the user file
-            function () {
-                return utilities.promiseGetJsonFile(userFile);
-            },
-
-            //do hash / compare
+        when(roles.validateLogin(credentials.username, credentials.password))
+            .then(
             function (userObj) {
-                var tmp = when.defer();
-
-                PasswordHasher.hash(credentials.password, user.salt, function (err, hash) {
-                    if (err) {
-                        tmp.reject(err);
-                        return res.json(400, { ok: false, errors: [err] });
-                    }
-                    else if (hash === user.password_hash) {
-                        tmp.resolve(userObj);
-                    }
-                    else {
-                        return res.json(401, { ok: false, errors: ['Bad password']});
-                    }
-                });
-
-                return tmp.promise;
-            },
-            function (userObj) {
-                var tmp = when.defer();
-
-                if (userObj.access_token == req.params.token) {
-                    userObj.access_token = null;
-                }
-
-                var idx = utilities.indexOf(userObj.access_tokens, req.params.token);
-                if (idx >= 0) {
-                    userObj.access_tokens.splice(idx, 1);
-                }
-
                 try {
-                    //save user
-                    var userJson = JSON.stringify(userObj);
-                    fs.writeFileSync(user, userJson);
-
+                    roles.destroyAccessToken(req.params.token);
                     res.json({ ok: true });
-                    tmp.resolve();
                 }
                 catch (ex) {
-                    logger.error("error saving userfile " + ex);
-                    tmp.reject();
+                    logger.error("error saving user " + ex);
+                    res.json(401, { ok: false, errors: ['Error updating token']});
                 }
-
-                return tmp.promise;
-            }
-        ]);
+            },
+            function () {
+                res.json(401, { ok: false, errors: ['Bad password']});
+            });
     },
 
     basicAuth: function (req) {
