@@ -59,7 +59,7 @@ RolesController.prototype = {
 
         this.saveUser();
     },
-    addAccessToken: function(accessToken, clientId, userId, expires) {
+    addAccessToken: function (accessToken, clientId, userId, expires) {
         var userObj = this.getUserByUserid(userId);
         this.usersByToken[accessToken] = userObj;
         userObj.access_tokens.push({
@@ -97,13 +97,16 @@ RolesController.prototype = {
 
         var files = fs.readdirSync(settings.userDataDir);
         if (!files || (files.length == 0)) {
-            logger.error( [ "-------", "No users exist, you should create some users!", "-------", ].join("\n") );
+            logger.error([ "-------", "No users exist, you should create some users!", "-------", ].join("\n"));
         }
 
         for (var i = 0; i < files.length; i++) {
             try {
-                var filename = files[i];
+
+                var filename = path.join(settings.userDataDir, files[i]);
                 var userObj = JSON.parse(fs.readFileSync(filename));
+
+                console.log("Loading user " + userObj.username);
                 this.addUser(userObj);
             }
             catch (ex) {
@@ -118,13 +121,13 @@ RolesController.prototype = {
     },
 
     getUserByName: function (username) {
-        return this.usersByUsername(username);
+        return this.usersByUsername[username];
     },
     getTokenInfoByToken: function (token) {
         return this.tokens[token];
     },
-    getUserByUserid: function(userid) {
-        for(var i=0;i<this.users.length;i++) {
+    getUserByUserid: function (userid) {
+        for (var i = 0; i < this.users.length; i++) {
             var user = this.users[i];
             if (user._id == userid) {
                 return user;
@@ -134,16 +137,16 @@ RolesController.prototype = {
     },
 
 
-    validateHashPromise: function (userObj, password) {
+    validateHashPromise: function (user, password) {
         var tmp = when.defer();
 
-        PasswordHasher.hash(credentials.password, user.salt, function (err, hash) {
+        PasswordHasher.hash(password, user.salt, function (err, hash) {
             if (err) {
                 logger.error("hash error " + err);
                 tmp.reject("Bad password");
             }
-            else if (hash === userObj.password_hash) {
-                tmp.resolve(userObj);
+            else if (hash === user.password_hash) {
+                tmp.resolve(user);
             }
             else {
                 tmp.reject("Bad password");
@@ -162,5 +165,31 @@ RolesController.prototype = {
 
         return this.validateHashPromise(userObj, password);
     },
+
+    createUser: function (username, password) {
+        var tmp = when.defer();
+        var that = this;
+
+        PasswordHasher.generateSalt(function (err, salt) {
+            salt = salt.toString('base64');
+            PasswordHasher.hash(password, salt, function (err, hash) {
+                var user = {
+                        username: username,
+                        password_hash: hash,
+                        salt: salt,
+                        access_tokens: []
+                    };
+
+                var userFile = path.join(settings.userDataDir, username + ".json");
+                fs.writeFileSync(userFile, JSON.stringify(user));
+
+                that.addUser(user);
+
+                tmp.resolve();
+            });
+        });
+
+        return tmp.promise;
+    }
 };
 module.exports = global.roles = new RolesController();

@@ -33,7 +33,7 @@ OAuth2ServerModel.prototype = {
 
         when(roles.validateLogin(username, password))
             .then(
-            function (userObj) {
+            function (user) {
                 callback(null, { id: user._id });
             },
             function (err) {

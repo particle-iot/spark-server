@@ -56,8 +56,8 @@ app.use(set_cors_headers);
 app.use(oauth.handler());
 app.use(oauth.errorHandler());
 
-//var UserCreator = require('./lib/UserCreator');
-//app.post('/v1/users', userCreator.getMiddleware());
+var UserCreator = require('./lib/UserCreator.js');
+app.post('/v1/users', UserCreator.getMiddleware());
 
 var api = require('./views/api_v1.js');
 //var eventsV1 = require('./lib/EventViews001.js');
