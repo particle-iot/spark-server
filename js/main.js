@@ -84,5 +84,7 @@ http.createServer(app).listen(node_port);
 
 
 var DeviceServer = require("spark-protocol").DeviceServer;
-var server = new DeviceServer();
+var server = new DeviceServer({
+    coreKeysDir: settings.coreKeysDir
+});
 server.start();
