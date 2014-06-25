@@ -60,18 +60,26 @@ RolesController.prototype = {
         this.saveUser();
     },
     addAccessToken: function (accessToken, clientId, userId, expires) {
-        var userObj = this.getUserByUserid(userId);
-        this.usersByToken[accessToken] = userObj;
-        userObj.access_tokens.push({
-            user_id: userId,
-            client_id: clientId,
-            token: accessToken,
-            expires_at: expires,
-            _id: token
-        });
-        this.saveUser(userObj);
+        var tmp = when.defer();
+        try {
+            var userObj = this.getUserByUserid(userId);
+            this.usersByToken[accessToken] = userObj;
 
-        return when.resolve();
+            userObj.access_tokens.push({
+                user_id: userId,
+                client_id: clientId,
+                token: accessToken,
+                expires_at: expires,
+                _id: accessToken
+            });
+            this.saveUser(userObj);
+            tmp.resolve();
+        }
+        catch (ex) {
+            logger.error("Error adding access token ", ex);
+            tmp.reject(ex);
+        }
+        return tmp.promise;
     },
 
 
@@ -170,22 +178,28 @@ RolesController.prototype = {
         var tmp = when.defer();
         var that = this;
 
-        PasswordHasher.generateSalt(function (err, salt) {
-            salt = salt.toString('base64');
-            PasswordHasher.hash(password, salt, function (err, hash) {
-                var user = {
+        PasswordHasher.generateSalt(function (err, userid) {
+            userid = userid.toString('base64');
+            userid = userid.substring(0, 32);
+
+            PasswordHasher.generateSalt(function (err, salt) {
+                salt = salt.toString('base64');
+                PasswordHasher.hash(password, salt, function (err, hash) {
+                    var user = {
+                        _id: userid,
                         username: username,
                         password_hash: hash,
                         salt: salt,
                         access_tokens: []
                     };
 
-                var userFile = path.join(settings.userDataDir, username + ".json");
-                fs.writeFileSync(userFile, JSON.stringify(user));
+                    var userFile = path.join(settings.userDataDir, username + ".json");
+                    fs.writeFileSync(userFile, JSON.stringify(user));
 
-                that.addUser(user);
+                    that.addUser(user);
 
-                tmp.resolve();
+                    tmp.resolve();
+                });
             });
         });
 
