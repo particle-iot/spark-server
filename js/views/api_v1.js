@@ -39,7 +39,7 @@ var Api = {
 //        app.get('/v1/devices/:coreid/:var', Api.get_var);
 //
 //        app.put('/v1/devices/:coreid', Api.set_core_attributes);
-//        app.get('/v1/devices/:coreid', Api.get_core_attributes);
+        app.get('/v1/devices/:coreid', Api.get_core_attributes);
 //        app.delete('/v1/devices/:coreid', Api.release_device);
 //
 //        //doesn't need per-core permissions, allows you to claim a core that is online / near you
@@ -105,6 +105,78 @@ var Api = {
         });
     },
 
+    get_core_attributes: function (req, res) {
+        var userid = Api.getUserID(req);
+        var socketID = Api.getSocketID(userid),
+            coreID = req.coreID,
+            socket = new CoreController(socketID);
+
+
+        logger.log("GetAttr", { coreID: coreID, userID: userid.toString() });
+
+        var objReady = parallel([
+            function () {
+                return when.resolve(global.server.getCoreAttributes(coreID));
+            },
+            function () {
+                return utilities.alwaysResolve(socket.sendAndListenForDFD(coreID, { cmd: "Describe" }, { cmd: "DescribeReturn" }));
+            }
+        ]);
+
+        //whatever we get back...
+        when(objReady).done(function (results) {
+            try {
+
+                if (!results || (results.length != 2)) {
+                    logger.error("get_core_attributes results was the wrong length " + JSON.stringify(results));
+                    res.json(404, "Oops, I couldn't find that core");
+                    return;
+                }
+
+
+                //we're expecting descResult to be an array: [ sender, {} ]
+                var doc = results[0],
+                    descResult = results[1],
+                    coreState = null;
+
+                if (!doc || !doc.coreID) {
+                    logger.error("get_core_attributes 404 error: " + JSON.stringify(doc));
+                    res.json(404, "Oops, I couldn't find that core in the database");
+                    return;
+                }
+
+                if (util.isArray(descResult) && (descResult.length > 1)) {
+                    coreState = descResult[1].state || {};
+                }
+                if (!coreState) {
+                    logger.error("get_core_attributes didn't get description: " + JSON.stringify(descResult));
+                }
+
+                var device = {
+                    id: doc.coreID,
+                    name: doc.name || null,
+                    last_app: doc.last_flashed,
+                    connected: !!coreState,
+                    variables: (coreState) ? coreState.v : null,
+                    functions: (coreState) ? coreState.f : null,
+                    cc3000_patch_version: doc.cc3000_driver_version
+                };
+
+                if (utilities.check_requires_update(doc, settings.cc3000_driver_version)) {
+                    device["requires_deep_update"] = true;
+                }
+
+                res.json(device);
+            }
+            catch (ex) {
+                logger.error("get_core_attributes merge error: " + ex);
+                res.json(500, { Error: "get_core_attributes error: " + ex });
+            }
+        }, null);
+
+        //get_core_attribs - end
+    },
+
 
     isDeviceOnline: function (userID, coreID) {
         var tmp = when.defer();
@@ -164,17 +236,28 @@ var Api = {
         var userid = Api.getUserID(req);
         var gotCore = utilities.deferredAny([
             function () {
-                return Database.getUserCore(userid, req.coreID);
+                var core = global.server.getCoreAttributes(req.coreID);
+                if (core) {
+                    return when.resolve(core);
+                }
+                else {
+                    return when.reject();
+                }
             },
             function () {
-                return Database.getUserCoreByName(userid, req.coreID);
+                var core = global.server.getCoreByName(req.coreID);
+                if (core) {
+                    return when.resolve(core);
+                }
+                else {
+                    return when.reject();
+                }
             }
         ]);
 
         when(gotCore).then(
-            function (docs) {
-                if (docs && (docs.length > 0)) {
-                    var core = docs[0];
+            function (core) {
+                if (core) {
                     req.coreID = core.coreID;
                     req.coreInfo = {
                         last_handshake_at: core.last_handshake_at
