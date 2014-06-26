@@ -69,7 +69,7 @@ RolesController.prototype = {
                 user_id: userId,
                 client_id: clientId,
                 token: accessToken,
-                expires_at: expires,
+                expires: expires,
                 _id: accessToken
             });
             this.saveUser(userObj);
@@ -84,7 +84,7 @@ RolesController.prototype = {
 
 
     saveUser: function (userObj) {
-        var userFile = path.join(settings.userDataDir, userObj.username);
+        var userFile = path.join(settings.userDataDir, userObj.username) + ".json";
         var userJson = JSON.stringify(userObj);
         fs.writeFileSync(userFile, userJson);
     },

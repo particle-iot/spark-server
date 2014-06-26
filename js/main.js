@@ -87,4 +87,6 @@ var DeviceServer = require("spark-protocol").DeviceServer;
 var server = new DeviceServer({
     coreKeysDir: settings.coreKeysDir
 });
+global.server = server;
 server.start();
+

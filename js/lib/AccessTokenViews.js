@@ -25,7 +25,7 @@ AccessTokenViews.prototype = {
         }
 
         //if successful, should return something like:
-        //  [ { token: d.token, expires_at: d.expires_at, client: d.client_id } ]
+        //  [ { token: d.token, expires: d.expires, client: d.client_id } ]
 
         when(roles.validateLogin(credentials.username, credentials.password))
             .then(

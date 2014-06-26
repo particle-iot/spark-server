@@ -1,3 +1,4 @@
+var fs = require('fs');
 var when = require('when');
 var extend = require('xtend');
 var EventEmitter = require('events').EventEmitter;
@@ -7,14 +8,15 @@ var settings = require("../settings");
 var utilities = require("./utilities.js");
 
 
-var CoreController = function (socketID) {
+var CoreController = function (coreID, socketID) {
+    this.coreID = coreID;
     this.socketID = socketID;
 };
 
 CoreController.prototype = {
     getCore: function (coreid) {
         if (global.cores) {
-            return global.cores[coreid];
+            return global.server.getCore(coreid);
         }
         else {
             logger.error("Spark-protocol server not running");
@@ -23,7 +25,7 @@ CoreController.prototype = {
 
 
     sendAndListenFor: function (recipient, msg, filter, callback, once) {
-        this.listenFor(filter, callback, once);
+        this.listenFor(recipient, filter, callback, once);
         this.send(recipient, msg);
     },
 
@@ -51,15 +53,16 @@ CoreController.prototype = {
      * @param msg
      */
     send: function (recipient, msg) {
+        var that = this;
         var core = this.getCore(recipient);
-        if (!core) {
+        if (!core || !core.onApiMessage) {
             logger.error("Couldn't find that core " + recipient);
             return;
         }
 
         process.nextTick(function () {
             try {
-                core.onApiMessage(this.socketID, msg);
+                core.onApiMessage(that.socketID, msg);
             }
             catch (ex) {
                 logger.error("error during send: " + ex);
@@ -73,9 +76,9 @@ CoreController.prototype = {
      * @param callback
      * @param once - removes the listener after we've heard back
      */
-    listenFor: function (filter, callback, once) {
+    listenFor: function (recipient, filter, callback, once) {
         var core = this.getCore(recipient);
-        if (!core) {
+        if (!core || !core.on) {
             logger.error("Couldn't find that core " + recipient);
             return;
         }
@@ -139,5 +142,35 @@ CoreController.prototype = {
 
     }
 };
+
+///**
+// * This should be made more efficient, this is too simplistic
+// * @returns {{}}
+// */
+//CoreController.listAllCores = function() {
+//    var files = fs.readdirSync(settings.coreKeysDir);
+//    var cores = [];
+//
+//
+//
+//
+//
+//    var corelist = files.map(function(filename) { return utilities.filenameNoExt(filename); });
+//    var cores = {};
+//    for(var i=0;i<corelist.length;i++) {
+//        var id = corelist[i];
+//        cores[id] = null;
+//
+//        for(var key in global.cores) {
+//            var core = global.cores[key];
+//            if (core.coreID == id) {
+//                cores[id] = core;
+//                break;
+//            }
+//        }
+//    }
+//    return cores;
+//};
+
 module.exports = CoreController;
 

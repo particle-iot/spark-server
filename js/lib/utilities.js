@@ -244,6 +244,19 @@ module.exports = that = {
             return filename;
         }
     },
+    filenameNoExt: function (filename) {
+        if (!filename || (filename.length === 0)) {
+            return filename;
+        }
+
+        var idx = filename.lastIndexOf('.');
+        if (idx >= 0) {
+            return filename.substr(0, idx);
+        }
+        else {
+            return filename;
+        }
+    },
 
     indexOf: function (arr, val) {
         if (!arr || (arr.length == 0)) {
