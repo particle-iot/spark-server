@@ -36,7 +36,7 @@ var Api = {
 //
 //        //core functions / variables
 //        app.post('/v1/devices/:coreid/:func', Api.fn_call);
-//        app.get('/v1/devices/:coreid/:var', Api.get_var);
+        app.get('/v1/devices/:coreid/:var', Api.get_var);
 //
 //        app.put('/v1/devices/:coreid', Api.set_core_attributes);
         app.get('/v1/devices/:coreid', Api.get_core_attributes);
@@ -270,6 +270,57 @@ var Api = {
                 //s`okay.
                 next();
             })
+    },
+
+    get_var: function (req, res) {
+        var userid = Api.getUserID(req);
+        var socketID = Api.getSocketID(userid),
+            coreID = req.coreID,
+            varName = req.param('var'),
+            format = req.param('format');
+
+        logger.log("GetVar", {coreID: coreID, userID: userid.toString()});
+
+
+        //send it along to the device service
+        //and listen for a response back from the device service
+        var socket = new CoreController(socketID);
+        var coreResult = socket.sendAndListenForDFD(coreID,
+            { cmd: "GetVar", name: varName },
+            { cmd: "VarReturn", name: varName },
+            settings.coreRequestTimeout
+        );
+
+        //sendAndListenForDFD resolves arr to ==> [sender, msg]
+        when(coreResult)
+            .then(function (arr) {
+                var msg = arr[1];
+                if (msg.error) {
+                    //at this point, either we didn't get a describe return, or that variable
+                    //didn't exist, either way, 404
+                    return res.json(404, {
+                        ok: false,
+                        error: msg.error
+                    });
+                }
+
+                //TODO: make me look like the spec.
+                msg.coreInfo = req.coreInfo;
+                msg.coreInfo.connected = true;
+
+                if (format && (format == "raw")) {
+                    return res.send("" + msg.result);
+                }
+                else {
+                    return res.json(msg);
+                }
+            },
+            function () {
+                res.json(408, {error: "Timed out."});
+            }
+        ).ensure(function () {
+                socket.close();
+            });
     },
 
 
