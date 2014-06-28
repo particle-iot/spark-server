@@ -8,14 +8,14 @@ var settings = require("../settings");
 var utilities = require("./utilities.js");
 
 
-var CoreController = function (coreID, socketID) {
-    this.coreID = coreID;
+var CoreController = function (socketID) {
+    //this.coreID = coreID;
     this.socketID = socketID;
 };
 
 CoreController.prototype = {
     getCore: function (coreid) {
-        if (global.cores) {
+        if (global.server) {
             return global.server.getCore(coreid);
         }
         else {
@@ -62,6 +62,7 @@ CoreController.prototype = {
 
         process.nextTick(function () {
             try {
+                //console.log("sending message with socketID" + that.socketID);
                 core.onApiMessage(that.socketID, msg);
             }
             catch (ex) {
@@ -98,7 +99,7 @@ CoreController.prototype = {
 
                 process.nextTick(function () {
                     try {
-                        //logger.log('passing message to callback');
+                        //logger.log('passing message to callback ', msg);
                         callback(sender, msg);
                     }
                     catch (ex) {
