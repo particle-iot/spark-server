@@ -35,7 +35,7 @@ var Api = {
 //
 //
 //        //core functions / variables
-//        app.post('/v1/devices/:coreid/:func', Api.fn_call);
+        app.post('/v1/devices/:coreid/:func', Api.fn_call);
         app.get('/v1/devices/:coreid/:var', Api.get_var);
 //
 //        app.put('/v1/devices/:coreid', Api.set_core_attributes);
@@ -321,6 +321,83 @@ var Api = {
         ).ensure(function () {
                 socket.close();
             });
+    },
+
+    fn_call: function (req, res) {
+        var user_id = Api.getUserID(req),
+            coreID = req.coreID,
+            funcName = req.params.func,
+            format = req.params.format;
+
+        logger.log("FunCall", { coreID: coreID, user_id: user_id.toString() });
+
+        var socketID = Api.getSocketID(user_id);
+        var socket = new CoreController(socketID);
+        var core = socket.getCore(coreID);
+
+
+        var args = req.body;
+        delete args.access_token;
+        logger.log("FunCall - calling core ", { coreID: coreID, user_id: user_id.toString() });
+        var coreResult = socket.sendAndListenForDFD(coreID,
+            { cmd: "CallFn", name: funcName, args: args },
+            { cmd: "FnReturn", name: funcName },
+            settings.coreRequestTimeout
+        );
+
+        //sendAndListenForDFD resolves arr to ==> [sender, msg]
+        when(coreResult)
+            .then(
+                function (arr) {
+                    var sender = arr[0], msg = arr[1];
+
+                    try {
+                        //logger.log("FunCall - heard back ", { coreID: coreID, user_id: user_id.toString() });
+                        if (msg.error && (msg.error.indexOf("Unknown Function") >= 0)) {
+                            res.json(404, {
+                                ok: false,
+                                error: "Function not found"
+                            });
+                        }
+                        else if (msg.error != null) {
+                            res.json(400, {
+                                ok: false,
+                                error: msg.error
+                            });
+                        }
+                        else {
+                            if (format && (format == "raw")) {
+                                res.send("" + msg.result);
+                            }
+                            else {
+                                res.json({
+                                    id: core.coreID,
+                                    name: core.name || null,
+                                    last_app: core.last_flashed_app_name || null,
+                                    connected: true,
+                                    return_value: msg.result
+                                });
+                            }
+                        }
+                    }
+                    catch (ex) {
+                        logger.error("FunCall handling resp error " + ex);
+                        res.json(500, {
+                            ok: false,
+                            error: "Error while api was rendering response"
+                        });
+                    }
+                },
+                function () {
+                    res.json(408, {error: "Timed out."});
+                }
+         ).ensure(function () {
+                socket.close();
+            });
+
+        //socket.send(coreID, { cmd: "CallFn", name: funcName, args: args });
+
+        // send the function call along to the device service
     },
 
 
