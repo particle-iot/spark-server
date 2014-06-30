@@ -30,15 +30,12 @@ var Api = {
         //our middleware
         app.param("coreid", Api.loadCore);
 
-//        //helper page
-//        app.get('/v1/:coreid/flash', Api.file_upload_view);
-//
-//
-//        //core functions / variables
+
+        //core functions / variables
         app.post('/v1/devices/:coreid/:func', Api.fn_call);
         app.get('/v1/devices/:coreid/:var', Api.get_var);
-//
-//        app.put('/v1/devices/:coreid', Api.set_core_attributes);
+
+        app.put('/v1/devices/:coreid', Api.set_core_attributes);
         app.get('/v1/devices/:coreid', Api.get_core_attributes);
 //        app.delete('/v1/devices/:coreid', Api.release_device);
 //
@@ -141,7 +138,7 @@ var Api = {
 
                 if (!doc || !doc.coreID) {
                     logger.error("get_core_attributes 404 error: " + JSON.stringify(doc));
-                    res.json(404, "Oops, I couldn't find that core in the database");
+                    res.json(404, "Oops, I couldn't find that core");
                     return;
                 }
 
@@ -175,6 +172,91 @@ var Api = {
         }, null);
 
         //get_core_attribs - end
+    },
+
+
+    set_core_attributes: function (req, res) {
+        var coreID = req.coreID;
+        var userid = Api.getUserID(req);
+
+        var promises = [];
+
+        logger.log("set_core_attributes", { coreID: coreID, userID: userid.toString() });
+
+        var coreName = req.body ? req.body.name : null;
+        if (coreName != null) {
+            logger.log("SetAttr", { coreID: coreID, userID: userid.toString(), name: coreName });
+
+            global.server.setCoreAttribute(req.coreID, "name", coreName);
+            promises.push(when.resolve());
+        }
+
+        var hasFiles = req.files && req.files.file;
+        if (hasFiles) {
+            //oh hey, you want to flash firmware?
+            //promises.push(Api.flash_core_dfd(req));
+
+            //TODO: test me!
+            promises.push(Api.compile_and__or_flash_dfd(req));
+        }
+
+        var signal = req.body && req.body.signal;
+        if (signal) {
+            //get your hands up in the air!  Or down.
+            promises.push(Api.core_signal_dfd(req));
+        }
+
+        var flashApp = req.body ? req.body.app : null;
+        if (flashApp) {
+            // It makes no sense to flash a known app and also
+            // either signal or flash a file sent with the request
+            if (!hasFiles && !signal) {
+
+                // MUST sanitize app name here, before sending to Device Service
+                if (utilities.contains(settings.known_apps, flashApp)) {
+                    promises.push(Api.flash_known_app_dfd(req));
+                }
+                else {
+                    promises.push(when.reject("Can't flash unknown app " + flashApp));
+                }
+            }
+        }
+
+        var app_id = req.body ? req.body.app_id : null;
+        if (app_id && !hasFiles && !signal && !flashApp) {
+            //we have an app id, and no files, and stuff
+            //we must be flashing from the db!
+            promises.push(Api.flash_app_in_db_dfd(req));
+        }
+
+        var app_example_id = req.body ? req.body.app_example_id : null;
+        if (app_example_id && !hasFiles && !signal && !flashApp && !app_id) {
+            //we have an app id, and no files, and stuff
+            //we must be flashing from the db!
+            promises.push(Api.flash_example_app_in_db_dfd(req));
+        }
+
+
+        if (promises.length >= 1) {
+            when.all(promises).done(
+                function (results) {
+                    var aggregate = {};
+                    for (var i in results) {
+                        for (var key in results[i]) {
+                            aggregate[key] = results[i][key];
+                        }
+                    }
+                    res.json(aggregate);
+                },
+                function (err) {
+                    res.json({ ok: false, errors: [err] });
+                }
+            );
+        }
+        else {
+            logger.error("set_core_attributes - nothing to do?", { coreID: coreID, userID: userid.toString() });
+            res.json({error: "Nothing to do?"});
+        }
     },
 
 
@@ -224,7 +306,7 @@ var Api = {
     loadCore: function (req, res, next) {
         req.coreID = req.param('coreid') || req.body.id;
 
-        //load core info from the database?
+        //load core info!
         req.coreInfo = {
             "last_app": "",
             "last_heard": new Date(),
@@ -398,6 +480,138 @@ var Api = {
         //socket.send(coreID, { cmd: "CallFn", name: funcName, args: args });
 
         // send the function call along to the device service
+    },
+
+       /**
+     * Ask the core to start / stop the "RaiseYourHand" signal
+     * @param req
+     */
+    core_signal_dfd: function (req) {
+        var tmp = when.defer();
+
+        var userid = Api.getUserID(req),
+            socketID = Api.getSocketID(userid),
+            coreID = req.coreID,
+            showSignal = parseInt(req.body.signal);
+
+        logger.log("SignalCore", { coreID: coreID, userID: userid.toString()});
+
+        var socket = new CoreController(socketID);
+        var failTimer = setTimeout(function () {
+            socket.close();
+            tmp.reject({error: "Timed out, didn't hear back"});
+        }, settings.coreSignalTimeout);
+
+        //listen for a response back from the device service
+        socket.listenFor({ cmd: "RaiseHandReturn"},
+            function () {
+                clearTimeout(failTimer);
+                socket.close();
+
+                tmp.resolve({
+                    id: coreID,
+                    connected: true,
+                    signaling: showSignal === 1
+                });
+            }, true);
+
+
+        //send it along to the core via the device service
+        socket.send(coreID, { cmd: "RaiseHand", args: { signal: showSignal } });
+
+        return tmp.promise;
+    },
+
+    compile_and__or_flash_dfd: function (req) {
+        var allDone = when.defer();
+        var userid = Api.getUserID(req),
+            coreID = req.coreID;
+
+
+        //
+        //  Did they pass us a source file or a binary file?
+        //
+        var hasSourceFiles = false;
+        var sourceExts = [".cpp", ".c", ".h", ".ino" ];
+        if (req.files) {
+            for (var name in req.files) {
+                if (!req.files.hasOwnProperty(name)) {
+                    continue;
+                }
+
+                var ext = utilities.getFilenameExt(req.files[name].path);
+                if (utilities.contains(sourceExts, ext)) {
+                    hasSourceFiles = true;
+                    break;
+                }
+            }
+        }
+
+
+        if (hasSourceFiles) {
+            //TODO: federate?
+            allDone.reject("Not yet implemented");
+        }
+        else {
+            //they sent a binary, just flash it!
+            var flashDone = Api.flash_core_dfd(req);
+
+            //pipe rejection / resolution of flash to response
+            utilities.pipeDeferred(flashDone, allDone);
+        }
+
+        return allDone.promise;
+    },
+
+
+    /**
+     * Flashing firmware to the core, binary file!
+     * @param req
+     * @returns {promise|*|Function|Promise|when.promise}
+     */
+    flash_core_dfd: function (req) {
+        var tmp = when.defer();
+
+        var userid = Api.getUserID(req),
+            socketID = Api.getSocketID(userid),
+            coreID = req.coreID;
+
+        logger.log("FlashCore", {coreID: coreID, userID: userid.toString()});
+
+        var args = req.query;
+        delete args.coreid;
+
+        if (req.files) {
+            args.data = fs.readFileSync(req.files.file.path);
+        }
+
+        var socket = new CoreController(socketID);
+        var failTimer = setTimeout(function () {
+            socket.close();
+            tmp.reject({error: "Timed out."});
+        }, settings.coreFlashTimeout);
+
+        //listen for the first response back from the device service
+        socket.listenFor({ cmd: "Event", name: "Update" },
+            function (sender, msg) {
+                clearTimeout(failTimer);
+                socket.close();
+
+                var response = { id: coreID, status: msg.message };
+                if ("Update started" === msg.message) {
+                    tmp.resolve(response);
+                }
+                else {
+                    logger.error("flash_core_dfd rejected ", response);
+                    tmp.reject(response);
+                }
+
+            }, true);
+
+        //send it along to the device service
+        socket.send(coreID, { cmd: "UFlash", args: args });
+
+        return tmp.promise;
     },
 
 
