@@ -65,12 +65,12 @@ var Api = {
 
         //give me all the cores
 
-        var cores = global.server.getAllCores(),
+        var allCoreIDs = global.server.getAllCoreIDs(),
             devices = [],
             connected_promises = [];
 
-        for (var coreid in cores) {
-            var core = cores[coreid];
+        for (var coreid in allCoreIDs) {
+            var core = global.server.getCoreAttributes(coreid);
 
             var device = {
                 id: coreid,
@@ -188,7 +188,7 @@ var Api = {
             logger.log("SetAttr", { coreID: coreID, userID: userid.toString(), name: coreName });
 
             global.server.setCoreAttribute(req.coreID, "name", coreName);
-            promises.push(when.resolve());
+            promises.push(when.resolve({ ok: true, name: coreName }));
         }
 
         var hasFiles = req.files && req.files.file;
@@ -430,50 +430,50 @@ var Api = {
         //sendAndListenForDFD resolves arr to ==> [sender, msg]
         when(coreResult)
             .then(
-                function (arr) {
-                    var sender = arr[0], msg = arr[1];
+            function (arr) {
+                var sender = arr[0], msg = arr[1];
 
-                    try {
-                        //logger.log("FunCall - heard back ", { coreID: coreID, user_id: user_id.toString() });
-                        if (msg.error && (msg.error.indexOf("Unknown Function") >= 0)) {
-                            res.json(404, {
-                                ok: false,
-                                error: "Function not found"
-                            });
-                        }
-                        else if (msg.error != null) {
-                            res.json(400, {
-                                ok: false,
-                                error: msg.error
-                            });
-                        }
-                        else {
-                            if (format && (format == "raw")) {
-                                res.send("" + msg.result);
-                            }
-                            else {
-                                res.json({
-                                    id: core.coreID,
-                                    name: core.name || null,
-                                    last_app: core.last_flashed_app_name || null,
-                                    connected: true,
-                                    return_value: msg.result
-                                });
-                            }
-                        }
-                    }
-                    catch (ex) {
-                        logger.error("FunCall handling resp error " + ex);
-                        res.json(500, {
+                try {
+                    //logger.log("FunCall - heard back ", { coreID: coreID, user_id: user_id.toString() });
+                    if (msg.error && (msg.error.indexOf("Unknown Function") >= 0)) {
+                        res.json(404, {
                             ok: false,
-                            error: "Error while api was rendering response"
+                            error: "Function not found"
                         });
                     }
-                },
-                function () {
-                    res.json(408, {error: "Timed out."});
+                    else if (msg.error != null) {
+                        res.json(400, {
+                            ok: false,
+                            error: msg.error
+                        });
+                    }
+                    else {
+                        if (format && (format == "raw")) {
+                            res.send("" + msg.result);
+                        }
+                        else {
+                            res.json({
+                                id: core.coreID,
+                                name: core.name || null,
+                                last_app: core.last_flashed_app_name || null,
+                                connected: true,
+                                return_value: msg.result
+                            });
+                        }
+                    }
                 }
-         ).ensure(function () {
+                catch (ex) {
+                    logger.error("FunCall handling resp error " + ex);
+                    res.json(500, {
+                        ok: false,
+                        error: "Error while api was rendering response"
+                    });
+                }
+            },
+            function () {
+                res.json(408, {error: "Timed out."});
+            }
+        ).ensure(function () {
                 socket.close();
             });
 
@@ -482,7 +482,7 @@ var Api = {
         // send the function call along to the device service
     },
 
-       /**
+    /**
      * Ask the core to start / stop the "RaiseYourHand" signal
      * @param req
      */
