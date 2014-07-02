@@ -39,7 +39,9 @@ spark keys server default_key.der 192.168.1.10
 5.) Edit your Spark-CLI config file to point at your Spark-server.  Open ~/.spark/spark.config.json in your favorite text editor, and add:
 
 ```
-  apiUrl": "http://192.168.1.10:8080",
+{
+  apiUrl": "http://192.168.1.10:8080"
+}
 ```
 
 6.) Create a user and login with the Spark-CLI
