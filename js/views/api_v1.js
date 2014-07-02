@@ -37,13 +37,13 @@ var Api = {
 
         app.put('/v1/devices/:coreid', Api.set_core_attributes);
         app.get('/v1/devices/:coreid', Api.get_core_attributes);
-//        app.delete('/v1/devices/:coreid', Api.release_device);
-//
-//        //doesn't need per-core permissions, allows you to claim a core that is online / near you
-//        app.post('/v1/devices', Api.claim_device);
 
         //doesn't need per-core permissions, only shows owned cores.
         app.get('/v1/devices', Api.list_devices);
+
+        //app.delete('/v1/devices/:coreid', Api.release_device);
+        //app.post('/v1/devices', Api.claim_device);
+
     },
 
     getSocketID: function (userID) {
@@ -70,6 +70,10 @@ var Api = {
             connected_promises = [];
 
         for (var coreid in allCoreIDs) {
+            if (!coreid) {
+                continue;
+            }
+
             var core = global.server.getCoreAttributes(coreid);
 
             var device = {
@@ -194,9 +198,6 @@ var Api = {
         var hasFiles = req.files && req.files.file;
         if (hasFiles) {
             //oh hey, you want to flash firmware?
-            //promises.push(Api.flash_core_dfd(req));
-
-            //TODO: test me!
             promises.push(Api.compile_and__or_flash_dfd(req));
         }
 
@@ -292,7 +293,9 @@ var Api = {
         logger.log("isDeviceOnline: Pinging core... ", { coreID: coreID });
 
         //send it along to the device service
-        socket.send(coreID, { cmd: "Ping" });
+        if (!socket.send(coreID, { cmd: "Ping" })) {
+            tmp.reject("send failed");
+        }
 
         return tmp.promise;
     },
@@ -319,7 +322,7 @@ var Api = {
         var gotCore = utilities.deferredAny([
             function () {
                 var core = global.server.getCoreAttributes(req.coreID);
-                if (core) {
+                if (core && core.coreID) {
                     return when.resolve(core);
                 }
                 else {
@@ -328,7 +331,7 @@ var Api = {
             },
             function () {
                 var core = global.server.getCoreByName(req.coreID);
-                if (core) {
+                if (core && core.coreID) {
                     return when.resolve(core);
                 }
                 else {
@@ -340,7 +343,7 @@ var Api = {
         when(gotCore).then(
             function (core) {
                 if (core) {
-                    req.coreID = core.coreID;
+                    req.coreID = core.coreID || req.coreID;
                     req.coreInfo = {
                         last_handshake_at: core.last_handshake_at
                     };

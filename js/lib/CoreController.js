@@ -57,7 +57,7 @@ CoreController.prototype = {
         var core = this.getCore(recipient);
         if (!core || !core.onApiMessage) {
             logger.error("Couldn't find that core " + recipient);
-            return;
+            return false;
         }
 
         process.nextTick(function () {
@@ -69,6 +69,7 @@ CoreController.prototype = {
                 logger.error("error during send: " + ex);
             }
         });
+        return true;
     },
 
     /**
@@ -111,6 +112,33 @@ CoreController.prototype = {
         core.on(that.socketID, handler);
     },
 
+    subscribe: function(isPublic, name, userid) {
+        if (userid && (userid != "")) {
+            name = userid + "/" + name;
+        }
+
+
+//        if (!sock) {
+//            return false;
+//        }
+
+        //start permitting these messages through on this socket.
+        global.publisher.subscribe(name, this);
+
+        return false;
+    },
+
+    unsubscribe: function(isPublic, name, userid) {
+        if (userid && (userid != "")) {
+            name = userid + "/" + name;
+        }
+
+//        if (!sock) {
+//            return;
+//        }
+
+        global.publisher.unsubscribe(name, this);
+    },
 
     //isPublic, obj.name, obj.userid, obj.data, obj.ttl, obj.published_at
     sendEvent: function (isPublic, name, userid, data, ttl, published_at) {
