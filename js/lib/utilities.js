@@ -1,3 +1,4 @@
+var os = require('os');
 var when = require('when');
 var logger = require('./logger.js');
 var extend = require('xtend');
@@ -338,6 +339,27 @@ module.exports = that = {
         return (version && (version < target));
     },
 
+    getIPAddresses: function () {
+        //adapter = adapter || "eth0";
+        var results = [];
+        var nics = os.networkInterfaces();
+
+        for (var name in nics) {
+            var nic = nics[name];
+
+            for (var i = 0; i < nic.length; i++) {
+                var addy = nic[i];
+
+                if ((addy.family != "IPv4") || (addy.address == "127.0.0.1")) {
+                    continue;
+                }
+
+                results.push(addy.address);
+            }
+        }
+
+        return results;
+    },
 
     foo: null
 };
