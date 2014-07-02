@@ -506,7 +506,7 @@ var Api = {
         }, settings.coreSignalTimeout);
 
         //listen for a response back from the device service
-        socket.listenFor({ cmd: "RaiseHandReturn"},
+        socket.listenFor(coreID, { cmd: "RaiseHandReturn"},
             function () {
                 clearTimeout(failTimer);
                 socket.close();
@@ -595,7 +595,7 @@ var Api = {
         }, settings.coreFlashTimeout);
 
         //listen for the first response back from the device service
-        socket.listenFor({ cmd: "Event", name: "Update" },
+        socket.listenFor(coreID, { cmd: "Event", name: "Update" },
             function (sender, msg) {
                 clearTimeout(failTimer);
                 socket.close();

@@ -57,7 +57,7 @@ CoreController.prototype = {
         var that = this;
         var core = this.getCore(recipient);
         if (!core || !core.onApiMessage) {
-            logger.error("Couldn't find that core " + recipient);
+            logger.error("Couldn't find that core ", recipient);
             return false;
         }
 
@@ -82,7 +82,7 @@ CoreController.prototype = {
     listenFor: function (recipient, filter, callback, once) {
         var core = this.getCore(recipient);
         if (!core || !core.on) {
-            logger.error("Couldn't find that core " + recipient);
+            logger.error("Couldn't find that core ", recipient);
             return;
         }
 
