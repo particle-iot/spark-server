@@ -60,12 +60,12 @@ var UserCreator = require('./lib/UserCreator.js');
 app.post('/v1/users', UserCreator.getMiddleware());
 
 var api = require('./views/api_v1.js');
-//var eventsV1 = require('./lib/EventViews001.js');
+var eventsV1 = require('./views/EventViews001.js');
 var tokenViews = new AccessTokenViews({  });
 
 
+eventsV1.loadViews(app);
 api.loadViews(app);
-//eventsV1.loadViews(app);
 tokenViews.loadViews(app);
 
 

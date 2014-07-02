@@ -11,6 +11,7 @@ var utilities = require("./utilities.js");
 var CoreController = function (socketID) {
     //this.coreID = coreID;
     this.socketID = socketID;
+    EventEmitter.call(this);
 };
 
 CoreController.prototype = {
@@ -112,7 +113,7 @@ CoreController.prototype = {
         core.on(that.socketID, handler);
     },
 
-    subscribe: function(isPublic, name, userid) {
+    subscribe: function (isPublic, name, userid) {
         if (userid && (userid != "")) {
             name = userid + "/" + name;
         }
@@ -128,7 +129,7 @@ CoreController.prototype = {
         return false;
     },
 
-    unsubscribe: function(isPublic, name, userid) {
+    unsubscribe: function (isPublic, name, userid) {
         if (userid && (userid != "")) {
             name = userid + "/" + name;
         }
@@ -141,28 +142,27 @@ CoreController.prototype = {
     },
 
     //isPublic, obj.name, obj.userid, obj.data, obj.ttl, obj.published_at
-    sendEvent: function (isPublic, name, userid, data, ttl, published_at) {
+    sendEvent: function (isPublic, name, userid, data, ttl, published_at, coreid) {
 
         if (!global.publisher) {
             logger.error("Spark-protocol server not running");
             return;
         }
 
-        process.nextTick(function () {
-            try {
-                global.publisher.publish(
-                    isPublic,
-                    name,
-                    userid,
-                    data,
-                    ttl,
-                    published_at
-                );
-            }
-            catch (ex) {
-                logger.error("sendEvent Error: " + ex);
-            }
-        });
+        try {
+            global.publisher.publish(
+                isPublic,
+                name,
+                userid,
+                data,
+                ttl,
+                published_at,
+                coreid
+            );
+        }
+        catch (ex) {
+            logger.error("sendEvent Error: " + ex);
+        }
 
         return true;
     },
@@ -200,6 +200,6 @@ CoreController.prototype = {
 //    }
 //    return cores;
 //};
-
+CoreController.prototype = extend(CoreController.prototype, EventEmitter.prototype);
 module.exports = CoreController;
 
