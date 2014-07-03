@@ -7,7 +7,6 @@
         "hogan-express": "~0.5.1",
         "request": "~2.27.0",
         "node-oauth2-server": "~1.5.3",
-        "ursa": "~0.8.0",
         "when": "~2.8.0",
         "xtend": "~2.1.1"
     },

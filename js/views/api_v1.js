@@ -13,7 +13,6 @@ var utilities = require("../lib/utilities.js");
 var fs = require('fs');
 var when = require('when');
 var util = require('util');
-var ursa = require('ursa');
 var path = require('path');
 var moment = require('moment');
 
