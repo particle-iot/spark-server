@@ -56,3 +56,14 @@ spark keys server default_key.der 192.168.1.10
   spark list
 ```
 
+
+Quick Install
+==============
+
+```
+git clone git@github.com:spark/spark-server.git
+cd spark-server/js
+npm install
+node main.js
+```
+
