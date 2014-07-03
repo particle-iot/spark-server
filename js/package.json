@@ -2,7 +2,6 @@
     "name": "spark-server",
     "version": "0.0.1",
     "dependencies": {
-        "spark-protocol": "git+https://github.com/spark/spark-protocol.git",
         "moment": "~2.3.1",
         "express": "~3.4.4",
         "hogan-express": "~0.5.1",
