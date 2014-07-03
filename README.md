@@ -31,8 +31,15 @@ Your server IP address is: 192.168.1.10
 3.) Load your server public key and IP address onto your cores with the Spark-CLI
 
 ```
+spark keys server default_key.pem 192.168.1.10
 spark keys server default_key.der 192.168.1.10
 ```
+
+Note!  The CLI will turn your PEM file into a DER file, but you can also do that yourself with the command:
+```
+    openssl rsa -in  default_key.pem -pubin -pubout -outform DER -out default_key.der
+```
+
 
 4.) Grab your core public key and save it in your core_keys folder as a public pem file with your coreID as the filename.
 
