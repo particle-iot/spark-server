@@ -48,9 +48,10 @@ Note!  The CLI will turn your PEM file into a DER file, but you can also do that
 
 ```
 {
-  apiUrl": "http://192.168.1.10:8080"
+  "apiUrl": "http://192.168.1.10:8080"
 }
 ```
+For beginners: note that you have to add in a `,` at the end of the previous line
 
 6.) Create a user and login with the Spark-CLI
 
