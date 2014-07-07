@@ -83,13 +83,16 @@ RolesController.prototype = {
             var userObj = this.getUserByUserid(userId);
             this.usersByToken[accessToken] = userObj;
 
-            userObj.access_tokens.push({
+            var tokenObj = {
                 user_id: userId,
                 client_id: clientId,
                 token: accessToken,
                 expires: expires,
                 _id: accessToken
-            });
+            };
+
+            this.tokens[accessToken] = tokenObj;
+            userObj.access_tokens.push(tokenObj);
             this.saveUser(userObj);
             tmp.resolve();
         }
@@ -103,7 +106,7 @@ RolesController.prototype = {
 
     saveUser: function (userObj) {
         var userFile = path.join(settings.userDataDir, userObj.username) + ".json";
-        var userJson = JSON.stringify(userObj);
+        var userJson = JSON.stringify(userObj, null, 2);
         fs.writeFileSync(userFile, userJson);
     },
 
