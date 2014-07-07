@@ -32,6 +32,7 @@ var fs = require('fs');
 var when = require('when');
 var util = require('util');
 var path = require('path');
+var ursa = require('ursa');
 var moment = require('moment');
 
 /*
@@ -57,6 +58,8 @@ var Api = {
 
         //doesn't need per-core permissions, only shows owned cores.
         app.get('/v1/devices', Api.list_devices);
+
+        app.post('/v1/provisioning/:coreid', Api.provision_core);
 
         //app.delete('/v1/devices/:coreid', Api.release_device);
         //app.post('/v1/devices', Api.claim_device);
@@ -632,6 +635,50 @@ var Api = {
         socket.send(coreID, { cmd: "UFlash", args: args });
 
         return tmp.promise;
+    },
+
+     provision_core: function (req, res) {
+        //if we're here, the user should be allowed to provision cores.
+
+        var done = Api.provision_core_dfd(req);
+        when(done).then(
+            function (result) {
+                res.json(result);
+            },
+            function (err) {
+                //different status code here?
+                res.json(400, err);
+            });
+    },
+
+    provision_core_dfd: function (req) {
+        var result = when.defer(),
+            userid = Api.getUserID(req),
+            deviceID =  req.body.deviceID,
+            publicKey =  req.body.publicKey;
+
+        if (!deviceID) {
+            return when.reject({ error: "No deviceID provided" });
+        }
+
+        try {
+            var keyObj = ursa.createPublicKey(publicKey);
+            if (!publicKey || (!ursa.isPublicKey(keyObj))) {
+                return when.reject({ error: "No key provided" });
+            }
+        }
+        catch (ex) {
+            logger.error("error while parsing publicKey " + ex);
+            return when.reject({ error: "Key error " + ex });
+        }
+
+
+        global.server.addCoreKey(deviceID, publicKey);
+        global.server.setCoreAttribute(deviceID, "registrar", userid);
+        global.server.setCoreAttribute(deviceID, "timestamp", new Date());
+        result.resolve("Success!");
+
+        return result.promise;
     },
 
 
