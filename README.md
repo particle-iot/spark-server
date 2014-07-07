@@ -12,6 +12,19 @@ An API compatible open source server for interacting with devices speaking the s
 </pre>
 
 
+Quick Install
+==============
+
+```
+git clone git@github.com:spark/spark-protocol.git
+git clone git@github.com:spark/spark-server.git
+cd spark-server/js
+npm install ../../spark-protocol/js
+npm install
+node main.js
+```
+
+
 How do I get started?
 =====================
 
@@ -48,9 +61,10 @@ Note!  The CLI will turn your PEM file into a DER file, but you can also do that
 
 ```
 {
-  apiUrl": "http://192.168.1.10:8080"
+  "apiUrl": "http://192.168.1.10:8080"
 }
 ```
+For beginners: note that you have to add in a `,` at the end of the previous line
 
 6.) Create a user and login with the Spark-CLI
 
@@ -62,19 +76,6 @@ Note!  The CLI will turn your PEM file into a DER file, but you can also do that
 
 ```
   spark list
-```
-
-
-Quick Install
-==============
-
-```
-git clone git@github.com:spark/spark-protocol.git
-git clone git@github.com:spark/spark-server.git
-cd spark-server/js
-npm install ../../spark-protocol/js
-npm install
-node main.js
 ```
 
 
