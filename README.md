@@ -39,7 +39,7 @@ Your server IP address is: 192.168.1.10
 ```
 
 
-3.) Load your server public key and IP address onto your cores with the Spark-CLI
+3.) Load your server public key and IP address onto your cores with the Spark-CLI ( https://github.com/spark/spark-cli )
 
 ```
 spark keys server default_key.pem 192.168.1.10
