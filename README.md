@@ -52,10 +52,7 @@ Note!  The CLI will turn your PEM file into a DER file, but you can also do that
     openssl rsa -in  default_key.pem -pubin -pubout -outform DER -out default_key.der
 ```
 
-
-4.) Grab your core public key and save it in your core_keys folder as a public pem file with your coreID as the filename.
-
-5.) Edit your Spark-CLI config file to point at your Spark-server.  Open ~/.spark/spark.config.json in your favorite text editor, and add:
+4.) Edit your Spark-CLI config file to point at your Spark-server.  Open ~/.spark/spark.config.json in your favorite text editor, and add:
 
 ```
 {
@@ -64,11 +61,21 @@ Note!  The CLI will turn your PEM file into a DER file, but you can also do that
 ```
 For beginners: note that you have to add in a `,` at the end of the previous line
 
+
+5.) Put your core into listening mode, and run `spark identify` to get your core id.
+
 6.) Create a user and login with the Spark-CLI
 
 ```
   spark setup
 ```
+
+7.) Create and provision access on your local cloud with the keys doctor:
+
+```
+   spark keys doctor your_core_id
+```
+
 
 7.) See your connected cores!
 
