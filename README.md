@@ -103,35 +103,52 @@ The spark-server module aims to provide a HTTP rest interface that is API compat
 programs you write to run against the Spark Cloud should also work on the Local Cloud.  Some features aren't here yet, but may be
 coming down the road, right now the endpoints exposed are:
 
-List devices:
-    GET /v1/devices
+List devices
 
-Call function:
-    POST /v1/devices/:coreid/:func
+`GET /v1/devices`
 
-Get variable:
-    GET /v1/devices/:coreid/:var
+Call function
+
+`POST /v1/devices/:coreid/:func`
+
+Get variable
+
+`GET /v1/devices/:coreid/:var`
 
 Get Core attributes
-    GET /v1/devices/:coreid
+
+`GET /v1/devices/:coreid`
 
 Set Core attributes (and flash a core)
-    PUT /v1/devices/:coreid
+
+`PUT /v1/devices/:coreid`
 
 Get all Events
-    GET /v1/events
-    GET /v1/events/:event_name
+
+```
+ GET /v1/events
+ GET /v1/events/:event_name
+```
+
+
 
 Get all my Events
-    GET /v1/devices/events
-    GET /v1/devices/events/:event_name
+
+```
+ GET /v1/devices/events
+ GET /v1/devices/events/:event_name
+```
 
 Get all my Core's Events
-    GET /v1/devices/:coreid/events
-    GET /v1/devices/:coreid/events/:event_name
+
+```
+ GET /v1/devices/:coreid/events
+ GET /v1/devices/:coreid/events/:event_name
+```
 
 Publish an event
-    POST /v1/devices/events
+
+`POST /v1/devices/events`
 
 What features will be added soon?
 ====================================
