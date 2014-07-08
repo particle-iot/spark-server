@@ -16,10 +16,8 @@ Quick Install
 ==============
 
 ```
-git clone git@github.com:spark/spark-protocol.git
 git clone git@github.com:spark/spark-server.git
 cd spark-server/js
-npm install ../../spark-protocol/js
 npm install
 node main.js
 ```
