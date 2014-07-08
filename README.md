@@ -157,7 +157,7 @@ What API features are missing
 Known Limitations
 ==================
 
-We worked hard to make our cloud services scalable and awesome, but that also presents a burden for new users.  This release was designed to be easy to use, to understand, and to maintain, and not to discourage anyone who is new to running a server.  This means some of the fancy stuff isn't here yet, but don't dispair, we'll keep improving this project, and we hope you'll use it to build awesome things.
+We worked hard to make our cloud services scalable and awesome, but that also presents a burden for new users.  This release was designed to be easy to use, to understand, and to maintain, and not to discourage anyone who is new to running a server.  This means some of the fancy stuff isn't here yet, but don't despair, we'll keep improving this project, and we hope you'll use it to build awesome things.
 
 
 What features are coming
