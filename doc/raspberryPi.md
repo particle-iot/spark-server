@@ -2,7 +2,7 @@
 Quick Install on a Raspberry PI
 =======================================
 
-If you're already familiar with the command line, or you are comfortable setting up a new pi SD card, and following a script, here's the quick install guide!
+If you're already familiar with the command line, or you are comfortable setting up a new [pi SD card](http://elinux.org/RPi_Easy_SD_Card_Setup), and following a script, here's the quick install guide!
 
 
 ```sh
