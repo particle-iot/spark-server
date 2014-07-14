@@ -1,7 +1,7 @@
 spark-server
 ============
 
-An API compatible open source server for interacting with devices speaking the spark-protocol
+An API compatible open source server for interacting with devices speaking the [spark-protocol](https://github.com/spark/spark-protocol)
 
 <pre>
    __  __            __                 __        __                ____
@@ -16,10 +16,8 @@ Quick Install
 ==============
 
 ```
-git clone git@github.com:spark/spark-protocol.git
 git clone git@github.com:spark/spark-server.git
 cd spark-server/js
-npm install ../../spark-protocol/js
 npm install
 node main.js
 ```
@@ -41,7 +39,7 @@ Your server IP address is: 192.168.1.10
 ```
 
 
-3.) Load your server public key and IP address onto your cores with the Spark-CLI
+3.) Load your server public key and IP address onto your cores with the [Spark-CLI](https://github.com/spark/spark-cli)
 
 ```
 spark keys server default_key.pem 192.168.1.10
@@ -54,10 +52,7 @@ Note!  The CLI will turn your PEM file into a DER file, but you can also do that
     openssl rsa -in  default_key.pem -pubin -pubout -outform DER -out default_key.der
 ```
 
-
-4.) Grab your core public key and save it in your core_keys folder as a public pem file with your coreID as the filename.
-
-5.) Edit your Spark-CLI config file to point at your Spark-server.  Open ~/.spark/spark.config.json in your favorite text editor, and add:
+4.) Edit your Spark-CLI config file to point at your Spark-server.  Open ~/.spark/spark.config.json in your favorite text editor, and add:
 
 ```
 {
@@ -66,11 +61,21 @@ Note!  The CLI will turn your PEM file into a DER file, but you can also do that
 ```
 For beginners: note that you have to add in a `,` at the end of the previous line
 
+
+5.) Put your core into listening mode, and run `spark identify` to get your core id.
+
 6.) Create a user and login with the Spark-CLI
 
 ```
   spark setup
 ```
+
+7.) Create and provision access on your local cloud with the keys doctor:
+
+```
+   spark keys doctor your_core_id
+```
+
 
 7.) See your connected cores!
 
@@ -98,35 +103,52 @@ The spark-server module aims to provide a HTTP rest interface that is API compat
 programs you write to run against the Spark Cloud should also work on the Local Cloud.  Some features aren't here yet, but may be
 coming down the road, right now the endpoints exposed are:
 
-List devices:
-    GET /v1/devices
+List devices
 
-Call function:
-    POST /v1/devices/:coreid/:func
+`GET /v1/devices`
 
-Get variable:
-    GET /v1/devices/:coreid/:var
+Call function
+
+`POST /v1/devices/:coreid/:func`
+
+Get variable
+
+`GET /v1/devices/:coreid/:var`
 
 Get Core attributes
-    GET /v1/devices/:coreid
+
+`GET /v1/devices/:coreid`
 
 Set Core attributes (and flash a core)
-    PUT /v1/devices/:coreid
+
+`PUT /v1/devices/:coreid`
 
 Get all Events
-    GET /v1/events
-    GET /v1/events/:event_name
+
+```
+ GET /v1/events
+ GET /v1/events/:event_name
+```
+
+
 
 Get all my Events
-    GET /v1/devices/events
-    GET /v1/devices/events/:event_name
+
+```
+ GET /v1/devices/events
+ GET /v1/devices/events/:event_name
+```
 
 Get all my Core's Events
-    GET /v1/devices/:coreid/events
-    GET /v1/devices/:coreid/events/:event_name
+
+```
+ GET /v1/devices/:coreid/events
+ GET /v1/devices/:coreid/events/:event_name
+```
 
 Publish an event
-    POST /v1/devices/events
+
+`POST /v1/devices/events`
 
 What features will be added soon?
 ====================================
@@ -152,8 +174,7 @@ What API features are missing
 Known Limitations
 ==================
 
-We worked hard to make our cloud services scalable and awesome, but that also presents a burden for new users.  This release was designed
-to be easy to use, to understand, and to maintain, and not to discourage anyone who is new to running a server.
+We worked hard to make our cloud services scalable and awesome, but that also presents a burden for new users.  This release was designed to be easy to use, to understand, and to maintain, and not to discourage anyone who is new to running a server.  This means some of the fancy stuff isn't here yet, but don't despair, we'll keep improving this project, and we hope you'll use it to build awesome things.
 
 
 What features are coming
