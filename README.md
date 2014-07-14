@@ -22,7 +22,7 @@ npm install
 node main.js
 ```
 
-[Raspberry pi Quick Install](docs/raspberryPi)
+[Raspberry pi Quick Install](doc/raspberryPi.md)
 
 
 How do I get started?
