@@ -40,7 +40,7 @@ Here's a few things you need to know:
 {
   "access_token": "abecedf1234abecedf1234",
   "username": "sparkgeek@loccalcloud.com",
-   apiUrl": "http://10.0.1.200:8080"
+   apiUrl": "http://localhost:8080"
 }
 
 ```
