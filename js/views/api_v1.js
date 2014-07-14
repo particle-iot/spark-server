@@ -62,7 +62,7 @@ var Api = {
         app.post('/v1/provisioning/:coreid', Api.provision_core);
 
         //app.delete('/v1/devices/:coreid', Api.release_device);
-        //app.post('/v1/devices', Api.claim_device);
+        app.post('/v1/devices', Api.claim_device);
 
     },
 
