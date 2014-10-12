@@ -54,15 +54,15 @@ Note!  The CLI will turn your PEM file into a DER file, but you can also do that
     openssl rsa -in  default_key.pem -pubin -pubout -outform DER -out default_key.der
 ```
 
-4.) Edit your Spark-CLI config file to point at your Spark-server.  Open ~/.spark/spark.config.json in your favorite text editor, and add:
+4.) Create new profile that points Spark-CLI to your server and switch Spark-CLI to use new config file  
 
 ```
-{
-  "apiUrl": "http://192.168.1.10:8080"
-}
-```
-For beginners: note that you have to add in a `,` at the end of the previous line
 
+# spark config creates ~/.spark/local.config.json file if it doesn't exists.
+spark config local apiUrl http://192.168.1.10:8080
+# switch to profile 'local' in profile.json file
+spark config local
+```
 
 5.) Put your core into listening mode, and run `spark identify` to get your core id.
 
@@ -79,7 +79,7 @@ For beginners: note that you have to add in a `,` at the end of the previous lin
 ```
 
 
-7.) See your connected cores!
+8.) See your connected cores!
 
 ```
   spark list
