@@ -29,6 +29,10 @@
     },
     "main": "main.js",
     "contributors": [
-        "Kenneth Lim <kennethlimcp@gmail.com>"
+        {
+            "name": "Kenneth Lim",
+            "email": "kennethlimcp@gmail.com",
+            "url": "https://github.com/kennethlimcp"
+        }
     ]
 }
