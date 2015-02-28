@@ -12,7 +12,7 @@ If you're already familiar with the command line, or you are comfortable setting
 
 	#
 	#	Expand your partition to fill your SD card
-	#	Make sure you're booting into the console 
+	#	Make sure you're booting into the console
 	#
 	sudo raspi-config
 	sudo update-rc.d lightdm disable
