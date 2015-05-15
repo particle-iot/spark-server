@@ -3,6 +3,8 @@ spark-server
 
 An API compatible open source server for interacting with devices speaking the [spark-protocol](https://github.com/spark/spark-protocol)
 
+*Photon users:* This application has not been rigorously tested with the Photon. We will be reviewing and testing it shortly, but in the meantime, YMMV. If you do attempt to use the Photon with this library and run into problems, please open an issue.
+
 <pre>
    __  __            __                 __        __                ____
   / /_/ /_  ___     / /___  _________ _/ /  _____/ /___  __  ______/ / /
