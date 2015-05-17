@@ -23,6 +23,7 @@ If you're already familiar with the command line, or you are comfortable setting
 	sudo apt-get install git htop rng-tools
 	wget http://node-arm.herokuapp.com/node_latest_armhf.deb
 	sudo dpkg -i node_latest_armhf.deb
+	rm node_latest_armhf.deb
 
 	#
 	#
@@ -38,12 +39,14 @@ If you're already familiar with the command line, or you are comfortable setting
 	#	Install DFU-Util
 	#
 	sudo apt-get install libusb-1.0-0-dev
-	wget http://dfu-util.gnumonks.org/releases/dfu-util-0.7.tar.gz
+	wget http://dfu-util.sourceforge.net/releases/dfu-util-0.7.tar.gz
 	tar xvf dfu-util-0.7.tar.gz
 	cd dfu-util-0.7
 	./configure
 	make
 	sudo make install
+	cd ..
+	rm dfu-util-0.7.tar.gz
 
 
 	#
@@ -62,7 +65,7 @@ If you're already familiar with the command line, or you are comfortable setting
 	cd /spark
 
 	git clone https://github.com/spark/spark-server.git
-	cd spark-server/js
+	cd spark-server
 	npm install
 	node main.js
 ```
