@@ -38,9 +38,9 @@ If you're already familiar with the command line, or you are comfortable setting
 	#	Install DFU-Util
 	#
 	sudo apt-get install libusb-1.0-0-dev
-	wget http://dfu-util.gnumonks.org/releases/dfu-util-0.7.tar.gz
-	tar xvf dfu-util-0.7.tar.gz
-	cd dfu-util-0.7
+	wget http://dfu-util.sourceforge.net/releases/dfu-util-0.8.tar.gz
+	tar xvf dfu-util-0.8.tar.gz
+	cd dfu-util-0.8
 	./configure
 	make
 	sudo make install
