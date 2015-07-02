@@ -18,10 +18,10 @@ If you're already familiar with the command line, or you are comfortable setting
 	sudo update-rc.d lightdm disable
 
 	#
-	#	Install Node.js
+	#	Install Node.js ( version 0.10.36 should be used, see https://github.com/spark/spark-server/issues/48 )
 	#
 	sudo apt-get install git htop rng-tools
-	wget http://node-arm.herokuapp.com/node_latest_armhf.deb
+	wget https://node-arm.herokuapp.com/node_0.10.36_armhf.deb
 	sudo dpkg -i node_latest_armhf.deb
 
 	#
