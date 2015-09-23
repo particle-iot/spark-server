@@ -235,8 +235,8 @@ var EventsApi = {
         //-----------------------------------
         //get core events
         //socket.subscribe(true, name);
-        socket.subscribe(true, name, userid);
-        socket.subscribe(false, name, userid);
+        socket.subscribe(true, name, userid,coreid);
+        socket.subscribe(false, name, userid,coreid);
 
         //-----------------------------------
         //filter to core id

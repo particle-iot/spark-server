@@ -131,18 +131,13 @@ CoreController.prototype = {
         core.on(that.socketID, handler);
     },
 
-    subscribe: function (isPublic, name, userid) {
-        if (userid && (userid != "")) {
-            name = userid + "/" + name;
-        }
-
-
+    subscribe: function (isPublic, name, userid,coreid) {
 //        if (!sock) {
 //            return false;
 //        }
 
         //start permitting these messages through on this socket.
-        global.publisher.subscribe(name, this);
+        global.publisher.subscribe(name,userid,coreid, this);
 
         return false;
     },
