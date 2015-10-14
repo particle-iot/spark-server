@@ -194,7 +194,7 @@ var EventsApi = {
         //-----------------------------------
         //get firehose and my private events.
         //socket.subscribe(true, name);
-        socket.subscribe(true, name);
+        //socket.subscribe(true, name);
         socket.subscribe(false, name, userid);
 
 
