@@ -34,7 +34,9 @@ AccessTokenViews.prototype = {
         app.delete('/v1/access_tokens/:token', this.destroy.bind(this));
     },
     index: function (req, res) {
-        var credentials = AccessTokenViews.basicAuth(req);
+        //var credentials = AccessTokenViews.basicAuth(req);
+        //var credentials = this.basicAuth(req);
+        var credentials= AccessTokenViews.prototype.basicAuth(req);
         if (!credentials) {
             return res.json(401, {
                 ok: false,
@@ -56,7 +58,8 @@ AccessTokenViews.prototype = {
     },
 
     destroy: function (req, res) {
-        var credentials = AccessTokenViews.basicAuth(req);
+        //var credentials = AccessTokenViews.basicAuth(req);
+        var credentials= AccessTokenViews.prototype.basicAuth(req);
         if (!credentials) {
             return res.json(401, {
                 ok: false,
