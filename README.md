@@ -40,51 +40,49 @@ node main.js
 Your server IP address is: 192.168.1.10
 ```
 
-
-3.) Load your server public key and IP address onto your cores with the [Spark-CLI](https://github.com/spark/spark-cli)
-
-First, put your Core in DFU mode by holding the MODE and RESET buttons on the Core, then releasing RESET while continuing to hold MODE for 3 seconds until the LED starts blinking yellow.
+3.) We will now create a new server profile on Particle-CLI using the command:
 
 ```
-spark keys server default_key.pub.pem 192.168.1.10
+particle config profile_name apiUrl "http://DOMAIN_OR_IP"
 ```
 
-Note!  The CLI will turn your PEM file into a DER file, but you can also do that yourself with the command:
-```
-    openssl rsa -in  default_key.pem -pubin -pubout -outform DER -out default_key.der
-```
+For the local cloud, the port number 8080 needs to be added behind: http://domain_or_ip:8080
 
-4.) Edit your Spark-CLI config file to point at your Spark-server.  Open ~/.spark/spark.config.json in your favorite text editor, and add:
+This will create a new profile to point to your server and switching back to the spark cloud is simply particle config particle and other profiles would be particle config profile_name
 
-```
-{
-  "apiUrl": "http://192.168.1.10:8080"
-}
-```
-For beginners: note that you have to add in a `,` at the end of the previous line
+4.) We will now point over to the local cloud using particle config profile_name
 
-
-5.) Put your core into listening mode, and run `spark identify` to get your core id.
-
-6.) Create a user and login with the Spark-CLI
+5.) On a separate CMD from the one running the server, type
 
 ```
-  spark setup
+particle setup
 ```
+
+This will create an account on the local cloud
+
+Perform CTRL + C once you logon with Particle-CLI asking you to send Wifi-credentials etc...
+
+6.) On Command-line, cd to particle-server and place your core in DFU mode [flashing yellow]
 
 7.) Create and provision access on your local cloud with the keys doctor:
 
 ```
-   spark keys doctor your_core_id
+   particle keys doctor your_core_id
 ```
 
-
-7.) See your connected cores!
+8.) Change server keys to local cloud key + IP Address
 
 ```
-  spark list
+particle keys server default_key.pub.pem IP_ADDRESS
 ```
 
+9.) Go to cores_key directory to place core public key inside
+
+```
+cd core_keys
+place core in DFU-mode
+particle keys save INPUT_DEVICE_ID_HERE
+```
 
 What kind of project is this?
 ======================================
