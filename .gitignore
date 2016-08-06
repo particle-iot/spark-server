@@ -27,3 +27,5 @@ node_modules
 js/build/config.gypi
 
 js/package.json.ori
+spark-server.esproj
+.DS_Store

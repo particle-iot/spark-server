@@ -38,7 +38,7 @@ AccessTokenViews.prototype = {
         //var credentials = this.basicAuth(req);
         var credentials= AccessTokenViews.prototype.basicAuth(req);
         if (!credentials) {
-            return res.json(401, {
+            return res.status(401).json({
                 ok: false,
                 errors: ["Unauthorized. You must send username and password in HTTP Basic Auth to view your access tokens."]
             });
@@ -53,7 +53,7 @@ AccessTokenViews.prototype = {
                 res.json(userObj.access_tokens);
             },
             function () {
-                res.json(401, { ok: false, errors: ['Bad password']});
+                res.status(401).json({ ok: false, errors: ['Bad password']});
             });
     },
 
@@ -61,7 +61,7 @@ AccessTokenViews.prototype = {
         //var credentials = AccessTokenViews.basicAuth(req);
         var credentials= AccessTokenViews.prototype.basicAuth(req);
         if (!credentials) {
-            return res.json(401, {
+            return res.status(401).json({
                 ok: false,
                 errors: ["Unauthorized. You must send username and password in HTTP Basic Auth to delete an access token."]
             });
@@ -76,11 +76,11 @@ AccessTokenViews.prototype = {
                 }
                 catch (ex) {
                     logger.error("error saving user " + ex);
-                    res.json(401, { ok: false, errors: ['Error updating token']});
+                    res.status(401).json({ ok: false, errors: ['Error updating token']});
                 }
             },
             function () {
-                res.json(401, { ok: false, errors: ['Bad password']});
+                res.status(401).json({ ok: false, errors: ['Bad password']});
             });
     },
 
