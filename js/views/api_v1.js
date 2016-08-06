@@ -62,7 +62,8 @@ var Api = {
         app.post('/v1/provisioning/:coreid', Api.provision_core);
 
         //app.delete('/v1/devices/:coreid', Api.release_device);
-        app.post('/v1/devices', Api.claim_device);
+        //app.post('/v1/devices', Api.claim_device);
+        app.post('/v1/device_claims', Api.claim_device);        
 
     },
 
@@ -322,7 +323,9 @@ var Api = {
 
 
     claim_device: function (req, res) {
-        res.json({ ok: true });
+        logger.log("claim device");
+        //res.json({ ok: true });
+        res.json({ claim_code: 'rCFr2KAJNgzJ2rR3Jm1ZoUd7G4Sr3ak7MRHdWrM274eYzInP1+psZ0fP2qNehlj' });
     },
 
 
