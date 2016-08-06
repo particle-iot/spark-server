@@ -122,7 +122,7 @@ var Api = {
                 devices[i].last_heard = (desc.value) ? desc.value.lastPing : null;
             }
 
-            res.json(200, devices);
+            res.status(200).json(devices);
         });
     },
 
@@ -150,7 +150,7 @@ var Api = {
 
                 if (!results || (results.length != 2)) {
                     logger.error("get_core_attributes results was the wrong length " + JSON.stringify(results));
-                    res.json(404, "Oops, I couldn't find that core");
+                    res.status(404).json("Oops, I couldn't find that core");
                     return;
                 }
 
@@ -162,7 +162,7 @@ var Api = {
 
                 if (!doc || !doc.coreID) {
                     logger.error("get_core_attributes 404 error: " + JSON.stringify(doc));
-                    res.json(404, "Oops, I couldn't find that core");
+                    res.status(404).json("Oops, I couldn't find that core");
                     return;
                 }
 
@@ -191,7 +191,7 @@ var Api = {
             }
             catch (ex) {
                 logger.error("get_core_attributes merge error: " + ex);
-                res.json(500, { Error: "get_core_attributes error: " + ex });
+                res.status(500).json({ Error: "get_core_attributes error: " + ex });
             }
         }, null);
 
@@ -327,7 +327,7 @@ var Api = {
 
 
     loadCore: function (req, res, next) {
-        req.coreID = req.param('coreid') || req.body.id;
+        req.coreID = req.params.coreid || req.body.id;
 
         //load core info!
         req.coreInfo = {
@@ -381,8 +381,8 @@ var Api = {
         var userid = Api.getUserID(req);
         var socketID = Api.getSocketID(userid),
             coreID = req.coreID,
-            varName = req.param('var'),
-            format = req.param('format');
+            varName = req.params.var,
+            format = req.params.format;
 
         logger.log("GetVar", {coreID: coreID, userID: userid.toString()});
 
@@ -403,7 +403,7 @@ var Api = {
                 if (msg.error) {
                     //at this point, either we didn't get a describe return, or that variable
                     //didn't exist, either way, 404
-                    return res.json(404, {
+                    return res.status(404).json({
                         ok: false,
                         error: msg.error
                     });
@@ -414,14 +414,14 @@ var Api = {
                 msg.coreInfo.connected = true;
 
                 if (format && (format == "raw")) {
-                    return res.send("" + msg.result);
+                    return res.sendStatus("" + msg.result);
                 }
                 else {
                     return res.json(msg);
                 }
             },
             function () {
-                res.json(408, {error: "Timed out."});
+                res.status(408).json({error: "Timed out."});
             }
         ).ensure(function () {
                 socket.close();
@@ -459,20 +459,20 @@ var Api = {
                 try {
                     //logger.log("FunCall - heard back ", { coreID: coreID, user_id: user_id.toString() });
                     if (msg.error && (msg.error.indexOf("Unknown Function") >= 0)) {
-                        res.json(404, {
+                        res.status(404).json({
                             ok: false,
                             error: "Function not found"
                         });
                     }
                     else if (msg.error != null) {
-                        res.json(400, {
+                        res.status(400).json({
                             ok: false,
                             error: msg.error
                         });
                     }
                     else {
                         if (format && (format == "raw")) {
-                            res.send("" + msg.result);
+                            res.sendStatus("" + msg.result);
                         }
                         else {
                             res.json({
@@ -487,14 +487,14 @@ var Api = {
                 }
                 catch (ex) {
                     logger.error("FunCall handling resp error " + ex);
-                    res.json(500, {
+                    res.status(500).json({
                         ok: false,
                         error: "Error while api was rendering response"
                     });
                 }
             },
             function () {
-                res.json(408, {error: "Timed out."});
+                res.status(408).json({error: "Timed out."});
             }
         ).ensure(function () {
                 socket.close();
@@ -647,7 +647,7 @@ var Api = {
             },
             function (err) {
                 //different status code here?
-                res.json(400, err);
+                res.status(400).json(err);
             });
     },
 

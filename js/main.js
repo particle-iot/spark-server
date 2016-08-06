@@ -19,7 +19,8 @@
 var fs = require('fs');
 var http = require('http');
 var express = require('express');
-
+var bodyParser = require('body-parser');
+var morgan = require('morgan');
 
 var settings = require('./settings.js');
 var utilities = require("./lib/utilities.js");
@@ -68,9 +69,12 @@ process.on('uncaughtException', function (ex) {
 
 
 var app = express();
-app.use(express.logger());
-app.use(express.bodyParser());
+app.set('json spaces', 4);
+app.use(morgan('combined'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(set_cors_headers);
+
 app.use(oauth.handler());
 app.use(oauth.errorHandler());
 
