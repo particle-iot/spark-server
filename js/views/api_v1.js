@@ -428,26 +428,6 @@ var Api = {
 	    	});
 	    }
     },
-    
-    /*linkDevice: function (coreid, claimCode) {
-    	var user = roles.getUserByClaimCode(claimCode);
-    	
-    	if(user != undefined) {
-    	
-    		logger.log("Linking Device...", { coreID: coreid });
-    	
-    		when(roles.addDevice(coreid, user.id)).then(
-    			function () {
-    				logger.log("Device linked", { coreID: coreid });
-    			}, 
-    			function (err) {
-    				logger.error("Error in linking Device", { coreID: coreid });
-    			}
-    		);
-    	} else {
-    		logger.error("Claim code not valid", { claimCode: claimCode });
-    	}
-    },*/
 	
 	release_device: function (req, res) {
 		var coreID = req.coreID;
@@ -471,6 +451,24 @@ var Api = {
 			  "error": "user Permission Denied",
 			  "info": "I didn't recognize that device name or ID"
 			});
+		}
+	},
+	
+	linkDevice: function (coreid, claimCode) {
+		var user = global.roles.getUserByClaimCode(claimCode);
+		if(user && user._id) {
+			logger.log("Linking Device...", { coreID: coreid });
+		
+			when(global.roles.addDevice(coreid, user._id)).then(
+				function () {
+					logger.log("Device linked", { coreID: coreid });
+				}, 
+				function (err) {
+					logger.error("Error in linking Device", { coreID: coreid });
+				}
+			);
+		} else {
+			logger.error("Claim code not valid", { claimCode: claimCode });
 		}
 	},
 	
@@ -835,4 +833,4 @@ var Api = {
     _: null
 };
 
-exports = module.exports = Api;
+exports = module.exports = global.api = Api;

@@ -131,7 +131,9 @@ Claim a device
 
 `POST /v1/devices`
 
+Release a device
 
+`DELETE /v1/devices/:coreid`
 
 Get all Events
 
@@ -162,9 +164,6 @@ Publish an event
 
 What features will be added soon?
 ====================================
-
-- Release a Core
-    DELETE /v1/devices/:coreid
 
 - per-user / per-core ownership and access restrictions.  Right now ANY user on your local cloud can access ANY device.
 
