@@ -123,6 +123,16 @@ Set Core attributes (and flash a core)
 
 `PUT /v1/devices/:coreid`
 
+Get a device claim code
+
+`POST /v1/device_claims`
+
+Claim a device
+
+`POST /v1/devices`
+
+
+
 Get all Events
 
 ```
@@ -155,9 +165,6 @@ What features will be added soon?
 
 - Release a Core
     DELETE /v1/devices/:coreid
-
-- Claim a core
-    POST /v1/devices
 
 - per-user / per-core ownership and access restrictions.  Right now ANY user on your local cloud can access ANY device.
 

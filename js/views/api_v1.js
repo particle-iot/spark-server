@@ -36,6 +36,9 @@ var path = require('path');
 var ursa = require('ursa');
 var moment = require('moment');
 
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
+
 /*
  * TODO: modularize duplicate code
  * TODO: implement proper session handling / user authentication
@@ -54,7 +57,7 @@ var Api = {
         app.post('/v1/devices/:coreid/:func', Api.fn_call);
         app.get('/v1/devices/:coreid/:var', Api.get_var);
 
-        app.put('/v1/devices/:coreid', Api.set_core_attributes);
+        app.put('/v1/devices/:coreid', multipartMiddleware, Api.set_core_attributes);
         app.get('/v1/devices/:coreid', Api.get_core_attributes);
 
         //doesn't need per-core permissions, only shows owned cores.
@@ -221,6 +224,7 @@ var Api = {
 
         var hasFiles = req.files && req.files.file;
         if (hasFiles) {
+        	console.log("file");
             //oh hey, you want to flash firmware?
             promises.push(Api.compile_and__or_flash_dfd(req));
         }
@@ -725,7 +729,9 @@ var Api = {
         delete args.coreid;
 
         if (req.files) {
+        	console.log(req.files);
             args.data = fs.readFileSync(req.files.file.path);
+            //args.data = fs.readFileSync(req.files.file.file);
         }
 
         var socket = new CoreController(socketID);
