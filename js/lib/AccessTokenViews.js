@@ -23,6 +23,7 @@ var sequence = require('when/sequence');
 var pipeline = require('when/pipeline');
 var PasswordHasher = require('./PasswordHasher.js');
 var roles = require('./RolesController.js');
+var logger = require('./logger.js');
 
 var AccessTokenViews = function (options) {
     this.options = options;

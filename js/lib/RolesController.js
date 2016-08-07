@@ -25,7 +25,7 @@ var PasswordHasher = require('./PasswordHasher.js');
 var roles = require('./RolesController.js');
 var settings = require('../settings.js');
 var logger = require('./logger.js');
-
+var utilities = require("./utilities.js");
 
 function RolesController() {
     this.init();
@@ -82,17 +82,20 @@ RolesController.prototype = {
         if (!userObj) {
             return true;
         }
-
+        
         delete this.usersByToken[access_token];
-        if (userObj.access_token == access_token) {
+        /*if (userObj.access_token == access_token) {
             userObj.access_token = null;
-        }
-        var idx = utilities.indexOf(userObj.access_tokens, req.params.token);
-        if (idx >= 0) {
-            userObj.access_tokens.splice(idx, 1);
+        }*/
+
+        for (var i = 0; i < userObj.access_tokens.length; i++) {
+            var tokenObj = userObj.access_tokens[i];
+            if (tokenObj.token == access_token) {
+                userObj.access_tokens.splice(i, 1);
+            }
         }
 
-        this.saveUser();
+        this.saveUser(userObj);
     },
     addAccessToken: function (accessToken, clientId, userId, expires) {
         var tmp = when.defer();
@@ -165,8 +168,7 @@ RolesController.prototype = {
             tmp.reject(ex);
         }
         return tmp.promise;
-    },
-
+    },  
     saveUser: function (userObj) {
         var userFile = path.join(settings.userDataDir, userObj.username) + ".json";
         var userJson = JSON.stringify(userObj, null, 2);
