@@ -65,7 +65,7 @@ var Api = {
 
         app.post('/v1/provisioning/:coreid', Api.provision_core);
 
-        //app.delete('/v1/devices/:coreid', Api.release_device);
+        app.delete('/v1/devices/:coreid', Api.release_device);
         
         app.post('/v1/devices', Api.claim_device);
         app.post('/v1/device_claims', Api.get_claim_code);
@@ -448,8 +448,32 @@ var Api = {
     		logger.error("Claim code not valid", { claimCode: claimCode });
     	}
     },*/
-
-
+	
+	release_device: function (req, res) {
+		var coreID = req.coreID;
+		var userid = Api.getUserID(req);
+		
+		var user = global.roles.getUserByDevice(coreID);
+		
+		if(user && user._id == userid) {
+			when(global.roles.removeDevice(coreID, userid)).then(
+				function () {
+					res.json({'ok' : true });
+				}, function (err) {
+					res.json({
+					  "error": "device Permission Denied",
+					  "info": "I didn't recognize that device name or ID"
+					});
+				}
+			);
+		} else {
+			res.json({
+			  "error": "user Permission Denied",
+			  "info": "I didn't recognize that device name or ID"
+			});
+		}
+	},
+	
     loadCore: function (req, res, next) {
         req.coreID = req.params.coreid || req.body.id;
 

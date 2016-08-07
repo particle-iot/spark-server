@@ -168,6 +168,26 @@ RolesController.prototype = {
             tmp.reject(ex);
         }
         return tmp.promise;
+    },
+	removeDevice: function (deviceId, userId) {
+		var tmp = when.defer();
+		try {
+	        var userObj = this.getUserByUserid(userId);
+
+	        delete this.usersByDevice[deviceId];
+	        var index = utilities.indexOf(userObj.devices, deviceId);
+	        if (index > -1) {
+	            userObj.devices.splice(index, 1);
+	        }
+	
+	        this.saveUser(userObj);
+			tmp.resolve();
+		}
+		catch (ex) {
+		    logger.error("Error releasing device ", ex);
+		    tmp.reject(ex);
+		}
+		return tmp.promise;
     },  
     saveUser: function (userObj) {
         var userFile = path.join(settings.userDataDir, userObj.username) + ".json";
