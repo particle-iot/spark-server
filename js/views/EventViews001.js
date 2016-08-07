@@ -182,7 +182,7 @@ var EventsApi = {
 
 
     get_events: function (req, res) {
-        var name = req.param('event_name');
+        var name = req.params.event_name;
         name = name || "";
         var socket = new CoreController();
 
@@ -202,7 +202,7 @@ var EventsApi = {
         EventsApi.pipeEvents(socket, req, res);
     },
     get_my_events: function (req, res) {
-        var name = req.param('event_name');
+        var name = req.params.event_name;
         name = name || "";
         var socket = new CoreController();
 
@@ -221,10 +221,10 @@ var EventsApi = {
         EventsApi.pipeEvents(socket, req, res);
     },
     get_core_events: function (req, res) {
-        var name = req.param('event_name');
+        var name = req.params.event_name;
         var socket = new CoreController();
         name = name || "";
-        var coreid = req.coreID || req.param('coreid');
+        var coreid = req.coreID || req.params.coreid;
 
         var userid = Api.getUserID(req);
 //        if (userid) {
