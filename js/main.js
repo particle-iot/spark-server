@@ -94,7 +94,7 @@ tokenViews.loadViews(app);
 
 
 app.use(function (req, res, next) {
-    return res.send(404);
+    return res.sendStatus(404);
 });
 
 

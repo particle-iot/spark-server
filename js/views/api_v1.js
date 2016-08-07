@@ -20,6 +20,7 @@ var settings = require('../settings.js');
 
 var CoreController = require('../lib/CoreController.js');
 var roles = require('../lib/RolesController.js');
+var PasswordHasher = require('../lib/PasswordHasher.js');
 
 var sequence = require('when/sequence');
 var parallel = require('when/parallel');
@@ -62,9 +63,9 @@ var Api = {
         app.post('/v1/provisioning/:coreid', Api.provision_core);
 
         //app.delete('/v1/devices/:coreid', Api.release_device);
-        //app.post('/v1/devices', Api.claim_device);
-        app.post('/v1/device_claims', Api.claim_device);        
-
+        
+        app.post('/v1/devices', Api.claim_device);
+        app.post('/v1/device_claims', Api.get_claim_code);
     },
 
     getSocketID: function (userID) {
@@ -85,12 +86,15 @@ var Api = {
         logger.log("ListDevices", { userID: userid });
 
         //give me all the cores
-
-        var allCoreIDs = global.server.getAllCoreIDs(),
+		
+        //var allCoreIDs = global.server.getAllCoreIDs(),
+        var userDevicesIDs = global.roles.devices[userid],
             devices = [],
             connected_promises = [];
-
-        for (var coreid in allCoreIDs) {
+		
+        for (var index in userDevicesIDs) {
+        	var coreid = userDevicesIDs[index];
+        	
             if (!coreid) {
                 continue;
             }
@@ -99,7 +103,7 @@ var Api = {
 
             var device = {
                 id: coreid,
-                name: (core) ? core.name : null,
+                name: core ? core.name : null,
                 last_app: core ? core.last_flashed_app_name : null,
                 last_heard: null
             };
@@ -118,7 +122,6 @@ var Api = {
         when.settle(connected_promises).then(function (descriptors) {
             for (var i = 0; i < descriptors.length; i++) {
                 var desc = descriptors[i];
-
                 devices[i].connected = ('rejected' !== desc.state);
                 devices[i].last_heard = (desc.value) ? desc.value.lastPing : null;
             }
@@ -315,18 +318,132 @@ var Api = {
 
         //send it along to the device service
         if (!socket.send(coreID, { cmd: "Ping" })) {
-            tmp.reject("send failed");
+            tmp.reject("Device is not connected");
         }
 
         return tmp.promise;
     },
 
-
+	get_claim_code: function (req, res) {
+		var userid = Api.getUserID(req);
+		logger.log("GenerateClaimCode", { userID: userid });
+		
+		var userDevicesIDs = global.roles.devices[userid];
+		PasswordHasher.generateSalt(function (err, code) {
+			code = code.toString('base64');
+			code = code.substring(0, 63);
+			
+			when(roles.addClaimCode(code, userid)).then(
+				function () {
+					res.json({ 
+						claim_code: code, 
+						device_ids: userDevicesIDs 
+					});
+				},
+				function (err) {
+				    res.json({
+				    	ok: false,
+				    	errors: [
+					    	err
+					    ]
+				    });
+				}
+			);
+		});
+	}, 
+	
     claim_device: function (req, res) {
-        logger.log("claim device");
-        //res.json({ ok: true });
-        res.json({ claim_code: 'rCFr2KAJNgzJ2rR3Jm1ZoUd7G4Sr3ak7MRHdWrM274eYzInP1+psZ0fP2qNehlj' });
+    	var userid = Api.getUserID(req);
+    	var coreid = req.body.id;
+    	var core = global.server.getCoreAttributes(req.body.id);
+    	
+    	if(req.body.id) {
+	    	if(core.claimCode) {
+	    		var user = global.roles.getUserByClaimCode(core.claimCode);
+	    		
+	    		if(user && user._id == userid) {
+			    	when(roles.addDevice(coreid, userid)).then(
+				    	function () {
+				    		var claimInfo = {
+				    			user_id : userid,
+				    			id: coreid,
+				    			connected: false,
+				    			ok: true
+				    		}
+				    		
+				    		when(Api.isDeviceOnline(userid, coreid))
+				    			.then(
+				    	    		function (desc) {
+				    	    			claimInfo.connected = ('rejected' !== desc.state);
+				    	    			
+				    	    			res.json(claimInfo);
+				    	    		},
+				    	    		function (err) {
+				    	    		    res.json({
+				    	    		    	ok: false,
+				    	    		    	errors: [
+				    			    	    	err
+				    			    	    ]
+				    	    		    });
+				    	    		}
+				    	    	);
+				    	},
+				    	function (err) {
+				    	    res.json({
+				    	    	ok: false,
+				    	    	errors: [
+				    	        	err
+				    	        ]
+				    	    });
+				    	}    
+			    	);
+			    } else {
+			    	res.json({
+			    		ok: false, 
+			    		errors: [ 
+			    			{}
+			    		]
+			    		//message: "user not found"
+			    	});
+			    }
+	    	} else {
+	    		res.json({
+	    			ok: false, 
+	    			errors: [ 
+	    				{}
+	    			]
+	    			//message: "device not found"
+	    		});
+	    	}
+	    } else {
+	    	res.json({
+	    		ok: false, 
+	    		errors: [ 
+	    			"data.deviceID is empty" 
+	    		]
+	    	});
+	    }
     },
+    
+    /*linkDevice: function (coreid, claimCode) {
+    	var user = roles.getUserByClaimCode(claimCode);
+    	
+    	if(user != undefined) {
+    	
+    		logger.log("Linking Device...", { coreID: coreid });
+    	
+    		when(roles.addDevice(coreid, user.id)).then(
+    			function () {
+    				logger.log("Device linked", { coreID: coreid });
+    			}, 
+    			function (err) {
+    				logger.error("Error in linking Device", { coreID: coreid });
+    			}
+    		);
+    	} else {
+    		logger.error("Claim code not valid", { claimCode: claimCode });
+    	}
+    },*/
 
 
     loadCore: function (req, res, next) {

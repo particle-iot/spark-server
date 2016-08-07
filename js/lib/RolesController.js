@@ -34,9 +34,12 @@ function RolesController() {
 RolesController.prototype = {
     users: null,
     usersByToken: null,
+    usersByDevice: null,
+    usersByClaimCode: null,
     usersByUsername: null,
     tokens: null,
-
+    claimCodes: null,
+	devices: null,
 
     init: function () {
         this._loadAndCacheUsers();
@@ -58,6 +61,20 @@ RolesController.prototype = {
             var token = userObj.access_tokens[i];
             this.usersByToken[ token ] = userObj;
             this.tokens[token.token] = token;
+        }
+        
+        //claim codes
+        this.claimCodes[userObj._id] = userObj.claim_codes;
+        for (var i = 0; i < userObj.claim_codes.length; i++) {
+            var claimCode = userObj.claim_codes[i];
+            this.usersByClaimCode[claimCode] = userObj;
+        }
+        
+        //devices claimed
+        this.devices[userObj._id] = userObj.devices;
+        for (var i = 0; i < userObj.devices.length; i++) {
+            var deviceId = userObj.devices[i];
+            this.usersByDevice[ deviceId ] = userObj;
         }
     },
     destroyAccessToken: function (access_token) {
@@ -102,7 +119,55 @@ RolesController.prototype = {
         }
         return tmp.promise;
     },
-
+    addClaimCode: function (claimCode, userId) {
+        var tmp = when.defer();
+        try {
+            var userObj = this.getUserByUserid(userId);
+            
+            userObj.claim_codes.push(claimCode);
+            this.saveUser(userObj);
+            
+            this.claimCodes[userObj._id].push(claimCode);
+            this.usersByClaimCode[ claimCode ] = userObj;
+            
+            tmp.resolve();
+        }
+        catch (ex) {
+            logger.error("Error adding claim code ", ex);
+            tmp.reject(ex);
+        }
+        return tmp.promise;
+    },
+	addDevice: function (deviceId, userId) {
+        var tmp = when.defer();
+        try {
+            var userObj = this.getUserByUserid(userId);
+			
+			/*var deviceObj = {
+			    id: deviceId,
+			    name: null
+			};*/
+			
+			if(this.usersByDevice[deviceId] == undefined) {
+				userObj.devices.push(deviceId);
+				this.saveUser(userObj);
+				
+				this.devices[userObj._id].push(deviceId);
+				this.usersByDevice[ deviceId ] = userObj;
+				
+				tmp.resolve();
+			} else if(this.usersByDevice[deviceId] == userObj) {
+				tmp.resolve();
+			} else {
+				tmp.reject("cannot claim");
+			}
+        }
+        catch (ex) {
+            logger.error("Error adding device ", ex);
+            tmp.reject(ex);
+        }
+        return tmp.promise;
+    },
 
     saveUser: function (userObj) {
         var userFile = path.join(settings.userDataDir, userObj.username) + ".json";
@@ -113,12 +178,15 @@ RolesController.prototype = {
     _loadAndCacheUsers: function () {
         this.users = [];
         this.usersByToken = {};
+        this.usersByDevice = {};
         this.usersByUsername = {};
+        this.usersByClaimCode = [];
         this.tokens = {};
-
+        this.claimCodes = [];
+		this.devices = [];
 
         // list files, load all user objects, index by access_tokens and usernames
-
+		// and devices
         if (!fs.existsSync(settings.userDataDir)) {
             fs.mkdirSync(settings.userDataDir);
         }
@@ -148,7 +216,13 @@ RolesController.prototype = {
     getUserByToken: function (access_token) {
         return this.usersByToken[access_token];
     },
-
+	getUserByDevice: function (deviceId) {
+	    return this.usersByDevice[deviceId];
+	},
+	getUserByClaimCode: function (claimCode) {
+	    return this.usersByClaimCode[claimCode];
+	},
+	
     getUserByName: function (username) {
         return this.usersByUsername[username];
     },
@@ -211,7 +285,9 @@ RolesController.prototype = {
                         username: username,
                         password_hash: hash,
                         salt: salt,
-                        access_tokens: []
+                        access_tokens: [],
+                        claim_codes: [],
+                        devices: []
                     };
 
                     var userFile = path.join(settings.userDataDir, username + ".json");
