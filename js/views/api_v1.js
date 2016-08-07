@@ -288,7 +288,6 @@ var Api = {
         }
     },
 
-
     isDeviceOnline: function (userID, coreID) {
         var tmp = when.defer();
 
@@ -380,6 +379,7 @@ var Api = {
 				    	    		function (desc) {
 				    	    			claimInfo.connected = ('rejected' !== desc.state);
 				    	    			
+				    	    			global.server.setCoreAttribute(coreid, "claimed", true);
 				    	    			res.json(claimInfo);
 				    	    		},
 				    	    		function (err) {
@@ -438,6 +438,8 @@ var Api = {
 		if(user && user._id == userid) {
 			when(global.roles.removeDevice(coreID, userid)).then(
 				function () {
+					
+					global.server.setCoreAttribute(coreID, "claimed", false);
 					res.json({'ok' : true });
 				}, function (err) {
 					res.json({
@@ -461,6 +463,7 @@ var Api = {
 		
 			when(global.roles.addDevice(coreid, user._id)).then(
 				function () {
+					global.server.setCoreAttribute(coreid, "claimed", true);
 					logger.log("Device linked", { coreID: coreid });
 				}, 
 				function (err) {
