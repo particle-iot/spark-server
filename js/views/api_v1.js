@@ -333,7 +333,7 @@ var Api = {
 			code = code.toString('base64');
 			code = code.substring(0, 63);
 			
-			when(roles.addClaimCode(code, userid)).then(
+			when(global.roles.addClaimCode(code, userid)).then(
 				function () {
 					res.json({ 
 						claim_code: code, 
@@ -362,7 +362,7 @@ var Api = {
 	    		var user = global.roles.getUserByClaimCode(core.claimCode);
 	    		
 	    		if(user && user._id == userid) {
-			    	when(roles.addDevice(coreid, userid)).then(
+			    	when(global.roles.addDevice(coreid, userid)).then(
 				    	function () {
 				    		var claimInfo = {
 				    			user_id : userid,

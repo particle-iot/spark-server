@@ -127,7 +127,6 @@ RolesController.prototype = {
             userObj.claim_codes.push(claimCode);
             this.saveUser(userObj);
             
-            this.claimCodes[userObj._id].push(claimCode);
             this.usersByClaimCode[ claimCode ] = userObj;
             
             tmp.resolve();
@@ -148,11 +147,10 @@ RolesController.prototype = {
 			    name: null
 			};*/
 			
-			if(this.usersByDevice[deviceId] == undefined) {
+			if(!this.usersByDevice[deviceId]) {
 				userObj.devices.push(deviceId);
 				this.saveUser(userObj);
 				
-				this.devices[userObj._id].push(deviceId);
 				this.usersByDevice[ deviceId ] = userObj;
 				
 				tmp.resolve();
