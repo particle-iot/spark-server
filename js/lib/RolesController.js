@@ -160,7 +160,7 @@ RolesController.prototype = {
 			} else if(this.usersByDevice[deviceId] == userObj) {
 				tmp.resolve();
 			} else {
-				tmp.reject("cannot claim");
+				tmp.reject("already claimed");
 			}
         }
         catch (ex) {

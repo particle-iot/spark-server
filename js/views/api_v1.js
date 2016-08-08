@@ -19,7 +19,6 @@
 var settings = require('../settings.js');
 
 var CoreController = require('../lib/CoreController.js');
-var roles = require('../lib/RolesController.js');
 var PasswordHasher = require('../lib/PasswordHasher.js');
 
 var sequence = require('when/sequence');
@@ -83,6 +82,16 @@ var Api = {
         //req.user.id is set in authorise.validateAccessToken in the OAUTH code
         return req.user.id;
     },
+    
+    hasDevice: function (req) {        
+        //check core permission
+        if(global.roles.getUserByDevice(req.coreID) && global.roles.getUserByDevice(req.coreID)._id == req.user.id) {
+        	return true;
+        } else {
+        	logger.log("device Permission Denied");
+        	return false;
+        }
+    },
 
     list_devices: function (req, res) {
         var userid = Api.getUserID(req);
@@ -138,7 +147,14 @@ var Api = {
         var socketID = Api.getSocketID(userid),
             coreID = req.coreID,
             socket = new CoreController(socketID);
-
+		
+		if(!Api.hasDevice(req)) {
+			res.status(403).json({
+			  "error": "device Permission Denied",
+			  "info": "I didn't recognize that device name or ID"
+			});
+			return;
+		}
 
         logger.log("GetAttr", { coreID: coreID, userID: userid.toString() });
 
@@ -209,7 +225,15 @@ var Api = {
     set_core_attributes: function (req, res) {
         var coreID = req.coreID;
         var userid = Api.getUserID(req);
-
+		
+		if(!Api.hasDevice(req)) {
+        	res.status(403).json({
+        	  "error": "device Permission Denied",
+        	  "info": "I didn't recognize that device name or ID"
+        	});
+        	return;
+        }
+		        
         var promises = [];
 
         logger.log("set_core_attributes", { coreID: coreID, userID: userid.toString() });
@@ -358,13 +382,14 @@ var Api = {
     claim_device: function (req, res) {
     	var userid = Api.getUserID(req);
     	var coreid = req.body.id;
-    	var core = global.server.getCoreAttributes(req.body.id);
+    	var core = global.server.getCoreAttributes(coreid);
     	
-    	if(req.body.id) {
-	    	if(core.claimCode) {
+    	if(coreid) {
+    	
+    		if(core.claimCode) {
 	    		var user = global.roles.getUserByClaimCode(core.claimCode);
 	    		
-	    		if(user && user._id == userid) {
+	    		if(user) {
 			    	when(global.roles.addDevice(coreid, userid)).then(
 				    	function () {
 				    		var claimInfo = {
@@ -383,44 +408,42 @@ var Api = {
 				    	    			res.json(claimInfo);
 				    	    		},
 				    	    		function (err) {
-				    	    		    res.json({
+				    	    		    res.status(404).json({
 				    	    		    	ok: false,
 				    	    		    	errors: [
-				    			    	    	err
+				    			    	    	"Device is not connected"
 				    			    	    ]
 				    	    		    });
 				    	    		}
 				    	    	);
 				    	},
 				    	function (err) {
-				    	    res.json({
+				    	    res.status(403).json({
 				    	    	ok: false,
 				    	    	errors: [
-				    	        	err
+				    	        	"That belongs to someone else. To request a transfer add ?request_transfer=true to the URL."
 				    	        ]
 				    	    });
 				    	}    
 			    	);
 			    } else {
-			    	res.json({
+			    	res.status(404).json({
 			    		ok: false, 
 			    		errors: [ 
 			    			{}
 			    		]
-			    		//message: "user not found"
 			    	});
 			    }
-	    	} else {
-	    		res.json({
-	    			ok: false, 
-	    			errors: [ 
-	    				{}
-	    			]
-	    			//message: "device not found"
-	    		});
-	    	}
+		    } else {
+		    	res.status(404).json({
+		    		ok: false, 
+		    		errors: [ 
+		    			{}
+		    		]
+		    	});
+		    }
 	    } else {
-	    	res.json({
+	    	res.status(404).json({
 	    		ok: false, 
 	    		errors: [ 
 	    			"data.deviceID is empty" 
@@ -433,27 +456,25 @@ var Api = {
 		var coreID = req.coreID;
 		var userid = Api.getUserID(req);
 		
-		var user = global.roles.getUserByDevice(coreID);
-		
-		if(user && user._id == userid) {
-			when(global.roles.removeDevice(coreID, userid)).then(
-				function () {
-					
-					global.server.setCoreAttribute(coreID, "claimed", false);
-					res.json({'ok' : true });
-				}, function (err) {
-					res.json({
-					  "error": "device Permission Denied",
-					  "info": "I didn't recognize that device name or ID"
-					});
-				}
-			);
-		} else {
-			res.json({
-			  "error": "user Permission Denied",
+		if(!Api.hasDevice(req)) {
+			res.status(403).json({
+			  "error": "device Permission Denied",
 			  "info": "I didn't recognize that device name or ID"
 			});
+			return;
 		}
+		
+		when(global.roles.removeDevice(coreID, userid)).then(
+			function () {
+				global.server.setCoreAttribute(coreID, "claimed", false);
+				res.json({'ok' : true });
+			}, function (err) {
+				res.status(403).json({
+				  "error": "device Permission Denied",
+				  "info": "I didn't recognize that device name or ID"
+				});
+			}
+		);
 	},
 	
 	linkDevice: function (coreid, claimCode) {
@@ -532,7 +553,15 @@ var Api = {
             coreID = req.coreID,
             varName = req.params.var,
             format = req.params.format;
-
+		
+		if(!Api.hasDevice(req)) {
+        	res.status(403).json({
+        	  "error": "device Permission Denied",
+        	  "info": "I didn't recognize that device name or ID"
+        	});
+        	return;
+        }
+		        
         logger.log("GetVar", {coreID: coreID, userID: userid.toString()});
 
 
@@ -582,7 +611,15 @@ var Api = {
             coreID = req.coreID,
             funcName = req.params.func,
             format = req.params.format;
-
+		
+		if(!Api.hasDevice(req)) {
+        	res.status(403).json({
+        	  "error": "device Permission Denied",
+        	  "info": "I didn't recognize that device name or ID"
+        	});
+        	return;
+        }
+        
         logger.log("FunCall", { coreID: coreID, user_id: user_id.toString() });
 
         var socketID = Api.getSocketID(user_id);
