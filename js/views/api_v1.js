@@ -83,12 +83,13 @@ var Api = {
         return req.user.id;
     },
     
-    hasDevice: function (req) {        
+    hasDevice: function (coreID, userID) {  
+    	var userObj = global.roles.getUserByDevice(coreID);
         //check core permission
-        if(global.roles.getUserByDevice(req.coreID) && global.roles.getUserByDevice(req.coreID)._id == req.user.id) {
+        if(userObj && userObj._id == userID) {
         	return true;
         } else {
-        	logger.log("device Permission Denied");
+        	//logger.log("device Permission Denied");
         	return false;
         }
     },
@@ -148,7 +149,7 @@ var Api = {
             coreID = req.coreID,
             socket = new CoreController(socketID);
 		
-		if(!Api.hasDevice(req)) {
+		if(!Api.hasDevice(coreID, userid)) {
 			res.status(403).json({
 			  "error": "device Permission Denied",
 			  "info": "I didn't recognize that device name or ID"
@@ -226,7 +227,7 @@ var Api = {
         var coreID = req.coreID;
         var userid = Api.getUserID(req);
 		
-		if(!Api.hasDevice(req)) {
+		if(!Api.hasDevice(coreID, userid)) {
         	res.status(403).json({
         	  "error": "device Permission Denied",
         	  "info": "I didn't recognize that device name or ID"
@@ -456,7 +457,7 @@ var Api = {
 		var coreID = req.coreID;
 		var userid = Api.getUserID(req);
 		
-		if(!Api.hasDevice(req)) {
+		if(!Api.hasDevice(coreID, userid)) {
 			res.status(403).json({
 			  "error": "device Permission Denied",
 			  "info": "I didn't recognize that device name or ID"
@@ -554,7 +555,7 @@ var Api = {
             varName = req.params.var,
             format = req.params.format;
 		
-		if(!Api.hasDevice(req)) {
+		if(!Api.hasDevice(coreID, userid)) {
         	res.status(403).json({
         	  "error": "device Permission Denied",
         	  "info": "I didn't recognize that device name or ID"
@@ -607,12 +608,12 @@ var Api = {
     },
 
     fn_call: function (req, res) {
-        var user_id = Api.getUserID(req),
+        var userid = Api.getUserID(req),
             coreID = req.coreID,
             funcName = req.params.func,
             format = req.params.format;
 		
-		if(!Api.hasDevice(req)) {
+		if(!Api.hasDevice(coreID, userid)) {
         	res.status(403).json({
         	  "error": "device Permission Denied",
         	  "info": "I didn't recognize that device name or ID"
@@ -620,16 +621,16 @@ var Api = {
         	return;
         }
         
-        logger.log("FunCall", { coreID: coreID, user_id: user_id.toString() });
+        logger.log("FunCall", { coreID: coreID, userid: userid.toString() });
 
-        var socketID = Api.getSocketID(user_id);
+        var socketID = Api.getSocketID(userid);
         var socket = new CoreController(socketID);
         var core = socket.getCore(coreID);
 
 
         var args = req.body;
         delete args.access_token;
-        logger.log("FunCall - calling core ", { coreID: coreID, user_id: user_id.toString() });
+        logger.log("FunCall - calling core ", { coreID: coreID, userid: userid.toString() });
         var coreResult = socket.sendAndListenForDFD(coreID,
             { cmd: "CallFn", name: funcName, args: args },
             { cmd: "FnReturn", name: funcName },

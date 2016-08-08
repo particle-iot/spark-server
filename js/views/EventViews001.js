@@ -143,6 +143,10 @@ var EventsApi = {
                 if (!checkSocket()) {
                     return;
                 }
+                
+                if(!Api.hasDevice(coreid, userid)) {
+                	return;
+                }
 
                 try {
                     _lastMessage = new Date();
