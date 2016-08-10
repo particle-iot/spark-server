@@ -32,7 +32,9 @@ OAuth2ServerModel.prototype = {
     },
 
     getClient: function (clientId, clientSecret, callback) {
-        return callback(null, { client_id: clientId });
+    	var client = roles.getClient(clientId, clientSecret);
+    	// This object will be exposed in req.oauth.client
+        return callback(null, ( client ? { client_id : client } : false));
     },
 
     grantTypeAllowed: function (clientId, grantType, callback) {

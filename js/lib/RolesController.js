@@ -232,6 +232,17 @@ RolesController.prototype = {
         }
     },
 
+	getClient: function ( clientId, clientSecret) {
+		var filename = settings.oauthClientsFile;
+		var clients = JSON.parse(fs.readFileSync(filename));
+		
+		for (var i = 0; i < clients.length; i++) {
+			if (clients[i].client_id == clientId) {
+				return (clients[i].secret == clientSecret ? clientId : false);
+			}
+		}
+		return false;
+	},
 
     getUserByToken: function (access_token) {
         return this.usersByToken[access_token];
