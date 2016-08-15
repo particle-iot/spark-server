@@ -50,8 +50,11 @@ var EventsApi = {
 
     //-----------------------------------------------------------------
 
-    pipeEvents: function (socket, req, res, filterCoreId) {
+    pipeEvents: function (socket, req, res, next, filterCoreId) {
         var userid = Api.getUserID(req);
+        if(!userid) {
+        	return next();
+        }
 
         /*
          Start SSE
@@ -185,12 +188,15 @@ var EventsApi = {
     },
 
 
-    get_events: function (req, res) {
+    get_events: function (req, res, next) {
         var name = req.params.event_name;
         name = name || "";
         var socket = new CoreController();
 
         var userid = Api.getUserID(req);
+        if(!userid) {
+        	return next();
+        }
 //        if (userid) {
 //            socket.authorize(userid);
 //        }
@@ -205,12 +211,15 @@ var EventsApi = {
         //send it all through
         EventsApi.pipeEvents(socket, req, res);
     },
-    get_my_events: function (req, res) {
+    get_my_events: function (req, res, next) {
         var name = req.params.event_name;
         name = name || "";
         var socket = new CoreController();
 
         var userid = Api.getUserID(req);
+        if(!userid) {
+        	return next();
+        }
 //        if (userid) {
 //            socket.authorize(userid);
 //        }
@@ -224,13 +233,16 @@ var EventsApi = {
         //don't filter by core id
         EventsApi.pipeEvents(socket, req, res);
     },
-    get_core_events: function (req, res) {
+    get_core_events: function (req, res, next) {
         var name = req.params.event_name;
         var socket = new CoreController();
         name = name || "";
         var coreid = req.coreID || req.params.coreid;
 
         var userid = Api.getUserID(req);
+        if(!userid) {
+        	return next();
+        }
 //        if (userid) {
 //            socket.authorize(userid);
 //        }
@@ -248,14 +260,18 @@ var EventsApi = {
     },
 
 
-    send_an_event: function (req, res) {
+    send_an_event: function (req, res, next) {
         var userid = Api.getUserID(req),
             socketID = Api.getSocketID(userid),
             eventName = req.body.name,
             data = req.body.data,
             ttl = req.body.ttl || 60,
             private_str = req.body.private;
-
+		
+		if(!userid) {
+			return next();
+		}
+		
         var is_public = (!private_str || (private_str == "") || (private_str == "false"));
 
         var socket = new CoreController(socketID);
