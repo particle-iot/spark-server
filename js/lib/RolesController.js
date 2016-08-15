@@ -37,8 +37,12 @@ RolesController.prototype = {
     usersByDevice: null,
     usersByClaimCode: null,
     usersByUsername: null,
-    tokens: null,
+    
+    access_tokens: null,
+    refresh_tokens: null,
+    
     claimCodes: null,
+    
 	devices: null,
 
     init: function () {
@@ -49,18 +53,11 @@ RolesController.prototype = {
         this.users.push(userObj);
         this.usersByUsername[ userObj.username ] = userObj;
 
-        if (userObj.access_token) {
-            this.usersByToken[userObj.access_token] = userObj;
-            this.tokens.push({
-                user_id: userObj._id,
-                expires: userObj.access_token_expires_at
-            });
-        }
-
         for (var i = 0; i < userObj.access_tokens.length; i++) {
             var token = userObj.access_tokens[i];
-            this.usersByToken[ token ] = userObj;
-            this.tokens[token.token] = token;
+            this.usersByToken[token.token] = userObj;
+            this.access_tokens[token.token] = token;
+            this.refresh_tokens[token.refresh_token] = token;
         }
         
         //claim codes
@@ -84,10 +81,8 @@ RolesController.prototype = {
         }
         
         delete this.usersByToken[access_token];
-        /*if (userObj.access_token == access_token) {
-            userObj.access_token = null;
-        }*/
-
+        delete this.access_tokens[access_token];
+        
         for (var i = 0; i < userObj.access_tokens.length; i++) {
             var tokenObj = userObj.access_tokens[i];
             if (tokenObj.token == access_token) {
@@ -97,24 +92,62 @@ RolesController.prototype = {
 
         this.saveUser(userObj);
     },
-    addAccessToken: function (accessToken, clientId, userId, expires) {
-        var tmp = when.defer();
+    revokeToken: function (token) {
+    	var userObj = this.usersByToken[token.accessToken];
+    	if (!userObj) {
+    	    return false;
+    	}
+    	var tokenObj = this.access_tokens[token.accessToken];
+    	if(!tokenObj) {
+    		return false;
+    	}
+    	
+    	delete this.usersByToken[token.accessToken];
+        delete this.access_tokens[token.accessToken];
+        delete this.refresh_tokens[token.refreshToken];
+        
+        for (var i = 0; i < userObj.access_tokens.length; i++) {
+            var tokenObj = userObj.access_tokens[i];
+            if (tokenObj.token == token.accessToken) {
+                userObj.access_tokens.splice(i, 1);
+            }
+        }
+		this.saveUser(userObj);
+
+        return token;
+    },
+    addAccessToken: function (token, client, user) {
+    	var tmp = when.defer();
         try {
-            var userObj = this.getUserByUserid(userId);
-            this.usersByToken[accessToken] = userObj;
+        	var tokenObj = {
+        	    //user_id: user._id,
+        	    token: token.accessToken,
+        	    expires_at: token.accessTokenExpiresAt,
+        	    client: client.client_id, 
+        	    refresh_token: token.refreshToken,
+        	    scope: token.scope
+        	};
 
-            var tokenObj = {
-                user_id: userId,
-                client_id: clientId,
-                token: accessToken,
-                expires: expires,
-                _id: accessToken
-            };
+            var userObj = this.getUserByUserid(user._id);
+            if(!userObj) {
+            	//refresh_token
+            	userObj = this.getUserByUserid(user);
+            }
+            this.usersByToken[token.accessToken] = userObj;
 
-            this.tokens[accessToken] = tokenObj;
+            this.access_tokens[token.accessToken] = tokenObj;
+            this.refresh_tokens[token.refreshToken] = tokenObj;
             userObj.access_tokens.push(tokenObj);
             this.saveUser(userObj);
-            tmp.resolve();
+            
+            tmp.resolve({ 
+            	accessToken: token.accessToken, 
+            	client: client, 
+            	user: userObj._id, 
+            	refreshToken: token.refreshToken,
+            	scope: token.scope,
+            	accessTokenExpiresAt: token.accessTokenExpiresAt
+            });
         }
         catch (ex) {
             logger.error("Error adding access token ", ex);
@@ -194,24 +227,24 @@ RolesController.prototype = {
         var userJson = JSON.stringify(userObj, null, 2);
         fs.writeFileSync(userFile, userJson);
     },
-
+	
     _loadAndCacheUsers: function () {
         this.users = [];
         this.usersByToken = {};
         this.usersByDevice = {};
         this.usersByUsername = {};
-        this.usersByClaimCode = [];
-        this.tokens = {};
-        this.claimCodes = [];
+        this.usersByClaimCode = {};
+        this.access_tokens = {};
+        this.refresh_tokens = {};
+        this.claimCodes = {};
 		this.devices = [];
-
+		
         // list files, load all user objects, index by access_tokens and usernames
 		// and devices
         if (!fs.existsSync(settings.userDataDir)) {
             fs.mkdirSync(settings.userDataDir);
         }
-
-
+        
         var files = fs.readdirSync(settings.userDataDir);
         if (!files || (files.length == 0)) {
             logger.error([ "-------", "No users exist, you should create some users!", "-------", ].join("\n"));
@@ -235,10 +268,11 @@ RolesController.prototype = {
 	getClient: function ( clientId, clientSecret) {
 		var filename = settings.oauthClientsFile;
 		var clients = JSON.parse(fs.readFileSync(filename));
-		
 		for (var i = 0; i < clients.length; i++) {
 			if (clients[i].client_id == clientId) {
-				return (clients[i].secret == clientSecret ? clientId : false);
+				if(clients[i].client_secret == clientSecret) {
+					return clients[i];
+				}
 			}
 		}
 		return false;
@@ -257,8 +291,35 @@ RolesController.prototype = {
     getUserByName: function (username) {
         return this.usersByUsername[username];
     },
-    getTokenInfoByToken: function (token) {
-        return this.tokens[token];
+    getTokenInfoByAccessToken: function (token) {
+    	var tokenObj = this.access_tokens[token];
+    	if(!tokenObj) {
+    		return false;
+    	}
+    	console.log(tokenObj);
+        return {
+        	accessToken: tokenObj.token, 
+        	client: tokenObj.client, 
+        	user: this.getUserByToken(tokenObj.token)._id, 
+        	refreshToken: tokenObj.refresh_token,
+        	accessTokenExpiresAt: new Date(tokenObj.expires_at),
+        	scope: tokenObj.scope
+        };
+    },
+    getTokenInfoByRefreshToken: function (token) {
+        var tokenObj = this.refresh_tokens[token];
+        if(!tokenObj) {
+        	return false;
+        }
+        return {
+        	accessToken: tokenObj.token, 
+        	client: tokenObj.client, 
+        	user: this.getUserByToken(tokenObj.token)._id, 
+        	refreshToken: tokenObj.refresh_token,
+        	refreshTokenExpiresAt: new Date(tokenObj.expires_at),
+        	//refreshTokenExpiresAt not managed return accessTokenExpires
+        	scope: tokenObj.scope
+        };
     },
     getUserByUserid: function (userid) {
         for (var i = 0; i < this.users.length; i++) {

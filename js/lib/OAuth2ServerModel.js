@@ -26,39 +26,32 @@ var OAuth2ServerModel = function (options) {
 };
 OAuth2ServerModel.prototype = {
 
-    getAccessToken: function (bearerToken, callback) {
-        var token = roles.getTokenInfoByToken(bearerToken);
-        callback(null, token);
+    getAccessToken: function (bearerToken) {
+    	return when(roles.getTokenInfoByAccessToken(bearerToken));
     },
 
-    getClient: function (clientId, clientSecret, callback) {
-    	var client = roles.getClient(clientId, clientSecret);
-    	// This object will be exposed in req.oauth.client
-        return callback(null, ( client ? { client_id : client } : false));
+    getClient: function(clientId, clientSecret) {
+    	return when(roles.getClient(clientId, clientSecret));
+    },
+    
+    getRefreshToken: function (bearerToken) {
+      	return when(roles.getTokenInfoByRefreshToken(bearerToken));
+    },
+    
+    revokeToken: function (bearerToken) {
+    	return when(roles.revokeToken(bearerToken));
     },
 
-    grantTypeAllowed: function (clientId, grantType, callback) {
-        return callback(null, 'password' === grantType);
+    saveToken: function (token, client, user) {
+    	return when(roles.addAccessToken(token, client, user));
     },
 
-    saveAccessToken: function (accessToken, clientId, userId, expires, callback) {
-        when(roles.addAccessToken(accessToken, clientId, userId, expires))
-            .ensure(callback);
-    },
-
-    getUser: function (username, password, callback) {
+    getUser: function (username, password) {
         if (username && username.toLowerCase) {
             username = username.toLowerCase();
         }
 
-        when(roles.validateLogin(username, password))
-            .then(
-            function (user) {
-                callback(null, { id: user._id });
-            },
-            function (err) {
-                callback(err, null);
-            });
+        return when(roles.validateLogin(username, password));
     }
 };
 
