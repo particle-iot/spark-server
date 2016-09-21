@@ -34,6 +34,10 @@ OAuth2ServerModel.prototype = {
     	return when(roles.getClient(clientId, clientSecret));
     },
     
+    getUserFromClient: function(client) {
+    	return when(roles.getUserByClient(client.client_id));
+    },
+    
     getRefreshToken: function (bearerToken) {
       	return when(roles.getTokenInfoByRefreshToken(bearerToken));
     },

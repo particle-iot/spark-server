@@ -32,5 +32,6 @@ module.exports = {
     maxHooksPerUser: 20,
     maxHooksPerDevice: 10,
     
-    oauthClientsFile: path.join(__dirname, "oauth_clients.json")
+    oauthClientsFile: path.join(__dirname, "oauth_clients.json"),
+    orgDataDir: path.join(__dirname, "orgs"),
 };

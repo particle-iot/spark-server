@@ -40,10 +40,20 @@ RolesController.prototype = {
     
     access_tokens: null,
     refresh_tokens: null,
-    
-    claimCodes: null,
+    claim_codes: null,
     
 	devices: null,
+	clients: null,
+	
+	orgsBySlug: null,
+	orgsByUserId: null,
+
+	customers: null,
+	customersByEmail: null,
+	//customersByToken: null,
+	
+	orgsByProduct: null,
+	products : null,
 
     init: function () {
         this._loadAndCacheUsers();
@@ -61,7 +71,7 @@ RolesController.prototype = {
         }
         
         //claim codes
-        this.claimCodes[userObj._id] = userObj.claim_codes;
+        this.claim_codes[userObj._id] = userObj.claim_codes;
         for (var i = 0; i < userObj.claim_codes.length; i++) {
             var claimCode = userObj.claim_codes[i];
             this.usersByClaimCode[claimCode] = userObj;
@@ -72,6 +82,52 @@ RolesController.prototype = {
         for (var i = 0; i < userObj.devices.length; i++) {
             var deviceId = userObj.devices[i];
             this.usersByDevice[ deviceId ] = userObj;
+        }
+    },
+    addCustomer: function (customerObj) {
+    	
+    	console.log("Loading customer " + customerObj.email);
+    	
+    	this.customers.push(customerObj);
+        this.customersByEmail[ customerObj.email ] = customerObj;
+    
+        for (var k = 0; k < customerObj.access_tokens.length; k++) {
+            var token = customerObj.access_tokens[k];
+            this.usersByToken[token.token] = customerObj;
+            this.access_tokens[token.token] = token;
+            this.refresh_tokens[token.refresh_token] = token;
+        }
+        
+        //claim codes
+        this.claim_codes[customerObj._id] = customerObj.claim_codes;
+        for (var i = 0; i < customerObj.claim_codes.length; i++) {
+            var claimCode = customerObj.claim_codes[i];
+            this.usersByClaimCode[claimCode.code] = customerObj;
+        }
+        
+        //devices claimed
+        this.devices[customerObj._id] = customerObj.devices;
+        for (var i = 0; i < customerObj.devices.length; i++) {
+            var deviceId = customerObj.devices[i];
+            this.usersByDevice[ deviceId ] = customerObj;
+        }
+    },
+    addClient: function (clientObj) {
+    	this.clients.push(clientObj);
+    },
+    addOrg: function (orgObj) {
+        this.orgsBySlug[orgObj.slug] = orgObj;
+        this.orgsByUserId[orgObj.user_id] = orgObj;
+        
+        for (var i = 0; i < orgObj.customers.length; i++) {
+        	this.addCustomer(orgObj.customers[i]); //add customer
+        }
+        
+        this.products[orgObj.slug] = []; //list product
+        for (var j = 0; j < orgObj.products.length; j++) {
+        	this.products[orgObj.slug].push(orgObj.products[j]);
+        	this.orgsByProduct[ orgObj.products[j].slug ] = orgObj;
+        	this.orgsByProduct[ orgObj.products[j].product_id ] = orgObj;
         }
     },
     destroyAccessToken: function (access_token) {
@@ -112,8 +168,11 @@ RolesController.prototype = {
                 userObj.access_tokens.splice(i, 1);
             }
         }
-		this.saveUser(userObj);
-
+		if(tokenObj.scope && tokenObj.scope.indexOf("customer=") > -1) {
+			this.saveCustomer(userObj);
+		} else {
+        	this.saveUser(userObj);
+        }
         return token;
     },
     addAccessToken: function (token, client, user) {
@@ -127,27 +186,49 @@ RolesController.prototype = {
         	    refresh_token: token.refreshToken,
         	    scope: token.scope
         	};
-
-            var userObj = this.getUserByUserid(user._id);
-            if(!userObj) {
-            	//refresh_token
-            	userObj = this.getUserByUserid(user);
+        	
+        	if(token.scope && token.scope.indexOf("customer=") > -1) {
+        	    //is a customer token
+        	    var email = token.scope.split("=")[1];
+        	    var customerObj = this.customersByEmail[email];
+        	    
+        	    this.usersByToken[token.accessToken] = customerObj;
+        	    this.access_tokens[token.accessToken] = tokenObj;
+        	    this.refresh_tokens[token.refreshToken] = tokenObj;
+        	    customerObj.access_tokens.push(tokenObj);
+        	    this.saveCustomer(customerObj);
+        	    
+        	    tmp.resolve({ 
+        	    	accessToken: token.accessToken, 
+        	    	client: client,
+        	    	refreshToken: token.refreshToken,
+        	    	user: customerObj._id,
+        	    	scope: token.scope,
+        	    	accessTokenExpiresAt: token.accessTokenExpiresAt
+        	    });
+        	    
+        	} else {
+	            var userObj = this.getUserByUserid(user._id);
+	            if(!userObj) {
+	            	//refresh_token
+	            	userObj = this.getUserByUserid(user);
+	            }
+	            this.usersByToken[token.accessToken] = userObj;
+	
+	            this.access_tokens[token.accessToken] = tokenObj;
+	            this.refresh_tokens[token.refreshToken] = tokenObj;
+	            userObj.access_tokens.push(tokenObj);
+	            this.saveUser(userObj);
+	            
+	            tmp.resolve({ 
+	            	accessToken: token.accessToken, 
+	            	client: client, 
+	            	user: userObj._id, 
+	            	refreshToken: token.refreshToken,
+	            	scope: token.scope,
+	            	accessTokenExpiresAt: token.accessTokenExpiresAt
+	            });
             }
-            this.usersByToken[token.accessToken] = userObj;
-
-            this.access_tokens[token.accessToken] = tokenObj;
-            this.refresh_tokens[token.refreshToken] = tokenObj;
-            userObj.access_tokens.push(tokenObj);
-            this.saveUser(userObj);
-            
-            tmp.resolve({ 
-            	accessToken: token.accessToken, 
-            	client: client, 
-            	user: userObj._id, 
-            	refreshToken: token.refreshToken,
-            	scope: token.scope,
-            	accessTokenExpiresAt: token.accessTokenExpiresAt
-            });
         }
         catch (ex) {
             logger.error("Error adding access token ", ex);
@@ -173,20 +254,38 @@ RolesController.prototype = {
         }
         return tmp.promise;
     },
-	addDevice: function (deviceId, userId) {
+    addProductClaimCode: function (claimCode, customerId, productId) {
         var tmp = when.defer();
         try {
-            var userObj = this.getUserByUserid(userId);
-			
-			/*var deviceObj = {
-			    id: deviceId,
-			    name: null
-			};*/
-			
+            var claimCodeObj = {
+            	code : claimCode,
+            	product_id : productId
+            }
+            
+            var customerObj = this.getCustomerByCustomerid(customerId);
+            customerObj.claim_codes.push(claimCodeObj);
+            this.saveCustomer(customerObj);
+            
+            this.usersByClaimCode[ claimCode ] = customerObj;
+            
+            tmp.resolve();
+        }
+        catch (ex) {
+            logger.error("Error adding claim code ", ex);
+            tmp.reject(ex);
+        }
+        return tmp.promise;
+    },
+	addDevice: function (deviceId, userObj) {
+        var tmp = when.defer();
+        try {
 			if(!this.usersByDevice[deviceId]) {
 				userObj.devices.push(deviceId);
-				this.saveUser(userObj);
-				
+				if(userObj.org) { //customer
+					this.saveCustomer(userObj);
+				} else {
+					this.saveUser(userObj);
+				}
 				this.usersByDevice[ deviceId ] = userObj;
 				
 				tmp.resolve();
@@ -206,27 +305,89 @@ RolesController.prototype = {
 		var tmp = when.defer();
 		try {
 	        var userObj = this.getUserByUserid(userId);
-
-	        delete this.usersByDevice[deviceId];
-	        var index = utilities.indexOf(userObj.devices, deviceId);
-	        if (index > -1) {
-	            userObj.devices.splice(index, 1);
-	        }
-	
-	        this.saveUser(userObj);
-			tmp.resolve();
+			
+			if(this.usersByDevice[deviceId]) {
+		        var index = utilities.indexOf(userObj.devices, deviceId);
+		        if (index > -1) {
+		            userObj.devices.splice(index, 1);
+		        }
+		        
+		        delete this.usersByDevice[deviceId];
+		
+		        this.saveUser(userObj);
+				tmp.resolve();
+			} else {
+				tmp.reject('Device not found');
+			}
 		}
 		catch (ex) {
 		    logger.error("Error releasing device ", ex);
 		    tmp.reject(ex);
 		}
 		return tmp.promise;
-    },  
+    }, 
+    removeProductDevice: function (deviceId, productid) {
+    	var tmp = when.defer();
+    	try {
+            var productObj = this.getProductByProductid(productid);
+            var index = utilities.indexOf(productObj.devices, deviceId);
+        	if (index > -1) {
+        	    productObj.devices.splice(index, 1);
+        	    this.saveProduct(productObj);
+        	    
+        	    delete this.usersByDevice[deviceId];
+        	    
+        	    var orgObj = this.getOrgByProduct(productObj.product_id);
+        	    for (var i = 0; i < orgObj.customers.length; i++) {
+        	    	var index = utilities.indexOf(orgObj.customers[i].devices, deviceId);
+        	    	if (index > -1) {
+        	    	    orgObj.customers[i].devices.splice(index, 1);
+        	    	    this.saveCustomer(orgObj.customers[i]);
+        	    	}
+        	    }
+        	    
+        	    tmp.resolve();
+        	} else {
+        		tmp.reject('Device not found for product');
+        	}
+    	}
+    	catch (ex) {
+    	    logger.error("Error releasing device ", ex);
+    	    tmp.reject(ex);
+    	}
+    	return tmp.promise;
+    },
     saveUser: function (userObj) {
         var userFile = path.join(settings.userDataDir, userObj.username) + ".json";
         var userJson = JSON.stringify(userObj, null, 2);
         fs.writeFileSync(userFile, userJson);
     },
+	saveCustomer: function (customerObj) {
+	    var orgObj = this.orgsBySlug[customerObj.org];
+	    var orgFile = path.join(settings.orgDataDir, orgObj.slug) + ".json";
+	    var index = 0;
+	    for (var i = 0; i < orgObj.customers.length; i++) {
+	        var customer = orgObj.customers[i];
+	        if (customer._id == customerObj._id) {
+	            orgObj.customers[i] = customerObj;
+	        }
+	    }
+	    var orgJson = JSON.stringify(orgObj, null, 2);
+	    fs.writeFileSync(orgFile, orgJson);
+	},
+	saveProduct: function (productObj) {
+		var orgObj = this.orgsByProduct[productObj.slug];
+	    var orgFile = path.join(settings.orgDataDir, orgObj.slug) + ".json";
+	    var index = 0;
+	    for (var i = 0; i < orgObj.products.length; i++) {
+	        var product = orgObj.products[i];
+	        if (product.id == productObj.id) {
+	            orgObj.products[i] = productObj;
+	        }
+	    }
+	    var orgJson = JSON.stringify(orgObj, null, 2);
+	    fs.writeFileSync(orgFile, orgJson);
+	},
 	
     _loadAndCacheUsers: function () {
         this.users = [];
@@ -234,10 +395,22 @@ RolesController.prototype = {
         this.usersByDevice = {};
         this.usersByUsername = {};
         this.usersByClaimCode = {};
+        
         this.access_tokens = {};
         this.refresh_tokens = {};
-        this.claimCodes = {};
+        this.claim_codes = {};
+        
 		this.devices = [];
+		this.clients = [];
+		this.orgsBySlug = {};
+		this.orgsByUserId = {};
+		
+		this.customers = [];
+		this.customersByEmail = {};
+		//this.customersByToken = {};
+		
+		this.orgsByProduct = {};
+		this.products = {};
 		
         // list files, load all user objects, index by access_tokens and usernames
 		// and devices
@@ -263,19 +436,46 @@ RolesController.prototype = {
                 logger.error("RolesController - error loading user at " + filename);
             }
         }
-    },
+        
+        var filenameClient = settings.oauthClientsFile;
+        var clients = JSON.parse(fs.readFileSync(filenameClient));
+        for (var j = 0; j < clients.length; j++) {
+            try {
+            	console.log("Loading client " + clients[j].client_id);
+            	this.addClient(clients[j]);
+            }
+            catch (ex) {
+                logger.error("RolesController - error loading client at " + filenameOrg);
+            }
+        }
+        
+        var filesOrg = fs.readdirSync(settings.orgDataDir);
+        
+        for (var k = 0; k < filesOrg.length; k++) {
+            try {
 
+                var filenameOrg = path.join(settings.orgDataDir, filesOrg[k]);
+                var orgObj = JSON.parse(fs.readFileSync(filenameOrg));
+
+                console.log("Loading org " + orgObj.slug);
+                this.addOrg(orgObj);
+            }
+            catch (ex) {
+                logger.error("RolesController - error loading org at " + filenameOrg);
+            }
+        }
+    },
+    
 	getClient: function ( clientId, clientSecret) {
-		var filename = settings.oauthClientsFile;
-		var clients = JSON.parse(fs.readFileSync(filename));
-		for (var i = 0; i < clients.length; i++) {
-			if (clients[i].client_id == clientId) {
-				if(clients[i].client_secret == clientSecret) {
-					return clients[i];
-				}
-			}
+		var clientObj = this.getClientByClientid(clientId);
+		if (clientObj.client_secret == clientSecret) {
+			return clientObj;
 		}
 		return false;
+	},
+	
+	getUserByClient: function ( clientId ) {
+		return this.getUserByUserid(this.orgsBySlug[clientId].user_id);
 	},
 
     getUserByToken: function (access_token) {
@@ -287,6 +487,15 @@ RolesController.prototype = {
 	getUserByClaimCode: function (claimCode) {
 	    return this.usersByClaimCode[claimCode];
 	},
+	getOrgByProduct: function (product) { //ok
+	    return this.orgsByProduct[product];
+	},
+	getOrgByUserid: function (user_id) { //ok 
+	    return this.orgsByUserId[user_id];
+	},
+	getCustomerByEmail: function (email) {
+	    return this.customersByEmail[email];
+	},
 	
     getUserByName: function (username) {
         return this.usersByUsername[username];
@@ -296,7 +505,6 @@ RolesController.prototype = {
     	if(!tokenObj) {
     		return false;
     	}
-    	console.log(tokenObj);
         return {
         	accessToken: tokenObj.token, 
         	client: tokenObj.client, 
@@ -330,7 +538,37 @@ RolesController.prototype = {
         }
         return null;
     },
-
+    
+    getProductByProductid: function (productid) {
+    	var orgObj = this.orgsByProduct[productid];
+        for (var i = 0; i < this.products[orgObj.slug].length; i++) {
+            var product = this.products[orgObj.slug][i];
+            if (product.id == productid || product.slug == productid) {
+                return product;
+            }
+        }
+        return null;
+    },
+    
+    getCustomerByCustomerid: function (customerid) {
+        for (var i = 0; i < this.customers.length; i++) {
+            var customer = this.customers[i];
+            if (customer._id == customerid) {
+                return customer;
+            }
+        }
+        return null;
+    },
+    
+    getClientByClientid: function (clientId) {
+    	for (var i = 0; i < this.clients.length; i++) {
+    		var client = this.clients[i];
+    		if (client.client_id == clientId) {
+    			return client;
+    		}
+    	}
+    	return null;
+    },
 
     validateHashPromise: function (user, password) {
         var tmp = when.defer();
@@ -351,7 +589,6 @@ RolesController.prototype = {
         return tmp.promise;
     },
 
-
     validateLogin: function (username, password) {
         var userObj = this.getUserByName(username);
         if (!userObj) {
@@ -359,6 +596,19 @@ RolesController.prototype = {
         }
 
         return this.validateHashPromise(userObj, password);
+    },
+    
+    validateClient: function (clientId, clientSecret) {
+    	var tmp = when.defer();
+    	
+        var clientObj = this.getClient(clientId, clientSecret);
+        if (!clientObj) {
+            return tmp.reject("Bad client");
+        }
+		
+		tmp.resolve(clientObj);
+		
+        return tmp.promise;
     },
 
     createUser: function (username, password) {
@@ -392,6 +642,48 @@ RolesController.prototype = {
             });
         });
 
+        return tmp.promise;
+    },
+    
+    createCustomer: function (clientObj, product, email) {
+        var tmp = when.defer();
+        var that = this;
+	
+		var orgObj = that.getOrgByProduct(product);
+		if(orgObj && orgObj.slug == clientObj.client_id) {
+			var customer = that.getCustomerByEmail(email);
+			if(!customer) {
+						
+		        PasswordHasher.generateSalt(function (err, customerid) {
+		            customerid = customerid.toString('base64');
+		            customerid = customerid.substring(0, 32);
+					
+		            var customer = {
+		                _id: customerid,
+		                email: email,
+		                org: orgObj.slug,
+		                access_tokens: [],
+		                claim_codes: [],
+		                devices: []
+		            };
+		            
+		            var orgFile = path.join(settings.orgDataDir, orgObj.slug) + ".json";
+		            orgObj.customers.push(customer);
+		
+		            var orgJson = JSON.stringify(orgObj, null, 2);
+		            fs.writeFileSync(orgFile, orgJson);
+		
+		            that.addCustomer(customer);
+					
+		            tmp.resolve();
+		        });
+			} else {	
+				tmp.reject('Customer '+email+' already exists');
+			}
+		} else {
+			tmp.reject('Bad product');
+		}
+		
         return tmp.promise;
     }
 };

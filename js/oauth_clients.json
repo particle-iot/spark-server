@@ -1,7 +1,7 @@
 [
 	{
 		"client_id" : "particle",
-		"secret" : "particle",
-		"grant_type" : "password"
+		"client_secret" : "particle",
+		"grants" : [ "password", "refresh_token" ]
 	}
 ]

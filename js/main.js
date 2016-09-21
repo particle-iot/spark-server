@@ -26,22 +26,14 @@ var settings = require('./settings.js');
 var utilities = require("./lib/utilities.js");
 var logger = require('./lib/logger.js');
 
-var OAuthServer = require('node-oauth2-server');
+//var OAuthServer = require('node-oauth2-server');
+var oauthserver = require('express-oauth-server');
+
 var OAuth2ServerModel = require('./lib/OAuth2ServerModel');
 var AccessTokenViews = require('./lib/AccessTokenViews.js');
+var CustomerViews = require('./lib/CustomerViews.js');
 
 global._socket_counter = 1;
-
-var oauth = OAuthServer({
-    model: new OAuth2ServerModel({  }),
-    allow: {
-        "post": ['/v1/users'],
-        "get": ['/server/health', '/v1/access_tokens'],
-        "delete": ['/v1/access_tokens/([0-9a-f]{40})']
-    },
-    grants: ['password'],
-    accessTokenLifetime: 7776000    //90 days
-});
 
 var set_cors_headers = function (req, res, next) {
     if ('OPTIONS' === req.method) {
@@ -69,14 +61,27 @@ process.on('uncaughtException', function (ex) {
 
 
 var app = express();
-app.set('json spaces', 4);
+
+app.oauth = new oauthserver({
+  model: new OAuth2ServerModel({}),
+  accessTokenLifetime: 7776000    //90 days
+});
+
+app.set('json spaces', 2);
 app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(set_cors_headers);
 
-app.use(oauth.handler());
-app.use(oauth.errorHandler());
+app.post('/oauth/token', app.oauth.token());
+
+//app.use(app.oauth.token());
+app.all('/v1/device*', app.oauth.authenticate());
+app.all('/v1/provisioning*', app.oauth.authenticate());
+app.all('/v1/events*', app.oauth.authenticate());
+//app.all('/v1/products', app.oauth.authenticate()); //TODO remove customer creation
+//app.use(oauth.handler());
+//app.use(oauth.errorHandler());
 
 var UserCreator = require('./lib/UserCreator.js');
 app.post('/v1/users', UserCreator.getMiddleware());
@@ -84,18 +89,19 @@ app.post('/v1/users', UserCreator.getMiddleware());
 var api = require('./views/api_v1.js');
 var eventsV1 = require('./views/EventViews001.js');
 var tokenViews = new AccessTokenViews({  });
+var customerViews = new CustomerViews({  });
 
 
 eventsV1.loadViews(app);
 api.loadViews(app);
 tokenViews.loadViews(app);
+customerViews.loadViews(app);
 
 
-
-
-app.use(function (req, res, next) {
-    return res.sendStatus(404);
-});
+/*app.use(function (req, res, next) {
+	res.status(404);
+	next();
+});*/
 
 
 var node_port = process.env.NODE_PORT || '8080';

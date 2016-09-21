@@ -57,10 +57,10 @@ var Api = {
         app.get('/v1/devices/:coreid/:var', Api.get_var);
 
         app.put('/v1/devices/:coreid', multipartMiddleware, Api.set_core_attributes);
-        app.get('/v1/devices/:coreid', Api.get_core_attributes);
+        app.get('/v1/devices/:coreid', Api.get_core_attributes);//ok customer
 
         //doesn't need per-core permissions, only shows owned cores.
-        app.get('/v1/devices', Api.list_devices);
+        app.get('/v1/devices', Api.list_devices);//ok customer
 
         app.post('/v1/provisioning/:coreid', Api.provision_core);
 
@@ -68,6 +68,13 @@ var Api = {
         
         app.post('/v1/devices', Api.claim_device);
         app.post('/v1/device_claims', Api.get_claim_code);
+        
+        /*products*/
+        app.get('/v1/products', app.oauth.authenticate(), Api.list_products);
+        app.get('/v1/products/:productIdOrSlug', app.oauth.authenticate(), Api.get_product);
+        app.post('/v1/products/:productIdOrSlug/device_claims', app.oauth.authenticate(), Api.get_product_claim_code);
+        app.delete('/v1/products/:productIdOrSlug/devices/:coreid', app.oauth.authenticate(), Api.release_product_device);
+        app.get('/v1/products/:productIdOrSlug/customers', app.oauth.authenticate(), Api.get_product_customers);
     },
 
     getSocketID: function (userID) {
@@ -76,7 +83,33 @@ var Api = {
 
     getUserID: function (req) {
         if (!req.app.locals.oauth) {
-            logger.log("User obj was empty");
+            logger.log("Token obj was empty");
+            return false;
+        }
+        if(req.app.locals.oauth.token.scope && req.app.locals.oauth.token.scope.indexOf("customer=") > -1) {
+        	logger.log("Customer token");
+        	return false;
+        }
+        //req.user.id is set in authorise.validateAccessToken in the OAUTH code
+        return req.app.locals.oauth.token.user;
+    },
+    
+    getCustomerID: function (req) {
+        if (!req.app.locals.oauth) {
+            logger.log("Token obj was empty");
+            return false;
+        }
+        if(!req.app.locals.oauth.token.scope || req.app.locals.oauth.token.scope.indexOf("customer=") == -1) {
+        	logger.log("User token");
+        	return false;
+        }
+        //req.user.id is set in authorise.validateAccessToken in the OAUTH code
+        return req.app.locals.oauth.token.user;
+    },
+    
+    getUserOrCustomerID: function (req) {
+        if (!req.app.locals.oauth) {
+            logger.log("Token obj was empty");
             return false;
         }
         //req.user.id is set in authorise.validateAccessToken in the OAUTH code
@@ -95,7 +128,7 @@ var Api = {
     },
 
     list_devices: function (req, res, next) {
-        var userid = Api.getUserID(req);
+        var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
         }
@@ -117,7 +150,7 @@ var Api = {
             }
 
             var core = global.server.getCoreAttributes(coreid);
-
+			
             var device = {
                 id: coreid,
                 name: core ? core.name : null,
@@ -148,7 +181,7 @@ var Api = {
     },
 
     get_core_attributes: function (req, res, next) {
-        var userid = Api.getUserID(req);
+        var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
         }
@@ -407,13 +440,13 @@ var Api = {
     	if(coreid) {
     	
     		if(core.claimCode) {
-	    		var user = global.roles.getUserByClaimCode(core.claimCode);
+	    		var userObj = global.roles.getUserByClaimCode(core.claimCode);
 	    		
 	    		if(user) {
-			    	when(global.roles.addDevice(coreid, userid)).then(
+			    	when(global.roles.addDevice(coreid, userObj)).then(
 				    	function () {
 				    		var claimInfo = {
-				    			user_id : userid,
+				    			user_id : userObj._id,
 				    			id: coreid,
 				    			connected: false,
 				    			ok: true
@@ -500,18 +533,38 @@ var Api = {
 		);
 	},
 	
-	linkDevice: function (coreid, claimCode) {
-		var user = global.roles.getUserByClaimCode(claimCode);
-		if(user && user._id) {
+	//called when the core send its claim code
+	linkDevice: function (coreid, claimCode, productid) {
+		var userObj = global.roles.getUserByClaimCode(claimCode);
+		if(userObj) {
 			logger.log("Linking Device...", { coreID: coreid });
 		
-			when(global.roles.addDevice(coreid, user._id)).then(
+			if(userObj.org) { //if customer
+				//check if coreid is present in product devices
+				var productObj = global.roles.getProductByProductid(productid);
+				var index = utilities.indexOf(productObj.devices, deviceId);
+				if (index > -1) {
+					for (var i = 0; i < global.roles.claim_codes[userObj._id].length; i++) {
+						var claimCodeObj = global.roles.claim_codes[userObj._id][i];
+						//check if the claim code is valid for the product
+						if (claimCodeObj.code == claimCode && claimCodeObj.product_id != productid) {
+							logger.error("Claim code not valid for product", { claimCode: claimCode });
+							return false;
+						}
+					};
+				} else {
+					logger.error("Device not found for product");
+					return false;
+				}
+			} 
+			
+			when(global.roles.addDevice(coreid, userObj)).then(
 				function () {
 					global.server.setCoreAttribute(coreid, "claimed", true);
 					logger.log("Device linked", { coreID: coreid });
 				}, 
 				function (err) {
-					logger.error("Error in linking Device", { coreID: coreid });
+					logger.error("Error in linking Device: "+err, { coreID: coreid });
 				}
 			);
 		} else {
@@ -918,7 +971,156 @@ var Api = {
 
         return result.promise;
     },
-
+    
+    //List products the currently authenticated user has access to.
+    list_products: function (req, res, next) {
+        var userid = Api.getUserID(req);
+        if(!userid) {
+        	return next();
+        }
+        
+        logger.log("ListProducts", { userID: userid }); 
+        
+        var orgObj = global.roles.getOrgByUserid(userid);
+        if(orgObj) {
+        	var productObjs = global.roles.products[orgObj.slug];
+    	
+    		//remove devices ??
+    		res.json({ products : productObjs });
+    	} else {
+    		res.json({ products : [] });
+    	}
+    },
+    
+    //Retrieve details for a product.
+    get_product: function( req, res, next) {
+    	var userid = Api.getUserID(req);
+    	if(!userid) {
+    		return next();
+    	}
+    	
+    	logger.log("GetProduct", { userID: userid }); 
+    	
+    	var productid = req.params.productIdOrSlug;
+    	var orgObj = global.roles.getOrgByProduct(productid);
+    	if(orgObj && orgObj.user_id == userid) {
+    		var productObj = global.roles.getProductByProductid(productid);
+    
+    		res.json({ product : productObj });
+    	} else {
+    		res.status(404).json({ ok: false, errors: [ 'Product not found' ] });
+    	}
+    },
+    
+    //Generate a device claim code for a customer, scoped for a specific product.
+    get_product_claim_code: function (req, res, next) {
+    	var customerid = Api.getCustomerID(req);
+    	if(!customerid) {
+    		return next();
+    	}
+    	
+    	var productid = req.params.productIdOrSlug;
+    	
+    	logger.log("GenerateProductClaimCode", { customerID: customerid });
+    	
+    	var productObj = global.roles.getProductByProductid(productid);
+    	var productDevicesIDs = productObj.devices;
+    	PasswordHasher.generateSalt(function (err, code) {
+    		code = code.toString('base64');
+    		code = code.substring(0, 63);
+    		
+    		when(global.roles.addProductClaimCode(code, customerid, productObj.product_id)).then(
+    			function () {
+    				res.json({ 
+    					claim_code: code, 
+    					device_ids: productDevicesIDs 
+    				});
+    			},
+    			function (err) {
+    			    res.json({
+    			    	ok: false,
+    			    	errors: [
+    				    	err
+    				    ]
+    			    });
+    			}
+    		);
+    	});
+    },
+	
+	//Remove a device from a product and re-assign to a generic Particle product. This endpoint will unclaim the device if it is owned by a customer.
+	release_product_device: function (req, res, next) {
+		var coreID = req.coreID;
+		var userid = Api.getUserID(req);
+		if(!userid) {
+			return next();
+		}
+		
+		var productid = req.params.productIdOrSlug;
+		var orgObj = global.roles.getOrgByProduct(productid);
+		if(orgObj && orgObj.user_id == userid) {
+			when(global.roles.removeProductDevice(coreID, productid)).then(
+				function () {
+					global.server.setCoreAttribute(coreID, "claimed", false);
+					res.status(204).json();
+				}, function (err) {
+					res.status(400).json({
+					  "code": 400,
+					  "ok": false,
+					  "info": "Device not found for this product"
+					});
+				}
+			);
+		} else {
+			res.status(404).json({ ok: false, errors: [ 'Product not found.' ] });
+		}
+	},
+	
+	//List Customers for a product.
+	get_product_customers: function( req, res, next) {
+		var userid = Api.getUserID(req);
+		if(!userid) {
+			return next();
+		}
+		
+		logger.log("GetProductCustomer", { userID: userid }); 
+		
+		var productid = req.params.productIdOrSlug;
+		var productObj = global.roles.getProductByProductid(productid);
+		var productDevices = productObj.devices;
+		var orgObj = global.roles.getOrgByProduct(productid);
+		if(orgObj && orgObj.user_id == userid) {
+			var customerObjs = [];
+			var devices = [];
+			for (var k = 0; k < productDevices.length; k++) {
+				var deviceid = productDevices[k];
+				var customerObj = global.roles.getUserByDevice(deviceid);
+				if(customerObj && customerObj.org) { //if customer
+					customerObjs.push({
+						id: customerObj._id,
+						email: customerObj.email,
+						devices: customerObj.devices
+					});
+					
+					var core = global.server.getCoreAttributes(deviceid);
+					
+					var device = {
+					    id: deviceid,
+					    name: core ? core.name : null,
+					    last_ip_address: core.last_ip_address,
+					    product_id: core.product_id
+					}; 
+					
+					//miss device status
+					
+					devices.push(device);
+				}
+			}
+			res.json({ customers : customerObjs, devices : devices });
+		} else {
+			res.status(404).json({ ok: false, errors: [ 'Product not found' ] });
+		}
+	},
 
     _: null
 };
