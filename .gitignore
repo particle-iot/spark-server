@@ -29,3 +29,5 @@ js/build/config.gypi
 js/package.json.ori
 spark-server.esproj
 .DS_Store
+/js/oauth_clients.json
+js/orgs/*
