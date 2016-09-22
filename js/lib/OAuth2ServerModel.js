@@ -49,6 +49,10 @@ OAuth2ServerModel.prototype = {
     saveToken: function (token, client, user) {
     	return when(roles.addAccessToken(token, client, user));
     },
+    
+    validateScope: function(user, client, scope) {
+    	return scope;
+    },
 
     getUser: function (username, password) {
         if (username && username.toLowerCase) {
