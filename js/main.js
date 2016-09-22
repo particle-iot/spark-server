@@ -64,6 +64,7 @@ var app = express();
 
 app.oauth = new oauthserver({
   model: new OAuth2ServerModel({}),
+  allowBearerTokensInQueryString:true,
   accessTokenLifetime: 7776000    //90 days
 });
 
@@ -76,7 +77,7 @@ app.use(set_cors_headers);
 app.post('/oauth/token', app.oauth.token());
 
 //app.use(app.oauth.token());
-app.all('/v1/device*', app.oauth.authenticate());
+app.all('/v1/devices*', app.oauth.authenticate());
 app.all('/v1/provisioning*', app.oauth.authenticate());
 app.all('/v1/events*', app.oauth.authenticate());
 //app.all('/v1/products', app.oauth.authenticate()); //TODO remove customer creation
@@ -98,10 +99,9 @@ tokenViews.loadViews(app);
 customerViews.loadViews(app);
 
 
-/*app.use(function (req, res, next) {
-	res.status(404);
-	next();
-});*/
+app.use(function (req, res, next) {
+	res.status(404).send({ ok: false, error: "Not Found" });
+});
 
 
 var node_port = process.env.NODE_PORT || '8080';

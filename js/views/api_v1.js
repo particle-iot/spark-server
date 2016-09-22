@@ -67,7 +67,7 @@ var Api = {
         app.delete('/v1/devices/:coreid', Api.release_device);
         
         app.post('/v1/devices', Api.claim_device);
-        app.post('/v1/device_claims', Api.get_claim_code);
+        app.post('/v1/device_claims', app.oauth.authenticate(), Api.get_claim_code);
         
         /*products*/
         app.get('/v1/products', app.oauth.authenticate(), Api.list_products);
