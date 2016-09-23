@@ -22,7 +22,7 @@
     "moment": "*",
     "morgan": "^1.7.0",
     "request": "*",
-    "spark-protocol": "*",
+    "spark-protocol": "git://github.com/durielz/spark-protocol.git",
     "ursa": "*",
     "when": "*",
     "xtend": "*"
