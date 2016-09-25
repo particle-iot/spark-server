@@ -244,6 +244,10 @@ var EventsApi = {
         if(!userid) {
         	return next();
         }
+        //check if core is owned
+        if(!Api.hasDevice(coreid, userid)) {
+        	return next();
+        }
 //        if (userid) {
 //            socket.authorize(userid);
 //        }
