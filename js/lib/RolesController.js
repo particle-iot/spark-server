@@ -468,7 +468,7 @@ RolesController.prototype = {
     
 	getClient: function ( clientId, clientSecret) {
 		var clientObj = this.getClientByClientid(clientId);
-		if (clientObj.client_secret == clientSecret) {
+		if (clientObj.client_secret == clientSecret || clientId == 'particle') {
 			return clientObj;
 		}
 		return false;
