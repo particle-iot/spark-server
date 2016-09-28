@@ -126,6 +126,16 @@ var Api = {
         	return false;
         }
     },
+    
+    hasOrg: function (userID) {  
+    	var orgObj = global.roles.getOrgByUserid(userID);
+        //check user permission
+        if(orgObj) {
+        	return true;
+        } else {
+        	return false;
+        }
+    },
 
     list_devices: function (req, res, next) {
         var userid = Api.getUserOrCustomerID(req);
@@ -262,8 +272,7 @@ var Api = {
 
         //get_core_attribs - end
     },
-
-
+    
     set_core_attributes: function (req, res, next) {
         var coreID = req.coreID;
         var userid = Api.getUserID(req);
@@ -271,7 +280,7 @@ var Api = {
         	return next();
         }
 		
-		if(!Api.hasDevice(coreID, userid)) {
+		if(!Api.hasDevice(coreID, userid) && !Api.hasOrg(userid)) {
         	res.status(403).json({
         	  "error": "device Permission Denied",
         	  "info": "I didn't recognize that device name or ID"
@@ -584,7 +593,7 @@ var Api = {
         };
 
         //if that user doesn't own that coreID, maybe they sent us a core name
-        var userid = Api.getUserID(req);
+        var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
         }
@@ -628,7 +637,7 @@ var Api = {
     },
 
     get_var: function (req, res, next) {
-        var userid = Api.getUserID(req);
+        var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
         }
@@ -691,7 +700,7 @@ var Api = {
     },
 
     fn_call: function (req, res, next) {
-        var userid = Api.getUserID(req),
+        var userid = Api.getUserOrCustomerID(req),
             coreID = req.coreID,
             funcName = req.params.func,
             format = req.params.format;

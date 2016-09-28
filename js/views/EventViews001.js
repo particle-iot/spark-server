@@ -51,7 +51,7 @@ var EventsApi = {
     //-----------------------------------------------------------------
 
     pipeEvents: function (socket, req, res, next, filterCoreId) {
-        var userid = Api.getUserID(req);
+        var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
         }
@@ -194,7 +194,7 @@ var EventsApi = {
         name = name || "";
         var socket = new CoreController();
 
-        var userid = Api.getUserID(req);
+        var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
         }
@@ -217,7 +217,7 @@ var EventsApi = {
         name = name || "";
         var socket = new CoreController();
 
-        var userid = Api.getUserID(req);
+        var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
         }
@@ -240,7 +240,7 @@ var EventsApi = {
         name = name || "";
         var coreid = req.coreID || req.params.coreid;
 
-        var userid = Api.getUserID(req);
+        var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
         }
@@ -266,7 +266,7 @@ var EventsApi = {
 
 
     send_an_event: function (req, res, next) {
-        var userid = Api.getUserID(req),
+        var userid = Api.getUserOrCustomerID(req),
             socketID = Api.getSocketID(userid),
             eventName = req.body.name,
             data = req.body.data,

@@ -43,7 +43,7 @@ var set_cors_headers = function (req, res, next) {
             'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
             'Access-Control-Max-Age': 300
         });
-        return res.send(204);
+        return res.sendStatus(204);
     }
     else {
         res.set({'Access-Control-Allow-Origin': '*'});
