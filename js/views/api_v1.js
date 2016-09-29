@@ -551,7 +551,7 @@ var Api = {
 			if(userObj.org) { //if customer
 				//check if coreid is present in product devices
 				var productObj = global.roles.getProductByProductid(productid);
-				var index = utilities.indexOf(productObj.devices, deviceId);
+				var index = utilities.indexOf(productObj.devices, coreid);
 				if (index > -1) {
 					for (var i = 0; i < global.roles.claim_codes[userObj._id].length; i++) {
 						var claimCodeObj = global.roles.claim_codes[userObj._id][i];

@@ -543,7 +543,7 @@ RolesController.prototype = {
     	var orgObj = this.orgsByProduct[productid];
         for (var i = 0; i < this.products[orgObj.slug].length; i++) {
             var product = this.products[orgObj.slug][i];
-            if (product.id == productid || product.slug == productid) {
+            if (product.product_id == productid || product.slug == productid) {
                 return product;
             }
         }
