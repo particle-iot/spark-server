@@ -136,6 +136,16 @@ var Api = {
         	return false;
         }
     },
+    
+    hasProduct: function (productIdOrSlug, userID) {
+    	var orgObj = global.roles.getOrgByProductid(productIdOrSlug);
+        //check user permission
+        if(orgObj && orgObj.user_id == userID) {
+        	return true;
+        } else {
+        	return false;
+        }
+    },
 
     list_devices: function (req, res, next) {
         var userid = Api.getUserOrCustomerID(req);
@@ -1011,7 +1021,7 @@ var Api = {
     	logger.log("GetProduct", { userID: userid }); 
     	
     	var productid = req.params.productIdOrSlug;
-    	var orgObj = global.roles.getOrgByProduct(productid);
+    	var orgObj = global.roles.getOrgByProductid(productid);
     	if(orgObj && orgObj.user_id == userid) {
     		var productObj = global.roles.getProductByProductid(productid);
     
@@ -1066,7 +1076,7 @@ var Api = {
 		}
 		
 		var productid = req.params.productIdOrSlug;
-		var orgObj = global.roles.getOrgByProduct(productid);
+		var orgObj = global.roles.getOrgByProductid(productid);
 		if(orgObj && orgObj.user_id == userid) {
 			when(global.roles.removeProductDevice(coreID, productid)).then(
 				function () {
@@ -1097,7 +1107,7 @@ var Api = {
 		var productid = req.params.productIdOrSlug;
 		var productObj = global.roles.getProductByProductid(productid);
 		var productDevices = productObj.devices;
-		var orgObj = global.roles.getOrgByProduct(productid);
+		var orgObj = global.roles.getOrgByProductid(productid);
 		if(orgObj && orgObj.user_id == userid) {
 			var customerObjs = [];
 			var devices = [];

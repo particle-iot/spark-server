@@ -337,7 +337,7 @@ RolesController.prototype = {
         	    
         	    delete this.usersByDevice[deviceId];
         	    
-        	    var orgObj = this.getOrgByProduct(productObj.product_id);
+        	    var orgObj = this.getOrgByProductid(productObj.product_id);
         	    for (var i = 0; i < orgObj.customers.length; i++) {
         	    	var index = utilities.indexOf(orgObj.customers[i].devices, deviceId);
         	    	if (index > -1) {
@@ -487,7 +487,7 @@ RolesController.prototype = {
 	getUserByClaimCode: function (claimCode) {
 	    return this.usersByClaimCode[claimCode];
 	},
-	getOrgByProduct: function (product) { //ok
+	getOrgByProductid: function (product) { //ok
 	    return this.orgsByProduct[product];
 	},
 	getOrgByUserid: function (user_id) { //ok 
@@ -540,6 +540,17 @@ RolesController.prototype = {
     },
     
     getProductByProductid: function (productid) {
+    	var orgObj = this.orgsByProduct[productid];
+        for (var i = 0; i < this.products[orgObj.slug].length; i++) {
+            var product = this.products[orgObj.slug][i];
+            if (product.product_id == productid || product.slug == productid) {
+                return product;
+            }
+        }
+        return null;
+    },
+    
+    getProductByUserid: function (userid) {
     	var orgObj = this.orgsByProduct[productid];
         for (var i = 0; i < this.products[orgObj.slug].length; i++) {
             var product = this.products[orgObj.slug][i];
@@ -649,7 +660,7 @@ RolesController.prototype = {
         var tmp = when.defer();
         var that = this;
 	
-		var orgObj = that.getOrgByProduct(product);
+		var orgObj = that.getOrgByProductid(product);
 		if(orgObj && orgObj.slug == clientObj.client_id) {
 			var customer = that.getCustomerByEmail(email);
 			if(!customer) {

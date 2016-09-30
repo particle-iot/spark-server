@@ -45,12 +45,14 @@ var EventsApi = {
 
         app.get('/v1/devices/:coreid/events', EventsApi.get_core_events);
         app.get('/v1/devices/:coreid/events/:event_name', EventsApi.get_core_events);
+        
+        app.get('/v1/products/:productIdOrSlug/events', app.oauth.authenticate(), EventsApi.get_product_events);
     },
 
 
     //-----------------------------------------------------------------
 
-    pipeEvents: function (socket, req, res, next, filterCoreId) {
+    pipeEvents: function (socket, req, res, next, filterCoreId, filterProductId) {
         var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
@@ -139,8 +141,12 @@ var EventsApi = {
 
         //  http://www.whatwg.org/specs/web-apps/current-work/#server-sent-events
         var writeEventGen = function (isPublic) {
-            return function (name, data, ttl, published_at, coreid) {
+            return function (name, data, ttl, published_at, coreid, productid) {
                 if (filterCoreId && (filterCoreId != coreid)) {
+                    return;
+                }
+                
+                if (filterProductId && (filterProductId != productid)) {
                     return;
                 }
 
@@ -148,7 +154,11 @@ var EventsApi = {
                     return;
                 }
                 
-                if(!Api.hasDevice(coreid, userid)) {
+                if(!filterProductId && !Api.hasDevice(coreid, userid)) {
+                	return;
+                }
+                
+                if(filterProductId && !Api.hasProduct(productid, userid)) {
                 	return;
                 }
 
@@ -162,7 +172,8 @@ var EventsApi = {
                         data: data ? data.toString() : null,
                         ttl: ttl ? ttl.toString() : null,
                         published_at: (published_at) ? published_at.toString() : null,
-                        coreid: (coreid) ? coreid.toString() : null
+                        coreid: (coreid) ? coreid.toString() : null,
+                        productid: (productid) ? productid.toString() : null
                     };
                     res.write("event: " + name + "\n");
                     res.write("data: " + JSON.stringify(obj) + "\n\n"); //~100 ms for 100,000 stringifies
@@ -210,7 +221,7 @@ var EventsApi = {
 
 
         //send it all through
-        EventsApi.pipeEvents(socket, req, res);
+        EventsApi.pipeEvents(socket, req, res, next);
     },
     get_my_events: function (req, res, next) {
         var name = req.params.event_name;
@@ -232,7 +243,7 @@ var EventsApi = {
         socket.subscribe(false, name, userid);
 
         //don't filter by core id
-        EventsApi.pipeEvents(socket, req, res);
+        EventsApi.pipeEvents(socket, req, res, next);
     },
     get_core_events: function (req, res, next) {
         var name = req.params.event_name;
@@ -261,7 +272,7 @@ var EventsApi = {
 
         //-----------------------------------
         //filter to core id
-        EventsApi.pipeEvents(socket, req, res, coreid);
+        EventsApi.pipeEvents(socket, req, res, next, coreid);
     },
 
 
@@ -293,6 +304,36 @@ var EventsApi = {
             socket.close();
             res.json({ok: success});
         }, 250);
+    },
+    
+    get_product_events: function (req, res, next) {
+        var name = req.params.event_name;
+        var socket = new CoreController();
+        name = name || "";
+        var productid = req.params.productIdOrSlug;
+
+        var userid = Api.getUserOrCustomerID(req);
+        if(!userid) {
+        	return next();
+        }
+        //check if product is owned by user
+        if(!Api.hasProduct(productid, userid)) {
+        	return next();
+        }
+//        if (userid) {
+//            socket.authorize(userid);
+//        }
+
+
+        //-----------------------------------
+        //get product events
+        //socket.subscribe(true, name);
+        socket.subscribe(true, name, userid);
+        socket.subscribe(false, name, userid);
+
+        //-----------------------------------
+        //filter to core id
+        EventsApi.pipeEvents(socket, req, res, next, null, productid);
     },
 
     _: null
