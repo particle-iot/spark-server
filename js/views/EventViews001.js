@@ -141,12 +141,8 @@ var EventsApi = {
 
         //  http://www.whatwg.org/specs/web-apps/current-work/#server-sent-events
         var writeEventGen = function (isPublic) {
-            return function (name, data, ttl, published_at, coreid, productid) {
+            return function (name, data, ttl, published_at, coreid) {
                 if (filterCoreId && (filterCoreId != coreid)) {
-                    return;
-                }
-                
-                if (filterProductId && (filterProductId != productid)) {
                     return;
                 }
 
@@ -154,11 +150,11 @@ var EventsApi = {
                     return;
                 }
                 
-                if(!filterProductId && !Api.hasDevice(coreid, userid)) {
+                if(filterProductId == null && !Api.hasDevice(coreid, userid)) {
                 	return;
                 }
                 
-                if(filterProductId && !Api.hasProduct(productid, userid)) {
+                if(filterProductId != null && !Api.hasProduct(filterProductId, userid)) {
                 	return;
                 }
 
@@ -172,8 +168,7 @@ var EventsApi = {
                         data: data ? data.toString() : null,
                         ttl: ttl ? ttl.toString() : null,
                         published_at: (published_at) ? published_at.toString() : null,
-                        coreid: (coreid) ? coreid.toString() : null,
-                        productid: (productid) ? productid.toString() : null
+                        coreid: (coreid) ? coreid.toString() : null
                     };
                     res.write("event: " + name + "\n");
                     res.write("data: " + JSON.stringify(obj) + "\n\n"); //~100 ms for 100,000 stringifies
@@ -311,7 +306,8 @@ var EventsApi = {
         var socket = new CoreController();
         name = name || "";
         var productid = req.params.productIdOrSlug;
-
+		productid = productid || null;
+		
         var userid = Api.getUserOrCustomerID(req);
         if(!userid) {
         	return next();
