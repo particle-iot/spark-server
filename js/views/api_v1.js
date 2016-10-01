@@ -75,6 +75,8 @@ var Api = {
         app.post('/v1/products/:productIdOrSlug/device_claims', app.oauth.authenticate(), Api.get_product_claim_code);
         app.delete('/v1/products/:productIdOrSlug/devices/:coreid', app.oauth.authenticate(), Api.release_product_device);
         app.get('/v1/products/:productIdOrSlug/customers', app.oauth.authenticate(), Api.get_product_customers);
+        
+        app.post('/v1/products/:productIdOrSlug/devices', app.oauth.authenticate(), Api.add_product_device);
     },
 
     getSocketID: function (userID) {
@@ -1138,6 +1140,34 @@ var Api = {
 			res.json({ customers : customerObjs, devices : devices });
 		} else {
 			res.status(404).json({ ok: false, errors: [ 'Product not found' ] });
+		}
+	},
+	
+	add_product_device: function (req, res, next) {
+		var coreID = req.body.id;
+		var userid = Api.getUserID(req);
+		if(!userid) {
+			return next();
+		}
+		
+		var productid = req.params.productIdOrSlug;
+		logger.log("AddingProductDevice", { productID: productid });
+		
+		var orgObj = global.roles.getOrgByProductid(productid);
+		if(orgObj && orgObj.user_id == userid) {
+			when(global.roles.addProductDevice(coreID, productid)).then(
+				function () {
+					res.sendStatus(204);
+				}, function (err) {
+					res.status(400).json({
+					  "code": 400,
+					  "ok": false,
+					  "info": "Device already present for that product"
+					});
+				}
+			);
+		} else {
+			res.status(404).json({ ok: false, errors: [ 'Product not found.' ] });
 		}
 	},
 

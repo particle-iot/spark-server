@@ -326,6 +326,34 @@ RolesController.prototype = {
 		}
 		return tmp.promise;
     }, 
+    addProductDevice: function (deviceId, productid) {
+    	var tmp = when.defer();
+    	try {
+            var productObj = this.getProductByProductid(productid);
+            var index = utilities.indexOf(productObj.devices, deviceId);
+            if (index == -1) { //if not present
+	            productObj.devices.push(deviceId);
+	            this.saveProduct(productObj);
+	            
+	            //add deviceId to products array
+	            var orgObj = this.getOrgByProductid(productObj.product_id);
+	            for (var i = 0; i < this.products[orgObj.slug].length; i++) {
+	        		var product = this.products[orgObj.slug][i];
+	        		if (product.product_id == productid || product.slug == productid) {
+	        		    this.products[orgObj.slug][i].devices.push(deviceId);
+	        		}
+	        	}
+	        	tmp.resolve();
+        	} else {
+        		tmp.reject('Device already present for that product');
+        	}
+    	}
+    	catch (ex) {
+    	    logger.error("Error adding device ", ex);
+    	    tmp.reject(ex);
+    	}
+    	return tmp.promise;
+    },
     removeProductDevice: function (deviceId, productid) {
     	var tmp = when.defer();
     	try {
@@ -487,8 +515,8 @@ RolesController.prototype = {
 	getUserByClaimCode: function (claimCode) {
 	    return this.usersByClaimCode[claimCode];
 	},
-	getOrgByProductid: function (product) { //ok
-	    return this.orgsByProduct[product];
+	getOrgByProductid: function (productid) { //ok
+	    return this.orgsByProduct[productid];
 	},
 	getOrgByUserid: function (user_id) { //ok 
 	    return this.orgsByUserId[user_id];
