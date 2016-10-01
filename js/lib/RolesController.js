@@ -335,14 +335,6 @@ RolesController.prototype = {
 	            productObj.devices.push(deviceId);
 	            this.saveProduct(productObj);
 	            
-	            //add deviceId to products array
-	            var orgObj = this.getOrgByProductid(productObj.product_id);
-	            for (var i = 0; i < this.products[orgObj.slug].length; i++) {
-	        		var product = this.products[orgObj.slug][i];
-	        		if (product.product_id == productid || product.slug == productid) {
-	        		    this.products[orgObj.slug][i].devices.push(deviceId);
-	        		}
-	        	}
 	        	tmp.resolve();
         	} else {
         		tmp.reject('Device already present for that product');

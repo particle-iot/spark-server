@@ -1083,7 +1083,7 @@ var Api = {
 			when(global.roles.removeProductDevice(coreID, productid)).then(
 				function () {
 					global.server.setCoreAttribute(coreID, "claimed", false);
-					res.status(204).json();
+					res.json({ ok:true });
 				}, function (err) {
 					res.status(400).json({
 					  "code": 400,
@@ -1145,6 +1145,9 @@ var Api = {
 	
 	add_product_device: function (req, res, next) {
 		var coreID = req.body.id;
+		if(!coreID) {
+			res.status(400).json({ ok: false, errors: [ 'id is required.' ] });
+		}
 		var userid = Api.getUserID(req);
 		if(!userid) {
 			return next();
@@ -1157,7 +1160,7 @@ var Api = {
 		if(orgObj && orgObj.user_id == userid) {
 			when(global.roles.addProductDevice(coreID, productid)).then(
 				function () {
-					res.sendStatus(204);
+					res.json({ ok:true });
 				}, function (err) {
 					res.status(400).json({
 					  "code": 400,
