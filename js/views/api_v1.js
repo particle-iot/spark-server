@@ -177,6 +177,8 @@ var Api = {
                 id: coreid,
                 name: core ? core.name : null,
                 last_app: core ? core.last_flashed_app_name : null,
+                product_id: core ? core.spark_product_id : null,
+                firmware_version: core ? core.product_firmware_version : null,
                 last_heard: null
             };
 
