@@ -595,6 +595,15 @@ var Api = {
 		}
 	},
 	
+	safeMode: function (coreID, description) {
+		        
+        logger.log("Device is in SAFE MODE", {coreID: coreID});
+		
+		//TODO something
+		
+		global.server.publishSpecialEvents('spark/status/safe-mode', description, coreID);
+    },
+	
     loadCore: function (req, res, next) {
         req.coreID = req.params.coreid || req.body.id;
 
