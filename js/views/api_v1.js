@@ -231,9 +231,6 @@ var Api = {
             },
             function () {
                 return utilities.alwaysResolve(socket.sendAndListenForDFD(coreID, { cmd: "Describe" }, { cmd: "DescribeReturn" }));
-            },
-            function () {
-            	return when.resolve(Api.isDeviceOnline(userid, coreID));
             }
         ]);
 
@@ -241,7 +238,7 @@ var Api = {
         when(objReady).done(function (results) {
             try {
 
-                if (!results || (results.length != 3)) {
+                if (!results || (results.length != 2)) {
                     logger.error("get_core_attributes results was the wrong length " + JSON.stringify(results));
                     res.status(404).json("Oops, I couldn't find that core");
                     return;
@@ -251,8 +248,7 @@ var Api = {
                 //we're expecting descResult to be an array: [ sender, {} ]
                 var doc = results[0],
                     descResult = results[1],
-                    coreState = null,
-                    connected = results[2].online || null;
+                    coreState = null;
 
                 if (!doc || !doc.coreID) {
                     logger.error("get_core_attributes 404 error: " + JSON.stringify(doc));
@@ -266,7 +262,7 @@ var Api = {
                 if (!coreState) {
                     logger.error("get_core_attributes didn't get description: " + JSON.stringify(descResult));
                 }
-
+				
                 var device = {
                     id: doc.coreID,
                     name: doc.name || null,
@@ -274,8 +270,7 @@ var Api = {
                     product_id: doc.spark_product_id || null,
                     firmware_version: doc.product_firmware_version || null,
                     system_version: doc.spark_system_version || null,
-                    //connected: !!coreState,
-                    connected: !!connected,
+                    connected: !!coreState,
                     variables: (coreState) ? coreState.v : null,
                     functions: (coreState) ? coreState.f : null,
                     cc3000_patch_version: doc.cc3000_driver_version
