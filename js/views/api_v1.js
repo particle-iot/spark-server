@@ -179,6 +179,7 @@ var Api = {
                 last_app: core ? core.last_flashed_app_name : null,
                 product_id: core ? core.spark_product_id : null,
                 firmware_version: core ? core.product_firmware_version : null,
+                system_version: core ? core.spark_system_version : null,
                 last_heard: null
             };
 
@@ -230,6 +231,9 @@ var Api = {
             },
             function () {
                 return utilities.alwaysResolve(socket.sendAndListenForDFD(coreID, { cmd: "Describe" }, { cmd: "DescribeReturn" }));
+            },
+            function () {
+            	return when.resolve(Api.isDeviceOnline(userid, coreID));
             }
         ]);
 
@@ -237,7 +241,7 @@ var Api = {
         when(objReady).done(function (results) {
             try {
 
-                if (!results || (results.length != 2)) {
+                if (!results || (results.length != 3)) {
                     logger.error("get_core_attributes results was the wrong length " + JSON.stringify(results));
                     res.status(404).json("Oops, I couldn't find that core");
                     return;
@@ -247,7 +251,8 @@ var Api = {
                 //we're expecting descResult to be an array: [ sender, {} ]
                 var doc = results[0],
                     descResult = results[1],
-                    coreState = null;
+                    coreState = null,
+                    connected = null;
 
                 if (!doc || !doc.coreID) {
                     logger.error("get_core_attributes 404 error: " + JSON.stringify(doc));
@@ -261,12 +266,16 @@ var Api = {
                 if (!coreState) {
                     logger.error("get_core_attributes didn't get description: " + JSON.stringify(descResult));
                 }
+                if (results[2].state) {
+                	connected = ('rejected' !== results[2].state);
+                }
 
                 var device = {
                     id: doc.coreID,
                     name: doc.name || null,
                     last_app: doc.last_flashed,
-                    connected: !!coreState,
+                    //connected: !!coreState,
+                    connected: !!connected,
                     variables: (coreState) ? coreState.v : null,
                     functions: (coreState) ? coreState.f : null,
                     cc3000_patch_version: doc.cc3000_driver_version
@@ -598,10 +607,11 @@ var Api = {
 	safeMode: function (coreID, description) {
 		        
         logger.log("Device is in SAFE MODE", {coreID: coreID});
-		
-		//TODO something
-		
+        
 		global.server.publishSpecialEvents('spark/status/safe-mode', description, coreID);
+		
+		//#  spark/safe-mode-updater/updating
+		//{"name":"spark/safe-mode-updater/updating","data":"2","ttl":"60","published_at":"2016-01-01T14:41:0.000Z","coreid":"particle-internal"}
     },
 	
     loadCore: function (req, res, next) {
