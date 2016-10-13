@@ -252,7 +252,7 @@ var Api = {
                 var doc = results[0],
                     descResult = results[1],
                     coreState = null,
-                    connected = null;
+                    connected = results[2].online || null;
 
                 if (!doc || !doc.coreID) {
                     logger.error("get_core_attributes 404 error: " + JSON.stringify(doc));
@@ -266,14 +266,14 @@ var Api = {
                 if (!coreState) {
                     logger.error("get_core_attributes didn't get description: " + JSON.stringify(descResult));
                 }
-                if (results[2].state) {
-                	connected = ('rejected' !== results[2].state);
-                }
 
                 var device = {
                     id: doc.coreID,
                     name: doc.name || null,
                     last_app: doc.last_flashed,
+                    product_id: doc.spark_product_id || null,
+                    firmware_version: doc.product_firmware_version || null,
+                    system_version: doc.spark_system_version || null,
                     //connected: !!coreState,
                     connected: !!connected,
                     variables: (coreState) ? coreState.v : null,
