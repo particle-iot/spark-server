@@ -195,7 +195,7 @@ var Api = {
 
         //switched 'done' to 'then' - threw an exception with 'done' here.
         when.settle(connected_promises).then(function (descriptors) {
-            for (var i = 0; i < descriptors.length; i++) {
+        	for (var i = 0; i < descriptors.length; i++) {
                 var desc = descriptors[i];
                 devices[i].connected = ('rejected' !== desc.state);
                 devices[i].last_heard = (desc.value) ? desc.value.lastPing : null;
@@ -233,7 +233,7 @@ var Api = {
                 return utilities.alwaysResolve(socket.sendAndListenForDFD(coreID, { cmd: "Describe" }, { cmd: "DescribeReturn" }));
             },
             function () {
-                return when.resolve(Api.isDeviceOnline(userid, coreID));
+                return utilities.alwaysResolve(socket.sendAndListenForDFD(coreID, { cmd: "Ping" }, { cmd: "Pong" }));
             }
         ]);
 
@@ -247,12 +247,11 @@ var Api = {
                     return;
                 }
 
-
                 //we're expecting descResult to be an array: [ sender, {} ]
                 var doc = results[0],
                     descResult = results[1],
                     coreState = null,
-                    connected = results[2].online;
+                    descPingResult = results[2];
 
                 if (!doc || !doc.coreID) {
                     logger.error("get_core_attributes 404 error: " + JSON.stringify(doc));
@@ -275,7 +274,7 @@ var Api = {
                     firmware_version: doc.product_firmware_version || null,
                     system_version: doc.spark_system_version || null,
                     //connected: !!coreState,
-                    connected: connected,
+                    connected: (descPingResult) ? descPingResult[1].online : false,
                     variables: (coreState) ? coreState.v : null,
                     functions: (coreState) ? coreState.f : null,
                     cc3000_patch_version: doc.cc3000_driver_version
