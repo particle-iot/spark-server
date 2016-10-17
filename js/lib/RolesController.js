@@ -510,6 +510,9 @@ RolesController.prototype = {
 	getOrgByProductid: function (productid) { //ok
 	    return this.orgsByProduct[productid];
 	},
+	getOrgBySlug: function (orgSlug) { //ok
+	    return this.orgsBySlug[orgSlug];
+	},
 	getOrgByUserid: function (user_id) { //ok 
 	    return this.orgsByUserId[user_id];
 	},
@@ -676,11 +679,11 @@ RolesController.prototype = {
         return tmp.promise;
     },
     
-    createCustomer: function (clientObj, product, email) {
+    createCustomer: function (clientObj, /*product,*/ orgSlug, email) {
         var tmp = when.defer();
         var that = this;
 	
-		var orgObj = that.getOrgByProductid(product);
+		var orgObj = that.getOrgBySlug(orgSlug);
 		if(orgObj && orgObj.slug == clientObj.client_id) {
 			var customer = that.getCustomerByEmail(email);
 			if(!customer) {

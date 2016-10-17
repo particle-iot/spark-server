@@ -17,7 +17,8 @@ var CustomerViews = function (options) {
 
 CustomerViews.prototype = {
     loadViews: function (app) {
-        app.post('/v1/products/:productIdOrSlug/customers', this.createCustomer.bind(this));
+        //app.post('/v1/products/:productIdOrSlug/customers', this.createCustomer.bind(this));
+        app.post('/v1/orgs/:orgSlug/customers', this.createCustomer.bind(this));
     },
     
     createCustomer: function (req, res, next) {
@@ -29,7 +30,8 @@ CustomerViews.prototype = {
             });
         }
         
-        var product = req.params.productIdOrSlug;
+        //var product = req.params.productIdOrSlug;
+        var orgSlug = req.params.orgSlug;
         
         var email = req.body.email;
         if(!email){
@@ -42,7 +44,7 @@ CustomerViews.prototype = {
         when(roles.validateClient(credentials.clientId, credentials.clientSecret))
             .then(
             function (clientObj) {
-            	when(roles.createCustomer(clientObj, product, email)) 
+            	when(roles.createCustomer(clientObj, /*product,*/ orgSlug, email)) 
             	.then(
             		function () {
             			res.json({ok: true});

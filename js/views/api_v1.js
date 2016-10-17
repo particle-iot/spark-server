@@ -274,7 +274,7 @@ var Api = {
                     firmware_version: doc.product_firmware_version || null,
                     system_version: doc.spark_system_version || null,
                     //connected: !!coreState,
-                    connected: (descPingResult) ? descPingResult[1].online : false,
+                    connected: (descPingResult != "Request Timed Out") ? descPingResult[1].online : false,
                     variables: (coreState) ? coreState.v : null,
                     functions: (coreState) ? coreState.f : null,
                     cc3000_patch_version: doc.cc3000_driver_version
