@@ -539,7 +539,7 @@ var Api = {
 	
 	release_device: function (req, res, next) {
 		var coreID = req.coreID;
-		var userid = Api.getUserOrCustomerID(req);
+		var userid = Api.getUserID(req);
 		if(!userid) {
 			return next();
 		}
@@ -1133,29 +1133,22 @@ var Api = {
 		var orgObj = global.roles.getOrgByProductid(productid);
 		if(orgObj && orgObj.user_id == userid) {
 			var customerObjs = [];
+			var userObjIds = [];
 			var devices = [];
 			for (var k = 0; k < productDevices.length; k++) {
 				var deviceid = productDevices[k];
-				var customerObj = global.roles.getUserByDevice(deviceid);
-				if(customerObj && customerObj.org) { //if customer
-					customerObjs.push({
-						id: customerObj._id,
-						email: customerObj.email,
-						devices: customerObj.devices
-					});
-					
-					var core = global.server.getCoreAttributes(deviceid);
-					
-					var device = {
-					    id: deviceid,
-					    name: core ? core.name : null,
-					    last_ip_address: core.last_ip_address,
-					    product_id: core.product_id
-					}; 
-					
-					//miss device status
-					
-					devices.push(device);
+				var userObj = global.roles.getUserByDevice(deviceid);
+				if(userObj && userObj.org) { //if customer
+					devices.push(deviceid);
+					var index = utilities.indexOf(userObjIds, userObj._id);
+					if (index == -1) {
+						userObjIds.push(userObj._id);
+						customerObjs.push({
+							id: userObj._id,
+							email: userObj.email,
+							devices: userObj.devices
+						});
+					}
 				}
 			}
 			res.json({ customers : customerObjs, devices : devices });

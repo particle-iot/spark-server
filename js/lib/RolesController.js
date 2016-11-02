@@ -356,8 +356,8 @@ RolesController.prototype = {
             var productObj = this.getProductByProductid(productid);
             var index = utilities.indexOf(productObj.devices, deviceId);
         	if (index > -1) {
-        	    productObj.devices.splice(index, 1);
-        	    this.saveProduct(productObj);
+        	    /*productObj.devices.splice(index, 1);
+        	    this.saveProduct(productObj);*/
         	    
         	    delete this.usersByDevice[deviceId];
         	    
