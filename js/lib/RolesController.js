@@ -313,8 +313,12 @@ RolesController.prototype = {
 		        }
 		        
 		        delete this.usersByDevice[deviceId];
-		
-		        this.saveUser(userObj);
+				
+				if(userObj.org) { //customer
+					this.saveCustomer(userObj);
+				} else {
+					this.saveUser(userObj);
+				}
 				tmp.resolve();
 			} else {
 				tmp.reject('Device not found');

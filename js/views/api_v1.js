@@ -539,7 +539,7 @@ var Api = {
 	
 	release_device: function (req, res, next) {
 		var coreID = req.coreID;
-		var userid = Api.getUserID(req);
+		var userid = Api.getUserOrCustomerID(req);
 		if(!userid) {
 			return next();
 		}
