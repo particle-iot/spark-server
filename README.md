@@ -28,41 +28,34 @@ node main.js
 How do I get started?
 =====================
 
-1.) Run the server with:
+1) Run the server with:
 
 ```
 node main.js
 ```
 
-2.) Watch for your IP address, you'll see something like:
+2) Watch for your IP address, you'll see something like:
 
 ```
 Your server IP address is: 192.168.1.10
 ```
 
-3.) We will now create a new server profile on Particle-CLI using the command:
+3) We will now create a new server profile on Particle-CLI using the command:
 
 ```
 particle config profile_name apiUrl "http://DOMAIN_OR_IP"
 ```
 
-For the local cloud, the port number 8080 needs to be added behind: http://domain_or_ip:8080
+For the local cloud, the port number 8080 needs to be added behind: `http://domain_or_ip:8080`.  It is important to also have the `http://` otherwise it won't work.
 
-This will create a new profile to point to your server and switching back to the spark cloud is simply:
-```
-particle config particle
-```
-and other profiles would be:
+This will create a new profile to point to your server and switching back to the spark cloud is simply `particle config particle` and other profiles would be `particle config profile_name`
+
+4) We will now point over to the local cloud using 
 ```
 particle config profile_name
 ```
 
-4.) We will now point over to the local cloud using 
-```
-particle config profile_name
-```
-
-5.) On a separate CMD from the one running the server, type
+5) On a separate CMD from the one running the server, type
 
 ```
 particle setup
@@ -72,27 +65,22 @@ This will create an account on the local cloud
 
 Perform CTRL + C once you logon with Particle-CLI asking you to send Wifi-credentials etc...
 
-6.) On Command-line, cd to particle-server and place your core in DFU mode [flashing yellow]
+6) Put your core into listening mode, and run `spark identify` to get your core id. You'll need this id later
 
-7.) Create and provision access on your local cloud with the keys doctor:
+7) `mkdir ..\temp` and `cd ..\temp` - A bunch of keys will be generated in the next steps.
+
+8) Change server keys to local cloud key + IP Address
+
+```
+particle keys server ..\spark-server\default_key.pub.pem IP_ADDRESS
+```
+
+9) Create and provision access on your local cloud with the keys doctor:
 
 ```
    particle keys doctor your_core_id
 ```
 
-8.) Change server keys to local cloud key + IP Address
-
-```
-particle keys server default_key.pub.pem IP_ADDRESS
-```
-
-9.) Go to cores_key directory to place core public key inside
-
-```
-cd core_keys
-place core in DFU-mode
-particle keys save INPUT_DEVICE_ID_HERE
-```
 
 What kind of project is this?
 ======================================
