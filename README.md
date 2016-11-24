@@ -17,7 +17,7 @@ Quick Install
 
 ```
 git clone https://github.com/spark/spark-server.git
-cd spark-server/js
+cd spark-server/
 npm install
 node main.js
 ```
