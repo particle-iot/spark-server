@@ -113,4 +113,3 @@ var ips = utilities.getIPAddresses();
 for(var i=0;i<ips.length;i++) {
 	console.log("Your server IP address is: " + ips[i]);
 }
-
