@@ -48,7 +48,14 @@ particle config profile_name apiUrl "http://DOMAIN_OR_IP"
 
 For the local cloud, the port number 8080 needs to be added behind: http://domain_or_ip:8080
 
-This will create a new profile to point to your server and switching back to the spark cloud is simply particle config particle and other profiles would be particle config profile_name
+This will create a new profile to point to your server and switching back to the spark cloud is simply:
+```
+particle config particle
+```
+and other profiles would be:
+```
+particle config profile_name
+```
 
 4.) We will now point over to the local cloud using particle config profile_name
 
