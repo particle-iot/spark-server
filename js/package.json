@@ -1,0 +1,37 @@
+{
+  "name": "spark-server",
+  "version": "0.1.1",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spark/spark-server"
+  },
+  "homepage": "https://github.com/spark/spark-server",
+  "bugs": "https://github.com/spark/spark-server/issues",
+  "author": {
+    "name": "David Middlecamp",
+    "email": "david@spark.io",
+    "url": "https://www.spark.io/"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "connect-multiparty": "^2.0.0",
+    "express": "^4.14.0",
+    "express-oauth-server": "git://github.com/durielz/express-oauth-server.git",
+    "hogan-express": "^0.5.2",
+    "moment": "*",
+    "morgan": "^1.7.0",
+    "request": "*",
+    "spark-protocol": "git://github.com/durielz/spark-protocol.git",
+    "ursa": "*",
+    "when": "*",
+    "xtend": "*"
+  },
+  "scripts": {
+    "start": "node main.js"
+  },
+  "main": "main.js",
+  "contributors": [
+    "Kenneth Lim <kennethlimcp@gmail.com>"
+  ]
+}
