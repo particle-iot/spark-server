@@ -57,7 +57,10 @@ and other profiles would be:
 particle config profile_name
 ```
 
-4.) We will now point over to the local cloud using particle config profile_name
+4.) We will now point over to the local cloud using 
+```
+particle config profile_name
+```
 
 5.) On a separate CMD from the one running the server, type
 
