@@ -1,7 +1,0 @@
-[
-	{
-		"client_id" : "particle",
-		"client_secret" : "particle",
-		"grants" : [ "password", "refresh_token" ]
-	}
-]
