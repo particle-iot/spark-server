@@ -19,60 +19,70 @@
 var fs = require('fs');
 var http = require('http');
 var express = require('express');
-
+var bodyParser = require('body-parser');
+var morgan = require('morgan');
 
 var settings = require('./settings.js');
 var utilities = require("./lib/utilities.js");
 var logger = require('./lib/logger.js');
 
-var OAuthServer = require('node-oauth2-server');
+//var OAuthServer = require('node-oauth2-server');
+var oauthserver = require('express-oauth-server');
+
 var OAuth2ServerModel = require('./lib/OAuth2ServerModel');
 var AccessTokenViews = require('./lib/AccessTokenViews.js');
+var CustomerViews = require('./lib/CustomerViews.js');
 
 global._socket_counter = 1;
 
-var oauth = OAuthServer({
-	model: new OAuth2ServerModel({  }),
-	allow: {
-		"post": ['/v1/users'],
-		"get": ['/server/health', '/v1/access_tokens'],
-		"delete": ['/v1/access_tokens/([0-9a-f]{40})']
-	},
-	grants: ['password'],
-	accessTokenLifetime: 7776000    //90 days
-});
-
 var set_cors_headers = function (req, res, next) {
-	if ('OPTIONS' === req.method) {
-		res.set({
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-			'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
-			'Access-Control-Max-Age': 300
-		});
-		return res.send(204);
-	}
-	else {
-		res.set({'Access-Control-Allow-Origin': '*'});
-		next();
-	}
+    if ('OPTIONS' === req.method) {
+        res.set({
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
+            'Access-Control-Max-Age': 300
+        });
+        return res.sendStatus(204);
+    }
+    else {
+        res.set({'Access-Control-Allow-Origin': '*'});
+        next();
+    }
 };
 
 //TODO: something better here
 process.on('uncaughtException', function (ex) {
-	var details = '';
-	try { details = JSON.stringify(ex); }  catch (ex2) { }
+    var details = '';
+    try { details = JSON.stringify(ex); }  catch (ex2) { }
 
-	logger.error('Caught exception: ' + ex + details);
+    logger.error('Caught exception: ' + ex + details);
 });
 
 
 var app = express();
-app.use(express.logger());
-app.use(express.bodyParser());
+
+app.oauth = new oauthserver({
+  model: new OAuth2ServerModel({}),
+  allowBearerTokensInQueryString:true,
+  accessTokenLifetime: 7776000    //90 days
+});
+
+app.set('json spaces', 2);
+app.use(morgan('combined'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(set_cors_headers);
-app.use(oauth.handler());
-app.use(oauth.errorHandler());
+
+app.post('/oauth/token', app.oauth.token());
+
+//app.use(app.oauth.token());
+app.all('/v1/devices*', app.oauth.authenticate());
+app.all('/v1/provisioning*', app.oauth.authenticate());
+app.all('/v1/events*', app.oauth.authenticate());
+//app.all('/v1/products', app.oauth.authenticate()); //TODO remove customer creation
+//app.use(oauth.handler());
+//app.use(oauth.errorHandler());
 
 var UserCreator = require('./lib/UserCreator.js');
 app.post('/v1/users', UserCreator.getMiddleware());
@@ -80,21 +90,21 @@ app.post('/v1/users', UserCreator.getMiddleware());
 var api = require('./views/api_v1.js');
 var eventsV1 = require('./views/EventViews001.js');
 var tokenViews = new AccessTokenViews({  });
+var customerViews = new CustomerViews({  });
 
 
 eventsV1.loadViews(app);
 api.loadViews(app);
 tokenViews.loadViews(app);
-
-
+customerViews.loadViews(app);
 
 
 app.use(function (req, res, next) {
-	return res.send(404);
+	res.status(404).send({ ok: false, error: "Not Found" });
 });
 
 
-var node_port = process.env.NODE_PORT || '8080';
+var node_port = process.env.NODE_PORT || '9000';
 node_port = parseInt(node_port);
 
 console.log("Starting server, listening on " + node_port);
@@ -103,7 +113,7 @@ http.createServer(app).listen(node_port);
 
 var DeviceServer = require("spark-protocol").DeviceServer;
 var server = new DeviceServer({
-	coreKeysDir: settings.coreKeysDir
+    coreKeysDir: settings.coreKeysDir
 });
 global.server = server;
 server.start();
@@ -111,5 +121,5 @@ server.start();
 
 var ips = utilities.getIPAddresses();
 for(var i=0;i<ips.length;i++) {
-	console.log("Your server IP address is: " + ips[i]);
+    console.log("Your server IP address is: " + ips[i]);
 }
