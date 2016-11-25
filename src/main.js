@@ -29,6 +29,8 @@ var OAuthServer = require('node-oauth2-server');
 var OAuth2ServerModel = require('./lib/OAuth2ServerModel');
 var AccessTokenViews = require('./lib/AccessTokenViews.js');
 
+const Webhook = require('./views/Webhooks');
+
 global._socket_counter = 1;
 
 var oauth = OAuthServer({
@@ -85,7 +87,7 @@ var tokenViews = new AccessTokenViews({  });
 eventsV1.loadViews(app);
 api.loadViews(app);
 tokenViews.loadViews(app);
-
+const webhookViews = new Webhook(app);
 
 
 
