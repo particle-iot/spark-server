@@ -16,10 +16,10 @@
 *    You can download the source here: https://github.com/spark/spark-server
 */
 
-var fs = require('fs');
-var http = require('http');
-var express = require('express');
-
+import http from 'http';
+import express from 'express';
+import morgan from 'morgan';
+import bodyParser from 'body-parser'
 
 var settings = require('./settings.js');
 var utilities = require("./lib/utilities.js");
@@ -69,9 +69,10 @@ process.on('uncaughtException', function (ex) {
 });
 
 
-var app = express();
-app.use(express.logger());
-app.use(express.bodyParser());
+const app = express();
+app.use(morgan('combined'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(set_cors_headers);
 app.use(oauth.handler());
 app.use(oauth.errorHandler());
@@ -92,7 +93,7 @@ const webhookViews = new Webhook(app);
 
 
 app.use(function (req, res, next) {
-	return res.send(404);
+	return res.sendStatus(404);
 });
 
 
