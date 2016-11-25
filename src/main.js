@@ -43,15 +43,15 @@ var oauth = OAuthServer({
 });
 
 var set_cors_headers = function (req, res, next) {
-	if ('OPTIONS' === req.method) {
-		res.set({
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-			'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
-			'Access-Control-Max-Age': 300
-		});
-		return res.send(204);
-	}
+  if ('OPTIONS' === req.method) {
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
+      'Access-Control-Max-Age': 300
+    });
+    return res.send(204);
+  }
 	else {
 		res.set({'Access-Control-Allow-Origin': '*'});
 		next();
