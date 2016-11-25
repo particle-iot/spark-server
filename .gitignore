@@ -1,3 +1,6 @@
+# ide files
+.idea
+
 # Logs
 logs
 *.log
@@ -30,3 +33,6 @@ users
 *.der
 *.pem
 *.pub.pem
+
+# build folder
+build
