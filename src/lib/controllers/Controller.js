@@ -1,4 +1,4 @@
-class Controller {
+export default class Controller {
   bad(message) {
     return {
       data: {message},
@@ -13,5 +13,3 @@ class Controller {
     };
   }
 }
-
-module.exports = ViewBase;

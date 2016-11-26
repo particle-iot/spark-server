@@ -19,7 +19,7 @@
 
 import path from 'path';
 
-export default  {
+export default {
 	baseUrl: 'http://localhost',
 	coreFlashTimeout: 90000,
 	coreKeysDir: path.join(__dirname, 'core_keys'),

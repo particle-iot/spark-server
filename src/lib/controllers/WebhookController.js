@@ -1,8 +1,11 @@
-const ViewBase = require('./Controller');
-
-const ROUTE_BASE = '/v1/webhooks';
+import Controller from './Controller';
+import httpVerb from '../decorators/httpVerb';
+import route from '../decorators/route';
 
 class WebhookController extends Controller {
+
+  @httpVerb('get');
+  @route('/v1/webhooks');
   get(model) {
     return this.ok([
       {
@@ -22,6 +25,8 @@ class WebhookController extends Controller {
     ]);
   }
 
+  @httpVerb('post');
+  @route('/v1/webhooks');
   post(model) {
     const webhookToSave = {
       ...model,
@@ -36,4 +41,4 @@ class WebhookController extends Controller {
   }
 }
 
-module.exports = WebhookController;
+export default WebhookController;
