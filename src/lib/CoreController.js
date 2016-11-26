@@ -22,7 +22,7 @@ var extend = require('xtend');
 var EventEmitter = require('events').EventEmitter;
 
 var logger = require('./logger.js');
-var settings = require("../settings");
+import settings from '../settings';
 var utilities = require("./utilities.js");
 
 
