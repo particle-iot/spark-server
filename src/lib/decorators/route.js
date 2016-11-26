@@ -1,6 +1,6 @@
 export default (
   route: string,
 ): Decorator => (target, name, descriptor): Object => {
-  descriptor.route = route;
+  target[name].route = route;
   return descriptor;
 };

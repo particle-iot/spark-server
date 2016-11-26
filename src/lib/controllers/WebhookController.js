@@ -3,7 +3,6 @@ import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
 class WebhookController extends Controller {
-
   @httpVerb('get');
   @route('/v1/webhooks');
   get(model) {

@@ -5,7 +5,29 @@ export type Decorator = (
 ) => Object;
 
 export type HttpVerb =
+  'checkout' |
+  'connect' |
+  'copy' |
   'delete' |
+  'head' |
   'get' |
+  'lock' |
+  'm-search' |
+  'merge' |
+  'mkactivity' |
+  'mkcol' |
+  'move' |
+  'notify' |
+  'options' |
+  'patch' |
   'post' |
-  'put';
+  'propfind' |
+  'proppatch' |
+  'purge' |
+  'put' |
+  'report' |
+  'search' |
+  'subscribe' |
+  'trace' |
+  'unlock' |
+  'unsubscribe';

@@ -32,6 +32,9 @@ import UserCreator from './lib/UserCreator.js';
 
 import api from './views/api_v1.js';
 import eventsV1 from './views/EventViews001.js';
+
+// Routing
+import routeConfig from './lib/routeConfig';
 import WebhookController from './lib/controllers/WebhookController';
 
 const  NODE_PORT = process.env.NODE_PORT || 8080;
@@ -93,7 +96,9 @@ const tokenViews = new AccessTokenViews({});
 eventsV1.loadViews(app);
 api.loadViews(app);
 tokenViews.loadViews(app);
-const webhookViews = new WebhookController();
+routeConfig(app, [
+  new WebhookController(),
+]);
 
 app.use((request, response, next) => response.sendStatus(404));
 
