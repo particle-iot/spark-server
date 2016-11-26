@@ -122,7 +122,7 @@ var Api = {
 				devices[i].last_heard = (desc.value) ? desc.value.lastPing : null;
 			}
 
-			res.json(200, devices);
+			res.status(200).json(devices);
 		});
 	},
 
@@ -327,7 +327,7 @@ var Api = {
 
 
 	loadCore: function (req, res, next) {
-		req.coreID = req.param('coreid') || req.body.id;
+		req.coreID = req.params.coreid || req.body.id;
 
 		//load core info!
 		req.coreInfo = {
@@ -381,8 +381,8 @@ var Api = {
 		var userid = Api.getUserID(req);
 		var socketID = Api.getSocketID(userid),
 			coreID = req.coreID,
-			varName = req.param('var'),
-			format = req.param('format');
+			varName = req.params.var,
+			format = req.params.format;
 
 		logger.log("GetVar", {coreID: coreID, userID: userid.toString()});
 

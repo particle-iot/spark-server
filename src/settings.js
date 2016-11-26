@@ -15,20 +15,18 @@
 *
 *    You can download the source here: https://github.com/spark/spark-server
 */
+// @flow
 
-var path = require('path');
+import path from 'path';
 
-module.exports = {
-	baseUrl: "http://localhost",
-	userDataDir: path.join(__dirname, "users"),
-	coreKeysDir: path.join(__dirname, "core_keys"),
-
-	coreRequestTimeout: 30000,
-	isCoreOnlineTimeout: 2000,
-
-	coreSignalTimeout: 30000,
+export default  {
+	baseUrl: 'http://localhost',
 	coreFlashTimeout: 90000,
-
-	maxHooksPerUser: 20,
+	coreKeysDir: path.join(__dirname, 'core_keys'),
+	coreRequestTimeout: 30000,
+	coreSignalTimeout: 30000,
+	isCoreOnlineTimeout: 2000,
 	maxHooksPerDevice: 10,
+	maxHooksPerUser: 20,
+	userDataDir: path.join(__dirname, 'users'),
 };

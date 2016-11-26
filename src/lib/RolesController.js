@@ -23,7 +23,7 @@ var sequence = require('when/sequence');
 var pipeline = require('when/pipeline');
 var PasswordHasher = require('./PasswordHasher.js');
 var roles = require('./RolesController.js');
-var settings = require('../settings.js');
+import settings from '../settings';
 var logger = require('./logger.js');
 
 
