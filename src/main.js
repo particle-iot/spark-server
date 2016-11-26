@@ -63,18 +63,18 @@ const oauth = OAuthServer({
 	model: new OAuth2ServerModel({}),
 });
 
-const setCORSHeaders = (req, res, next) => {
-  if ('OPTIONS' === req.method) {
-    res.set({
+const setCORSHeaders = (request, response, next) => {
+  if ('OPTIONS' === request.method) {
+    response.set({
       'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Max-Age': 300,
     });
-    return res.sendStatus(204);
+    return response.sendStatus(204);
   }
 	else {
-		res.set({'Access-Control-Allow-Origin': '*'});
+		response.set({'Access-Control-Allow-Origin': '*'});
 		next();
 	}
 };
@@ -95,7 +95,7 @@ api.loadViews(app);
 tokenViews.loadViews(app);
 const webhookViews = new Webhook(app);
 
-app.use((req, res, next) => res.sendStatus(404));
+app.use((request, response, next) => response.sendStatus(404));
 
 
 console.log("Starting server, listening on " + NODE_PORT);
