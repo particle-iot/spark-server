@@ -16,102 +16,100 @@
 *    You can download the source here: https://github.com/spark/spark-server
 */
 
-var fs = require('fs');
-var http = require('http');
-var express = require('express');
+import bodyParser from 'body-parser';
+import express from 'express';
+import http from 'http';
+import morgan from 'morgan';
+import OAuthServer from 'node-oauth2-server';
+import { DeviceServer } from 'spark-protocol';
+import settings from './settings';
 
+import utilities from './lib/utilities';
+import logger from './lib/logger';
+import OAuth2ServerModel from './lib/OAuth2ServerModel';
+import AccessTokenViews from './lib/AccessTokenViews';
+import UserCreator from './lib/UserCreator.js';
 
-var settings = require('./settings.js');
-var utilities = require("./lib/utilities.js");
-var logger = require('./lib/logger.js');
+import api from './views/api_v1.js';
+import eventsV1 from './views/EventViews001.js';
+import Webhook from './views/Webhooks';
 
-var OAuthServer = require('node-oauth2-server');
-var OAuth2ServerModel = require('./lib/OAuth2ServerModel');
-var AccessTokenViews = require('./lib/AccessTokenViews.js');
+const  NODE_PORT = process.env.NODE_PORT || 8080;
 
-const Webhook = require('./views/Webhooks');
-
+// TODO wny do we need this? (Anton Puko)
 global._socket_counter = 1;
 
-var oauth = OAuthServer({
-	model: new OAuth2ServerModel({  }),
-	allow: {
-		"post": ['/v1/users'],
-		"get": ['/server/health', '/v1/access_tokens'],
-		"delete": ['/v1/access_tokens/([0-9a-f]{40})']
-	},
-	grants: ['password'],
-	accessTokenLifetime: 7776000    //90 days
+//TODO: something better here
+process.on('uncaughtException', (exception) => {
+  let details = '';
+  try {
+    details = JSON.stringify(exception);
+  } catch (stringifyException) {
+    logger.error('Caught exception: ' + stringifyException);
+  }
+  logger.error('Caught exception: ' + exception + details);
 });
 
-var set_cors_headers = function (req, res, next) {
-	if ('OPTIONS' === req.method) {
-		res.set({
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-			'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
-			'Access-Control-Max-Age': 300
-		});
-		return res.send(204);
-	}
+const app = express();
+
+const oauth = OAuthServer({
+  allow: {
+    "delete": ['/v1/access_tokens/([0-9a-f]{40})'],
+    "get": ['/server/health', '/v1/access_tokens'],
+    "post": ['/v1/users'],
+  },
+	accessTokenLifetime: 7776000,    //90 days
+	grants: ['password'],
+	model: new OAuth2ServerModel({}),
+});
+
+const setCORSHeaders = (req, res, next) => {
+  if ('OPTIONS' === req.method) {
+    res.set({
+      'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Max-Age': 300,
+    });
+    return res.sendStatus(204);
+  }
 	else {
 		res.set({'Access-Control-Allow-Origin': '*'});
 		next();
 	}
 };
 
-//TODO: something better here
-process.on('uncaughtException', function (ex) {
-	var details = '';
-	try { details = JSON.stringify(ex); }  catch (ex2) { }
-
-	logger.error('Caught exception: ' + ex + details);
-});
-
-
-var app = express();
-app.use(express.logger());
-app.use(express.bodyParser());
-app.use(set_cors_headers);
+app.use(morgan('combined'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(setCORSHeaders);
 app.use(oauth.handler());
 app.use(oauth.errorHandler());
 
-var UserCreator = require('./lib/UserCreator.js');
+
 app.post('/v1/users', UserCreator.getMiddleware());
-
-var api = require('./views/api_v1.js');
-var eventsV1 = require('./views/EventViews001.js');
-var tokenViews = new AccessTokenViews({  });
-
+const tokenViews = new AccessTokenViews({});
 
 eventsV1.loadViews(app);
 api.loadViews(app);
 tokenViews.loadViews(app);
 const webhookViews = new Webhook(app);
 
+app.use((req, res, next) => res.sendStatus(404));
 
 
-app.use(function (req, res, next) {
-	return res.send(404);
+console.log("Starting server, listening on " + NODE_PORT);
+http.createServer(app).listen(NODE_PORT);
+
+const deviceServer = new DeviceServer({
+	coreKeysDir: settings.coreKeysDir,
 });
 
-
-var node_port = process.env.NODE_PORT || '8080';
-node_port = parseInt(node_port);
-
-console.log("Starting server, listening on " + node_port);
-http.createServer(app).listen(node_port);
+// TODO wny do we need next line? (Anton Puko)
+global.server = deviceServer;
+deviceServer.start();
 
 
-var DeviceServer = require("spark-protocol").DeviceServer;
-var server = new DeviceServer({
-	coreKeysDir: settings.coreKeysDir
-});
-global.server = server;
-server.start();
-
-
-var ips = utilities.getIPAddresses();
-for(var i=0;i<ips.length;i++) {
-	console.log("Your server IP address is: " + ips[i]);
-}
+utilities.getIPAddresses().forEach((ip) =>
+  console.log(`Your server IP address is: ${ip}`),
+);
