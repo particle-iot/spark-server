@@ -37,7 +37,7 @@ import api from './views/api_v1.js';
 import eventsV1 from './views/EventViews001.js';
 
 // Routing
-import routeConfig from './lib/routeConfig';
+import routeConfig from './lib/RouteConfig';
 import WebhookController from './lib/controllers/WebhookController';
 
 const  NODE_PORT = process.env.NODE_PORT || 8080;

@@ -1,4 +1,4 @@
-import type {Webhook} from '../../types';
+import type { Webhook } from '../../types';
 
 import {FileManager} from 'spark-protocol';
 import uuid from '../uuid';
