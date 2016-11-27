@@ -14,20 +14,20 @@ class WebhookFileRepository extends FileRepositoryBase {
       id: uuid(),
     };
 
-    this.createFile(modelToSave.id + '.json', modelToSave);
+    this.__createFile(modelToSave.id + '.json', modelToSave);
     return modelToSave;
   }
 
   delete(id: string): void {
-    this.deleteFile(id + '.json');
+    this.__deleteFile(id + '.json');
   }
 
   getAll(): Array<Webhook> {
-    return this.getAllData();
+    return this.__getAllData();
   }
 
   getById(id: string): Webhook {
-    return this.getFile(id + '.json');
+    return this.__getFile(id + '.json');
   }
 }
 
