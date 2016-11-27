@@ -18,6 +18,7 @@
 // @flow
 
 import path from 'path';
+import WebhookFileRepository from './lib/repository/WebhookFileRepository';
 
 export default {
 	baseUrl: 'http://localhost',
@@ -29,4 +30,7 @@ export default {
 	maxHooksPerDevice: 10,
 	maxHooksPerUser: 20,
 	userDataDir: path.join(__dirname, 'users'),
+	webhookRepository: new WebhookFileRepository(
+		path.join(__dirname, 'webhooks'),
+	),
 };

@@ -30,6 +30,7 @@ node_modules
 # Spark generated files/directories which contain secrets
 core_keys
 users
+webhooks
 *.der
 *.pem
 *.pub.pem

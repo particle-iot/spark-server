@@ -97,7 +97,7 @@ eventsV1.loadViews(app);
 api.loadViews(app);
 tokenViews.loadViews(app);
 routeConfig(app, [
-  new WebhookController(),
+  new WebhookController(settings.webhookRepository),
 ]);
 
 app.use((request, response, next) => response.sendStatus(404));
