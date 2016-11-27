@@ -1,4 +1,4 @@
-import type {Decorator, HttpVerb} from './types';
+import type { Decorator, HttpVerb } from './types';
 
 export default (
   httpVerb: HttpVerb,
