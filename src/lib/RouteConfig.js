@@ -1,4 +1,4 @@
-import type {$Application} from 'express';
+import type { $Application } from 'express';
 
 import type Controller from './controllers/Controller'
 

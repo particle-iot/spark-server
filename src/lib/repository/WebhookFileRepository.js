@@ -1,4 +1,4 @@
-import type {Webhook} from '../../types';
+import type { Webhook } from '../../types';
 
 import FileManager from './FileManager';
 import uuid from '../uuid';
