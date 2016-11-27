@@ -14,8 +14,10 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 *    You can download the source here: https://github.com/spark/spark-server
+*
+* @flow
+*
 */
-// @flow
 
 import path from 'path';
 import WebhookFileRepository from './lib/repository/WebhookFileRepository';
