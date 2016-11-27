@@ -1,6 +1,6 @@
 import type {Webhook} from '../../types';
 
-import FileManager from './FileManager';
+import {FileManager} from 'spark-protocol';
 import uuid from '../uuid';
 
 class WebhookFileRepository {
