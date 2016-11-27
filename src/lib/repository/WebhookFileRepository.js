@@ -8,6 +8,9 @@ class WebhookFileRepository extends FileRepositoryBase {
     const modelToSave = {
       ...model,
       created_at: new Date(),
+      // TODO: Add another repository for fetching users. This should be
+      // injected on every request so we can easily get the current user
+      created_by: null, // user id
       id: uuid(),
     };
 

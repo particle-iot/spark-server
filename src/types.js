@@ -12,3 +12,10 @@ export type Webhook = {
   responseTopic: string,
   url: string,
 };
+
+export type Repository<TModel> = {
+  create(model: TModel) => TModel,
+  delete(id: string) => void,
+  getAll() => Array<TModel>,
+  getById(id: string) => TModel,
+};

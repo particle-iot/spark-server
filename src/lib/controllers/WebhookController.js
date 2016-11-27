@@ -1,5 +1,4 @@
-import type {Webhook} from '../../types';
-import type {WebhookRepositoryType} from './types';
+import type {Repository, Webhook} from '../../types';
 
 import settings from '../../settings';
 import Controller from './Controller';
@@ -7,9 +6,9 @@ import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
 class WebhookController extends Controller {
-  _webhookRepository: RepositoryType<Webhook>;
+  _webhookRepository: Repository<Webhook>;
 
-  constructor(webhookRepository: RepositoryType<Webhook>) {
+  constructor(webhookRepository: Repository<Webhook>) {
     super();
 
     this._webhookRepository = webhookRepository;
