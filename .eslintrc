@@ -29,7 +29,7 @@
       "never"
     ],
     "flowtype/use-flow-type": 1,
-    "import/imports-first": 0,
+    "import/first": 0,
     "import/newline-after-import": 0,
     "import/no-duplicates": 0,
     "import/no-extraneous-dependencies": 0,
