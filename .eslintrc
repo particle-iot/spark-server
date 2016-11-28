@@ -37,7 +37,7 @@
     "import/no-unresolved": 2,
     "import/prefer-default-export": 0,
     "newline-per-chained-call": 0,
-    "no-console": 1,
+    "no-console": 0,
     "no-duplicate-imports": 0,
     "no-mixed-operators": 0,
     "no-underscore-dangle": 0,
