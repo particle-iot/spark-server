@@ -38,10 +38,10 @@ import utilities from './lib/utilities';
 import logger from './lib/logger';
 import OAuth2ServerModel from './lib/OAuth2ServerModel';
 import AccessTokenViews from './lib/AccessTokenViews';
-import UserCreator from './lib/UserCreator.js';
+import UserCreator from './lib/UserCreator';
 
-import api from './views/api_v1.js';
-import eventsV1 from './views/EventViews001.js';
+import api from './views/api_v1';
+import eventsV1 from './views/EventViews001';
 
 // Routing
 import routeConfig from './lib/RouteConfig';
@@ -52,12 +52,12 @@ import {
   ServerConfigFileRepository,
 } from 'spark-protocol';
 
-const  NODE_PORT = process.env.NODE_PORT || 8080;
+const NODE_PORT = process.env.NODE_PORT || 8080;
 
 // TODO wny do we need this? (Anton Puko)
 global._socket_counter = 1;
 
-//TODO: something better here
+// TODO: something better here
 process.on('uncaughtException', (exception: Error) => {
   let details = '';
   try {
@@ -71,17 +71,17 @@ process.on('uncaughtException', (exception: Error) => {
 const app = express();
 
 const oauth = OAuthServer({
+  accessTokenLifetime: 7776000, // 90 days
   allow: {
-    'delete': ['/v1/access_tokens/([0-9a-f]{40})'],
-    'get': ['/server/health', '/v1/access_tokens'],
-    'post': ['/v1/users'],
+    delete: ['/v1/access_tokens/([0-9a-f]{40})'],
+    get: ['/server/health', '/v1/access_tokens'],
+    post: ['/v1/users'],
   },
-	accessTokenLifetime: 7776000, // 90 days
-	grants: ['password'],
-	model: new OAuth2ServerModel({}),
+  grants: ['password'],
+  model: new OAuth2ServerModel({}),
 });
 
-const setCORSHeaders: Middleware  = (
+const setCORSHeaders: Middleware = (
   request: $Request,
   response: $Response,
   next: NextFunction,
@@ -96,10 +96,8 @@ const setCORSHeaders: Middleware  = (
     });
     return response.sendStatus(204);
   }
-  else {
-    response.set({ 'Access-Control-Allow-Origin': '*' });
-    next();
-  }
+  response.set({ 'Access-Control-Allow-Origin': '*' });
+  return next();
 };
 
 app.use(morgan('combined'));
@@ -123,13 +121,12 @@ routeConfig(app, [
 const noRouteMiddleware: Middleware = (
   request: $Request,
   response: $Response,
-  next: NextFunction,
 ): mixed => response.sendStatus(404);
 
 app.use(noRouteMiddleware);
 
 
-console.log("Starting server, listening on " + NODE_PORT);
+console.log(`Starting server, listening on ${NODE_PORT}`);
 app.listen(NODE_PORT);
 
 const deviceServer = new DeviceServer({
@@ -142,8 +139,8 @@ const deviceServer = new DeviceServer({
     settings.serverKeyFile,
   ),
   serverKeyFile: settings.serverKeyFile,
-  serverKeyPassFile: settings.serverKeyPassFile,
   serverKeyPassEnvVar: settings.serverKeyPassEnvVar,
+  serverKeyPassFile: settings.serverKeyPassFile,
 });
 
 // TODO wny do we need next line? (Anton Puko)
@@ -151,6 +148,6 @@ global.server = deviceServer;
 deviceServer.start();
 
 
-utilities.getIPAddresses().forEach((ip) =>
+utilities.getIPAddresses().forEach((ip: string): void =>
   console.log(`Your server IP address is: ${ip}`),
 );
