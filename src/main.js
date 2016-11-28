@@ -46,7 +46,7 @@ import UsersController from './lib/controllers/UsersController';
 import WebhookController from './lib/controllers/WebhookController';
 
 import {
-  DeviceFileRepository,
+  DeviceAttributeFileRepository,
   ServerConfigFileRepository,
 } from 'spark-protocol';
 
@@ -63,7 +63,7 @@ process.on('uncaughtException', (exception: Error) => {
   } catch (stringifyException) {
     logger.error(`Caught exception: ${stringifyException}`);
   }
-  logger.error(`Caught exception: ${exception.toString()} ${details}`);
+  logger.error(`Caught exception: ${exception.toString()} ${exception.stack}`);
 });
 
 const app = express();
@@ -114,8 +114,9 @@ console.log(`Starting server, listening on ${NODE_PORT}`);
 app.listen(NODE_PORT);
 
 const deviceServer = new DeviceServer({
-  deviceAttributeRepository: new DeviceFileRepository(
-    path.join(__dirname, 'device_keys'),
+  coreKeysDir: settings.coreKeysDir,
+  deviceAttributeRepository: new DeviceAttributeFileRepository(
+    settings.coreKeysDir,
   ),
   host: settings.HOST,
   port: settings.PORT,
