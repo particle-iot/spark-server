@@ -35,4 +35,15 @@ export default {
 	webhookRepository: new WebhookFileRepository(
 		path.join(__dirname, 'webhooks'),
 	),
+
+	/**
+	 * Your server crypto keys!
+	 */
+	cryptoSalt: 'aes-128-cbc',
+	serverKeyFile: "default_key.pem",
+	serverKeyPassFile: null,
+	serverKeyPassEnvVar: null,
+
+	PORT: 5683,
+	HOST: "localhost",
 };

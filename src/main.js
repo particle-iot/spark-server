@@ -29,6 +29,7 @@ import type {
 import bodyParser from 'body-parser';
 import express from 'express';
 import morgan from 'morgan';
+import path from 'path';
 import OAuthServer from 'node-oauth2-server';
 import { DeviceServer } from 'spark-protocol';
 import settings from './settings';
@@ -45,6 +46,11 @@ import eventsV1 from './views/EventViews001.js';
 // Routing
 import routeConfig from './lib/RouteConfig';
 import WebhookController from './lib/controllers/WebhookController';
+
+import {
+  DeviceFileRepository,
+  ServerConfigFileRepository,
+} from 'spark-protocol';
 
 const  NODE_PORT = process.env.NODE_PORT || 8080;
 
@@ -82,10 +88,11 @@ const setCORSHeaders: Middleware  = (
 ): mixed => {
   if (request.method === 'OPTIONS') {
     response.set({
-      'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
+      'Access-Control-Allow-Headers':
+        'X-Requested-With, Content-Type, Accept, Authorization',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Max-Age': 300,
+      'Access-Control-Max-Age': '300',
     });
     return response.sendStatus(204);
   }
@@ -126,7 +133,17 @@ console.log("Starting server, listening on " + NODE_PORT);
 app.listen(NODE_PORT);
 
 const deviceServer = new DeviceServer({
-	coreKeysDir: settings.coreKeysDir,
+  deviceAttributeRepository: new DeviceFileRepository(
+    path.join(__dirname, 'device_keys'),
+  ),
+  host: settings.HOST,
+  port: settings.PORT,
+  serverConfigRepository: new ServerConfigFileRepository(
+    settings.serverKeyFile,
+  ),
+  serverKeyFile: settings.serverKeyFile,
+  serverKeyPassFile: settings.serverKeyPassFile,
+  serverKeyPassEnvVar: settings.serverKeyPassEnvVar,
 });
 
 // TODO wny do we need next line? (Anton Puko)

@@ -24,7 +24,7 @@ class WebhookController extends Controller {
 
   @httpVerb('get')
   @route('/v1/webhooks/:webhookId')
-  getByWebhookId({ webhookId }: { webhookId: string }) {
+  getByWebhookId(webhookId: string) {
     return this.ok(this._webhookRepository.getById(webhookId));
   }
 
@@ -44,7 +44,7 @@ class WebhookController extends Controller {
 
   @httpVerb('delete')
   @route('/v1/webhooks/:webhookId')
-  delete({ webhookId }: { webhookId: string }) {
+  delete(webhookId: string) {
     this._webhookRepository.delete(webhookId);
     return this.ok();
   }

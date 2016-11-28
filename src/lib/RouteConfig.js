@@ -4,10 +4,10 @@ import type Controller from './controllers/Controller'
 
 const getFunctionArgumentNames = (func): Array<string> => {
   // First match everything inside the function argument parens.
-  const arguments = func.toString().match(/function\s.*?\(([^)]*)\)/)[1];
+  const args = func.toString().match(/function\s.*?\(([^)]*)\)/)[1];
 
   // Split the arguments string into an array comma delimited.
-  return arguments.split(',').map(argument => {
+  return args.split(',').map(argument => {
     // Ensure no inline comments are parsed and trim the whitespace.
     return argument.replace(/\/\*.*\*\//, '').trim();
   }).filter(argument => !!argument);
