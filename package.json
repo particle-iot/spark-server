@@ -63,6 +63,7 @@
     "eslint-plugin-flowtype": "^2.28.2",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-sorting": "^0.3.0",
+    "express-oauth-server": "^2.0.0-b1",
     "nodemon": "^1.11.0",
     "rimraf": "^2.5.4"
   }
