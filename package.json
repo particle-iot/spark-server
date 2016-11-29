@@ -36,9 +36,9 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "express-oauth-server": "^2.0.0-b1",
     "moment": "*",
     "morgan": "^1.7.0",
-    "node-oauth2-server": "~1.5.3",
     "request": "*",
     "spark-protocol": "../spark-protocol",
     "ursa": "*",
@@ -63,7 +63,6 @@
     "eslint-plugin-flowtype": "^2.28.2",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-sorting": "^0.3.0",
-    "express-oauth-server": "^2.0.0-b1",
     "nodemon": "^1.11.0",
     "rimraf": "^2.5.4"
   }
