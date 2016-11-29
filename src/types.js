@@ -29,14 +29,17 @@ export type Device = {
   timestamp: Date,
 };
 
-export type GrantType = 'password' | 'refresh_token';
+export type GrantType =
+  'bearer_token'|
+  'password'|
+  'refresh_token';
 
 export type TokenObject = {
   accessToken: string
   accessTokenExpiresAt: Date,
   refreshToken: string,
   refreshTokenExpiresAt: Date,
-  scope: Object,
+  scope: string,
 };
 
 export type User = {

@@ -54,6 +54,7 @@ class PasswordHasher {
         (error: ?Error, key: Buffer) => {
           if (error) {
             reject(error);
+            return;
           }
           resolve(key.toString('base64'));
         },

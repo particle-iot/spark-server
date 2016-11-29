@@ -27,7 +27,7 @@ class UsersFileRepository {
       salt,
       username,
     };
-    // todo make async call of fileManager when implement async inside fileManager
+
     this._fileManager.createFile(`${modelToSave.id}.json`, modelToSave);
     return modelToSave;
   };
@@ -69,7 +69,6 @@ class UsersFileRepository {
       accessTokens: [...user.accessTokens, tokenObject],
     };
 
-    // todo make async call of fileManager when implement async inside fileManager
     this._fileManager.writeFile(`${userId}.json`, userToSave);
   }
 }
