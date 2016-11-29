@@ -27,12 +27,12 @@ export default (app: $Application, controllers: Array<Controller>) => {
 
       const argumentNames = getFunctionArgumentNames(mappedFunction);
 
-      app[httpVerb](route, (request: $Request, response: $Response) => {
+      app[httpVerb](route, async (request: $Request, response: $Response) => {
         const values = argumentNames
           .map((argument: string): string => request.params[argument])
           .filter((value: ?Object): boolean => value !== undefined);
 
-        const result = mappedFunction.call(
+        const result = await mappedFunction.call(
           controller,
           ...values,
           request.body,
