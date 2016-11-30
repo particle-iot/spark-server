@@ -27,12 +27,9 @@ const getFunctionArgumentNames = (func: Function): Array<string> => {
 // TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
   (request: $Request, response: $Response, next: NextFunction) => {
-    console.log('im in maybe');
     if (condition) {
-      console.log('here');
       middleware(request, response, next);
     } else {
-      console.log('here1');
       next();
     }
   };
