@@ -24,6 +24,7 @@ import WebhookFileRepository from './lib/repository/WebhookFileRepository';
 import UsersFileRepository from './lib/repository/UsersFileRepository';
 
 export default {
+  accessTokenLifetime: 7776000, // 90 days,
 	baseUrl: 'http://localhost',
 	coreFlashTimeout: 90000,
 	coreKeysDir: path.join(__dirname, 'core_keys'),

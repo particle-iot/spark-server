@@ -30,13 +30,11 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import morgan from 'morgan';
 import path from 'path';
-import OAuthServer from 'express-oauth-server';
 import { DeviceServer } from 'spark-protocol';
 import settings from './settings';
 
 import utilities from './lib/utilities';
 import logger from './lib/logger';
-import OAuthModel from './lib/OAuthModel';
 import AccessTokenViews from './lib/AccessTokenViews';
 
 import api from './views/api_v1';
@@ -70,11 +68,6 @@ process.on('uncaughtException', (exception: Error) => {
 
 const app = express();
 
-const oauth = new OAuthServer({
-  accessTokenLifetime: 7776000, // 90 days
-  model: new OAuthModel(settings.usersRepository),
-});
-
 const setCORSHeaders: Middleware = (
   request: $Request,
   response: $Response,
@@ -98,10 +91,6 @@ app.use(morgan('combined'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(setCORSHeaders);
-
-// todo temporary for login
-app.post('/oauth/token', oauth.token());
-
 
 const tokenViews = new AccessTokenViews({});
 
