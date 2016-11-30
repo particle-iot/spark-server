@@ -21,7 +21,7 @@
 
 import path from 'path';
 import WebhookFileRepository from './lib/repository/WebhookFileRepository';
-import UsersFileRepository from './lib/repository/UsersFIleRepository';
+import UsersFileRepository from './lib/repository/UsersFileRepository';
 
 export default {
 	baseUrl: 'http://localhost',
