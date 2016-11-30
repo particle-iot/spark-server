@@ -13,6 +13,13 @@ export type Webhook = {
   url: string,
 };
 
+
+export type Client = {
+  clientId: string,
+  clientSecret: string,
+  grants: Array<GrantType>,
+};
+
 export type Device = {
   deviceId: string,
   ip: string,
@@ -20,6 +27,32 @@ export type Device = {
   productFirmwareVersion: number,
   registrar: string,
   timestamp: Date,
+};
+
+export type GrantType =
+  'bearer_token'|
+  'password'|
+  'refresh_token';
+
+export type TokenObject = {
+  accessToken: string
+  accessTokenExpiresAt: Date,
+  refreshToken: string,
+  refreshTokenExpiresAt: Date,
+  scope: string,
+};
+
+export type User = {
+  accessTokens: Array<TokenObject>,
+  created_at: Date,
+  id: string,
+  passwordHash: string,
+  username: string,
+};
+
+export type UserCredentials = {
+  username: string,
+  password: string,
 };
 
 export type Repository<TModel> = {

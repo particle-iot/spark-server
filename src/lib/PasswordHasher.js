@@ -26,24 +26,40 @@ const HASH_ITERATIONS = 30000;
 const KEY_LENGTH = 64;
 
 class PasswordHasher {
-  static generateSalt(callback: (error: ?Error, buffer: Buffer) => void) {
-    crypto.randomBytes(64, callback);
+  static generateSalt(size: number = 64): Promise<*> {
+    // todo better annotate promise resolve, reject
+    return new Promise((resolve: Function, reject: Function) => {
+      crypto.randomBytes(size, (error: ?Error, buffer: Buffer) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(buffer.toString('base64'));
+      });
+    });
   }
 
   static hash(
-    password: Buffer,
-    salt: Buffer,
-    callback: (error: ?Error, key: string) => void,
-  ) {
-    crypto.pbkdf2(
-      password.toString('base64'),
-      salt.toString('base64'),
-      HASH_ITERATIONS,
-      KEY_LENGTH,
-      HASH_DIGEST,
-      (error: ?Error, key: Buffer): void =>
-        callback(error, key.toString('base64')),
-    );
+    password: string,
+    salt: string,
+  ): Promise<*> {
+    // todo better annotate promise resolve, reject
+    return new Promise((resolve: Function, reject: Function) => {
+      crypto.pbkdf2(
+        password,
+        salt,
+        HASH_ITERATIONS,
+        KEY_LENGTH,
+        HASH_DIGEST,
+        (error: ?Error, key: Buffer) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve(key.toString('base64'));
+        },
+      );
+    });
   }
 }
 

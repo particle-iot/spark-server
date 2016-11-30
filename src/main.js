@@ -30,21 +30,21 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import morgan from 'morgan';
 import path from 'path';
-import OAuthServer from 'node-oauth2-server';
+import OAuthServer from 'express-oauth-server';
 import { DeviceServer } from 'spark-protocol';
 import settings from './settings';
 
 import utilities from './lib/utilities';
 import logger from './lib/logger';
-import OAuth2ServerModel from './lib/OAuth2ServerModel';
+import OAuthModel from './lib/OAuthModel';
 import AccessTokenViews from './lib/AccessTokenViews';
-import UserCreator from './lib/UserCreator';
 
 import api from './views/api_v1';
 import eventsV1 from './views/EventViews001';
 
 // Routing
 import routeConfig from './lib/RouteConfig';
+import UsersController from './lib/controllers/UsersController';
 import WebhookController from './lib/controllers/WebhookController';
 
 import {
@@ -70,15 +70,9 @@ process.on('uncaughtException', (exception: Error) => {
 
 const app = express();
 
-const oauth = OAuthServer({
+const oauth = new OAuthServer({
   accessTokenLifetime: 7776000, // 90 days
-  allow: {
-    delete: ['/v1/access_tokens/([0-9a-f]{40})'],
-    get: ['/server/health', '/v1/access_tokens'],
-    post: ['/v1/users'],
-  },
-  grants: ['password'],
-  model: new OAuth2ServerModel({}),
+  model: new OAuthModel(settings.usersRepository),
 });
 
 const setCORSHeaders: Middleware = (
@@ -104,17 +98,18 @@ app.use(morgan('combined'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(setCORSHeaders);
-app.use(oauth.handler());
-app.use(oauth.errorHandler());
+
+// todo temporary for login
+app.post('/oauth/token', oauth.token());
 
 
-app.post('/v1/users', UserCreator.getMiddleware());
 const tokenViews = new AccessTokenViews({});
 
 eventsV1.loadViews(app);
 api.loadViews(app);
 tokenViews.loadViews(app);
 routeConfig(app, [
+  new UsersController(settings.usersRepository),
   new WebhookController(settings.webhookRepository),
 ]);
 

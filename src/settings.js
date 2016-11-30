@@ -21,6 +21,7 @@
 
 import path from 'path';
 import WebhookFileRepository from './lib/repository/WebhookFileRepository';
+import UsersFileRepository from './lib/repository/UsersFIleRepository';
 
 export default {
 	baseUrl: 'http://localhost',
@@ -35,6 +36,9 @@ export default {
 	webhookRepository: new WebhookFileRepository(
 		path.join(__dirname, 'webhooks'),
 	),
+  usersRepository: new UsersFileRepository(
+    path.join(__dirname, 'users'),
+  ),
 
 	/**
 	 * Your server crypto keys!
