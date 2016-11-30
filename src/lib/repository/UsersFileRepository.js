@@ -5,6 +5,7 @@ import type { TokenObject, User, UserCredentials } from '../../types';
 import { FileManager, uuid } from 'spark-protocol';
 import PasswordHasher from '../PasswordHasher';
 
+// todo change class methods style to arrow functions.
 class UsersFileRepository {
   _fileManager: FileManager;
 
@@ -61,6 +62,14 @@ class UsersFileRepository {
       return error;
     }
   }
+
+  getByAccessToken = (accessToken: string): ?User =>
+    this.getAll().find((user: User): User =>
+      user.accessTokens.some((tokenObject: TokenObject): boolean =>
+        tokenObject.accessToken === accessToken,
+      ),
+    );
+
 
   saveAccessToken(userId: string, tokenObject: TokenObject) {
     const user = this.getById(userId);
