@@ -11,10 +11,21 @@ class OauthModel {
     this._usersRepository = usersRepository;
   }
 
-  getAccessToken(bearerToken) {
-    // todo implement getAccessToken
-    return true;
-  }
+  getAccessToken = (bearerToken: string) => {
+    const user = this._usersRepository.getByAccessToken(bearerToken);
+    if (!user) {
+      return false;
+    }
+
+    const userTokenObject = user.accessTokens.find((tokenObject) =>
+      tokenObject.accessToken === bearerToken,
+    );
+
+    return {
+      accessToken: userTokenObject.accessToken,
+      user: user.id,
+    };
+  };
 
   getClient = (clientId: string, clientSecret: string): Client =>
     ouathClients.find((client: Client): Client =>
