@@ -1,6 +1,8 @@
+// @flow
+
 import type { Webhook } from '../../types';
 
-import {FileManager, uuid} from 'spark-protocol';
+import { FileManager, uuid } from 'spark-protocol';
 
 class WebhookFileRepository {
   _fileManager: FileManager;
@@ -9,7 +11,7 @@ class WebhookFileRepository {
     this._fileManager = new FileManager(path);
   }
 
-  create(model: Webhook): Webhook {
+  create = (model: Webhook): Webhook => {
     const modelToSave = {
       ...model,
       created_at: new Date(),
@@ -19,21 +21,18 @@ class WebhookFileRepository {
       id: uuid(),
     };
 
-    this._fileManager.createFile(modelToSave.id + '.json', modelToSave);
+    this._fileManager.createFile(`${modelToSave.id}.json`, modelToSave);
     return modelToSave;
-  }
+  };
 
-  delete(id: string): void {
-    this._fileManager.deleteFile(id + '.json');
-  }
+  delete = (id: string): void =>
+    this._fileManager.deleteFile(`${id}.json`);
 
-  getAll(): Array<Webhook> {
-    return this._fileManager.getAllData();
-  }
+  getAll = (): Array<Webhook> =>
+    this._fileManager.getAllData();
 
-  getById(id: string): Webhook {
-    return this._fileManager.getFile(id + '.json');
-  }
+  getById = (id: string): Webhook =>
+    this._fileManager.getFile(`${id}.json`);
 }
 
 export default WebhookFileRepository;

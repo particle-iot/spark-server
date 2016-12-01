@@ -21,7 +21,7 @@ var path = require('path');
 var when = require('when');
 var sequence = require('when/sequence');
 var pipeline = require('when/pipeline');
-var PasswordHasher = require('./PasswordHasher.js');
+import PasswordHasher from './PasswordHasher';
 var roles = require('./RolesController.js');
 import settings from '../settings';
 var logger = require('./logger.js');
