@@ -34,6 +34,16 @@ const maybe = (middleware: Middleware, condition: boolean): Middleware =>
     }
   };
 
+const injectUserMiddleware = (): Middleware =>
+  (request: $Request, response: $Response, next: NextFunction) => {
+    const oauthInfo = response.locals.oauth;
+    if (oauthInfo) {
+      // eslint-disable-next-line no-param-reassign
+      request.user = oauthInfo.token.user;
+    }
+    next();
+  };
+
 
 export default (app: $Application, controllers: Array<Controller>) => {
   // TODO figure out, may be I need to add oauth to app.oauth or app.locals.oauth
@@ -44,7 +54,7 @@ export default (app: $Application, controllers: Array<Controller>) => {
     model: new OAuthModel(settings.usersRepository),
   });
 
-  app.post('/oauth/token', oauth.token());
+  app.post(settings.loginRoute, oauth.token());
 
   controllers.forEach((controller: Controller) => {
     Object.getOwnPropertyNames(
@@ -62,14 +72,20 @@ export default (app: $Application, controllers: Array<Controller>) => {
       app[httpVerb](
         route,
         maybe(oauth.authenticate(), !anonymous),
+        injectUserMiddleware(),
         async (request: $Request, response: $Response) => {
           const values = argumentNames
             .map((argument: string): string => request.params[argument])
             .filter((value: ?Object): boolean => value !== undefined);
 
+          const controllerContext = Object.create(controller);
+          controllerContext.request = request;
+          controllerContext.response = response;
+          controllerContext.user = request.user;
+
           try {
             const result = await mappedFunction.call(
-              controller,
+              controllerContext,
               ...values,
               request.body,
             );
