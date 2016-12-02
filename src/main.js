@@ -35,7 +35,6 @@ import settings from './settings';
 
 import utilities from './lib/utilities';
 import logger from './lib/logger';
-import AccessTokenViews from './lib/AccessTokenViews';
 
 import api from './views/api_v1';
 import eventsV1 from './views/EventViews001';
@@ -46,7 +45,7 @@ import UsersController from './lib/controllers/UsersController';
 import WebhookController from './lib/controllers/WebhookController';
 
 import {
-  DeviceFileRepository,
+  DeviceAttributeFileRepository,
   ServerConfigFileRepository,
 } from 'spark-protocol';
 
@@ -63,7 +62,7 @@ process.on('uncaughtException', (exception: Error) => {
   } catch (stringifyException) {
     logger.error(`Caught exception: ${stringifyException}`);
   }
-  logger.error(`Caught exception: ${exception.toString()} ${details}`);
+  logger.error(`Caught exception: ${exception.toString()} ${exception.stack}`);
 });
 
 const app = express();
@@ -92,11 +91,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(setCORSHeaders);
 
-const tokenViews = new AccessTokenViews({});
-
 eventsV1.loadViews(app);
 api.loadViews(app);
-tokenViews.loadViews(app);
+
 routeConfig(app, [
   new UsersController(settings.usersRepository),
   new WebhookController(settings.webhookRepository),
@@ -114,8 +111,9 @@ console.log(`Starting server, listening on ${NODE_PORT}`);
 app.listen(NODE_PORT);
 
 const deviceServer = new DeviceServer({
-  deviceAttributeRepository: new DeviceFileRepository(
-    path.join(__dirname, 'device_keys'),
+  coreKeysDir: settings.coreKeysDir,
+  deviceAttributeRepository: new DeviceAttributeFileRepository(
+    settings.coreKeysDir,
   ),
   host: settings.HOST,
   port: settings.PORT,

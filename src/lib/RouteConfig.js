@@ -13,28 +13,24 @@ import OAuthModel from './OAuthModel';
 import OAuthServer from 'express-oauth-server';
 import settings from '../settings';
 
-const getFunctionArgumentNames = (func: Function): Array<string> => {
-  // First match everything inside the function argument parens.
-  const args = func.toString().match(/function\s.*?\(([^)]*)\)/)[1];
-
-  // Split the arguments string into an array comma delimited.
-  return args.split(',').map((argument: string): string =>
-    // Ensure no inline comments are parsed and trim the whitespace.
-    argument.replace(/\/\*.*\*\//, '').trim(),
-  ).filter((argument: string): boolean => !!argument);
-};
-
 // TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
   (request: $Request, response: $Response, next: NextFunction) => {
-    console.log('im in maybe');
     if (condition) {
-      console.log('here');
       middleware(request, response, next);
     } else {
-      console.log('here1');
       next();
     }
+  };
+
+const injectUserMiddleware = (): Middleware =>
+  (request: $Request, response: $Response, next: NextFunction) => {
+    const oauthInfo = response.locals.oauth;
+    if (oauthInfo) {
+      // eslint-disable-next-line no-param-reassign
+      request.user = oauthInfo.token.user;
+    }
+    next();
   };
 
 
@@ -47,7 +43,7 @@ export default (app: $Application, controllers: Array<Controller>) => {
     model: new OAuthModel(settings.usersRepository),
   });
 
-  app.post('/oauth/token', oauth.token());
+  app.post(settings.loginRoute, oauth.token());
 
   controllers.forEach((controller: Controller) => {
     Object.getOwnPropertyNames(
@@ -59,20 +55,23 @@ export default (app: $Application, controllers: Array<Controller>) => {
         return;
       }
 
-
-      const argumentNames = getFunctionArgumentNames(mappedFunction);
-
       app[httpVerb](
         route,
         maybe(oauth.authenticate(), !anonymous),
+        injectUserMiddleware(),
         async (request: $Request, response: $Response) => {
+          const argumentNames = request.route.path.split('/:').splice(1);
           const values = argumentNames
             .map((argument: string): string => request.params[argument])
             .filter((value: ?Object): boolean => value !== undefined);
 
+          const controllerContext = Object.create(controller);
+          controllerContext.request = request;
+          controllerContext.response = response;
+          controllerContext.user = request.user;
           try {
             const result = await mappedFunction.call(
-              controller,
+              controllerContext,
               ...values,
               request.body,
             );
