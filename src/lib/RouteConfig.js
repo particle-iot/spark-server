@@ -13,17 +13,6 @@ import OAuthModel from './OAuthModel';
 import OAuthServer from 'express-oauth-server';
 import settings from '../settings';
 
-const getFunctionArgumentNames = (func: Function): Array<string> => {
-  // First match everything inside the function argument parens.
-  const args = func.toString().match(/function\s.*?\(([^)]*)\)/)[1];
-
-  // Split the arguments string into an array comma delimited.
-  return args.split(',').map((argument: string): string =>
-    // Ensure no inline comments are parsed and trim the whitespace.
-    argument.replace(/\/\*.*\*\//, '').trim(),
-  ).filter((argument: string): boolean => !!argument);
-};
-
 // TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
   (request: $Request, response: $Response, next: NextFunction) => {
@@ -66,14 +55,12 @@ export default (app: $Application, controllers: Array<Controller>) => {
         return;
       }
 
-
-      const argumentNames = getFunctionArgumentNames(mappedFunction);
-
       app[httpVerb](
         route,
         maybe(oauth.authenticate(), !anonymous),
         injectUserMiddleware(),
         async (request: $Request, response: $Response) => {
+          const argumentNames = request.route.path.split('/:').splice(1);
           const values = argumentNames
             .map((argument: string): string => request.params[argument])
             .filter((value: ?Object): boolean => value !== undefined);
@@ -82,7 +69,6 @@ export default (app: $Application, controllers: Array<Controller>) => {
           controllerContext.request = request;
           controllerContext.response = response;
           controllerContext.user = request.user;
-
           try {
             const result = await mappedFunction.call(
               controllerContext,
