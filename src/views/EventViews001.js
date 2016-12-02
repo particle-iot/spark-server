@@ -52,7 +52,6 @@ var EventsApi = {
 
 	pipeEvents: function (socket, req, res, filterCoreId) {
 		var userid = Api.getUserID(req);
-
 		/*
 		 Start SSE
 		 */
@@ -72,7 +71,7 @@ var EventsApi = {
 		var keepAlive = function() {
 			if (((new Date()) - _lastMessage) >= 9000) {
 				_lastMessage = new Date();
-				res.write("\n");
+				res.write("asdf\n");
 				checkSocket();
 			}
 		};
@@ -150,6 +149,8 @@ var EventsApi = {
 					//TODO: if the user puts the userid elsewhere in the event name... it's gonna get removed.
 					name = (name) ? name.toString().replace(userid + "/", "") : null;
 
+
+					// NOTE: THIS IS THE ACTUAL DATA THAT GETS SENT TO THE CORE!!!
 					var obj = {
 						data: data ? data.toString() : null,
 						ttl: ttl ? ttl.toString() : null,
@@ -254,6 +255,7 @@ var EventsApi = {
 		var is_public = (!private_str || (private_str == "") || (private_str == "false"));
 
 		var socket = new CoreController(socketID);
+		console.log('EventViews001 - send_and_event');
 		var success = socket.sendEvent(is_public,
 			eventName,
 			userid,

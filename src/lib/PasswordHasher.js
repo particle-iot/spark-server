@@ -14,24 +14,37 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 *    You can download the source here: https://github.com/spark/spark-server
+*
+* @flow
+*
 */
 
-var crypto = require('crypto');
+import crypto from 'crypto';
 
-var PasswordHasher = function () {
+const HASH_DIGEST = 'sha1';
+const HASH_ITERATIONS = 30000;
+const KEY_LENGTH = 64;
 
-};
+class PasswordHasher {
+  static generateSalt(callback: (error: ?Error, buffer: Buffer) => void) {
+    crypto.randomBytes(64, callback);
+  }
 
-PasswordHasher.generateSalt = function (callback) {
-	return crypto.randomBytes(64, callback);
-};
+  static hash(
+    password: Buffer,
+    salt: Buffer,
+    callback: (error: ?Error, key: string) => void,
+  ) {
+    crypto.pbkdf2(
+      password.toString('base64'),
+      salt.toString('base64'),
+      HASH_ITERATIONS,
+      KEY_LENGTH,
+      HASH_DIGEST,
+      (error: ?Error, key: Buffer): void =>
+        callback(error, key.toString('base64')),
+    );
+  }
+}
 
-PasswordHasher.hash = function (password, salt, callback) {
-	password = password.toString('base64');
-	salt = salt.toString('base64');
-	return crypto.pbkdf2(password, salt, 30000, 64, function (err, derivedKey) {
-		return callback(err, derivedKey.toString('base64'));
-	});
-};
-
-module.exports = PasswordHasher;
+export default PasswordHasher;
