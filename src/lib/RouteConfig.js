@@ -43,6 +43,13 @@ export default (app: $Application, controllers: Array<Controller>) => {
     model: new OAuthModel(settings.usersRepository),
   });
 
+  // TODO this is temporary authentication for api_v1 and events routes
+  // until we move them in our controllers:
+  app.all('/v1/devices*', oauth.authenticate());
+  app.all('/v1/provisioning*', oauth.authenticate());
+  app.all('/v1/events*', oauth.authenticate());
+  // end temporary
+
   app.post(settings.loginRoute, oauth.token());
 
   controllers.forEach((controller: Controller) => {
