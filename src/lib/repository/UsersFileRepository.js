@@ -59,7 +59,7 @@ class UsersFileRepository {
 
       return user;
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -69,6 +69,18 @@ class UsersFileRepository {
         tokenObject.accessToken === accessToken,
       ),
     );
+
+  deleteAccessToken(user: User, token: string) {
+    const userToSave = {
+      ...user,
+      accessTokens: user.accessTokens.filter(
+        (tokenObject: TokenObject): boolean =>
+          tokenObject.accessToken !== token,
+      ),
+    };
+
+    this._fileManager.writeFile(`${user.id}.json`, userToSave);
+  }
 
 
   saveAccessToken(userId: string, tokenObject: TokenObject) {

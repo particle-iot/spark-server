@@ -35,7 +35,6 @@ import settings from './settings';
 
 import utilities from './lib/utilities';
 import logger from './lib/logger';
-import AccessTokenViews from './lib/AccessTokenViews';
 
 import api from './views/api_v1';
 import eventsV1 from './views/EventViews001';
@@ -92,11 +91,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(setCORSHeaders);
 
-const tokenViews = new AccessTokenViews({});
-
 eventsV1.loadViews(app);
 api.loadViews(app);
-tokenViews.loadViews(app);
+
 routeConfig(app, [
   new UsersController(settings.usersRepository),
   new WebhookController(settings.webhookRepository),
