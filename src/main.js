@@ -91,13 +91,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(setCORSHeaders);
 
-eventsV1.loadViews(app);
-api.loadViews(app);
-
 routeConfig(app, [
   new UsersController(settings.usersRepository),
   new WebhookController(settings.webhookRepository),
 ]);
+
+eventsV1.loadViews(app);
+api.loadViews(app);
 
 const noRouteMiddleware: Middleware = (
   request: $Request,
