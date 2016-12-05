@@ -1,6 +1,6 @@
 // @flow
 
-import type { TokenObject } from '../src/types.js';
+import type { TokenObject } from '../src/types';
 
 import test from 'ava';
 import request from 'supertest-as-promised';
