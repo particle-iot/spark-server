@@ -135,7 +135,7 @@ var EventsApi = {
 		//  http://www.whatwg.org/specs/web-apps/current-work/#server-sent-events
 		var writeEventGen = function (isPublic) {
 			return function (name, data, ttl, published_at, coreid) {
-				if (filterCoreId && (filterCoreId != coreid)) {
+				if (filterCoreId && (filterCoreId !== coreid)) {
 					return;
 				}
 
@@ -252,7 +252,7 @@ var EventsApi = {
 			ttl = req.body.ttl || 60,
 			private_str = req.body.private;
 
-		var is_public = (!private_str || (private_str == "") || (private_str == "false"));
+		var is_public = (!private_str || (private_str === "") || (private_str === "false"));
 
 		var socket = new CoreController(socketID);
 		console.log('EventViews001 - send_and_event');

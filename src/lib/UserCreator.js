@@ -36,7 +36,7 @@ UserCreator.prototype = {
 	getMiddleware: function () {
 		var that = this;
 		return function (req, res) {
-			if ((null != req.body.username) && (null != req.body.password)) {
+			if ((null !== req.body.username) && (null !== req.body.password)) {
 				var username = req.body.username.toLowerCase();
 
 				return that.create(username, req.body.password, function (err) {

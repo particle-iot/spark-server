@@ -136,7 +136,7 @@ CoreController.prototype = {
   },
 
 	unsubscribe: function (isPublic, name, userid) {
-		if (userid && (userid != "")) {
+		if (userid && (userid !== "")) {
 			name = userid + "/" + name;
 		}
 
@@ -198,7 +198,7 @@ CoreController.prototype = {
 //
 //        for(var key in global.cores) {
 //            var core = global.cores[key];
-//            if (core.coreID == id) {
+//            if (core.coreID===id) {
 //                cores[id] = core;
 //                break;
 //            }

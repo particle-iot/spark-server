@@ -67,7 +67,7 @@ RolesController.prototype = {
 		}
 
 		delete this.usersByToken[access_token];
-		if (userObj.access_token == access_token) {
+		if (userObj.access_token===access_token) {
 			userObj.access_token = null;
 		}
 		var idx = utilities.indexOf(userObj.access_tokens, req.params.token);
@@ -125,7 +125,7 @@ RolesController.prototype = {
 
 
 		var files = fs.readdirSync(settings.userDataDir);
-		if (!files || (files.length == 0)) {
+		if (!files || (files.length===0)) {
 			logger.error([ "-------", "No users exist, you should create some users!", "-------", ].join("\n"));
 		}
 
@@ -158,7 +158,7 @@ RolesController.prototype = {
 	getUserByUserid: function (userid) {
 		for (var i = 0; i < this.users.length; i++) {
 			var user = this.users[i];
-			if (user._id == userid) {
+			if (user._id===userid) {
 				return user;
 			}
 		}

@@ -148,7 +148,7 @@ var Api = {
 		when(objReady).done(function (results) {
 			try {
 
-				if (!results || (results.length != 2)) {
+				if (!results || (results.length !== 2)) {
 					logger.error("get_core_attributes results was the wrong length " + JSON.stringify(results));
 					res.json(404, "Oops, I couldn't find that core");
 					return;
@@ -208,7 +208,7 @@ var Api = {
 		logger.log("set_core_attributes", { coreID: coreID, userID: userid.toString() });
 
 		var coreName = req.body ? req.body.name : null;
-		if (coreName != null) {
+		if (coreName !== null) {
 			logger.log("SetAttr", { coreID: coreID, userID: userid.toString(), name: coreName });
 
 			global.server.setCoreAttribute(req.coreID, "name", coreName);
@@ -413,7 +413,7 @@ var Api = {
 				msg.coreInfo = req.coreInfo;
 				msg.coreInfo.connected = true;
 
-				if (format && (format == "raw")) {
+				if (format && (format === "raw")) {
 					return res.send("" + msg.result);
 				}
 				else {
@@ -464,14 +464,14 @@ var Api = {
 							error: "Function not found"
 						});
 					}
-					else if (msg.error != null) {
+					else if (msg.error !== null) {
 						res.json(400, {
 							ok: false,
 							error: msg.error
 						});
 					}
 					else {
-						if (format && (format == "raw")) {
+						if (format && (format === "raw")) {
 							res.send("" + msg.result);
 						}
 						else {
