@@ -5,7 +5,8 @@ import type Controller from './controllers/Controller';
 
 const getFunctionArgumentNames = (func: Function): Array<string> => {
   // First match everything inside the function argument parens.
-  const args = func.toString().match(/function\s.*?\(([^)]*)\)/)[1];
+  const args =
+    (func.toString().match(/function\s.*?\(([^)]*)\)/) || [])[1] || '';
 
   // Split the arguments string into an array comma delimited.
   return args.split(',').map((argument: string): string =>
@@ -27,10 +28,10 @@ export default (app: $Application, controllers: Array<Controller>) => {
 
       const argumentNames = getFunctionArgumentNames(mappedFunction);
 
-      app[httpVerb](route, (request: $Request, response: $Response) => {
+      (app: any)[httpVerb](route, (request: $Request, response: $Response) => {
         const values = argumentNames
-          .map((argument: string): string => request.params[argument])
-          .filter((value: ?Object): boolean => value !== undefined);
+          .map((argument: string): any => request.params[argument])
+          .filter((value: ?any): boolean => value !== undefined);
 
         const result = mappedFunction.call(
           controller,
