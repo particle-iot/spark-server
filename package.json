@@ -32,8 +32,8 @@
     "prebuild": "npm run build:clean",
     "start": "nodemon --exec babel-node ./src/main.js --watch src --watch ../spark-protocol/lib --ignore core_keys --ignore users --ignore webhooks",
     "start:prod": "npm run build && node ./build/main.js",
-    "test": "NODE_ENV=test ava",
-    "test:watch": "NODE_ENV=test ava --watch"
+    "test": "ava",
+    "test:watch": "ava --watch"
   },
   "ava": {
     "verbose": true,

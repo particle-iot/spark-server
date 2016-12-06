@@ -23,7 +23,7 @@ import path from 'path';
 import WebhookFileRepository from './lib/repository/WebhookFileRepository';
 import UsersFileRepository from './lib/repository/UsersFileRepository';
 
-const settings = {
+export default {
   accessTokenLifetime: 7776000, // 90 days,
   baseUrl: 'http://localhost',
   coreFlashTimeout: 90000,
@@ -31,9 +31,10 @@ const settings = {
   coreRequestTimeout: 30000,
   coreSignalTimeout: 30000,
   isCoreOnlineTimeout: 2000,
+  loginRoute: '/oauth/token',
+  logRequests: true,
   maxHooksPerDevice: 10,
   maxHooksPerUser: 20,
-  loginRoute: '/oauth/token',
   webhookRepository: new WebhookFileRepository(
     path.join(__dirname, 'webhooks'),
   ),
@@ -52,17 +53,3 @@ const settings = {
   PORT: 5683,
   HOST: "localhost",
 };
-
-const testSettings = {
-  ...settings,
-  coreKeysDir: path.join(__dirname, '../test/__test_data__/core_keys'),
-  usersRepository: new UsersFileRepository(
-    path.join(__dirname, '../test/__test_data__/users'),
-  ),
-  webhookRepository: new WebhookFileRepository(
-    path.join(__dirname, '../test/__test_data__/webhooks'),
-  ),
-};
-
-export default process.env.NODE_ENV === 'test' ? testSettings : settings;
-

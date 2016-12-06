@@ -7,11 +7,11 @@ import type {
   Middleware,
   NextFunction,
 } from 'express';
+import type { Settings } from '../types';
 import type Controller from './controllers/Controller';
 
 import OAuthModel from './OAuthModel';
 import OAuthServer from 'express-oauth-server';
-import settings from '../settings';
 
 // TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
@@ -34,9 +34,11 @@ const injectUserMiddleware = (): Middleware =>
   };
 
 
-export default (app: $Application, controllers: Array<Controller>) => {
-  // TODO figure out, may be I need to add oauth to app.oauth or app.locals.oauth
-  // to be able to inject user object in request.
+export default (
+  app: $Application,
+  controllers: Array<Controller>,
+  settings: Settings,
+) => {
   const oauth = new OAuthServer({
     accessTokenLifetime: settings.accessTokenLifetime,
     allowBearerTokensInQueryString: true,
