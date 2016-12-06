@@ -29,7 +29,7 @@ test.serial('should return a new user object', async t => {
   t.truthy(user.id && user.passwordHash && user.salt && user.created_at);
 });
 
-test.serial('should throw an error if username is already exist', async t => {
+test.serial('should throw an error if username already in use', async t => {
   const response = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
