@@ -29,7 +29,6 @@ import type {
 import bodyParser from 'body-parser';
 import express from 'express';
 import morgan from 'morgan';
-import path from 'path';
 import { DeviceServer } from 'spark-protocol';
 import settings from './settings';
 
@@ -65,7 +64,7 @@ process.on('uncaughtException', (exception: Error) => {
   logger.error(`Caught exception: ${exception.toString()} ${exception.stack}`);
 });
 
-const app = express();
+export const app = express();
 
 const setCORSHeaders: Middleware = (
   request: $Request,
@@ -86,7 +85,10 @@ const setCORSHeaders: Middleware = (
   return next();
 };
 
-app.use(morgan('combined'));
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('combined'));
+}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(setCORSHeaders);

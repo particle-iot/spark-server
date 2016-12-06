@@ -20,9 +20,19 @@ class UsersController extends Controller {
   @route('/v1/users')
   @anonymous()
   async createUser(userCredentials: UserCredentials) {
-    // todo add checking for existing usernames.
-    const newUser = await this._usersRepository.create(userCredentials);
-    return this.ok(newUser);
+    try {
+      const isUserNameInUse =
+        this._usersRepository.isUserNameInUse(userCredentials.username);
+
+      if (isUserNameInUse) {
+        throw new Error('user with the username is already exist');
+      }
+
+      const newUser = await this._usersRepository.create(userCredentials);
+      return this.ok(newUser);
+    } catch (error) {
+      return this.bad(error.message);
+    }
   }
 
   @httpVerb('delete')

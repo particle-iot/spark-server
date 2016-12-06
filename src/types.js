@@ -35,7 +35,7 @@ export type GrantType =
   'refresh_token';
 
 export type TokenObject = {
-  accessToken: string
+  accessToken: string,
   accessTokenExpiresAt: Date,
   refreshToken: string,
   refreshTokenExpiresAt: Date,
