@@ -21,10 +21,10 @@ class UsersController extends Controller {
   @anonymous()
   async createUser(userCredentials: UserCredentials) {
     try {
-      const isUserNameExist = this._usersRepository.getAll()
-        .some((user: User): boolean => user.username === userCredentials.username);
+      const isUserNameInUse =
+        this._usersRepository.isUserNameInUse(userCredentials.username);
 
-      if (isUserNameExist) {
+      if (isUserNameInUse) {
         throw new Error('user with the username is already exist');
       }
 

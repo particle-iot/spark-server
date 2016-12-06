@@ -86,6 +86,11 @@ class UsersFileRepository {
     this._fileManager.deleteFile(`${id}.json`);
   }
 
+  isUserNameInUse = (username: string): boolean =>
+    this.getAll().some((user: User): boolean =>
+      user.username === username,
+    );
+
   saveAccessToken(userId: string, tokenObject: TokenObject) {
     const user = this.getById(userId);
     const userToSave = {
