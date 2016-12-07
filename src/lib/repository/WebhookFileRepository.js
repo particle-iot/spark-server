@@ -34,10 +34,6 @@ class WebhookFileRepository {
   getById = (id: string): Webhook =>
     this._fileManager.getFile(`${id}.json`);
 
-  isEventInUse = (event: string): boolean =>
-    this.getAll().some((webhook: Webhook): boolean =>
-      webhook.event === event,
-    );
 }
 
 export default WebhookFileRepository;

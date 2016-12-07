@@ -13,6 +13,8 @@ export type Webhook = {
   url: string,
 };
 
+export type WebhookRequestType = 'DELETE' | 'GET' |  'POST' | 'PUT';
+
 
 export type Client = {
   clientId: string,

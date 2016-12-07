@@ -1,12 +1,15 @@
 // @flow
 
-import type { Repository, Webhook } from '../../types';
+import type { Repository, Webhook, WebhookRequestType } from '../../types';
 
 import settings from '../../settings';
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
+const REQUEST_TYPES: Array<WebhookRequestType> = [
+  'DELETE', 'GET', 'POST', 'PUT',
+];
 
 const validateWebhookModel = (webhook: Webhook): ?Error => {
   if (!webhook.event) {
@@ -14,6 +17,12 @@ const validateWebhookModel = (webhook: Webhook): ?Error => {
   }
   if (!webhook.url) {
     return new Error('no url provided');
+  }
+  if (!webhook.requestType) {
+    return new Error('no requestType provided');
+  }
+  if (!REQUEST_TYPES.includes(webhook.requestType)) {
+    return new Error('wrong requestType');
   }
 
   return null;
@@ -47,13 +56,6 @@ class WebhookController extends Controller {
       const validateError = validateWebhookModel(model);
       if (validateError) {
         throw validateError;
-      }
-
-      const isEventInUse =
-        this._webhookRepository.isEventInUse(model.event);
-
-      if (isEventInUse) {
-        throw new Error(`event ${model.event} is in use`);
       }
 
       const newWebhook = this._webhookRepository.create(model);

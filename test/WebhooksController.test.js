@@ -16,6 +16,7 @@ const USER_CREDENTIALS = {
 
 const WEBHOOK_MODEL = {
   event: 'testEvent',
+  requestType: 'GET',
   url: 'http://webhooktest.com/',
 };
 
@@ -50,6 +51,7 @@ test.serial('should create a new webhook object', async t => {
     .query({ access_token: userToken })
     .send({
       event: WEBHOOK_MODEL.event,
+      requestType: WEBHOOK_MODEL.requestType,
       url: WEBHOOK_MODEL.url,
     });
 
@@ -64,6 +66,7 @@ test('should throw an error if event isn\'t provided', async t => {
     .post('/v1/webhooks')
     .query({ access_token: userToken })
     .send({
+      requestType: WEBHOOK_MODEL.requestType,
       url: WEBHOOK_MODEL.url,
     });
 
@@ -77,13 +80,14 @@ test('should throw an error if url isn\'t provided', async t => {
     .query({ access_token: userToken })
     .send({
       event: WEBHOOK_MODEL.event,
+      requestType: WEBHOOK_MODEL.requestType,
     });
 
   t.is(response.status, 400);
   t.is(response.body.message, 'no url provided');
 });
 
-test.serial('should throw an error if event is in use', async t => {
+test('should throw an error if requestType isn\'t provided', async t => {
   const response = await request(app)
     .post('/v1/webhooks')
     .query({ access_token: userToken })
@@ -93,7 +97,21 @@ test.serial('should throw an error if event is in use', async t => {
     });
 
   t.is(response.status, 400);
-  t.is(response.body.message, `event ${WEBHOOK_MODEL.event} is in use`);
+  t.is(response.body.message, 'no requestType provided');
+});
+
+test('should throw an error if requestType is wrong', async t => {
+  const response = await request(app)
+    .post('/v1/webhooks')
+    .query({ access_token: userToken })
+    .send({
+      event: WEBHOOK_MODEL.event,
+      requestType: 'some random value',
+      url: WEBHOOK_MODEL.url,
+    });
+
+  t.is(response.status, 400);
+  t.is(response.body.message, 'wrong requestType');
 });
 
 test.serial('should return all webhooks', async t => {
