@@ -7,6 +7,18 @@ import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
+
+const validateWebhookModel = (webhook: Webhook): ?Error => {
+  if (!webhook.event) {
+    return new Error('no event name provided');
+  }
+  if (!webhook.url) {
+    return new Error('no url provided');
+  }
+
+  return null;
+};
+
 class WebhookController extends Controller {
   _webhookRepository: Repository<Webhook>;
 
@@ -31,15 +43,30 @@ class WebhookController extends Controller {
   @httpVerb('post')
   @route('/v1/webhooks')
   post(model: Webhook) {
-    const newWebhook = this._webhookRepository.create(model);
-    return this.ok({
-      created_at: newWebhook.created_at,
-      event: newWebhook.event,
-      hookUrl: settings.baseUrl + '/v1/webhooks/' + newWebhook.id,
-      id: newWebhook.id,
-      ok: true,
-      url: newWebhook.url,
-    });
+    try {
+      const validateError = validateWebhookModel(model);
+      if (validateError) {
+        throw validateError;
+      }
+
+      const isEventInUse =
+        this._webhookRepository.isEventInUse(model.event);
+
+      if (isEventInUse) {
+        throw new Error(`event ${model.event} is in use`);
+      }
+
+      const newWebhook = this._webhookRepository.create(model);
+      return this.ok({
+        created_at: newWebhook.created_at,
+        event: newWebhook.event,
+        id: newWebhook.id,
+        ok: true,
+        url: newWebhook.url,
+      });
+    } catch (error) {
+      return this.bad(error.message);
+    }
   }
 
   @httpVerb('delete')
