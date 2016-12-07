@@ -62,3 +62,25 @@ export type Repository<TModel> = {
   getById: (id: string) => TModel,
   update: (id: string, model: TModel) => TModel,
 };
+
+export type Settings = {
+  accessTokenLifetime: number,
+  baseUrl: string,
+  coreFlashTimeout: number,
+  coreKeysDir: string,
+  coreRequestTimeout: number,
+  coreSignalTimeout: number,
+  cryptoSalt: string,
+  HOST: string,
+  isCoreOnlineTimeout: number,
+  loginRoute: string,
+  logRequests: boolean,
+  maxHooksPerDevice: number,
+  maxHooksPerUser: number,
+  PORT: number,
+  serverKeyFile: string,
+  serverKeyPassEnvVar: ?string,
+  serverKeyPassFile: ?string,
+  usersRepository: Repository<*>,
+  webhookRepository: Repository<*>,
+};
