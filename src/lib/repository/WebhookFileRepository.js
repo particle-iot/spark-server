@@ -33,6 +33,7 @@ class WebhookFileRepository {
 
   getById = (id: string): Webhook =>
     this._fileManager.getFile(`${id}.json`);
+
 }
 
 export default WebhookFileRepository;
