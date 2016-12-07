@@ -1,6 +1,6 @@
 // @flow
 
-import makeApp from '../src/app';
+import createApp from '../src/app';
 import settings from './settings';
 
-export default makeApp(settings);
+export default createApp(settings);

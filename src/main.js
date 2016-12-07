@@ -7,7 +7,7 @@ import {
 } from 'spark-protocol';
 import utilities from './lib/utilities';
 import logger from './lib/logger';
-import makeApp from './app';
+import createApp from './app';
 import settings from './settings';
 
 const NODE_PORT = process.env.NODE_PORT || 8080;
@@ -26,7 +26,7 @@ process.on('uncaughtException', (exception: Error) => {
   logger.error(`Caught exception: ${exception.toString()} ${exception.stack}`);
 });
 
-const app = makeApp(settings);
+const app = createApp(settings);
 
 const deviceServer = new DeviceServer({
   coreKeysDir: settings.coreKeysDir,
