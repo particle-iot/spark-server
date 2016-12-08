@@ -1,20 +1,30 @@
-export type Webhook = {
-  deviceID: string,
-  event: string,
-  errorResponseTopic: string,
+// @flow
+
+export type Webhook = WebhookMutator & {
+  created_at: Date,
   id: string,
-  json: {[key: string]: Object},
-  mydevices: boolean,
-  productIdOrSlug: ?string,
-  rejectUnauthorized: boolean,
-  requestType: string,
-  responseTemplate: ?string,
-  responseTopic: string,
+};
+
+export type WebhookMutator = {
+  auth?: { Authorization: string },
+  deviceID?: string,
+  errorResponseTopic?: string,
+  event: string,
+  form?: { [key: string]: Object },
+  headers?: { [key: string]: string },
+  json?: { [key: string]: Object },
+  mydevices?: boolean,
+  noDefaults?: boolean,
+  productIdOrSlug?: string,
+  query?: { [key: string]: Object },
+  rejectUnauthorized?: boolean,
+  requestType: RequestType,
+  responseTemplate?: string,
+  responseTopic?: string,
   url: string,
 };
 
-export type WebhookRequestType = 'DELETE' | 'GET' |  'POST' | 'PUT';
-
+export type RequestType = 'DELETE' | 'GET' | 'POST' | 'PUT';
 
 export type Client = {
   clientId: string,
@@ -49,6 +59,7 @@ export type User = {
   created_at: Date,
   id: string,
   passwordHash: string,
+  salt: string,
   username: string,
 };
 
@@ -57,12 +68,21 @@ export type UserCredentials = {
   password: string,
 };
 
-export type Repository<TModel> = {
-  create: (id: string, model: TModel) => TModel,
-  delete: (id: string) => void,
+export type Repository<TModel, TMutator> = {
+  create: (model: TMutator) => TModel,
+  deleteById: (id: string) => void,
   getAll: () => Array<TModel>,
   getById: (id: string) => TModel,
   update: (id: string, model: TModel) => TModel,
+};
+
+export type UsersRepository = Repository<User, UserCredentials> & {
+  deleteAccessToken: (user: User, accessToken: string) => void,
+  getByAccessToken: (accessToken: string) => User,
+  getByUsername: (username: string) => ?User,
+  isUserNameInUse: (username: string) => boolean,
+  saveAccessToken: (accessToken: string) => void,
+  validateLogin: (username: string, password: string) => User,
 };
 
 export type Settings = {
@@ -83,6 +103,6 @@ export type Settings = {
   serverKeyFile: string,
   serverKeyPassEnvVar: ?string,
   serverKeyPassFile: ?string,
-  usersRepository: Repository<*>,
-  webhookRepository: Repository<*>,
+  usersRepository: Repository<*, *>,
+  webhookRepository: Repository<*, *>,
 };

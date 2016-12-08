@@ -1,6 +1,6 @@
 // @flow
 
-import type { TokenObject } from '../src/types';
+import type {  TokenObject, UserCredentials } from '../src/types';
 
 import test from 'ava';
 import request from 'supertest-as-promised';
@@ -8,7 +8,7 @@ import ouathClients from '../src/oauthClients.json';
 import app from './testApp';
 import settings from './settings';
 
-const USER_CREDENTIALS = {
+const USER_CREDENTIALS: UserCredentials = {
   password: 'password',
   username: 'newUser@test.com',
 };
@@ -67,7 +67,7 @@ test.serial('should return all access tokens for the user', async t => {
 });
 
 
-test.serial('should delete access token for the user', async t => {
+test.serial('should deleteById access token for the user', async t => {
   const deleteResponse = await request(app)
     .delete(`/v1/access_tokens/${userToken}`)
     .auth(USER_CREDENTIALS.username, USER_CREDENTIALS.password);

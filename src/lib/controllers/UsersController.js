@@ -1,6 +1,9 @@
 // @flow
 
-import type { Repository, User, UserCredentials } from '../../types';
+import type {
+  UserCredentials,
+  UsersRepository,
+} from '../../types';
 
 import basicAuthParser from 'basic-auth-parser';
 import Controller from './Controller';
@@ -9,9 +12,9 @@ import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
 class UsersController extends Controller {
-  _usersRepository: Repository<User>;
+  _usersRepository: UsersRepository;
 
-  constructor(usersRepository: Repository<User>) {
+  constructor(usersRepository: UsersRepository) {
     super();
     this._usersRepository = usersRepository;
   }
@@ -19,7 +22,7 @@ class UsersController extends Controller {
   @httpVerb('post')
   @route('/v1/users')
   @anonymous()
-  async createUser(userCredentials: UserCredentials) {
+  async createUser(userCredentials: UserCredentials): Promise<*> {
     try {
       const isUserNameInUse =
         this._usersRepository.isUserNameInUse(userCredentials.username);
@@ -38,7 +41,7 @@ class UsersController extends Controller {
   @httpVerb('delete')
   @route('/v1/access_tokens/:token')
   @anonymous()
-  async deleteAccessToken(token: string) {
+  async deleteAccessToken(token: string): Promise<*> {
     try {
       const { username, password } = basicAuthParser(this.request.get('authorization'));
       const user = await this._usersRepository.validateLogin(username, password);
@@ -54,7 +57,7 @@ class UsersController extends Controller {
   @httpVerb('get')
   @route('/v1/access_tokens')
   @anonymous()
-  async getAccessTokens() {
+  async getAccessTokens(): Promise<*> {
     try {
       const { username, password } = basicAuthParser(this.request.get('authorization'));
       const user = await this._usersRepository.validateLogin(username, password);
