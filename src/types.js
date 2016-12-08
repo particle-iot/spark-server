@@ -1,27 +1,17 @@
 // @flow
 
-export type Webhook = {
-  deviceID: string,
-  event: string,
-  errorResponseTopic: string,
+export type Webhook = WebhookMutator & {
+  created_at: Date,
   id: string,
-  json: {[key: string]: Object},
-  mydevices: boolean,
-  productIdOrSlug: ?string,
-  rejectUnauthorized: boolean,
-  requestType: RequestType,
-  responseTemplate: ?string,
-  responseTopic: string,
-  url: string,
 };
 
 export type WebhookMutator = {
   auth?: { Authorization: string },
-  deviceID?: boolean,
+  deviceID?: string,
   errorResponseTopic?: string,
   event: string,
   form?: { [key: string]: Object },
-  headers?:{ [key: string]: string },
+  headers?: { [key: string]: string },
   json?: { [key: string]: Object },
   mydevices?: boolean,
   noDefaults?: boolean,
@@ -69,6 +59,7 @@ export type User = {
   created_at: Date,
   id: string,
   passwordHash: string,
+  salt: string,
   username: string,
 };
 
@@ -77,16 +68,16 @@ export type UserCredentials = {
   password: string,
 };
 
-export type Repository<TModel> = {
-  create: (id: string, model: TModel) => TModel,
+export type Repository<TModel, TMutator> = {
+  create: (model: TMutator) => TModel,
   deleteById: (id: string) => void,
   getAll: () => Array<TModel>,
   getById: (id: string) => TModel,
   update: (id: string, model: TModel) => TModel,
 };
 
-export type UsersRepository = Repository<User> & {
-  deleteAccessToken: (accessToken: string) => void,
+export type UsersRepository = Repository<User, UserCredentials> & {
+  deleteAccessToken: (user: User, accessToken: string) => void,
   getByAccessToken: (accessToken: string) => User,
   getByUsername: (username: string) => ?User,
   isUserNameInUse: (username: string) => boolean,
@@ -112,6 +103,6 @@ export type Settings = {
   serverKeyFile: string,
   serverKeyPassEnvVar: ?string,
   serverKeyPassFile: ?string,
-  usersRepository: Repository<*>,
-  webhookRepository: Repository<*>,
+  usersRepository: Repository<*, *>,
+  webhookRepository: Repository<*, *>,
 };

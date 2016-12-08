@@ -1,13 +1,14 @@
 // @flow
 
-// todo annotate better
+import type { HttpResult } from './types';
+
 export default class Controller {
-  bad = (message: string): Object => ({
+  bad = (message: string): HttpResult<*> => ({
     data: { message },
     status: 400,
   });
 
-  ok = (output?: Object): Object => ({
+  ok = <TType>(output?: TType): HttpResult<TType> => ({
     data: output,
     status: 200,
   });

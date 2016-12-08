@@ -135,7 +135,7 @@ test.serial('should return webhook object by id', async t => {
   t.is(testWebhook.url, response.body.url);
 });
 
-test.serial('should deleteById webhook', async t => {
+test.serial('should delete webhook', async t => {
   const deleteResponse = await request(app)
     .delete(`/v1/webhooks/${testWebhook.id}`)
     .query({ access_token: userToken });

@@ -15,17 +15,17 @@ const REQUEST_TYPES: Array<RequestType> = [
   'DELETE', 'GET', 'POST', 'PUT',
 ];
 
-const validateWebhookModel = (webhook: Webhook): ?Error => {
-  if (!webhook.event) {
+const validateWebhookMutator = (webhookMutator: WebhookMutator): ?Error => {
+  if (!webhookMutator.event) {
     return new Error('no event name provided');
   }
-  if (!webhook.url) {
+  if (!webhookMutator.url) {
     return new Error('no url provided');
   }
-  if (!webhook.requestType) {
+  if (!webhookMutator.requestType) {
     return new Error('no requestType provided');
   }
-  if (!REQUEST_TYPES.includes(webhook.requestType)) {
+  if (!REQUEST_TYPES.includes(webhookMutator.requestType)) {
     return new Error('wrong requestType');
   }
 
@@ -33,9 +33,9 @@ const validateWebhookModel = (webhook: Webhook): ?Error => {
 };
 
 class WebhookController extends Controller {
-  _webhookRepository: Repository<Webhook>;
+  _webhookRepository: Repository<Webhook, WebhookMutator>;
 
-  constructor(webhookRepository: Repository<Webhook>) {
+  constructor(webhookRepository: Repository<Webhook, WebhookMutator>) {
     super();
 
     this._webhookRepository = webhookRepository;
@@ -43,21 +43,21 @@ class WebhookController extends Controller {
 
   @httpVerb('get')
   @route('/v1/webhooks')
-  getAll(): Object {
+  async getAll(): Promise<*> {
     return this.ok(this._webhookRepository.getAll());
   }
 
   @httpVerb('get')
   @route('/v1/webhooks/:webhookId')
-  getById(webhookId: string): Object {
+  async getById(webhookId: string): Promise<*> {
     return this.ok(this._webhookRepository.getById(webhookId));
   }
 
   @httpVerb('post')
   @route('/v1/webhooks')
-  create(model: WebhookMutator): Object {
+  async create(model: WebhookMutator): Promise<*> {
     try {
-      const validateError = validateWebhookModel(model);
+      const validateError = validateWebhookMutator(model);
       if (validateError) {
         throw validateError;
       }
@@ -77,7 +77,7 @@ class WebhookController extends Controller {
 
   @httpVerb('delete')
   @route('/v1/webhooks/:webhookId')
-  deleteById(webhookId: string): Object {
+  async deleteById(webhookId: string): Promise<*> {
     this._webhookRepository.deleteById(webhookId);
     return this.ok();
   }

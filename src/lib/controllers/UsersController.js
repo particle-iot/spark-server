@@ -22,7 +22,7 @@ class UsersController extends Controller {
   @httpVerb('post')
   @route('/v1/users')
   @anonymous()
-  async createUser(userCredentials: UserCredentials): Promise<Object> {
+  async createUser(userCredentials: UserCredentials): Promise<*> {
     try {
       const isUserNameInUse =
         this._usersRepository.isUserNameInUse(userCredentials.username);
@@ -41,7 +41,7 @@ class UsersController extends Controller {
   @httpVerb('delete')
   @route('/v1/access_tokens/:token')
   @anonymous()
-  async deleteAccessToken(token: string): Promise<Object> {
+  async deleteAccessToken(token: string): Promise<*> {
     try {
       const { username, password } = basicAuthParser(this.request.get('authorization'));
       const user = await this._usersRepository.validateLogin(username, password);
@@ -57,7 +57,7 @@ class UsersController extends Controller {
   @httpVerb('get')
   @route('/v1/access_tokens')
   @anonymous()
-  async getAccessTokens(): Promise<Object> {
+  async getAccessTokens(): Promise<*> {
     try {
       const { username, password } = basicAuthParser(this.request.get('authorization'));
       const user = await this._usersRepository.validateLogin(username, password);

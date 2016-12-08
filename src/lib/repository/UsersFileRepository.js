@@ -41,7 +41,7 @@ class UsersFileRepository {
   getByUsername = (username: string): ?User =>
     this.getAll().find((user: User): boolean => user.username === username);
 
-  async validateLogin(username: string, password: string): User {
+  async validateLogin(username: string, password: string): Promise<User> {
     try {
       const user = this.getByUsername(username);
       if (!user) {
@@ -60,7 +60,7 @@ class UsersFileRepository {
   }
 
   getByAccessToken = (accessToken: string): ?User =>
-    this.getAll().find((user: User): User =>
+    this.getAll().find((user: User): boolean =>
       user.accessTokens.some((tokenObject: TokenObject): boolean =>
         tokenObject.accessToken === accessToken,
       ),
