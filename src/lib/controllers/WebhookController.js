@@ -1,13 +1,17 @@
 // @flow
 
-import type { Repository, Webhook, WebhookRequestType } from '../../types';
+import type {
+  Repository,
+  RequestType,
+  Webhook,
+  WebhookMutator,
+} from '../../types';
 
-import settings from '../../settings';
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
-const REQUEST_TYPES: Array<WebhookRequestType> = [
+const REQUEST_TYPES: Array<RequestType> = [
   'DELETE', 'GET', 'POST', 'PUT',
 ];
 
@@ -39,19 +43,19 @@ class WebhookController extends Controller {
 
   @httpVerb('get')
   @route('/v1/webhooks')
-  get() {
+  getAll(): Object {
     return this.ok(this._webhookRepository.getAll());
   }
 
   @httpVerb('get')
   @route('/v1/webhooks/:webhookId')
-  getByWebhookId(webhookId: string) {
+  getById(webhookId: string): Object {
     return this.ok(this._webhookRepository.getById(webhookId));
   }
 
   @httpVerb('post')
   @route('/v1/webhooks')
-  post(model: Webhook) {
+  create(model: WebhookMutator): Object {
     try {
       const validateError = validateWebhookModel(model);
       if (validateError) {
@@ -73,8 +77,8 @@ class WebhookController extends Controller {
 
   @httpVerb('delete')
   @route('/v1/webhooks/:webhookId')
-  delete(webhookId: string) {
-    this._webhookRepository.delete(webhookId);
+  deleteById(webhookId: string): Object {
+    this._webhookRepository.deleteById(webhookId);
     return this.ok();
   }
 }

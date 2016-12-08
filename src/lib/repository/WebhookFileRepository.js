@@ -25,7 +25,7 @@ class WebhookFileRepository {
     return modelToSave;
   };
 
-  delete = (id: string): void =>
+  deleteById = (id: string): void =>
     this._fileManager.deleteFile(`${id}.json`);
 
   getAll = (): Array<Webhook> =>

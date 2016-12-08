@@ -1,24 +1,30 @@
 // @flow
 
-import type { Client, Repository, User } from '../types';
+import type {
+  Client,
+  TokenObject,
+  User,
+  UsersRepository,
+} from '../types';
 
 import ouathClients from '../oauthClients.json';
 
 class OauthModel {
-  _usersRepository: Repository<User>;
+  _usersRepository: UsersRepository;
 
-  constructor(usersRepository: Repository<User>) {
+  constructor(usersRepository: UsersRepository) {
     this._usersRepository = usersRepository;
   }
 
-  getAccessToken = (bearerToken: string) => {
+  getAccessToken = (bearerToken: string): ?Object => {
     const user = this._usersRepository.getByAccessToken(bearerToken);
     if (!user) {
-      return false;
+      return null;
     }
 
-    const userTokenObject = user.accessTokens.find((tokenObject) =>
-      tokenObject.accessToken === bearerToken,
+    const userTokenObject = user.accessTokens.find(
+      (tokenObject: TokenObject): boolean =>
+        tokenObject.accessToken === bearerToken,
     );
 
     return {
@@ -32,11 +38,11 @@ class OauthModel {
       client.clientId === clientId && client.clientSecret === clientSecret,
     );
 
-  getUser = async (username: string, password: string): User => {
-    return await this._usersRepository.validateLogin(username, password);
-  };
+  getUser = async (username: string, password: string): Promise<User> =>
+    await this._usersRepository.validateLogin(username, password);
 
-  saveToken = (tokenObject, client, user) => {
+
+  saveToken = (tokenObject: TokenObject, client: Client, user: User): Object => {
     this._usersRepository.saveAccessToken(user.id, tokenObject);
     return {
       accessToken: tokenObject.accessToken,

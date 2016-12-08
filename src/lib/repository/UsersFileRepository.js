@@ -5,7 +5,6 @@ import type { TokenObject, User, UserCredentials } from '../../types';
 import { FileManager, uuid } from 'spark-protocol';
 import PasswordHasher from '../PasswordHasher';
 
-// todo change class methods style to arrow functions.
 class UsersFileRepository {
   _fileManager: FileManager;
 
@@ -13,7 +12,7 @@ class UsersFileRepository {
     this._fileManager = new FileManager(path);
   }
 
-  create = async (userCredentials: UserCredentials): User => {
+  create = async (userCredentials: UserCredentials): Promise<User> => {
     const { username, password } = userCredentials;
 
     const salt = await PasswordHasher.generateSalt();
@@ -33,19 +32,16 @@ class UsersFileRepository {
     return modelToSave;
   };
 
-  getAll(): Array<User> {
-    return this._fileManager.getAllData();
-  }
+  getAll = (): Array<User> =>
+    this._fileManager.getAllData();
 
-  getById(id: string): User {
-    return this._fileManager.getFile(id + '.json');
-  }
+  getById = (id: string): User =>
+    this._fileManager.getFile(`${id}.json`);
 
-  getByUsername(username: string) {
-    return this.getAll().find((user: User) => user.username === username);
-  }
+  getByUsername = (username: string): ?User =>
+    this.getAll().find((user: User): boolean => user.username === username);
 
-  async validateLogin(username: string, password: string) {
+  async validateLogin(username: string, password: string): User {
     try {
       const user = this.getByUsername(username);
       if (!user) {
@@ -70,7 +66,7 @@ class UsersFileRepository {
       ),
     );
 
-  deleteAccessToken(user: User, token: string) {
+  deleteAccessToken = (user: User, token: string) => {
     const userToSave = {
       ...user,
       accessTokens: user.accessTokens.filter(
@@ -80,18 +76,18 @@ class UsersFileRepository {
     };
 
     this._fileManager.writeFile(`${user.id}.json`, userToSave);
-  }
+  };
 
-  deleteById(id: string) {
+  deleteById = (id: string): void =>
     this._fileManager.deleteFile(`${id}.json`);
-  }
+
 
   isUserNameInUse = (username: string): boolean =>
     this.getAll().some((user: User): boolean =>
       user.username === username,
     );
 
-  saveAccessToken(userId: string, tokenObject: TokenObject) {
+  saveAccessToken = (userId: string, tokenObject: TokenObject) => {
     const user = this.getById(userId);
     const userToSave = {
       ...user,

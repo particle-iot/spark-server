@@ -1,7 +1,6 @@
 // @flow
 
-import type { Webhook } from '../src/types';
-
+import type { Webhook, WebhookMutator } from '../src/types';
 
 import test from 'ava';
 import request from 'supertest-as-promised';
@@ -14,7 +13,7 @@ const USER_CREDENTIALS = {
   username: 'webhookTestUser@test.com',
 };
 
-const WEBHOOK_MODEL = {
+const WEBHOOK_MODEL: WebhookMutator = {
   event: 'testEvent',
   requestType: 'GET',
   url: 'http://webhooktest.com/',
@@ -24,7 +23,7 @@ let testUser;
 let userToken;
 let testWebhook;
 
-test.before(async() => {
+test.before(async () => {
   const userResponse = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
@@ -136,7 +135,7 @@ test.serial('should return webhook object by id', async t => {
   t.is(testWebhook.url, response.body.url);
 });
 
-test.serial('should delete webhook', async t => {
+test.serial('should deleteById webhook', async t => {
   const deleteResponse = await request(app)
     .delete(`/v1/webhooks/${testWebhook.id}`)
     .query({ access_token: userToken });
@@ -157,6 +156,6 @@ test.serial('should delete webhook', async t => {
 });
 
 test.after.always(() => {
-  settings.webhookRepository.delete(testWebhook.id);
+  settings.webhookRepository.deleteById(testWebhook.id);
   settings.usersRepository.deleteById(testUser.id);
 });
