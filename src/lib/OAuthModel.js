@@ -27,6 +27,10 @@ class OauthModel {
         tokenObject.accessToken === bearerToken,
     );
 
+    if (!userTokenObject) {
+      return null;
+    }
+
     return {
       accessToken: userTokenObject.accessToken,
       user,
@@ -34,7 +38,7 @@ class OauthModel {
   };
 
   getClient = (clientId: string, clientSecret: string): Client =>
-    ouathClients.find((client: Client): Client =>
+    ouathClients.find((client: Client): boolean =>
       client.clientId === clientId && client.clientSecret === clientSecret,
     );
 
@@ -52,7 +56,7 @@ class OauthModel {
   };
 
   // todo figure out this function
-  validateScope = (user: User, scope) => scope;
+  validateScope = (user: User, client: Client, scope: string): string => scope;
 }
 
 export default OauthModel;
