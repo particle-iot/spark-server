@@ -56,7 +56,7 @@ class OauthModel {
   };
 
   // todo figure out this function
-  validateScope = (user: User, client: Client, scope: string): string => scope;
+  validateScope = (user: User, client: Client, scope: string): string => true;
 }
 
 export default OauthModel;
