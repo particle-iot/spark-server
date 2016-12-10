@@ -163,6 +163,7 @@ declare class express$Application extends express$Router mixins events$EventEmit
    */
   //   get(name: string): mixed;
   set(name: string, value: mixed): mixed;
+  param(name: string, (req: express$Request, res: express$Response) => void): mixed;
   render(name: string, optionsOrFunction: {[name: string]: mixed}, callback: express$RenderCallback): void;
 }
 

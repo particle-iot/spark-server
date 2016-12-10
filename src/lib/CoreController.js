@@ -81,7 +81,7 @@ CoreController.prototype = {
 
 		process.nextTick(function () {
 			try {
-				//console.log("sending message with socketID" + that.socketID);
+				console.log("sending message with socketID" + that.socketID, msg);
 				core.onApiMessage(that.socketID, msg);
 			}
 			catch (ex) {

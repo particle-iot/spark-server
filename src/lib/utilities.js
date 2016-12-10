@@ -24,26 +24,6 @@ var fs = require('fs');
 
 var that;
 module.exports = that = {
-
-	/**
-	 * ensures the function in the provided scope
-	 * @param fn
-	 * @param scope
-	 * @returns {Function}
-	 */
-	proxy: function (fn, scope) {
-		return function () {
-			try {
-				return fn.apply(scope, arguments);
-			}
-			catch (ex) {
-				logger.error(ex);
-				logger.error(ex.stack);
-				logger.log('error bubbled up ' + ex);
-			}
-		}
-	},
-
 	/**
 	 * Surely there is a better way to do this.
 	 * NOTE! This function does NOT short-circuit when an in-equality is detected.  This is
