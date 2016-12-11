@@ -6,6 +6,7 @@ import settings from '../../settings';
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
+import deviceToAPI from '../deviceToAPI';
 
 class ProvisioningController extends Controller {
   _deviceRepository: DeviceRepository;
@@ -23,13 +24,13 @@ class ProvisioningController extends Controller {
     postBody: {publicKey: string},
   ) {
     try {
-      const devices = await this._deviceRepository.provision(
+      const device = await this._deviceRepository.provision(
         coreID,
         'UserIDGoesHere',
         postBody.publicKey,
       );
 
-      return this.ok([]);
+      return this.ok(deviceToAPI(device));
     } catch (exception) {
       // I wish we could return no devices found but meh :/
       return this.ok([]);

@@ -23,15 +23,20 @@ export default (app: $Application, controllers: Array<Controller>) => {
           .map((argument: string): any => request.params[argument])
           .filter((value: ?any): boolean => value !== undefined);
 
+        // Take access token out if it's posted.
+        const {
+          access_token,
+          ...body,
+        } = request.body;
         const result = mappedFunction.call(
           controller,
           ...values,
-          request.body,
+          body,
         );
         if (result.then) {
           result.then(result => {
             response.status(result.status).json(result.data);
-          })
+          });
         } else {
           response.status(result.status).json(result.data);
         }

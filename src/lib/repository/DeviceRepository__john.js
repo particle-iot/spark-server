@@ -3,8 +3,11 @@
 import type { DeviceServer } from 'spark-protocol';
 import type { Device, DeviceAttributes, Repository } from '../../types';
 
+import Moniker from 'moniker';
 import ursa from 'ursa';
 import logger from '../logger';
+
+const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
 
 class DeviceRepository {
   _deviceAttributeRepository: Repository<DeviceAttributes>;
@@ -21,12 +24,33 @@ class DeviceRepository {
     this._deviceServer = deviceServer;
   }
 
+  async getByID(deviceID: string): Promise<Device> {
+    const attributes = await this._deviceAttributeRepository.getById(deviceID);
+    const core = this._deviceServer.getCore(attributes.coreID);
+    // TODO: Not sure if this should actually be the core ID that gets sent
+    // but that's what the old source code does :/
+    const response = core
+      ? await core.onApiMessage(
+        attributes.coreID,
+        { cmd: 'Ping' },
+      )
+      : {
+        connected: false,
+        lastPing: null,
+      };
+
+    return {
+      ...attributes,
+      connected: response.connected,
+      lastHeard: response.lastPing,
+    };
+  }
+
   async getAll(): Promise<Array<Device>> {
-    const deviceAttributes = await this._deviceAttributeRepository.getAll();
-
-    const devicePromises = deviceAttributes.map(async attributes => {
+    const devicesAttributes = await this._deviceAttributeRepository.getAll();
+    const devicePromises = devicesAttributes.map(async attributes => {
       const core = this._deviceServer.getCore(attributes.coreID);
-
+      console.log(attributes);
       // TODO: Not sure if this should actually be the core ID that gets sent
       // but that's what the old source code does :/
       const response = core
@@ -64,11 +88,11 @@ class DeviceRepository {
       { cmd:'CallFn', name: functionName, args: functionArguments },
     );
 
-    console.log();
-    console.log();
-    console.log(result);
-    console.log();
-    console.log();
+    if (result.error) {
+      throw result.error;
+    }
+
+    return result.result;
   }
 
   async provision(
@@ -76,7 +100,6 @@ class DeviceRepository {
     userID: string,
     publicKey: string,
   ): Promise<*> {
-
 		if (!deviceID) {
 			throw 'No deviceID provided';
 		}
@@ -91,12 +114,18 @@ class DeviceRepository {
 			throw 'Key error ' + exception;
 		}
     this._deviceKeyRepository.update(deviceID, publicKey);
+    const existingAttributes = this._deviceAttributeRepository.getById(
+      deviceID,
+    );
     const attributes = {
+      name: NAME_GENERATOR.choose(),
+      ...existingAttributes,
       registrar: userID,
       timestamp: new Date(),
     };
-    console.log(attributes);
     this._deviceAttributeRepository.update(deviceID, attributes);
+
+    return await this.getByID(deviceID);
   }
 }
 

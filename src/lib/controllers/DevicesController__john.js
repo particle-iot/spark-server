@@ -6,21 +6,7 @@ import settings from '../../settings';
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
-
-type APIType = {|
-  connected: boolean,
-  id: string,
-  last_app: ?string,
-  last_heard: ?Date,
-  name: string;
-|};
-const toAPI = (device: Device): APIType => ({
-  connected: device.connected,
-  id: device.coreID,
-  last_app: device.lastFlashedAppName,
-  last_heard: device.lastHeard,
-  name: device.name,
-});
+import deviceToAPI from '../deviceToAPI';
 
 class DevicesController extends Controller {
   _deviceRepository: DeviceRepository;
@@ -37,7 +23,7 @@ class DevicesController extends Controller {
     try {
       const devices = await this._deviceRepository.getAll();
 
-      return this.ok(devices.map(device => toAPI(device)));
+      return this.ok(devices.map(device => deviceToAPI(device)));
     } catch (exception) {
       // I wish we could return no devices found but meh :/
       return this.ok([]);
@@ -49,19 +35,26 @@ class DevicesController extends Controller {
   async callDeviceFunction(
     coreID: string,
     functionName: string,
-    postBody: {arg: string},
+    postBody: Object,
   ) {
     try {
-      const devices = await this._deviceRepository.callFunction(
+      const result = await this._deviceRepository.callFunction(
         coreID,
         functionName,
-        postBody.arg,
+        postBody,
       );
 
-      return this.ok([]);
+      const device = await this._deviceRepository.getByID(coreID);
+      return this.ok(deviceToAPI(device, result));
     } catch (exception) {
-      // I wish we could return no devices found but meh :/
-      return this.ok([]);
+      if (exception.indexOf('Unknown Function') >= 0) {
+        return this.bad(
+          'Function not found',
+          404,
+        );
+      }
+
+      return this.bad(exception);
     }
   }
 }

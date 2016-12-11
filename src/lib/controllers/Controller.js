@@ -1,8 +1,11 @@
 export default class Controller {
-  bad(message) {
+  bad(message, status: number = 400) {
     return {
-      data: {message},
-      status: 400,
+      data: {
+        error: message,
+        ok: false,
+      },
+      status: status,
     };
   }
 
