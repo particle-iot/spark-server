@@ -50,7 +50,7 @@ var Api = {
 
 
 		//core functions / variables
-		app.post('/v1/devices/:coreid/:func', Api.fn_call);
+		//app.post('/v1/devices/:coreid/:func', Api.fn_call);
 		app.get('/v1/devices/:coreid/:var', Api.get_var);
 
 		app.put('/v1/devices/:coreid', Api.set_core_attributes);
@@ -59,7 +59,7 @@ var Api = {
 		//doesn't need per-core permissions, only shows owned cores.
 		//app.get('/v1/devices', Api.list_devices);
 
-		app.post('/v1/provisioning/:coreid', Api.provision_core);
+		// app.post('/v1/provisioning/:coreid', Api.provision_core);
 
 		//app.delete('/v1/devices/:coreid', Api.release_device);
 		app.post('/v1/devices', Api.claim_device);

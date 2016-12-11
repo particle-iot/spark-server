@@ -33,11 +33,32 @@ class DevicesController extends Controller {
 
   @httpVerb('get')
   @route('/v1/devices')
-  async get() {
+  async getDevices() {
     try {
       const devices = await this._deviceRepository.getAll();
 
       return this.ok(devices.map(device => toAPI(device)));
+    } catch (exception) {
+      // I wish we could return no devices found but meh :/
+      return this.ok([]);
+    }
+  }
+
+  @httpVerb('post')
+  @route('/v1/devices/:coreID/:functionName')
+  async callDeviceFunction(
+    coreID: string,
+    functionName: string,
+    postBody: {arg: string},
+  ) {
+    try {
+      const devices = await this._deviceRepository.callFunction(
+        coreID,
+        functionName,
+        postBody.arg,
+      );
+
+      return this.ok([]);
     } catch (exception) {
       // I wish we could return no devices found but meh :/
       return this.ok([]);

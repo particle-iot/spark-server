@@ -2,13 +2,13 @@
 
 import type { Webhook } from '../../types';
 
-import { FileManager, uuid } from 'spark-protocol';
+import { JSONFileManager, uuid } from 'spark-protocol';
 
 class WebhookFileRepository {
-  _fileManager: FileManager;
+  _fileManager: JSONFileManager;
 
   constructor(path: string) {
-    this._fileManager = new FileManager(path);
+    this._fileManager = new JSONFileManager(path);
   }
 
   create = (model: Webhook): Webhook => {

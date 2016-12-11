@@ -3,18 +3,6 @@
 import type { $Application, $Request, $Response } from 'express';
 import type Controller from './controllers/Controller';
 
-const getFunctionArgumentNames = (func: Function): Array<string> => {
-  // First match everything inside the function argument parens.
-  const args =
-    (func.toString().match(/function\s.*?\(([^)]*)\)/) || [])[1] || '';
-
-  // Split the arguments string into an array comma delimited.
-  return args.split(',').map((argument: string): string =>
-    // Ensure no inline comments are parsed and trim the whitespace.
-    argument.replace(/\/\*.*\*\//, '').trim(),
-  ).filter((argument: string): boolean => !!argument);
-};
-
 export default (app: $Application, controllers: Array<Controller>) => {
   controllers.forEach((controller: Controller) => {
     Object.getOwnPropertyNames(
@@ -26,7 +14,9 @@ export default (app: $Application, controllers: Array<Controller>) => {
         return;
       }
 
-      const argumentNames = getFunctionArgumentNames(mappedFunction);
+      const argumentNames = (route.match(/:[\w]*/g) || []).map(
+        arumentName => arumentName.replace(':', ''),
+      );
 
       (app: any)[httpVerb](route, (request: $Request, response: $Response) => {
         const values = argumentNames

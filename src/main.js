@@ -48,11 +48,13 @@ import DeviceRepository from './lib/repository/DeviceRepository__john';
 
 // Routing
 import routeConfig from './lib/RouteConfig';
-import WebhookController from './lib/controllers/WebhookController';
 import DevicesController from './lib/controllers/DevicesController__john';
+import ProvisioningController from './lib/controllers/ProvisioningController';
+import WebhookController from './lib/controllers/WebhookController';
 
 import {
   DeviceAttributeFileRepository,
+  DeviceKeyFileRepository,
   ServerConfigFileRepository,
 } from 'spark-protocol';
 
@@ -150,11 +152,13 @@ const deviceServer = new DeviceServer({
 
 const deviceRepository = new DeviceRepository(
   deviceAttributeRepository,
+  new DeviceKeyFileRepository(settings.coreKeysDir),
   deviceServer,
 );
 
 routeConfig(app, [
   new DevicesController(deviceRepository),
+  new ProvisioningController(deviceRepository),
   new WebhookController(settings.webhookRepository),
 ]);
 
