@@ -13,7 +13,7 @@ export type Webhook = {
   url: string,
 };
 
-export type Device = {
+export type DeviceAttributes = {
   deviceId: string,
   ip: string,
   particleProductId: number,
@@ -22,10 +22,21 @@ export type Device = {
   timestamp: Date,
 };
 
+
+export type Device = DeviceAttributes & {
+  connected: boolean,
+  lastFlashedAppName: ?string,
+  lastHeard: ?Date,
+};
+
 export type Repository<TModel> = {
   create: (id: string, model: TModel) => TModel,
   delete: (id: string) => void,
   getAll: () => Array<TModel>,
   getById: (id: string) => TModel,
   update: (id: string, model: TModel) => TModel,
+};
+
+export type DeviceRepository = {
+  getAll(): Promise<Array<Device>>,
 };

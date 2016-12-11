@@ -9,7 +9,7 @@ class DeviceConnection {
     this._socketId = CONNECTION_COUNTER++;
   }
 
-  getDeviceById(coreId: string): Device {
+  async getStatus(deviceID: string): Object {
     
   }
 }

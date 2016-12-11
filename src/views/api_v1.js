@@ -14,12 +14,8 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 *    You can download the source here: https://github.com/spark/spark-server
-*
-* @flow
-*
 */
 
-import type { $Application, $Request, $Response } from 'express';
 var settings = require('../settings.js');
 
 var CoreController = require('../lib/CoreController.js');
@@ -30,7 +26,7 @@ var parallel = require('when/parallel');
 var pipeline = require('when/pipeline');
 
 var logger = require('../lib/logger.js');
-var utilities = require('../lib/utilities.js');
+var utilities = require("../lib/utilities.js");
 
 var fs = require('fs');
 var when = require('when');
@@ -47,9 +43,11 @@ var moment = require('moment');
  */
 
 var Api = {
-	loadViews: function (app: $Application) {
+	loadViews: function (app) {
 
-		app.param('coreid', Api.loadCore);
+		//our middleware
+		app.param("coreid", Api.loadCore);
+
 
 		//core functions / variables
 		app.post('/v1/devices/:coreid/:func', Api.fn_call);
@@ -59,7 +57,7 @@ var Api = {
 		app.get('/v1/devices/:coreid', Api.get_core_attributes);
 
 		//doesn't need per-core permissions, only shows owned cores.
-		app.get('/v1/devices', Api.list_devices);
+		//app.get('/v1/devices', Api.list_devices);
 
 		app.post('/v1/provisioning/:coreid', Api.provision_core);
 
@@ -68,23 +66,22 @@ var Api = {
 
 	},
 
-	getSocketID: function (userID: string) {
-		return userID + '_' + global._socket_counter++;
+	getSocketID: function (userID) {
+		return userID + "_" + global._socket_counter++;
 	},
 
-	_getUserID: function (req: $Request) {
-		const user = (req: any).user;
-		if (!user) {
-			logger.log('User obj was empty');
+	getUserID: function (req) {
+		if (!req.user) {
+			logger.log("User obj was empty");
 			return null;
 		}
 		//req.user.id is set in authorise.validateAccessToken in the OAUTH code
-		return user.id;
+		return req.user.id;
 	},
 
-	list_devices: function (req: $Request, res: $Response) {
-		var userid = Api._getUserID(req);
-		logger.log('ListDevices', { userID: userid });
+	list_devices: function (req, res) {
+		var userid = Api.getUserID(req);
+		logger.log("ListDevices", { userID: userid });
 
 		//give me all the cores
 
@@ -106,18 +103,16 @@ var Api = {
 				last_heard: null
 			};
 
-			// TODO: Handle this?
-			/*
 			if (utilities.check_requires_update(core, settings.cc3000_driver_version)) {
-				device['requires_deep_update'] = true;
+				device["requires_deep_update"] = true;
 			}
-			*/
+
 			devices.push(device);
 			console.log(device.id);
 			connected_promises.push(Api.isDeviceOnline(userid, device.id));
 		});
 
-		logger.log('ListDevices... waiting for connected state to settle ', { userID: userid });
+		logger.log("ListDevices... waiting for connected state to settle ", { userID: userid });
 
 		//switched 'done' to 'then' - threw an exception with 'done' here.
 		when.settle(connected_promises).then(function (descriptors) {
@@ -133,20 +128,20 @@ var Api = {
 	},
 
 	get_core_attributes: function (req, res) {
-		var userid = Api._getUserID(req);
+		var userid = Api.getUserID(req);
 		var socketID = Api.getSocketID(userid),
 			coreID = req.coreID,
 			socket = new CoreController(socketID);
 
 
-		logger.log('GetAttr', { coreID: coreID, userID: userid.toString() });
+		logger.log("GetAttr", { coreID: coreID, userID: userid.toString() });
 
 		var objReady = parallel([
 			function () {
 				return when.resolve(global.server.getCoreAttributes(coreID));
 			},
 			function () {
-				return utilities.alwaysResolve(socket.sendAndListenForDFD(coreID, { cmd: 'Describe' }, { cmd: 'DescribeReturn' }));
+				return utilities.alwaysResolve(socket.sendAndListenForDFD(coreID, { cmd: "Describe" }, { cmd: "DescribeReturn" }));
 			}
 		]);
 
@@ -155,8 +150,8 @@ var Api = {
 			try {
 
 				if (!results || (results.length !== 2)) {
-					logger.error('get_core_attributes results was the wrong length ' + JSON.stringify(results));
-					res.json(404, 'Oops, I couldn\'t find that core');
+					logger.error("get_core_attributes results was the wrong length " + JSON.stringify(results));
+					res.json(404, "Oops, I couldn't find that core");
 					return;
 				}
 
@@ -167,8 +162,8 @@ var Api = {
 					coreState = null;
 
 				if (!doc || !doc.coreID) {
-					logger.error('get_core_attributes 404 error: ' + JSON.stringify(doc));
-					res.json(404, 'Oops, I couldn\'t find that core');
+					logger.error("get_core_attributes 404 error: " + JSON.stringify(doc));
+					res.json(404, "Oops, I couldn't find that core");
 					return;
 				}
 
@@ -176,7 +171,7 @@ var Api = {
 					coreState = descResult[1].state || {};
 				}
 				if (!coreState) {
-					logger.error('get_core_attributes didn\'t get description: ' + JSON.stringify(descResult));
+					logger.error("get_core_attributes didn't get description: " + JSON.stringify(descResult));
 				}
 
 				var device = {
@@ -190,14 +185,14 @@ var Api = {
 				};
 
 				if (utilities.check_requires_update(doc, settings.cc3000_driver_version)) {
-					device['requires_deep_update'] = true;
+					device["requires_deep_update"] = true;
 				}
 
 				res.json(device);
 			}
 			catch (ex) {
-				logger.error('get_core_attributes merge error: ' + ex);
-				res.json(500, { Error: 'get_core_attributes error: ' + ex });
+				logger.error("get_core_attributes merge error: " + ex);
+				res.json(500, { Error: "get_core_attributes error: " + ex });
 			}
 		}, null);
 
@@ -207,17 +202,17 @@ var Api = {
 
 	set_core_attributes: function (req, res) {
 		var coreID = req.coreID;
-		var userid = Api._getUserID(req);
+		var userid = Api.getUserID(req);
 
 		var promises = [];
 
-		logger.log('set_core_attributes', { coreID: coreID, userID: userid.toString() });
+		logger.log("set_core_attributes", { coreID: coreID, userID: userid.toString() });
 
 		var coreName = req.body ? req.body.name : null;
 		if (coreName !== null) {
-			logger.log('SetAttr', { coreID: coreID, userID: userid.toString(), name: coreName });
+			logger.log("SetAttr", { coreID: coreID, userID: userid.toString(), name: coreName });
 
-			global.server.setCoreAttribute(req.coreID, 'name', coreName);
+			global.server.setCoreAttribute(req.coreID, "name", coreName);
 			promises.push(when.resolve({ ok: true, name: coreName }));
 		}
 
@@ -244,7 +239,7 @@ var Api = {
 					promises.push(Api.flash_known_app_dfd(req));
 				}
 				else {
-					promises.push(when.reject('Can\'t flash unknown app ' + flashApp));
+					promises.push(when.reject("Can't flash unknown app " + flashApp));
 				}
 			}
 		}
@@ -281,46 +276,46 @@ var Api = {
 			);
 		}
 		else {
-			logger.error('set_core_attributes - nothing to do?', { coreID: coreID, userID: userid.toString() });
-			res.json({error: 'Nothing to do?'});
+			logger.error("set_core_attributes - nothing to do?", { coreID: coreID, userID: userid.toString() });
+			res.json({error: "Nothing to do?"});
 		}
 	},
 
 
-	isDeviceOnline: function (userID: string, coreID: string) {
+	isDeviceOnline: function (userID, coreID) {
 		var tmp = when.defer();
 
 		var socketID = Api.getSocketID(userID);
 		var socket = new CoreController(socketID);
 
 		var failTimer = setTimeout(function () {
-			logger.log('isDeviceOnline: Ping timed out ', { coreID: coreID });
+			logger.log("isDeviceOnline: Ping timed out ", { coreID: coreID });
 			socket.close();
-			tmp.reject('Device is not connected');
+			tmp.reject("Device is not connected");
 		}, settings.isCoreOnlineTimeout);
 
 
 		//setup listener for response back from the device service
-		socket.listenFor(coreID, { cmd: 'Pong' }, function (sender, msg) {
+		socket.listenFor(coreID, { cmd: "Pong" }, function (sender, msg) {
 			clearTimeout(failTimer);
 			socket.close();
 
-			logger.log('isDeviceOnline: Device service thinks it is online... ', { coreID: coreID });
+			logger.log("isDeviceOnline: Device service thinks it is online... ", { coreID: coreID });
 
-			if (msg && msg.online) {
+			if (msg && msg.connected) {
 				tmp.resolve(msg);
 			}
 			else {
-				tmp.reject(['Core isn\'t online', 404]);
+				tmp.reject(["Core isn't online", 404]);
 			}
 
 		}, true);
 
-		logger.log('isDeviceOnline: Pinging core... ', { coreID: coreID });
+		logger.log("isDeviceOnline: Pinging core... ", { coreID: coreID });
 
 		//send it along to the device service
-		if (!socket.send(coreID, { cmd: 'Ping' })) {
-			tmp.reject('send failed');
+		if (!socket.send(coreID, { cmd: "Ping" })) {
+			tmp.reject("send failed");
 		}
 
 		return tmp.promise;
@@ -337,14 +332,14 @@ var Api = {
 
 		//load core info!
 		req.coreInfo = {
-			'last_app': '',
-			'last_heard': new Date(),
-			'connected': false,
-			'deviceID': req.coreID
+			"last_app": "",
+			"last_heard": new Date(),
+			"connected": false,
+			"deviceID": req.coreID
 		};
 
 		//if that user doesn't own that coreID, maybe they sent us a core name
-		var userid = Api._getUserID(req);
+		var userid = Api.getUserID(req);
 		var gotCore = utilities.deferredAny([
 			function () {
 				var core = global.server.getCoreAttributes(req.coreID);
@@ -384,21 +379,21 @@ var Api = {
 	},
 
 	get_var: function (req, res) {
-		var userid = Api._getUserID(req);
+		var userid = Api.getUserID(req);
 		var socketID = Api.getSocketID(userid),
 			coreID = req.coreID,
 			varName = req.params.var,
 			format = req.params.format;
 
-		logger.log('GetVar', {coreID: coreID, userID: userid.toString()});
+		logger.log("GetVar", {coreID: coreID, userID: userid.toString()});
 
 
 		//send it along to the device service
 		//and listen for a response back from the device service
 		var socket = new CoreController(socketID);
 		var coreResult = socket.sendAndListenForDFD(coreID,
-			{ cmd: 'GetVar', name: varName },
-			{ cmd: 'VarReturn', name: varName },
+			{ cmd: "GetVar", name: varName },
+			{ cmd: "VarReturn", name: varName },
 			settings.coreRequestTimeout
 		);
 
@@ -419,15 +414,15 @@ var Api = {
 				msg.coreInfo = req.coreInfo;
 				msg.coreInfo.connected = true;
 
-				if (format && (format === 'raw')) {
-					return res.send('' + msg.result);
+				if (format && (format === "raw")) {
+					return res.send("" + msg.result);
 				}
 				else {
 					return res.json(msg);
 				}
 			},
 			function () {
-				res.json(408, {error: 'Timed out.'});
+				res.json(408, {error: "Timed out."});
 			}
 		).ensure(function () {
 				socket.close();
@@ -435,12 +430,12 @@ var Api = {
 	},
 
 	fn_call: function (req, res) {
-		var user_id = Api._getUserID(req),
+		var user_id = Api.getUserID(req),
 			coreID = req.coreID,
 			funcName = req.params.func,
 			format = req.params.format;
 
-		logger.log('FunCall', { coreID: coreID, user_id: user_id.toString() });
+		logger.log("FunCall", { coreID: coreID, user_id: user_id.toString() });
 
 		var socketID = Api.getSocketID(user_id);
 		var socket = new CoreController(socketID);
@@ -449,10 +444,10 @@ var Api = {
 
 		var args = req.body;
 		delete args.access_token;
-		logger.log('FunCall - calling core ', { coreID: coreID, user_id: user_id.toString() });
+		logger.log("FunCall - calling core ", { coreID: coreID, user_id: user_id.toString() });
 		var coreResult = socket.sendAndListenForDFD(coreID,
-			{ cmd: 'CallFn', name: funcName, args: args },
-			{ cmd: 'FnReturn', name: funcName },
+			{ cmd: "CallFn", name: funcName, args: args },
+			{ cmd: "FnReturn", name: funcName },
 			settings.coreRequestTimeout
 		);
 
@@ -463,11 +458,11 @@ var Api = {
 				var sender = arr[0], msg = arr[1];
 
 				try {
-					//logger.log('FunCall - heard back ', { coreID: coreID, user_id: user_id.toString() });
-					if (msg.error && (msg.error.indexOf('Unknown Function') >= 0)) {
+					//logger.log("FunCall - heard back ", { coreID: coreID, user_id: user_id.toString() });
+					if (msg.error && (msg.error.indexOf("Unknown Function") >= 0)) {
 						res.json(404, {
 							ok: false,
-							error: 'Function not found'
+							error: "Function not found"
 						});
 					}
 					else if (msg.error !== null) {
@@ -477,8 +472,8 @@ var Api = {
 						});
 					}
 					else {
-						if (format && (format === 'raw')) {
-							res.send('' + msg.result);
+						if (format && (format === "raw")) {
+							res.send("" + msg.result);
 						}
 						else {
 							res.json({
@@ -492,47 +487,47 @@ var Api = {
 					}
 				}
 				catch (ex) {
-					logger.error('FunCall handling resp error ' + ex);
+					logger.error("FunCall handling resp error " + ex);
 					res.json(500, {
 						ok: false,
-						error: 'Error while api was rendering response'
+						error: "Error while api was rendering response"
 					});
 				}
 			},
 			function () {
-				res.json(408, {error: 'Timed out.'});
+				res.json(408, {error: "Timed out."});
 			}
 		).ensure(function () {
 				socket.close();
 			});
 
-		//socket.send(coreID, { cmd: 'CallFn', name: funcName, args: args });
+		//socket.send(coreID, { cmd: "CallFn", name: funcName, args: args });
 
 		// send the function call along to the device service
 	},
 
 	/**
-	 * Ask the core to start / stop the 'RaiseYourHand' signal
+	 * Ask the core to start / stop the "RaiseYourHand" signal
 	 * @param req
 	 */
 	core_signal_dfd: function (req) {
 		var tmp = when.defer();
 
-		var userid = Api._getUserID(req),
+		var userid = Api.getUserID(req),
 			socketID = Api.getSocketID(userid),
 			coreID = req.coreID,
 			showSignal = parseInt(req.body.signal);
 
-		logger.log('SignalCore', { coreID: coreID, userID: userid.toString()});
+		logger.log("SignalCore", { coreID: coreID, userID: userid.toString()});
 
 		var socket = new CoreController(socketID);
 		var failTimer = setTimeout(function () {
 			socket.close();
-			tmp.reject({error: 'Timed out, didn\'t hear back'});
+			tmp.reject({error: "Timed out, didn't hear back"});
 		}, settings.coreSignalTimeout);
 
 		//listen for a response back from the device service
-		socket.listenFor(coreID, { cmd: 'RaiseHandReturn'},
+		socket.listenFor(coreID, { cmd: "RaiseHandReturn"},
 			function () {
 				clearTimeout(failTimer);
 				socket.close();
@@ -546,14 +541,14 @@ var Api = {
 
 
 		//send it along to the core via the device service
-		socket.send(coreID, { cmd: 'RaiseHand', args: { signal: showSignal } });
+		socket.send(coreID, { cmd: "RaiseHand", args: { signal: showSignal } });
 
 		return tmp.promise;
 	},
 
 	compile_and__or_flash_dfd: function (req) {
 		var allDone = when.defer();
-		var userid = Api._getUserID(req),
+		var userid = Api.getUserID(req),
 			coreID = req.coreID;
 
 
@@ -561,7 +556,7 @@ var Api = {
 		//  Did they pass us a source file or a binary file?
 		//
 		var hasSourceFiles = false;
-		var sourceExts = ['.cpp', '.c', '.h', '.ino' ];
+		var sourceExts = [".cpp", ".c", ".h", ".ino" ];
 		if (req.files) {
 			for (var name in req.files) {
 				if (!req.files.hasOwnProperty(name)) {
@@ -579,7 +574,7 @@ var Api = {
 
 		if (hasSourceFiles) {
 			//TODO: federate?
-			allDone.reject('Not yet implemented');
+			allDone.reject("Not yet implemented");
 		}
 		else {
 			//they sent a binary, just flash it!
@@ -601,11 +596,11 @@ var Api = {
 	flash_core_dfd: function (req) {
 		var tmp = when.defer();
 
-		var userid = Api._getUserID(req),
+		var userid = Api.getUserID(req),
 			socketID = Api.getSocketID(userid),
 			coreID = req.coreID;
 
-		logger.log('FlashCore', {coreID: coreID, userID: userid.toString()});
+		logger.log("FlashCore", {coreID: coreID, userID: userid.toString()});
 
 		var args = req.query;
 		delete args.coreid;
@@ -617,28 +612,28 @@ var Api = {
 		var socket = new CoreController(socketID);
 		var failTimer = setTimeout(function () {
 			socket.close();
-			tmp.reject({error: 'Timed out.'});
+			tmp.reject({error: "Timed out."});
 		}, settings.coreFlashTimeout);
 
 		//listen for the first response back from the device service
-		socket.listenFor(coreID, { cmd: 'Event', name: 'Update' },
+		socket.listenFor(coreID, { cmd: "Event", name: "Update" },
 			function (sender, msg) {
 				clearTimeout(failTimer);
 				socket.close();
 
 				var response = { id: coreID, status: msg.message };
-				if ('Update started' === msg.message) {
+				if ("Update started" === msg.message) {
 					tmp.resolve(response);
 				}
 				else {
-					logger.error('flash_core_dfd rejected ', response);
+					logger.error("flash_core_dfd rejected ", response);
 					tmp.reject(response);
 				}
 
 			}, true);
 
 		//send it along to the device service
-		socket.send(coreID, { cmd: 'UFlash', args: args });
+		socket.send(coreID, { cmd: "UFlash", args: args });
 
 		return tmp.promise;
 	},
@@ -659,30 +654,30 @@ var Api = {
 
 	provision_core_dfd: function (req) {
 		var result = when.defer(),
-			userid = Api._getUserID(req),
+			userid = Api.getUserID(req),
 			deviceID =  req.body.deviceID,
 			publicKey =  req.body.publicKey;
 
 		if (!deviceID) {
-			return when.reject({ error: 'No deviceID provided' });
+			return when.reject({ error: "No deviceID provided" });
 		}
 
 		try {
 			var keyObj = ursa.createPublicKey(publicKey);
 			if (!publicKey || (!ursa.isPublicKey(keyObj))) {
-				return when.reject({ error: 'No key provided' });
+				return when.reject({ error: "No key provided" });
 			}
 		}
 		catch (ex) {
-			logger.error('error while parsing publicKey ' + ex);
-			return when.reject({ error: 'Key error ' + ex });
+			logger.error("error while parsing publicKey " + ex);
+			return when.reject({ error: "Key error " + ex });
 		}
 
 
 		global.server.addCoreKey(deviceID, publicKey);
-		global.server.setCoreAttribute(deviceID, 'registrar', userid);
-		global.server.setCoreAttribute(deviceID, 'timestamp', new Date());
-		result.resolve('Success!');
+		global.server.setCoreAttribute(deviceID, "registrar", userid);
+		global.server.setCoreAttribute(deviceID, "timestamp", new Date());
+		result.resolve("Success!");
 
 		return result.promise;
 	},

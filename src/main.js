@@ -43,9 +43,13 @@ import UserCreator from './lib/UserCreator';
 import api from './views/api_v1';
 import eventsV1 from './views/EventViews001';
 
+// Repositories
+import DeviceRepository from './lib/repository/DeviceRepository__john';
+
 // Routing
 import routeConfig from './lib/RouteConfig';
 import WebhookController from './lib/controllers/WebhookController';
+import DevicesController from './lib/controllers/DevicesController__john';
 
 import {
   DeviceAttributeFileRepository,
@@ -114,26 +118,26 @@ const tokenViews = new AccessTokenViews({});
 eventsV1.loadViews(app);
 api.loadViews(app);
 tokenViews.loadViews(app);
-routeConfig(app, [
-  new WebhookController(settings.webhookRepository),
-]);
 
+/*
 const noRouteMiddleware: Middleware = (
   request: $Request,
   response: $Response,
 ): mixed => response.sendStatus(404);
 
 app.use(noRouteMiddleware);
-
+*/
 
 console.log(`Starting server, listening on ${NODE_PORT}`);
 app.listen(NODE_PORT);
 
+const deviceAttributeRepository = new DeviceAttributeFileRepository(
+  settings.coreKeysDir,
+);
+
 const deviceServer = new DeviceServer({
   coreKeysDir: settings.coreKeysDir,
-  deviceAttributeRepository: new DeviceAttributeFileRepository(
-    settings.coreKeysDir,
-  ),
+  deviceAttributeRepository,
   host: settings.HOST,
   port: settings.PORT,
   serverConfigRepository: new ServerConfigFileRepository(
@@ -143,6 +147,16 @@ const deviceServer = new DeviceServer({
   serverKeyPassEnvVar: settings.serverKeyPassEnvVar,
   serverKeyPassFile: settings.serverKeyPassFile,
 });
+
+const deviceRepository = new DeviceRepository(
+  deviceAttributeRepository,
+  deviceServer,
+);
+
+routeConfig(app, [
+  new DevicesController(deviceRepository),
+  new WebhookController(settings.webhookRepository),
+]);
 
 // TODO wny do we need next line? (Anton Puko)
 global.server = deviceServer;

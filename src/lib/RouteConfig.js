@@ -38,8 +38,13 @@ export default (app: $Application, controllers: Array<Controller>) => {
           ...values,
           request.body,
         );
-
-        response.status(result.status).json(result.data);
+        if (result.then) {
+          result.then(result => {
+            response.status(result.status).json(result.data);
+          })
+        } else {
+          response.status(result.status).json(result.data);
+        }
       });
     });
   });
