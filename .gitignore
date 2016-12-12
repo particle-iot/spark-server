@@ -31,6 +31,7 @@ node_modules
 core_keys
 users
 webhooks
+test/__test_data__/*
 *.der
 *.pem
 *.pub.pem

@@ -1,6 +1,6 @@
 // @flow
 
-import type { Webhook } from '../../types';
+import type { Webhook, WebhookMutator } from '../../types';
 
 import { JSONFileManager, uuid } from 'spark-protocol';
 
@@ -11,7 +11,7 @@ class WebhookFileRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
-  create = (model: Webhook): Webhook => {
+  create = (model: WebhookMutator): Webhook => {
     const modelToSave = {
       ...model,
       created_at: new Date(),
@@ -25,7 +25,7 @@ class WebhookFileRepository {
     return modelToSave;
   };
 
-  delete = (id: string): void =>
+  deleteById = (id: string): void =>
     this._fileManager.deleteFile(`${id}.json`);
 
   getAll = (): Array<Webhook> =>

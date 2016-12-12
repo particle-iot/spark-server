@@ -21,29 +21,35 @@
 
 import path from 'path';
 import WebhookFileRepository from './lib/repository/WebhookFileRepository';
+import UsersFileRepository from './lib/repository/UsersFileRepository';
 
 export default {
-	baseUrl: 'http://localhost',
-	coreFlashTimeout: 90000,
-	coreKeysDir: path.join(__dirname, 'core_keys'),
-	coreRequestTimeout: 30000,
-	coreSignalTimeout: 30000,
-	isCoreOnlineTimeout: 2000,
-	maxHooksPerDevice: 10,
-	maxHooksPerUser: 20,
-	userDataDir: path.join(__dirname, 'users'),
-	webhookRepository: new WebhookFileRepository(
-		path.join(__dirname, 'webhooks'),
-	),
+  accessTokenLifetime: 7776000, // 90 days,
+  baseUrl: 'http://localhost',
+  coreFlashTimeout: 90000,
+  coreKeysDir: path.join(__dirname, 'core_keys'),
+  coreRequestTimeout: 30000,
+  coreSignalTimeout: 30000,
+  isCoreOnlineTimeout: 2000,
+  loginRoute: '/oauth/token',
+  logRequests: true,
+  maxHooksPerDevice: 10,
+  maxHooksPerUser: 20,
+  webhookRepository: new WebhookFileRepository(
+    path.join(__dirname, 'webhooks'),
+  ),
+  usersRepository: new UsersFileRepository(
+    path.join(__dirname, 'users'),
+  ),
 
-	/**
-	 * Your server crypto keys!
-	 */
-	cryptoSalt: 'aes-128-cbc',
-	serverKeyFile: "default_key.pem",
-	serverKeyPassFile: null,
-	serverKeyPassEnvVar: null,
+  /**
+   * Your server crypto keys!
+   */
+  cryptoSalt: 'aes-128-cbc',
+  serverKeyFile: "default_key.pem",
+  serverKeyPassFile: null,
+  serverKeyPassEnvVar: null,
 
-	PORT: 5683,
-	HOST: "localhost",
+  PORT: 5683,
+  HOST: "localhost",
 };
