@@ -9,7 +9,7 @@ import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 import deviceToAPI from '../deviceToAPI';
 
-class DevicesController extends Controller {
+class DeviceController extends Controller {
   _deviceRepository: DeviceRepository;
 
   constructor(deviceRepository: DeviceRepository) {
@@ -103,4 +103,4 @@ class DevicesController extends Controller {
   }
 }
 
-export default DevicesController;
+export default DeviceController;

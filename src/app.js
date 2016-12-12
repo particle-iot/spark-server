@@ -17,7 +17,7 @@ import api from './views/api_v1';
 import eventsV1 from './views/EventViews001';
 
 // Repositories
-import DeviceRepository from './lib/repository/DeviceRepository__john';
+import DeviceRepository from './lib/repository/DeviceRepository';
 import {
   DeviceAttributeFileRepository,
   DeviceKeyFileRepository,
@@ -25,7 +25,7 @@ import {
 
 // Routing
 import routeConfig from './lib/RouteConfig';
-import DevicesController from './lib/controllers/DevicesController__john';
+import DeviceController from './lib/controllers/DeviceController';
 import ProvisioningController from './lib/controllers/ProvisioningController';
 import UsersController from './lib/controllers/UsersController';
 import WebhookController from './lib/controllers/WebhookController';
@@ -73,7 +73,7 @@ export default (settings: Settings, deviceServer: Object): $Application => {
   routeConfig(
     app,
     [
-      new DevicesController(deviceRepository),
+      new DeviceController(deviceRepository),
       new ProvisioningController(deviceRepository),
       new UsersController(settings.usersRepository),
       new WebhookController(settings.webhookRepository),
