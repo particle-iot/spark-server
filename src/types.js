@@ -17,7 +17,7 @@ export type DeviceAttributes = {
   deviceId: string,
   ip: string,
   particleProductId: number,
-  productFirmwareVersion: number,
+  productFirmwareVersion: string,
   registrar: string,
   timestamp: Date,
 };
