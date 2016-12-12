@@ -81,16 +81,8 @@ export default (settings: Settings, deviceServer: Object): $Application => {
     settings,
   );
 
-  // TODO wny do we need next line? (Anton Puko)
   eventsV1.loadViews(app);
   api.loadViews(app);
-
-  const noRouteMiddleware: Middleware = (
-    request: $Request,
-    response: $Response,
-  ): mixed => response.sendStatus(404);
-
-  app.use(noRouteMiddleware);
 
   return app;
 };

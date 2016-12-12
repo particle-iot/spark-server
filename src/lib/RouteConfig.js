@@ -103,4 +103,8 @@ export default (
       });
     });
   });
+
+  app.all('*', (request: $Request, response: $Response): void =>
+    response.sendStatus(404),
+  );
 };
