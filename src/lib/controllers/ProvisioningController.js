@@ -1,8 +1,7 @@
 // @flow
 
-import type { Device, DeviceRepository } from '../../types';
+import type { DeviceRepository } from '../../types';
 
-import settings from '../../settings';
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
@@ -21,12 +20,12 @@ class ProvisioningController extends Controller {
   @route('/v1/provisioning/:coreID')
   async provision(
     coreID: string,
-    postBody: {publicKey: string},
-  ) {
+    postBody: { publicKey: string },
+  ): Promise<*> {
     try {
       const device = await this._deviceRepository.provision(
         coreID,
-        'UserIDGoesHere',
+        this.user.id,
         postBody.publicKey,
       );
 

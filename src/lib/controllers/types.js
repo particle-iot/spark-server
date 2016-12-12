@@ -5,6 +5,9 @@ export type HttpResult<TType> = {
   data: ?TType,
   status: number,
 } | {
-  data: ?string,
+  data: {
+    error: string,
+    ok: false,
+  },
   status: number,
 };
