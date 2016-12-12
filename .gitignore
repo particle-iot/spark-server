@@ -1,3 +1,6 @@
+# ide files
+.idea
+
 # Logs
 logs
 *.log
@@ -27,6 +30,11 @@ node_modules
 # Spark generated files/directories which contain secrets
 core_keys
 users
+webhooks
+test/__test_data__/*
 *.der
 *.pem
 *.pub.pem
+
+# build folder
+build

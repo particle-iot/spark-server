@@ -22,7 +22,7 @@ var extend = require('xtend');
 var EventEmitter = require('events').EventEmitter;
 
 var logger = require('./logger.js');
-var settings = require("../settings");
+import settings from '../settings';
 var utilities = require("./utilities.js");
 
 
@@ -81,7 +81,7 @@ CoreController.prototype = {
 
 		process.nextTick(function () {
 			try {
-				//console.log("sending message with socketID" + that.socketID);
+				console.log("sending message with socketID" + that.socketID, msg);
 				core.onApiMessage(that.socketID, msg);
 			}
 			catch (ex) {
@@ -131,24 +131,12 @@ CoreController.prototype = {
 		core.on(that.socketID, handler);
 	},
 
-	subscribe: function (isPublic, name, userid) {
-		if (userid && (userid != "")) {
-			name = userid + "/" + name;
-		}
-
-
-//        if (!sock) {
-//            return false;
-//        }
-
-		//start permitting these messages through on this socket.
-		global.publisher.subscribe(name, this);
-
-		return false;
-	},
+	subscribe: function (isPublic, name, userid,coreid) {
+		global.publisher.subscribe(name, userid, coreid, this);
+  },
 
 	unsubscribe: function (isPublic, name, userid) {
-		if (userid && (userid != "")) {
+		if (userid && (userid !== "")) {
 			name = userid + "/" + name;
 		}
 
@@ -210,7 +198,7 @@ CoreController.prototype = {
 //
 //        for(var key in global.cores) {
 //            var core = global.cores[key];
-//            if (core.coreID == id) {
+//            if (core.coreID===id) {
 //                cores[id] = core;
 //                break;
 //            }
@@ -220,4 +208,3 @@ CoreController.prototype = {
 //};
 CoreController.prototype = extend(CoreController.prototype, EventEmitter.prototype);
 module.exports = CoreController;
-
