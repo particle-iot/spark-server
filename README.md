@@ -3,14 +3,12 @@ spark-server
 
 An API compatible open source server for interacting with devices speaking the [spark-protocol](https://github.com/spark/spark-protocol)
 
-*Photon users:* This application has not been rigorously tested with the Photon. We will be reviewing and testing it shortly, but in the meantime, YMMV. If you do attempt to use the Photon with this library and run into problems, please open an issue.
-
 <pre>
    __  __            __                 __        __                ____
   / /_/ /_  ___     / /___  _________ _/ /  _____/ /___  __  ______/ / /
  / __/ __ \/ _ \   / / __ \/ ___/ __ `/ /  / ___/ / __ \/ / / / __  / /
-/ /_/ / / /  __/  / / /_/ / /__/ /_/ / /  / /__/ / /_/ / /_/ / /_/ /_/
-\__/_/ /_/\___/  /_/\____/\___/\__,_/_/   \___/_/\____/\__,_/\__,_(_)
+/ /_/ / / /  __/  / / /_/ / /__/ /_/ / /  / /__/ / /_/ / /_/ / /_/ /_/  
+\__/_/ /_/\___/  /_/\____/\___/\__,_/_/   \___/_/\____/\__,_/\__,_(_)   
 </pre>
 
 
@@ -19,7 +17,7 @@ Quick Install
 
 ```
 git clone https://github.com/spark/spark-server.git
-cd spark-server
+cd spark-server/
 npm install
 node main.js
 ```
@@ -30,61 +28,57 @@ node main.js
 How do I get started?
 =====================
 
-1.) Run the server with:
+1) Run the server with:
 
 ```
 node main.js
 ```
 
-2.) Watch for your IP address, you'll see something like:
+2) Watch for your IP address, you'll see something like:
 
 ```
 Your server IP address is: 192.168.1.10
 ```
 
-
-3.) Load your server public key and IP address onto your cores with the [Spark-CLI](https://github.com/spark/spark-cli)
-
-First, put your Core in DFU mode by holding the MODE and RESET buttons on the Core, then releasing RESET while continuing to hold MODE for 3 seconds until the LED starts blinking yellow.
+3) We will now create a new server profile on Particle-CLI using the command:
 
 ```
-spark keys server default_key.pub.pem 192.168.1.10
+particle config profile_name apiUrl "http://DOMAIN_OR_IP"
 ```
 
-Note!  The CLI will turn your PEM file into a DER file, but you can also do that yourself with the command:
+For the local cloud, the port number 8080 needs to be added behind: `http://domain_or_ip:8080`.  It is important to also have the `http://` otherwise it won't work.
+
+This will create a new profile to point to your server and switching back to the spark cloud is simply `particle config particle` and other profiles would be `particle config profile_name`
+
+4) We will now point over to the local cloud using 
 ```
-		openssl rsa -in  default_key.pem -pubin -pubout -outform DER -out default_key.der
-```
-
-4.) Edit your Spark-CLI config file to point at your Spark-server.  Open ~/.spark/spark.config.json in your favorite text editor, and add:
-
-```
-{
-	"apiUrl": "http://192.168.1.10:8080"
-}
-```
-For beginners: note that you have to add in a `,` at the end of the previous line
-
-
-5.) Put your core into listening mode, and run `spark identify` to get your core id.
-
-6.) Create a user and login with the Spark-CLI
-
-```
-	spark setup
+particle config profile_name
 ```
 
-7.) Create and provision access on your local cloud with the keys doctor:
+5) On a separate CMD from the one running the server, type
 
 ```
-	 spark keys doctor your_core_id
+particle setup
 ```
 
+This will create an account on the local cloud
 
-7.) See your connected cores!
+Perform CTRL + C once you logon with Particle-CLI asking you to send Wifi-credentials etc...
+
+6) Put your core into listening mode, and run `spark identify` to get your core id. You'll need this id later
+
+7) `mkdir ..\temp` and `cd ..\temp` - A bunch of keys will be generated in the next steps.
+
+8) Change server keys to local cloud key + IP Address
 
 ```
-	spark list
+particle keys server ..\spark-server\default_key.pub.pem IP_ADDRESS
+```
+
+9) Create and provision access on your local cloud with the keys doctor:
+
+```
+   particle keys doctor your_core_id
 ```
 
 
@@ -158,10 +152,10 @@ What features will be added soon?
 ====================================
 
 - Release a Core
-		DELETE /v1/devices/:coreid
+    DELETE /v1/devices/:coreid
 
 - Claim a core
-		POST /v1/devices
+    POST /v1/devices
 
 - per-user / per-core ownership and access restrictions.  Right now ANY user on your local cloud can access ANY device.
 
@@ -171,8 +165,8 @@ What features will be added soon?
 What API features are missing
 ================================
 
-	- the build IDE is not part of this release, but may be released separately later
-	- massive enterprise magic super horizontal scaling powers
+  - the build IDE is not part of this release, but may be released separately later
+  - massive enterprise magic super horizontal scaling powers
 
 
 Known Limitations
@@ -183,8 +177,3 @@ We worked hard to make our cloud services scalable and awesome, but that also pr
 
 What features are coming
 ========================
-
-
-
-
-

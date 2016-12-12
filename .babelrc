@@ -1,0 +1,10 @@
+{
+    "plugins": [
+      "transform-class-properties",
+      "transform-decorators-legacy",
+      "transform-es2015-destructuring",
+      "transform-es2015-spread",
+      "transform-flow-strip-types"
+    ],
+    "presets": ["es2015", "latest", "stage-0", "stage-1"]
+}

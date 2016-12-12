@@ -24,26 +24,6 @@ var fs = require('fs');
 
 var that;
 module.exports = that = {
-
-	/**
-	 * ensures the function in the provided scope
-	 * @param fn
-	 * @param scope
-	 * @returns {Function}
-	 */
-	proxy: function (fn, scope) {
-		return function () {
-			try {
-				return fn.apply(scope, arguments);
-			}
-			catch (ex) {
-				logger.error(ex);
-				logger.error(ex.stack);
-				logger.log('error bubbled up ' + ex);
-			}
-		}
-	},
-
 	/**
 	 * Surely there is a better way to do this.
 	 * NOTE! This function does NOT short-circuit when an in-equality is detected.  This is
@@ -52,10 +32,10 @@ module.exports = that = {
 	 * @param right
 	 */
 	bufferCompare: function (left, right) {
-		if ((left == null) && (right == null)) {
+		if ((left===null) && (right===null)) {
 			return true;
 		}
-		else if ((left == null) || (right == null)) {
+		else if ((left===null) || (right===null)) {
 			return false;
 		}
 
@@ -68,12 +48,12 @@ module.exports = that = {
 
 		logger.log('left: ', left.toString('hex'), ' right: ', right.toString('hex'));
 
-		var same = (left.length == right.length),
+		var same = (left.length===right.length),
 			i = 0,
 			max = left.length;
 
 		while (i < max) {
-			same &= (left[i] == right[i]);
+			same &= (left[i]===right[i]);
 			i++;
 		}
 
@@ -96,7 +76,7 @@ module.exports = that = {
 			if (!right.hasOwnProperty(prop)) {
 				continue;
 			}
-			matches &= (left[prop] == right[prop]);
+			matches &= (left[prop]===right[prop]);
 		}
 		return matches;
 	},
@@ -277,11 +257,11 @@ module.exports = that = {
 	},
 
 	indexOf: function (arr, val) {
-		if (!arr || (arr.length == 0)) {
+		if (!arr || (arr.length===0)) {
 			return -1;
 		}
 		for (var i = 0; i < arr.length; i++) {
-			if (arr[i] == val) {
+			if (arr[i]===val) {
 				return i;
 			}
 		}
@@ -367,7 +347,7 @@ module.exports = that = {
 			for (var i = 0; i < nic.length; i++) {
 				var addy = nic[i];
 
-				if ((addy.family != "IPv4") || (addy.address == "127.0.0.1")) {
+				if ((addy.family !== "IPv4") || (addy.address==="127.0.0.1")) {
 					continue;
 				}
 

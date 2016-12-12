@@ -52,7 +52,6 @@ var EventsApi = {
 
 	pipeEvents: function (socket, req, res, filterCoreId) {
 		var userid = Api.getUserID(req);
-
 		/*
 		 Start SSE
 		 */
@@ -72,7 +71,7 @@ var EventsApi = {
 		var keepAlive = function() {
 			if (((new Date()) - _lastMessage) >= 9000) {
 				_lastMessage = new Date();
-				res.write("\n");
+				res.write("asdf\n");
 				checkSocket();
 			}
 		};
@@ -136,7 +135,7 @@ var EventsApi = {
 		//  http://www.whatwg.org/specs/web-apps/current-work/#server-sent-events
 		var writeEventGen = function (isPublic) {
 			return function (name, data, ttl, published_at, coreid) {
-				if (filterCoreId && (filterCoreId != coreid)) {
+				if (filterCoreId && (filterCoreId !== coreid)) {
 					return;
 				}
 
@@ -150,6 +149,8 @@ var EventsApi = {
 					//TODO: if the user puts the userid elsewhere in the event name... it's gonna get removed.
 					name = (name) ? name.toString().replace(userid + "/", "") : null;
 
+
+					// NOTE: THIS IS THE ACTUAL DATA THAT GETS SENT TO THE CORE!!!
 					var obj = {
 						data: data ? data.toString() : null,
 						ttl: ttl ? ttl.toString() : null,
@@ -194,7 +195,6 @@ var EventsApi = {
 		//-----------------------------------
 		//get firehose and my private events.
 		//socket.subscribe(true, name);
-		socket.subscribe(true, name);
 		socket.subscribe(false, name, userid);
 
 
@@ -235,8 +235,8 @@ var EventsApi = {
 		//-----------------------------------
 		//get core events
 		//socket.subscribe(true, name);
-		socket.subscribe(true, name, userid);
-		socket.subscribe(false, name, userid);
+		socket.subscribe(true, name, userid, coreid);
+		socket.subscribe(false, name, userid, coreid);
 
 		//-----------------------------------
 		//filter to core id
@@ -252,9 +252,10 @@ var EventsApi = {
 			ttl = req.body.ttl || 60,
 			private_str = req.body.private;
 
-		var is_public = (!private_str || (private_str == "") || (private_str == "false"));
+		var is_public = (!private_str || (private_str === "") || (private_str === "false"));
 
 		var socket = new CoreController(socketID);
+		console.log('EventViews001 - send_and_event');
 		var success = socket.sendEvent(is_public,
 			eventName,
 			userid,

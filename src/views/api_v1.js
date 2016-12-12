@@ -19,7 +19,6 @@
 var settings = require('../settings.js');
 
 var CoreController = require('../lib/CoreController.js');
-var roles = require('../lib/RolesController.js');
 
 var sequence = require('when/sequence');
 var parallel = require('when/parallel');
@@ -50,16 +49,16 @@ var Api = {
 
 
 		//core functions / variables
-		app.post('/v1/devices/:coreid/:func', Api.fn_call);
+		//app.post('/v1/devices/:coreid/:func', Api.fn_call);
 		app.get('/v1/devices/:coreid/:var', Api.get_var);
 
 		app.put('/v1/devices/:coreid', Api.set_core_attributes);
 		app.get('/v1/devices/:coreid', Api.get_core_attributes);
 
 		//doesn't need per-core permissions, only shows owned cores.
-		app.get('/v1/devices', Api.list_devices);
+		//app.get('/v1/devices', Api.list_devices);
 
-		app.post('/v1/provisioning/:coreid', Api.provision_core);
+		// app.post('/v1/provisioning/:coreid', Api.provision_core);
 
 		//app.delete('/v1/devices/:coreid', Api.release_device);
 		app.post('/v1/devices', Api.claim_device);
@@ -70,17 +69,17 @@ var Api = {
 		return userID + "_" + global._socket_counter++;
 	},
 
-	getUserID: function (req) {
-		if (!req.user) {
+	getUserID: function (res) {
+		if (!res.locals.oauth) {
 			logger.log("User obj was empty");
 			return null;
 		}
 		//req.user.id is set in authorise.validateAccessToken in the OAUTH code
-		return req.user.id;
+		return res.locals.oauth.token.user.id;
 	},
 
 	list_devices: function (req, res) {
-		var userid = Api.getUserID(req);
+		var userid = Api.getUserID(res);
 		logger.log("ListDevices", { userID: userid });
 
 		//give me all the cores
@@ -89,9 +88,9 @@ var Api = {
 			devices = [],
 			connected_promises = [];
 
-		for (var coreid in allCoreIDs) {
+		allCoreIDs.forEach(coreid => {
 			if (!coreid) {
-				continue;
+				return;
 			}
 
 			var core = global.server.getCoreAttributes(coreid);
@@ -108,8 +107,9 @@ var Api = {
 			}
 
 			devices.push(device);
+			console.log(device.id);
 			connected_promises.push(Api.isDeviceOnline(userid, device.id));
-		}
+		});
 
 		logger.log("ListDevices... waiting for connected state to settle ", { userID: userid });
 
@@ -122,12 +122,12 @@ var Api = {
 				devices[i].last_heard = (desc.value) ? desc.value.lastPing : null;
 			}
 
-			res.json(200, devices);
+			res.status(200).json(devices);
 		});
 	},
 
 	get_core_attributes: function (req, res) {
-		var userid = Api.getUserID(req);
+		var userid = Api.getUserID(res);
 		var socketID = Api.getSocketID(userid),
 			coreID = req.coreID,
 			socket = new CoreController(socketID);
@@ -148,7 +148,7 @@ var Api = {
 		when(objReady).done(function (results) {
 			try {
 
-				if (!results || (results.length != 2)) {
+				if (!results || (results.length !== 2)) {
 					logger.error("get_core_attributes results was the wrong length " + JSON.stringify(results));
 					res.json(404, "Oops, I couldn't find that core");
 					return;
@@ -201,14 +201,14 @@ var Api = {
 
 	set_core_attributes: function (req, res) {
 		var coreID = req.coreID;
-		var userid = Api.getUserID(req);
+		var userid = Api.getUserID(res);
 
 		var promises = [];
 
 		logger.log("set_core_attributes", { coreID: coreID, userID: userid.toString() });
 
 		var coreName = req.body ? req.body.name : null;
-		if (coreName != null) {
+		if (coreName !== null) {
 			logger.log("SetAttr", { coreID: coreID, userID: userid.toString(), name: coreName });
 
 			global.server.setCoreAttribute(req.coreID, "name", coreName);
@@ -301,7 +301,7 @@ var Api = {
 
 			logger.log("isDeviceOnline: Device service thinks it is online... ", { coreID: coreID });
 
-			if (msg && msg.online) {
+			if (msg && msg.connected) {
 				tmp.resolve(msg);
 			}
 			else {
@@ -327,7 +327,7 @@ var Api = {
 
 
 	loadCore: function (req, res, next) {
-		req.coreID = req.param('coreid') || req.body.id;
+		req.coreID = req.params.coreid || req.body.id;
 
 		//load core info!
 		req.coreInfo = {
@@ -338,7 +338,7 @@ var Api = {
 		};
 
 		//if that user doesn't own that coreID, maybe they sent us a core name
-		var userid = Api.getUserID(req);
+		var userid = Api.getUserID(res);
 		var gotCore = utilities.deferredAny([
 			function () {
 				var core = global.server.getCoreAttributes(req.coreID);
@@ -378,11 +378,11 @@ var Api = {
 	},
 
 	get_var: function (req, res) {
-		var userid = Api.getUserID(req);
+		var userid = Api.getUserID(res);
 		var socketID = Api.getSocketID(userid),
 			coreID = req.coreID,
-			varName = req.param('var'),
-			format = req.param('format');
+			varName = req.params.var,
+			format = req.params.format;
 
 		logger.log("GetVar", {coreID: coreID, userID: userid.toString()});
 
@@ -413,7 +413,7 @@ var Api = {
 				msg.coreInfo = req.coreInfo;
 				msg.coreInfo.connected = true;
 
-				if (format && (format == "raw")) {
+				if (format && (format === "raw")) {
 					return res.send("" + msg.result);
 				}
 				else {
@@ -429,7 +429,7 @@ var Api = {
 	},
 
 	fn_call: function (req, res) {
-		var user_id = Api.getUserID(req),
+		var user_id = Api.getUserID(res),
 			coreID = req.coreID,
 			funcName = req.params.func,
 			format = req.params.format;
@@ -464,14 +464,14 @@ var Api = {
 							error: "Function not found"
 						});
 					}
-					else if (msg.error != null) {
+					else if (msg.error !== null) {
 						res.json(400, {
 							ok: false,
 							error: msg.error
 						});
 					}
 					else {
-						if (format && (format == "raw")) {
+						if (format && (format === "raw")) {
 							res.send("" + msg.result);
 						}
 						else {
@@ -512,7 +512,7 @@ var Api = {
 	core_signal_dfd: function (req) {
 		var tmp = when.defer();
 
-		var userid = Api.getUserID(req),
+		var userid = Api.getUserID(res),
 			socketID = Api.getSocketID(userid),
 			coreID = req.coreID,
 			showSignal = parseInt(req.body.signal);
@@ -547,7 +547,7 @@ var Api = {
 
 	compile_and__or_flash_dfd: function (req) {
 		var allDone = when.defer();
-		var userid = Api.getUserID(req),
+		var userid = Api.getUserID(res),
 			coreID = req.coreID;
 
 
@@ -592,10 +592,10 @@ var Api = {
 	 * @param req
 	 * @returns {promise|*|Function|Promise|when.promise}
 	 */
-	flash_core_dfd: function (req) {
+	flash_core_dfd: function (req, res) {
 		var tmp = when.defer();
 
-		var userid = Api.getUserID(req),
+		var userid = Api.getUserID(res),
 			socketID = Api.getSocketID(userid),
 			coreID = req.coreID;
 
@@ -651,9 +651,9 @@ var Api = {
 			});
 	},
 
-	provision_core_dfd: function (req) {
+	provision_core_dfd: function (req, res) {
 		var result = when.defer(),
-			userid = Api.getUserID(req),
+			userid = Api.getUserID(res),
 			deviceID =  req.body.deviceID,
 			publicKey =  req.body.publicKey;
 
