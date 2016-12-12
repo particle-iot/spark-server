@@ -150,6 +150,15 @@ class DeviceRepository {
     this._deviceAttributeRepository.update(attributes);
 
     return await this.getByID(deviceID);
+  };
+
+  renameDevice = (deviceID: string, name: string): DeviceAttributes => {
+    const attributes = this._deviceAttributeRepository.getById(deviceID);
+    const attributesToSave = {
+      ...attributes,
+      name,
+    };
+    return this._deviceAttributeRepository.update(attributesToSave);
   }
 }
 

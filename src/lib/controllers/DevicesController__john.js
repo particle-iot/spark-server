@@ -33,10 +33,31 @@ class DevicesController extends Controller {
 
   @httpVerb('get')
   @route('/v1/devices/:deviceID')
-  async getDevice(deviceID: string) {
+  async getDevice(deviceID: string): Promise<*> {
     try {
       const device = await this._deviceRepository.getDetailsByID(deviceID);
       return this.ok(deviceToAPI(device));
+    } catch (exception) {
+      return this.bad(exception);
+    }
+  }
+
+  @httpVerb('put')
+  @route('/v1/devices/:deviceID')
+  async updateDevice(deviceID: string, postBody: { name?: string }): Promise<*> {
+    try {
+      // 1 rename device
+      if (postBody.name) {
+        const updatedAttributes = this._deviceRepository.renameDevice(
+          deviceID,
+          postBody.name,
+        );
+
+        return this.ok({ name: updatedAttributes.name, ok: true });
+      }
+
+
+      return this.ok();
     } catch (exception) {
       return this.bad(exception);
     }
@@ -48,7 +69,7 @@ class DevicesController extends Controller {
     deviceID: string,
     functionName: string,
     postBody: Object,
-  ) {
+  ): Promise<*> {
     try {
       const result = await this._deviceRepository.callFunction(
         deviceID,
