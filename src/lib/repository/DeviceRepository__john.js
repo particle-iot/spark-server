@@ -24,7 +24,7 @@ class DeviceRepository {
     this._deviceServer = deviceServer;
   }
 
-  async getByID(deviceID: string): Promise<Device> {
+  getByID = async (deviceID: string): Promise<Device> => {
     const attributes = await this._deviceAttributeRepository.getById(deviceID);
     const core = this._deviceServer.getCore(attributes.deviceID);
     // TODO: Not sure if this should actually be the core ID that gets sent
@@ -45,33 +45,31 @@ class DeviceRepository {
       lastFlashedAppName: null,
       lastHeard: response.lastPing,
     };
-  }
+  };
 
-  async getDetailsByID(deviceID: string): Promise<Device> {
+  getDetailsByID = async (deviceID: string): Promise<Device> => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      throw 'Could not get device for ID';
+      throw new Error('Could not get device for ID');
     }
 
     return Promise.all([
       this._deviceAttributeRepository.getById(deviceID),
       core.onApiMessage(
-       deviceID,
-       { cmd: "Describe" },
-     )
-   ]).then(([attributes, description]) => {
-     return {
-       ...attributes,
-       connected: true,
-       lastFlashedAppName: null,
-       lastHeard: new Date(),
-       functions: description.f,
-       variables: description.v,
-     };
-   })
+        deviceID,
+        { cmd: 'Describe' },
+      ),
+    ]).then(([attributes, description]): Device => ({
+      ...attributes,
+      connected: true,
+      functions: description.f,
+      lastFlashedAppName: null,
+      lastHeard: new Date(),
+      variables: description.v,
+    }));
+  };
 
-  }
-  async getAll(): Promise<Array<Device>> {
+  getAll = async (): Promise<Array<Device>> => {
     const devicesAttributes = await this._deviceAttributeRepository.getAll();
     const devicePromises = devicesAttributes.map(async attributes => {
       const core = this._deviceServer.getCore(attributes.deviceID);
@@ -96,21 +94,21 @@ class DeviceRepository {
     });
 
     return Promise.all(devicePromises);
-  }
+  };
 
-  async callFunction(
+  callFunction= async (
     deviceID: string,
     functionName: string,
     functionArguments: Object,
-  ): Promise<*> {
+  ): Promise<*> => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
       return null;
     }
-
+    console.log(functionArguments);
     const result = await core.onApiMessage(
       deviceID,
-      { cmd:'CallFn', name: functionName, args: functionArguments },
+      { cmd: 'CallFn', name: functionName, args: functionArguments },
     );
 
     if (result.error) {
@@ -118,33 +116,33 @@ class DeviceRepository {
     }
 
     return result.result;
-  }
+  };
 
-  async provision(
+  provision = async (
     deviceID: string,
     userID: string,
     publicKey: string,
-  ): Promise<*> {
-		if (!deviceID) {
-			throw 'No deviceID provided';
-		}
+  ): Promise<*> => {
+    if (!deviceID) {
+      throw new Error('No deviceID provided');
+    }
 
-		try {
-			const createdKey = ursa.createPublicKey(publicKey);
-			if (!publicKey || !ursa.isPublicKey(createdKey)) {
-        throw 'No key provided';
-			}
-		} catch (exception) {
-			logger.error('error while parsing publicKey', exception);
-			throw 'Key error ' + exception;
-		}
+    try {
+      const createdKey = ursa.createPublicKey(publicKey);
+      if (!publicKey || !ursa.isPublicKey(createdKey)) {
+        throw new Error('No key provided');
+      }
+    } catch (exception) {
+      logger.error('error while parsing publicKey', exception);
+      throw new Error(`Key error ${exception}`);
+    }
     this._deviceKeyRepository.update(deviceID, publicKey);
     const existingAttributes = this._deviceAttributeRepository.getById(
       deviceID,
     );
     const attributes = {
+      deviceID,
       name: NAME_GENERATOR.choose(),
-      deviceID: deviceID,
       ...existingAttributes,
       registrar: userID,
       timestamp: new Date(),

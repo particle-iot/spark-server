@@ -1,8 +1,8 @@
 // @flow
 
 import type { Device, DeviceRepository } from '../../types';
+import type { DeviceAPIType } from '../deviceToAPI';
 
-import settings from '../../settings';
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
@@ -19,11 +19,12 @@ class DevicesController extends Controller {
 
   @httpVerb('get')
   @route('/v1/devices')
-  async getDevices() {
+  async getDevices(): Promise<*> {
     try {
       const devices = await this._deviceRepository.getAll();
 
-      return this.ok(devices.map(device => deviceToAPI(device)));
+      return this.ok(devices.map((device: Device): DeviceAPIType =>
+        deviceToAPI(device)));
     } catch (exception) {
       // I wish we could return no devices found but meh :/
       return this.ok([]);
