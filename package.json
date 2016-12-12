@@ -53,6 +53,7 @@
     "express": "^4.14.0",
     "express-oauth-server": "^2.0.0-b1",
     "moment": "*",
+    "moniker": "^0.1.2",
     "morgan": "^1.7.0",
     "request": "*",
     "spark-protocol": "../spark-protocol",
