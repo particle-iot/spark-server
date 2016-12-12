@@ -38,6 +38,7 @@ class DevicesController extends Controller {
     postBody: Object,
   ) {
     try {
+      console.log('foooobar')
       const result = await this._deviceRepository.callFunction(
         coreID,
         functionName,

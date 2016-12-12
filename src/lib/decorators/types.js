@@ -1,3 +1,5 @@
+// @flow
+
 export type Decorator = (
   target: Object,
   name: string,
@@ -8,7 +10,7 @@ export type HttpVerb =
   'checkout' |
   'connect' |
   'copy' |
-  'delete' |
+  'deleteById' |
   'head' |
   'get' |
   'lock' |

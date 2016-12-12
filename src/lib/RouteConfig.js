@@ -1,27 +1,88 @@
 // @flow
 
-import type { $Application, $Request, $Response } from 'express';
+import type {
+  $Application,
+  $Request,
+  $Response,
+  Middleware,
+  NextFunction,
+} from 'express';
+import type { Settings } from '../types';
 import type Controller from './controllers/Controller';
 
-export default (app: $Application, controllers: Array<Controller>) => {
+import OAuthModel from './OAuthModel';
+import OAuthServer from 'express-oauth-server';
+
+// TODO fix flow errors, come up with better name;
+const maybe = (middleware: Middleware, condition: boolean): Middleware =>
+  (request: $Request, response: $Response, next: NextFunction) => {
+    if (condition) {
+      middleware(request, response, next);
+    } else {
+      next();
+    }
+  };
+
+const injectUserMiddleware = (): Middleware =>
+  (request: $Request, response: $Response, next: NextFunction) => {
+    const oauthInfo = response.locals.oauth;
+    if (oauthInfo) {
+      const token = (oauthInfo: any).token;
+      // eslint-disable-next-line no-param-reassign
+      (request: any).user = token && token.user;
+    }
+    next();
+  };
+
+
+export default (
+  app: $Application,
+  controllers: Array<Controller>,
+  settings: Settings,
+) => {
+  const oauth = new OAuthServer({
+    accessTokenLifetime: settings.accessTokenLifetime,
+    allowBearerTokensInQueryString: true,
+    model: new OAuthModel(settings.usersRepository),
+  });
+
+  // TODO this is temporary authentication for api_v1 and events routes
+  // until we move them in our controllers:
+  app.all('/v1/devices*', oauth.authenticate());
+  app.all('/v1/provisioning*', oauth.authenticate());
+  app.all('/v1/events*', oauth.authenticate());
+  // end temporary
+
+  app.post(settings.loginRoute, oauth.token());
+
   controllers.forEach((controller: Controller) => {
     Object.getOwnPropertyNames(
-      Object.getPrototypeOf(controller),
+      (Object.getPrototypeOf(controller): any),
     ).forEach((functionName: string) => {
-      const mappedFunction = controller[functionName];
-      const { httpVerb, route } = mappedFunction;
+      const mappedFunction = (controller: any)[functionName];
+      const { httpVerb, route, anonymous } = mappedFunction;
       if (!httpVerb) {
         return;
       }
 
-      const argumentNames = (route.match(/:[\w]*/g) || []).map(
-        arumentName => arumentName.replace(':', ''),
-      );
-
-      (app: any)[httpVerb](route, (request: $Request, response: $Response) => {
+      (app: any)[httpVerb](
+        route,
+        maybe(oauth.authenticate(), !anonymous),
+        injectUserMiddleware(),
+        async (request: $Request, response: $Response,
+      ) => {
+        console.log('foao');
+        const argumentNames = (route.match(/:[\w]*/g) || []).map(
+     		   argumentName => argumentName.replace(':', ''),
+    	  );
         const values = argumentNames
-          .map((argument: string): any => request.params[argument])
-          .filter((value: ?any): boolean => value !== undefined);
+          .map((argument: string): string => request.params[argument])
+          .filter((value: ?Object): boolean => value !== undefined);
+
+        const controllerContext = Object.create(controller);
+        controllerContext.request = request;
+        controllerContext.response = response;
+        controllerContext.user = (request: any).user;
 
         // Take access token out if it's posted.
         const {
@@ -29,7 +90,7 @@ export default (app: $Application, controllers: Array<Controller>) => {
           ...body,
         } = request.body;
         const result = mappedFunction.call(
-          controller,
+          controllerContext,
           ...values,
           body,
         );

@@ -1,11 +1,36 @@
 // @flow
 
-import type { Repository, Webhook } from '../../types';
+import type {
+  Repository,
+  RequestType,
+  Webhook,
+  WebhookMutator,
+} from '../../types';
 
-import settings from '../../settings';
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
+
+const REQUEST_TYPES: Array<RequestType> = [
+  'DELETE', 'GET', 'POST', 'PUT',
+];
+
+const validateWebhookMutator = (webhookMutator: WebhookMutator): ?Error => {
+  if (!webhookMutator.event) {
+    return new Error('no event name provided');
+  }
+  if (!webhookMutator.url) {
+    return new Error('no url provided');
+  }
+  if (!webhookMutator.requestType) {
+    return new Error('no requestType provided');
+  }
+  if (!REQUEST_TYPES.includes(webhookMutator.requestType)) {
+    return new Error('wrong requestType');
+  }
+
+  return null;
+};
 
 class WebhookController extends Controller {
   _webhookRepository: Repository<Webhook>;
@@ -18,34 +43,46 @@ class WebhookController extends Controller {
 
   @httpVerb('get')
   @route('/v1/webhooks')
-  get() {
-    return this.ok(this._webhookRepository.getAll());
+  async getAll(): Promise<*> {
+    return this.ok(await this._webhookRepository.getAll());
   }
 
   @httpVerb('get')
   @route('/v1/webhooks/:webhookId')
-  getByWebhookId(webhookId: string) {
-    return this.ok(this._webhookRepository.getById(webhookId));
+  async getById(webhookId: string): Promise<*> {
+    return this.ok(await this._webhookRepository.getById(webhookId));
   }
 
   @httpVerb('post')
   @route('/v1/webhooks')
-  post(model: Webhook) {
-    const newWebhook = this._webhookRepository.create(model);
-    return this.ok({
-      created_at: newWebhook.created_at,
-      event: newWebhook.event,
-      hookUrl: settings.baseUrl + '/v1/webhooks/' + newWebhook.id,
-      id: newWebhook.id,
-      ok: true,
-      url: newWebhook.url,
-    });
+  async create(model: WebhookMutator): Promise<*> {
+    try {
+      const validateError = validateWebhookMutator(model);
+      if (validateError) {
+        throw validateError;
+      }
+
+      const newWebhook = await this._webhookRepository.create({
+        ...model,
+        created_at: new Date(),
+        id: '',
+      });
+      return this.ok({
+        created_at: newWebhook.created_at,
+        event: newWebhook.event,
+        id: newWebhook.id,
+        ok: true,
+        url: newWebhook.url,
+      });
+    } catch (error) {
+      return this.bad(error.message);
+    }
   }
 
   @httpVerb('delete')
   @route('/v1/webhooks/:webhookId')
-  delete(webhookId: string) {
-    this._webhookRepository.delete(webhookId);
+  async deleteById(webhookId: string): Promise<*> {
+    this._webhookRepository.deleteById(webhookId);
     return this.ok();
   }
 }
