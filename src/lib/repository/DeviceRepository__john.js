@@ -51,7 +51,6 @@ class DeviceRepository {
     const devicesAttributes = await this._deviceAttributeRepository.getAll();
     const devicePromises = devicesAttributes.map(async attributes => {
       const core = this._deviceServer.getCore(attributes.deviceID);
-      console.log(attributes);
       // TODO: Not sure if this should actually be the core ID that gets sent
       // but that's what the old source code does :/
       const response = core

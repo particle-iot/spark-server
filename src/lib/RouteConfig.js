@@ -71,7 +71,6 @@ export default (
         injectUserMiddleware(),
         async (request: $Request, response: $Response,
       ) => {
-        console.log('foao');
         const argumentNames = (route.match(/:[\w]*/g) || []).map(
      		   argumentName => argumentName.replace(':', ''),
     	  );
