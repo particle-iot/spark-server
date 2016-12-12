@@ -26,12 +26,12 @@ class DeviceRepository {
 
   async getByID(deviceID: string): Promise<Device> {
     const attributes = await this._deviceAttributeRepository.getById(deviceID);
-    const core = this._deviceServer.getCore(attributes.coreID);
+    const core = this._deviceServer.getCore(attributes.deviceID);
     // TODO: Not sure if this should actually be the core ID that gets sent
     // but that's what the old source code does :/
     const response = core
       ? await core.onApiMessage(
-        attributes.coreID,
+        attributes.deviceID,
         { cmd: 'Ping' },
       )
       : {
@@ -42,6 +42,7 @@ class DeviceRepository {
     return {
       ...attributes,
       connected: response.connected,
+      lastFlashedAppName: null,
       lastHeard: response.lastPing,
     };
   }
@@ -49,13 +50,13 @@ class DeviceRepository {
   async getAll(): Promise<Array<Device>> {
     const devicesAttributes = await this._deviceAttributeRepository.getAll();
     const devicePromises = devicesAttributes.map(async attributes => {
-      const core = this._deviceServer.getCore(attributes.coreID);
+      const core = this._deviceServer.getCore(attributes.deviceID);
       console.log(attributes);
       // TODO: Not sure if this should actually be the core ID that gets sent
       // but that's what the old source code does :/
       const response = core
         ? await core.onApiMessage(
-          attributes.coreID,
+          attributes.deviceID,
           { cmd: 'Ping' },
         )
         : {
@@ -66,6 +67,7 @@ class DeviceRepository {
       return {
         ...attributes,
         connected: response.connected,
+        lastFlashedAppName: null,
         lastHeard: response.lastPing,
       };
     });
@@ -76,7 +78,7 @@ class DeviceRepository {
   async callFunction(
     deviceID: string,
     functionName: string,
-    functionArguments: string,
+    functionArguments: Object,
   ): Promise<*> {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
@@ -123,7 +125,7 @@ class DeviceRepository {
       registrar: userID,
       timestamp: new Date(),
     };
-    this._deviceAttributeRepository.update(deviceID, attributes);
+    this._deviceAttributeRepository.update(attributes);
 
     return await this.getByID(deviceID);
   }

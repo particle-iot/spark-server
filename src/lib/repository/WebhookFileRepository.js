@@ -1,6 +1,6 @@
 // @flow
 
-import type { Webhook, WebhookMutator } from '../../types';
+import type { Webhook } from '../../types';
 
 import { JSONFileManager, uuid } from 'spark-protocol';
 
@@ -11,13 +11,10 @@ class WebhookFileRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
-  create = (model: WebhookMutator): Webhook => {
+  create = (model: Webhook): Webhook => {
     const modelToSave = {
       ...model,
       created_at: new Date(),
-      // TODO: Add another repository for fetching users. This should be
-      // injected on every request so we can easily get the current user
-      created_by: null, // user id
       id: uuid(),
     };
 
@@ -33,6 +30,10 @@ class WebhookFileRepository {
 
   getById = (id: string): Webhook =>
     this._fileManager.getFile(`${id}.json`);
+
+  update = (model: Webhook): Webhook => {
+    throw 'Not implemented';
+  };
 }
 
 export default WebhookFileRepository;

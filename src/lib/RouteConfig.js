@@ -27,8 +27,9 @@ const injectUserMiddleware = (): Middleware =>
   (request: $Request, response: $Response, next: NextFunction) => {
     const oauthInfo = response.locals.oauth;
     if (oauthInfo) {
+      const token = (oauthInfo: any).token;
       // eslint-disable-next-line no-param-reassign
-      request.user = oauthInfo.token.user;
+      (request: any).user = token && token.user;
     }
     next();
   };
@@ -56,9 +57,9 @@ export default (
 
   controllers.forEach((controller: Controller) => {
     Object.getOwnPropertyNames(
-      Object.getPrototypeOf(controller),
+      (Object.getPrototypeOf(controller): any),
     ).forEach((functionName: string) => {
-      const mappedFunction = controller[functionName];
+      const mappedFunction = (controller: any)[functionName];
       const { httpVerb, route, anonymous } = mappedFunction;
       if (!httpVerb) {
         return;
@@ -70,6 +71,7 @@ export default (
         injectUserMiddleware(),
         async (request: $Request, response: $Response,
       ) => {
+        console.log('foao');
         const argumentNames = (route.match(/:[\w]*/g) || []).map(
      		   argumentName => argumentName.replace(':', ''),
     	  );

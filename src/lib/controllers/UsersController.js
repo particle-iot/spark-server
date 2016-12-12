@@ -31,7 +31,9 @@ class UsersController extends Controller {
         throw new Error('user with the username is already exist');
       }
 
-      const newUser = await this._usersRepository.create(userCredentials);
+      const newUser = await this._usersRepository.createWithCredentials(
+        userCredentials,
+      );
       return this.ok(newUser);
     } catch (error) {
       return this.bad(error.message);
@@ -43,8 +45,13 @@ class UsersController extends Controller {
   @anonymous()
   async deleteAccessToken(token: string): Promise<*> {
     try {
-      const { username, password } = basicAuthParser(this.request.get('authorization'));
-      const user = await this._usersRepository.validateLogin(username, password);
+      const { username, password } = basicAuthParser(
+        this.request.get('authorization'),
+      );
+      const user = await this._usersRepository.validateLogin(
+        username,
+        password,
+      );
 
       this._usersRepository.deleteAccessToken(user, token);
 
@@ -59,7 +66,9 @@ class UsersController extends Controller {
   @anonymous()
   async getAccessTokens(): Promise<*> {
     try {
-      const { username, password } = basicAuthParser(this.request.get('authorization'));
+      const { username, password } = basicAuthParser(
+        this.request.get('authorization'),
+      );
       const user = await this._usersRepository.validateLogin(username, password);
       return this.ok(user.accessTokens);
     } catch (error) {

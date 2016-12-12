@@ -2,17 +2,19 @@
 
 import type { TokenObject, User, UserCredentials } from '../../types';
 
-import { FileManager, uuid } from 'spark-protocol';
+import { JSONFileManager, uuid } from 'spark-protocol';
 import PasswordHasher from '../PasswordHasher';
 
 class UsersFileRepository {
-  _fileManager: FileManager;
+  _fileManager: JSONFileManager;
 
   constructor(path: string) {
-    this._fileManager = new FileManager(path);
+    this._fileManager = new JSONFileManager(path);
   }
 
-  create = async (userCredentials: UserCredentials): Promise<User> => {
+  createWithCredentials = async (
+    userCredentials: UserCredentials,
+  ): Promise<User> => {
     const { username, password } = userCredentials;
 
     const salt = await PasswordHasher.generateSalt();
@@ -32,6 +34,14 @@ class UsersFileRepository {
     return modelToSave;
   };
 
+  create = (user: User): User => {
+    throw 'Not implemented';
+  };
+
+  update = (user: User): User => {
+    throw 'Not implemented';
+  };
+
   getAll = (): Array<User> =>
     this._fileManager.getAllData();
 
@@ -41,23 +51,23 @@ class UsersFileRepository {
   getByUsername = (username: string): ?User =>
     this.getAll().find((user: User): boolean => user.username === username);
 
-  async validateLogin(username: string, password: string): Promise<User> {
+  validateLogin = async (username: string, password: string): Promise<User> => {
     try {
       const user = this.getByUsername(username);
       if (!user) {
-        throw new Error('user doesn\'t exist');
+        throw new Error('User doesn\'t exist');
       }
 
       const hash = await PasswordHasher.hash(password, user.salt);
       if (hash !== user.passwordHash) {
-        throw new Error('wrong password');
+        throw new Error('Wrong password');
       }
 
       return user;
     } catch (error) {
       throw error;
     }
-  }
+  };
 
   getByAccessToken = (accessToken: string): ?User =>
     this.getAll().find((user: User): boolean =>
@@ -66,7 +76,7 @@ class UsersFileRepository {
       ),
     );
 
-  deleteAccessToken = (user: User, token: string) => {
+  deleteAccessToken = (user: User, token: string): void => {
     const userToSave = {
       ...user,
       accessTokens: user.accessTokens.filter(
@@ -87,7 +97,7 @@ class UsersFileRepository {
       user.username === username,
     );
 
-  saveAccessToken = (userId: string, tokenObject: TokenObject) => {
+  saveAccessToken = (userId: string, tokenObject: TokenObject): void => {
     const user = this.getById(userId);
     const userToSave = {
       ...user,

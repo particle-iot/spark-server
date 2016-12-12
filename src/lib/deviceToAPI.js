@@ -21,7 +21,7 @@ const deviceToAPI = (device: Device, result?: mixed): DeviceAPIType => ({
   cellular: false, // TODO: populate this from device.
   connected: device.connected,
   current_build_target: '', // TODO: populate this as well :(
-  id: device.coreID,
+  id: device.deviceID,
   last_app: device.lastFlashedAppName,
   last_heard: device.lastHeard,
   last_ip_address: device.ip,

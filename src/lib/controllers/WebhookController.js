@@ -33,9 +33,9 @@ const validateWebhookMutator = (webhookMutator: WebhookMutator): ?Error => {
 };
 
 class WebhookController extends Controller {
-  _webhookRepository: Repository<Webhook, WebhookMutator>;
+  _webhookRepository: Repository<Webhook>;
 
-  constructor(webhookRepository: Repository<Webhook, WebhookMutator>) {
+  constructor(webhookRepository: Repository<Webhook>) {
     super();
 
     this._webhookRepository = webhookRepository;
@@ -44,13 +44,13 @@ class WebhookController extends Controller {
   @httpVerb('get')
   @route('/v1/webhooks')
   async getAll(): Promise<*> {
-    return this.ok(this._webhookRepository.getAll());
+    return this.ok(await this._webhookRepository.getAll());
   }
 
   @httpVerb('get')
   @route('/v1/webhooks/:webhookId')
   async getById(webhookId: string): Promise<*> {
-    return this.ok(this._webhookRepository.getById(webhookId));
+    return this.ok(await this._webhookRepository.getById(webhookId));
   }
 
   @httpVerb('post')
@@ -62,7 +62,11 @@ class WebhookController extends Controller {
         throw validateError;
       }
 
-      const newWebhook = this._webhookRepository.create(model);
+      const newWebhook = await this._webhookRepository.create({
+        ...model,
+        created_at: new Date(),
+        id: '',
+      });
       return this.ok({
         created_at: newWebhook.created_at,
         event: newWebhook.event,
