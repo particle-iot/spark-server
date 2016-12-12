@@ -160,7 +160,7 @@ var Api = {
 					descResult = results[1],
 					coreState = null;
 
-				if (!doc || !doc.coreID) {
+				if (!doc || !doc.deviceID) {
 					logger.error("get_core_attributes 404 error: " + JSON.stringify(doc));
 					res.json(404, "Oops, I couldn't find that core");
 					return;
@@ -174,7 +174,7 @@ var Api = {
 				}
 
 				var device = {
-					id: doc.coreID,
+					id: doc.deviceID,
 					name: doc.name || null,
 					last_app: doc.last_flashed,
 					connected: !!coreState,

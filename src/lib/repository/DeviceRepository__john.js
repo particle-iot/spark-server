@@ -120,6 +120,7 @@ class DeviceRepository {
     );
     const attributes = {
       name: NAME_GENERATOR.choose(),
+      deviceID: deviceID,
       ...existingAttributes,
       registrar: userID,
       timestamp: new Date(),

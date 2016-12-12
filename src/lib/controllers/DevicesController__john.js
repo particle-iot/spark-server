@@ -31,20 +31,20 @@ class DevicesController extends Controller {
   }
 
   @httpVerb('post')
-  @route('/v1/devices/:coreID/:functionName')
+  @route('/v1/devices/:deviceID/:functionName')
   async callDeviceFunction(
-    coreID: string,
+    deviceID: string,
     functionName: string,
     postBody: Object,
   ) {
     try {
       const result = await this._deviceRepository.callFunction(
-        coreID,
+        deviceID,
         functionName,
         postBody,
       );
 
-      const device = await this._deviceRepository.getByID(coreID);
+      const device = await this._deviceRepository.getByID(deviceID);
       return this.ok(deviceToAPI(device, result));
     } catch (exception) {
       if (exception.indexOf('Unknown Function') >= 0) {
