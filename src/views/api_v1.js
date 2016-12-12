@@ -53,7 +53,7 @@ var Api = {
 		app.get('/v1/devices/:coreid/:var', Api.get_var);
 
 		app.put('/v1/devices/:coreid', Api.set_core_attributes);
-		app.get('/v1/devices/:coreid', Api.get_core_attributes);
+		//app.get('/v1/devices/:coreid', Api.get_core_attributes);
 
 		//doesn't need per-core permissions, only shows owned cores.
 		//app.get('/v1/devices', Api.list_devices);

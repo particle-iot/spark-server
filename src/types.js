@@ -71,8 +71,10 @@ export type UserCredentials = {
 
 export type Device = DeviceAttributes & {
   connected: boolean,
+  functions?: Array<string>,
   lastFlashedAppName: ?string,
   lastHeard: ?Date,
+  variables?: Object,
 };
 
 export type Repository<TModel> = {
@@ -122,6 +124,7 @@ export type DeviceRepository = {
     functionArguments: Object,
   ): Promise<*>,
   getAll(): Promise<Array<Device>>,
+  getDetailsByID(deviceID: string): Promise<*>,
   getByID(deviceID: string): Promise<Device>,
   provision(deviceID: string, userID: string, publicKey: string): Promise<*>,
 };

@@ -47,6 +47,30 @@ class DeviceRepository {
     };
   }
 
+  async getDetailsByID(deviceID: string): Promise<Device> {
+    const core = this._deviceServer.getCore(deviceID);
+    if (!core) {
+      throw 'Could not get device for ID';
+    }
+
+    return Promise.all([
+      this._deviceAttributeRepository.getById(deviceID),
+      core.onApiMessage(
+       deviceID,
+       { cmd: "Describe" },
+     )
+   ]).then(([attributes, description]) => {
+     return {
+       ...attributes,
+       connected: true,
+       lastFlashedAppName: null,
+       lastHeard: new Date(),
+       functions: description.f,
+       variables: description.v,
+     };
+   })
+
+  }
   async getAll(): Promise<Array<Device>> {
     const devicesAttributes = await this._deviceAttributeRepository.getAll();
     const devicePromises = devicesAttributes.map(async attributes => {

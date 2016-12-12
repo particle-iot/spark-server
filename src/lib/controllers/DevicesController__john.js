@@ -30,6 +30,17 @@ class DevicesController extends Controller {
     }
   }
 
+  @httpVerb('get')
+  @route('/v1/devices/:deviceID')
+  async getDevice(deviceID: string) {
+    try {
+      const device = await this._deviceRepository.getDetailsByID(deviceID);
+      return this.ok(deviceToAPI(device));
+    } catch (exception) {
+      return this.bad(exception);
+    }
+  }
+
   @httpVerb('post')
   @route('/v1/devices/:deviceID/:functionName')
   async callDeviceFunction(
