@@ -12,6 +12,7 @@ import type Controller from './controllers/Controller';
 
 import OAuthModel from './OAuthModel';
 import OAuthServer from 'express-oauth-server';
+import multer from 'multer';
 
 // TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
@@ -53,6 +54,8 @@ export default (
   app.all('/v1/events*', oauth.authenticate());
   // end temporary
 
+  const injectFilesMiddleware = multer();
+
   app.post(settings.loginRoute, oauth.token());
 
   controllers.forEach((controller: Controller) => {
@@ -69,38 +72,39 @@ export default (
         route,
         maybe(oauth.authenticate(), !anonymous),
         injectUserMiddleware(),
-        async (request: $Request, response: $Response,
-      ) => {
-        const argumentNames = (route.match(/:[\w]*/g) || []).map(
-     		   argumentName => argumentName.replace(':', ''),
-    	  );
-        const values = argumentNames
-          .map((argument: string): string => request.params[argument])
-          .filter((value: ?Object): boolean => value !== undefined);
+        injectFilesMiddleware.any(),
+        async(request: $Request, response: $Response) => {
+          const argumentNames = (route.match(/:[\w]*/g) || []).map(
+            (argumentName: string): string => argumentName.replace(':', ''),
+          );
+          const values = argumentNames
+            .map((argument: string): string => request.params[argument])
+            .filter((value: ?Object): boolean => value !== undefined);
 
-        const controllerContext = Object.create(controller);
-        controllerContext.request = request;
-        controllerContext.response = response;
-        controllerContext.user = (request: any).user;
+          const controllerContext = Object.create(controller);
+          controllerContext.request = request;
+          controllerContext.response = response;
+          controllerContext.user = (request: any).user;
 
-        // Take access token out if it's posted.
-        const {
-          access_token,
-          ...body,
-        } = request.body;
-        const result = mappedFunction.call(
-          controllerContext,
-          ...values,
-          body,
-        );
-        if (result.then) {
-          result.then(result => {
+          // Take access token out if it's posted.
+          const {
+            access_token,
+            ...body
+          } = request.body;
+          const result = mappedFunction.call(
+            controllerContext,
+            ...values,
+            body,
+          );
+          if (result.then) {
+            // eslint-disable-next-line no-shadow
+            result.then((result: Object): void =>
+              response.status(result.status).json(result.data),
+            );
+          } else {
             response.status(result.status).json(result.data);
-          });
-        } else {
-          response.status(result.status).json(result.data);
-        }
-      });
+          }
+        });
     });
   });
 

@@ -4,20 +4,20 @@ import type {
   Client,
   TokenObject,
   User,
-  UsersRepository,
+  UserRepository,
 } from '../types';
 
 import ouathClients from '../oauthClients.json';
 
 class OauthModel {
-  _usersRepository: UsersRepository;
+  _userRepository: UserRepository;
 
-  constructor(usersRepository: UsersRepository) {
-    this._usersRepository = usersRepository;
+  constructor(userRepository: UserRepository) {
+    this._userRepository = userRepository;
   }
 
   getAccessToken = (bearerToken: string): ?Object => {
-    const user = this._usersRepository.getByAccessToken(bearerToken);
+    const user = this._userRepository.getByAccessToken(bearerToken);
     if (!user) {
       return null;
     }
@@ -43,11 +43,11 @@ class OauthModel {
     );
 
   getUser = async (username: string, password: string): Promise<User> =>
-    await this._usersRepository.validateLogin(username, password);
+    await this._userRepository.validateLogin(username, password);
 
 
   saveToken = (tokenObject: TokenObject, client: Client, user: User): Object => {
-    this._usersRepository.saveAccessToken(user.id, tokenObject);
+    this._userRepository.saveAccessToken(user.id, tokenObject);
     return {
       accessToken: tokenObject.accessToken,
       client,

@@ -2,7 +2,7 @@
 
 import type {
   UserCredentials,
-  UsersRepository,
+  UserRepository,
 } from '../../types';
 
 import basicAuthParser from 'basic-auth-parser';
@@ -12,11 +12,11 @@ import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
 class UsersController extends Controller {
-  _usersRepository: UsersRepository;
+  _userRepository: UserRepository;
 
-  constructor(usersRepository: UsersRepository) {
+  constructor(userRepository: UserRepository) {
     super();
-    this._usersRepository = usersRepository;
+    this._userRepository = userRepository;
   }
 
   @httpVerb('post')
@@ -25,13 +25,13 @@ class UsersController extends Controller {
   async createUser(userCredentials: UserCredentials): Promise<*> {
     try {
       const isUserNameInUse =
-        this._usersRepository.isUserNameInUse(userCredentials.username);
+        this._userRepository.isUserNameInUse(userCredentials.username);
 
       if (isUserNameInUse) {
         throw new Error('user with the username is already exist');
       }
 
-      const newUser = await this._usersRepository.createWithCredentials(
+      const newUser = await this._userRepository.createWithCredentials(
         userCredentials,
       );
       return this.ok(newUser);
@@ -48,12 +48,12 @@ class UsersController extends Controller {
       const { username, password } = basicAuthParser(
         this.request.get('authorization'),
       );
-      const user = await this._usersRepository.validateLogin(
+      const user = await this._userRepository.validateLogin(
         username,
         password,
       );
 
-      this._usersRepository.deleteAccessToken(user, token);
+      this._userRepository.deleteAccessToken(user, token);
 
       return this.ok({ ok: true });
     } catch (error) {
@@ -69,7 +69,7 @@ class UsersController extends Controller {
       const { username, password } = basicAuthParser(
         this.request.get('authorization'),
       );
-      const user = await this._usersRepository.validateLogin(username, password);
+      const user = await this._userRepository.validateLogin(username, password);
       return this.ok(user.accessTokens);
     } catch (error) {
       return this.bad(error.message);

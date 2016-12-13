@@ -3,6 +3,7 @@
 import type { Device, DeviceRepository } from '../../types';
 import type { DeviceAPIType } from '../deviceToAPI';
 
+
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
@@ -55,9 +56,19 @@ class DevicesController extends Controller {
 
         return this.ok({ name: updatedAttributes.name, ok: true });
       }
+      // TODO not implemented yet
+      // 2 flash device with known app
+      if (this.request.app_id) {
+        this._deviceRepository.flashKnownApp(deviceID, this.request.files);
+        return this.ok({ id: deviceID, status: 'Update started' });
+      }
 
-
-      return this.ok();
+      // TODO not implemented yet
+      // 3 flash device with precompiled binary
+      if (this.request.files) {
+        this._deviceRepository.flashBinary(deviceID, this.request.files);
+        return this.ok({ id: deviceID, status: 'Update started' });
+      }
     } catch (exception) {
       return this.bad(exception);
     }

@@ -5,7 +5,7 @@ import type { TokenObject, User, UserCredentials } from '../../types';
 import { JSONFileManager, uuid } from 'spark-protocol';
 import PasswordHasher from '../PasswordHasher';
 
-class UsersFileRepository {
+class UserFileRepository {
   _fileManager: JSONFileManager;
 
   constructor(path: string) {
@@ -108,4 +108,4 @@ class UsersFileRepository {
   }
 }
 
-export default UsersFileRepository;
+export default UserFileRepository;

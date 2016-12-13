@@ -105,10 +105,53 @@ class DeviceRepository {
     if (!core) {
       return null;
     }
-    console.log(functionArguments);
     const result = await core.onApiMessage(
       deviceID,
       { cmd: 'CallFn', name: functionName, args: functionArguments },
+    );
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    return result.result;
+  };
+
+  flashBinary = async (
+    deviceID: string,
+    files: string,
+  ) => {
+    // TODO not implemented yet
+    const core = this._deviceServer.getCore(deviceID);
+    if (!core) {
+      return null;
+    }
+
+    const result = await core.onApiMessage(
+      deviceID,
+      { cmd: 'UFlash', args: { data: files[0].buffer } },
+    );
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    return result.result;
+  };
+
+  flashKnownApp = async (
+    deviceID: string,
+    app: string,
+  ) => {
+    // TODO not implemented yet
+    const core = this._deviceServer.getCore(deviceID);
+    if (!core) {
+      return null;
+    }
+
+    const result = await core.onApiMessage(
+      deviceID,
+      { cmd: 'FlashKnown', app },
     );
 
     if (result.error) {
