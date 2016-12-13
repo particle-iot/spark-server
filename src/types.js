@@ -85,7 +85,7 @@ export type Repository<TModel> = {
   update: (model: TModel) => TModel,
 };
 
-export type UsersRepository = Repository<User> & {
+export type UserRepository = Repository<User> & {
   createWithCredentials(credentials: UserCredentials): Promise<User>,
   deleteAccessToken(user: User, accessToken: string): void,
   getByAccessToken(accessToken: string): ?User,
@@ -113,7 +113,7 @@ export type Settings = {
   serverKeyFile: string,
   serverKeyPassEnvVar: ?string,
   serverKeyPassFile: ?string,
-  usersRepository: UsersRepository,
+  usersRepository: UserRepository,
   webhookRepository: Repository<*>,
 };
 

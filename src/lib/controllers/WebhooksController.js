@@ -32,7 +32,7 @@ const validateWebhookMutator = (webhookMutator: WebhookMutator): ?Error => {
   return null;
 };
 
-class WebhookController extends Controller {
+class WebhooksController extends Controller {
   _webhookRepository: Repository<Webhook>;
 
   constructor(webhookRepository: Repository<Webhook>) {
@@ -87,4 +87,4 @@ class WebhookController extends Controller {
   }
 }
 
-export default WebhookController;
+export default WebhooksController;

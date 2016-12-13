@@ -2,7 +2,7 @@
 
 import path from 'path';
 import WebhookFileRepository from '../src/lib/repository/WebhookFileRepository';
-import UsersFileRepository from '../src/lib/repository/UsersFileRepository';
+import UsersFileRepository from '../src/lib/repository/UserFileRepository';
 
 export default {
   accessTokenLifetime: 7776000, // 90 days,

@@ -25,10 +25,10 @@ import {
 
 // Routing
 import routeConfig from './lib/RouteConfig';
-import DeviceController from './lib/controllers/DeviceController';
+import DevicesController from './lib/controllers/DevicesController';
 import ProvisioningController from './lib/controllers/ProvisioningController';
 import UsersController from './lib/controllers/UsersController';
-import WebhookController from './lib/controllers/WebhookController';
+import WebhooksController from './lib/controllers/WebhooksController';
 
 export default (settings: Settings, deviceServer: Object): $Application => {
   const app = express();
@@ -73,10 +73,10 @@ export default (settings: Settings, deviceServer: Object): $Application => {
   routeConfig(
     app,
     [
-      new DeviceController(deviceRepository),
+      new DevicesController(deviceRepository),
       new ProvisioningController(deviceRepository),
       new UsersController(settings.usersRepository),
-      new WebhookController(settings.webhookRepository),
+      new WebhooksController(settings.webhookRepository),
     ],
     settings,
   );
