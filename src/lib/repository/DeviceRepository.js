@@ -49,11 +49,8 @@ class DeviceRepository {
     deviceID: string,
     userID: string,
   ): Promise<DeviceAttributes> => {
-    const userDevicesAttributes = await this.getAll(userID);
-    const deviceAttributes = userDevicesAttributes.find(
-      (attributes: DeviceAttributes): boolean =>
-        attributes.deviceID === deviceID,
-    );
+    const deviceAttributes =
+      await this._deviceAttributeRepository.getById(deviceID, userID);
 
     if (!deviceAttributes) {
       throw new Error('No device found');
