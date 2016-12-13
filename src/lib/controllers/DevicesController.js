@@ -19,11 +19,31 @@ class DevicesController extends Controller {
     this._deviceRepository = deviceRepository;
   }
 
+  @httpVerb('post')
+  @route('/v1/devices')
+  async claimDevice(postBody: { id: string }): Promise<*> {
+    const deviceID = postBody.id;
+    const userID = this.user.id;
+    await this._deviceRepository.claimDevice(deviceID, userID);
+
+    return this.ok({ ok: true });
+  }
+
+  @httpVerb('delete')
+  @route('/v1/devices/:deviceID')
+  async unclaimDevice(deviceID: string): Promise<*> {
+    const userID = this.user.id;
+    await this._deviceRepository.unclaimDevice(deviceID, userID);
+
+    return this.ok({ ok: true });
+  }
+
   @httpVerb('get')
   @route('/v1/devices')
   async getDevices(): Promise<*> {
     try {
-      const devices = await this._deviceRepository.getAll();
+      const userID = this.user.id;
+      const devices = await this._deviceRepository.getAll(userID);
 
       return this.ok(devices.map((device: Device): DeviceAPIType =>
         deviceToAPI(device)));
@@ -37,6 +57,7 @@ class DevicesController extends Controller {
   @route('/v1/devices/:deviceID')
   async getDevice(deviceID: string): Promise<*> {
     try {
+      // TODO add userID checking
       const device = await this._deviceRepository.getDetailsByID(deviceID);
       return this.ok(deviceToAPI(device));
     } catch (exception) {
@@ -52,10 +73,12 @@ class DevicesController extends Controller {
     postBody: { app_id?: string, name?: string, file_type?: 'binary' },
   ): Promise<*> {
     try {
+      const userID = this.user.id;
       // 1 rename device
       if (postBody.name) {
         const updatedAttributes = await this._deviceRepository.renameDevice(
           deviceID,
+          userID,
           postBody.name,
         );
 
@@ -70,17 +93,17 @@ class DevicesController extends Controller {
         );
         return this.ok({ id: deviceID, status: 'Update started' });
       }
-console.log(postBody);
+
       // TODO not implemented yet
       // 3 flash device with precompiled binary
       if (postBody.file_type === 'binary' && this.request.files.file) {
-        this._deviceRepository.flashBinary(deviceID, this.request.files.file);
+        await this._deviceRepository.flashBinary(deviceID, this.request.files.file);
         return this.ok({ id: deviceID, status: 'Update started' });
       }
 
       throw new Error('Did not update device');
     } catch (exception) {
-      return this.bad(exception);
+      return this.bad(exception.message);
     }
   }
 
@@ -98,6 +121,7 @@ console.log(postBody);
         postBody,
       );
 
+      // TODO add userID checking
       const device = await this._deviceRepository.getByID(deviceID);
       return this.ok(deviceToAPI(device, result));
     } catch (exception) {

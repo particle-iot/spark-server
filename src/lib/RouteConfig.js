@@ -9,6 +9,7 @@ import type {
 } from 'express';
 import type { Settings } from '../types';
 import type Controller from './controllers/Controller';
+import type HttpError from './HttpError';
 
 import OAuthModel from './OAuthModel';
 import OAuthServer from 'express-oauth-server';
@@ -35,7 +36,7 @@ const injectUserMiddleware = (): Middleware =>
     next();
   };
 const defaultMiddleware =
-  (request: $Request, response: $Response, next: NextFunction) => next();
+  (request: $Request, response: $Response, next: NextFunction): mixed => next();
 
 export default (
   app: $Application,
@@ -76,7 +77,7 @@ export default (
         allowedUploads
           ? injectFilesMiddleware.fields(allowedUploads)
           : defaultMiddleware,
-        async(request: $Request, response: $Response) => {
+        (request: $Request, response: $Response) => {
           const argumentNames = (route.match(/:[\w]*/g) || []).map(
             (argumentName: string): string => argumentName.replace(':', ''),
           );
@@ -91,27 +92,42 @@ export default (
 
           // Take access token out if it's posted.
           const {
-            access_token,
+            access_token, // eslint-disable-line no-unused-vars
             ...body
           } = request.body;
-          const result = mappedFunction.call(
-            controllerContext,
-            ...values,
-            body,
-          );
-          if (result.then) {
-            // eslint-disable-next-line no-shadow
-            result.then((result: Object): void => {
-              response.status(result.status).json(result.data);
+
+          try {
+            const functionResult = mappedFunction.call(
+              controllerContext,
+              ...values,
+              body,
+            );
+
+            if (functionResult.then) {
+              functionResult
+                .then((result: Object) => {
+                  response.status(result.status).json(result.data);
+                })
+                .catch((error: HttpError) => {
+                  response.status(error.status).json({
+                    error: error.message,
+                    ok: false,
+                  });
+                });
+            } else {
+              response.status(functionResult.status).json(functionResult.data);
+            }
+          } catch (error) {
+            response.status(error.status).json({
+              error: error.message,
+              ok: false,
             });
-          } else {
-            response.status(result.status).json(result.data);
           }
         });
     });
   });
 
-  app.all('*', (request: $Request, response: $Response): void => {
+  app.all('*', (request: $Request, response: $Response) => {
     response.sendStatus(404);
   });
 
@@ -119,13 +135,12 @@ export default (
     error: string,
     request: $Request,
     response: $Response,
-    next: NextFunction
-  ): void => {
+  ) => {
     response
       .status(400)
       .json({
         error: error.code ? error.code : error,
         ok: false,
       });
-  })
+  });
 };
