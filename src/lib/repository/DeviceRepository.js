@@ -54,7 +54,7 @@ class DeviceRepository {
       await this._deviceAttributeRepository.getById(deviceID, userID);
 
     if (!deviceAttributes) {
-      throw new Error('No device found', 404);
+      throw new HttpError('No device found', 404);
     }
 
     const attributesToSave = {
