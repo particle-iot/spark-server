@@ -90,7 +90,7 @@ class DeviceRepository {
   getDetailsByID = async (deviceID: string): Promise<Device> => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      throw new Error('Could not get device for ID');
+      throw new HttpError('Could not get device for ID', 404);
     }
 
     return Promise.all([
@@ -143,7 +143,7 @@ class DeviceRepository {
   ): Promise<*> => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      return null;
+      throw new HttpError('Could not get device for ID', 404);
     }
     const result = await core.onApiMessage(
       deviceID,
@@ -163,7 +163,7 @@ class DeviceRepository {
   ) => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      return null;
+      throw new HttpError('Could not get device for ID', 404);
     }
 
     const result = await core.onApiMessage(
@@ -185,7 +185,7 @@ class DeviceRepository {
     // TODO not implemented yet
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      return null;
+      throw new HttpError('Could not get device for ID', 404);
     }
 
     const result = await core.onApiMessage(
@@ -206,17 +206,17 @@ class DeviceRepository {
     publicKey: string,
   ): Promise<*> => {
     if (!deviceID) {
-      throw new Error('No deviceID provided');
+      throw new HttpError('No deviceID provided');
     }
 
     try {
       const createdKey = ursa.createPublicKey(publicKey);
       if (!publicKey || !ursa.isPublicKey(createdKey)) {
-        throw new Error('No key provided');
+        throw new HttpError('No key provided');
       }
-    } catch (exception) {
-      logger.error('error while parsing publicKey', exception);
-      throw new Error(`Key error ${exception}`);
+    } catch (error) {
+      logger.error('error while parsing publicKey', error);
+      throw new HttpError(`Key error ${error}`);
     }
     this._deviceKeyRepository.update(deviceID, publicKey);
     const existingAttributes = this._deviceAttributeRepository.getById(
@@ -243,7 +243,7 @@ class DeviceRepository {
     const attributes = await this._deviceAttributeRepository.getById(deviceID, userID);
 
     if (!attributes) {
-      throw new Error('No device found');
+      throw new HttpError('No device found', 404);
     }
 
     const attributesToSave = {

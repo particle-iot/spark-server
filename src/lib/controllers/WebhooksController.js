@@ -8,6 +8,7 @@ import type {
 } from '../../types';
 
 import Controller from './Controller';
+import HttpError from '../HttpError';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
@@ -15,18 +16,18 @@ const REQUEST_TYPES: Array<RequestType> = [
   'DELETE', 'GET', 'POST', 'PUT',
 ];
 
-const validateWebhookMutator = (webhookMutator: WebhookMutator): ?Error => {
+const validateWebhookMutator = (webhookMutator: WebhookMutator): ?HttpError => {
   if (!webhookMutator.event) {
-    return new Error('no event name provided');
+    return new HttpError('no event name provided');
   }
   if (!webhookMutator.url) {
-    return new Error('no url provided');
+    return new HttpError('no url provided');
   }
   if (!webhookMutator.requestType) {
-    return new Error('no requestType provided');
+    return new HttpError('no requestType provided');
   }
   if (!REQUEST_TYPES.includes(webhookMutator.requestType)) {
-    return new Error('wrong requestType');
+    return new HttpError('wrong requestType');
   }
 
   return null;
@@ -56,27 +57,23 @@ class WebhooksController extends Controller {
   @httpVerb('post')
   @route('/v1/webhooks')
   async create(model: WebhookMutator): Promise<*> {
-    try {
-      const validateError = validateWebhookMutator(model);
-      if (validateError) {
-        throw validateError;
-      }
-
-      const newWebhook = await this._webhookRepository.create({
-        ...model,
-        created_at: new Date(),
-        id: '',
-      });
-      return this.ok({
-        created_at: newWebhook.created_at,
-        event: newWebhook.event,
-        id: newWebhook.id,
-        ok: true,
-        url: newWebhook.url,
-      });
-    } catch (error) {
-      return this.bad(error.message);
+    const validateError = validateWebhookMutator(model);
+    if (validateError) {
+      throw validateError;
     }
+
+    const newWebhook = await this._webhookRepository.create({
+      ...model,
+      created_at: new Date(),
+      id: '',
+    });
+    return this.ok({
+      created_at: newWebhook.created_at,
+      event: newWebhook.event,
+      id: newWebhook.id,
+      ok: true,
+      url: newWebhook.url,
+    });
   }
 
   @httpVerb('delete')
