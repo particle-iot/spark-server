@@ -45,11 +45,14 @@ class DevicesController extends Controller {
 
   @httpVerb('put')
   @route('/v1/devices/:deviceID')
-  async updateDevice(deviceID: string, postBody: { name?: string }): Promise<*> {
+  async updateDevice(
+    deviceID: string,
+    postBody: { app_id?: string, name?: string },
+  ): Promise<*> {
     try {
       // 1 rename device
       if (postBody.name) {
-        const updatedAttributes = this._deviceRepository.renameDevice(
+        const updatedAttributes = await this._deviceRepository.renameDevice(
           deviceID,
           postBody.name,
         );
@@ -58,15 +61,18 @@ class DevicesController extends Controller {
       }
       // TODO not implemented yet
       // 2 flash device with known app
-      if (this.request.app_id) {
-        this._deviceRepository.flashKnownApp(deviceID, this.request.files);
+      if (postBody.app_id) {
+        await this._deviceRepository.flashKnownApp(
+          deviceID,
+          postBody.app_id,
+        );
         return this.ok({ id: deviceID, status: 'Update started' });
       }
 
       // TODO not implemented yet
       // 3 flash device with precompiled binary
       if (this.request.files) {
-        this._deviceRepository.flashBinary(deviceID, this.request.files);
+        await this._deviceRepository.flashBinary(deviceID, this.request.files);
         return this.ok({ id: deviceID, status: 'Update started' });
       }
     } catch (exception) {

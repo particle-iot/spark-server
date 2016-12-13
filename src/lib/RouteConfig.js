@@ -98,9 +98,9 @@ export default (
           );
           if (result.then) {
             // eslint-disable-next-line no-shadow
-            result.then((result: Object): void =>
-              response.status(result.status).json(result.data),
-            );
+            result.then((result: Object): void => {
+              response.status(result.status).json(result.data);
+            });
           } else {
             response.status(result.status).json(result.data);
           }
@@ -108,7 +108,7 @@ export default (
     });
   });
 
-  app.all('*', (request: $Request, response: $Response): void =>
-    response.sendStatus(404),
-  );
+  app.all('*', (request: $Request, response: $Response): void => {
+    response.sendStatus(404);
+  });
 };

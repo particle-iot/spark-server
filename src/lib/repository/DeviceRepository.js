@@ -1,5 +1,6 @@
 // @flow
 
+import type {File} from 'express';
 import type { DeviceServer } from 'spark-protocol';
 import type { Device, DeviceAttributes, Repository } from '../../types';
 
@@ -119,9 +120,8 @@ class DeviceRepository {
 
   flashBinary = async (
     deviceID: string,
-    files: string,
+    files: Array<File>,
   ) => {
-    // TODO not implemented yet
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
       return null;
@@ -195,13 +195,16 @@ class DeviceRepository {
     return await this.getByID(deviceID);
   };
 
-  renameDevice = (deviceID: string, name: string): DeviceAttributes => {
-    const attributes = this._deviceAttributeRepository.getById(deviceID);
+  renameDevice = async (
+    deviceID: string,
+    name: string,
+  ): Promise<DeviceAttributes> => {
+    const attributes = await this._deviceAttributeRepository.getById(deviceID);
     const attributesToSave = {
       ...attributes,
       name,
     };
-    return this._deviceAttributeRepository.update(attributesToSave);
+    return await this._deviceAttributeRepository.update(attributesToSave);
   }
 }
 

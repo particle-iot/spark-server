@@ -15,10 +15,23 @@ declare class express$RequestResponseBase {
   get(field: string): string | void;
 }
 
+declare type $File = {
+  buffer: Buffer,
+  destination: string,
+  encoding: string,
+  fieldname: string,
+  filename: string,
+  mimetype: string,
+  originalname: string,
+  path: string,
+  size: number,
+};
+
 declare class express$Request extends http$IncomingMessage mixins express$RequestResponseBase {
   baseUrl: string;
   body: Object;
   cookies: {[cookie: string]: string};
+  files: Array<$File>,
   fresh: boolean;
   hostname: boolean;
   ip: string;
@@ -171,6 +184,7 @@ declare module 'express' {
 
   declare type RouterOptions = express$RouterOptions;
   declare type CookieOptions = express$CookieOptions;
+  declare type File = $File;
   declare type Middleware = express$Middleware;
   declare type NextFunction = express$NextFunction;
   declare type $Response = express$Response;

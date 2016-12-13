@@ -1,5 +1,7 @@
 // @flow
 
+import type {File} from 'express';
+
 export type Webhook = WebhookMutator & {
   created_at: Date,
   id: string,
@@ -123,8 +125,11 @@ export type DeviceRepository = {
     functionName: string,
     functionArguments: Object,
   ): Promise<*>,
+  flashKnownApp(deviceID: string, app: string): Promise<*>,
+  flashBinary(deviceID: string, files: Array<$File>): Promise<*>,
   getAll(): Promise<Array<Device>>,
   getDetailsByID(deviceID: string): Promise<*>,
   getByID(deviceID: string): Promise<Device>,
   provision(deviceID: string, userID: string, publicKey: string): Promise<*>,
+  renameDevice(deviceID: string, name: string): Promise<DeviceAttributes>,
 };
