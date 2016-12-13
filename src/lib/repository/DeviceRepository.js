@@ -1,6 +1,6 @@
 // @flow
 
-import type {File} from 'express';
+import type { File } from 'express';
 import type { DeviceServer } from 'spark-protocol';
 import type { Device, DeviceAttributes, Repository } from '../../types';
 
@@ -25,8 +25,49 @@ class DeviceRepository {
     this._deviceServer = deviceServer;
   }
 
-  getByID = async (deviceID: string): Promise<Device> => {
-    const attributes = await this._deviceAttributeRepository.getById(deviceID);
+  claimDevice = async (
+    deviceID: string,
+    userID: string,
+  ): Promise<DeviceAttributes> => {
+    const deviceAttributes = await this._deviceAttributeRepository.getById(deviceID);
+
+    if (!deviceAttributes) {
+      throw new Error('No device found');
+    }
+    if (deviceAttributes.ownerID && deviceAttributes.ownerID !== userID) {
+      throw new Error('The device belongs to someone else.');
+    }
+
+    const attributesToSave = {
+      ...deviceAttributes,
+      ownerID: userID,
+    };
+    return await this._deviceAttributeRepository.update(attributesToSave);
+  };
+
+  unclaimDevice = async (
+    deviceID: string,
+    userID: string,
+  ): Promise<DeviceAttributes> => {
+    const userDevicesAttributes = await this.getAll(userID);
+    const deviceAttributes = userDevicesAttributes.find(
+      (attributes: DeviceAttributes): boolean =>
+        attributes.deviceID === deviceID,
+    );
+
+    if (!deviceAttributes) {
+      throw new Error('No device found');
+    }
+
+    const attributesToSave = {
+      ...deviceAttributes,
+      ownerID: null,
+    };
+    return await this._deviceAttributeRepository.update(attributesToSave);
+  };
+
+  getByID = async (deviceID: string, userID: string): Promise<Device> => {
+    const attributes = await this._deviceAttributeRepository.getById(deviceID, userID);
     const core = this._deviceServer.getCore(attributes.deviceID);
     // TODO: Not sure if this should actually be the core ID that gets sent
     // but that's what the old source code does :/
@@ -70,8 +111,8 @@ class DeviceRepository {
     }));
   };
 
-  getAll = async (): Promise<Array<Device>> => {
-    const devicesAttributes = await this._deviceAttributeRepository.getAll();
+  getAll = async (userID: string): Promise<Array<Device>> => {
+    const devicesAttributes = await this._deviceAttributeRepository.getAll(userID);
     const devicePromises = devicesAttributes.map(async attributes => {
       const core = this._deviceServer.getCore(attributes.deviceID);
       // TODO: Not sure if this should actually be the core ID that gets sent
@@ -187,19 +228,26 @@ class DeviceRepository {
       deviceID,
       name: NAME_GENERATOR.choose(),
       ...existingAttributes,
+      ownerID: userID,
       registrar: userID,
       timestamp: new Date(),
     };
-    this._deviceAttributeRepository.update(attributes);
+    await this._deviceAttributeRepository.update(attributes);
 
-    return await this.getByID(deviceID);
+    return await this.getByID(deviceID, userID);
   };
 
   renameDevice = async (
     deviceID: string,
+    userID: string,
     name: string,
   ): Promise<DeviceAttributes> => {
-    const attributes = await this._deviceAttributeRepository.getById(deviceID);
+    const attributes = await this._deviceAttributeRepository.getById(deviceID, userID);
+
+    if (!attributes) {
+      throw new Error('No device found');
+    }
+
     const attributesToSave = {
       ...attributes,
       name,

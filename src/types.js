@@ -1,6 +1,6 @@
 // @flow
 
-import type {File} from 'express';
+import type { File } from 'express';
 
 export type Webhook = WebhookMutator & {
   created_at: Date,
@@ -38,6 +38,7 @@ export type DeviceAttributes = {
   deviceID: string,
   ip: string,
   name: string,
+  ownerID: ?string,
   particleProductId: number,
   productFirmwareVersion: string,
   registrar: string,
@@ -125,11 +126,13 @@ export type DeviceRepository = {
     functionName: string,
     functionArguments: Object,
   ): Promise<*>,
-  flashKnownApp(deviceID: string, app: string): Promise<*>,
+  claimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
   flashBinary(deviceID: string, files: Array<$File>): Promise<*>,
-  getAll(): Promise<Array<Device>>,
+  flashKnownApp(deviceID: string, app: string): Promise<*>,
+  getAll(userID: string): Promise<Array<Device>>,
+  getByID(deviceID: string, userID: string): Promise<Device>,
   getDetailsByID(deviceID: string): Promise<*>,
-  getByID(deviceID: string): Promise<Device>,
   provision(deviceID: string, userID: string, publicKey: string): Promise<*>,
-  renameDevice(deviceID: string, name: string): Promise<DeviceAttributes>,
+  renameDevice(deviceID: string, userID: string, name: string): Promise<DeviceAttributes>,
+  unclaimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
 };
