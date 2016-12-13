@@ -34,7 +34,8 @@ const injectUserMiddleware = (): Middleware =>
     }
     next();
   };
-
+const defaultMiddleware =
+  (request: $Request, response: $Response, next: NextFunction) => next();
 
 export default (
   app: $Application,
@@ -63,7 +64,7 @@ export default (
       (Object.getPrototypeOf(controller): any),
     ).forEach((functionName: string) => {
       const mappedFunction = (controller: any)[functionName];
-      const { httpVerb, route, anonymous } = mappedFunction;
+      const { allowedUploads, anonymous, httpVerb, route } = mappedFunction;
       if (!httpVerb) {
         return;
       }
@@ -72,7 +73,9 @@ export default (
         route,
         maybe(oauth.authenticate(), !anonymous),
         injectUserMiddleware(),
-        injectFilesMiddleware.any(),
+        allowedUploads
+          ? injectFilesMiddleware.fields(allowedUploads)
+          : defaultMiddleware,
         async(request: $Request, response: $Response) => {
           const argumentNames = (route.match(/:[\w]*/g) || []).map(
             (argumentName: string): string => argumentName.replace(':', ''),
@@ -111,4 +114,18 @@ export default (
   app.all('*', (request: $Request, response: $Response): void => {
     response.sendStatus(404);
   });
+
+  (app: any).use((
+    error: string,
+    request: $Request,
+    response: $Response,
+    next: NextFunction
+  ): void => {
+    response
+      .status(400)
+      .json({
+        error: error.code ? error.code : error,
+        ok: false,
+      });
+  })
 };

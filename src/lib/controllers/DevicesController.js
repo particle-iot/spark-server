@@ -5,6 +5,7 @@ import type { DeviceAPIType } from '../deviceToAPI';
 
 
 import Controller from './Controller';
+import allowUpload from '../decorators/allowUpload';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 import deviceToAPI from '../deviceToAPI';
@@ -45,9 +46,10 @@ class DevicesController extends Controller {
 
   @httpVerb('put')
   @route('/v1/devices/:deviceID')
+  @allowUpload('file', 1)
   async updateDevice(
     deviceID: string,
-    postBody: { app_id?: string, name?: string },
+    postBody: { app_id?: string, name?: string, file_type?: 'binary' },
   ): Promise<*> {
     try {
       // 1 rename device
@@ -62,19 +64,21 @@ class DevicesController extends Controller {
       // TODO not implemented yet
       // 2 flash device with known app
       if (postBody.app_id) {
-        await this._deviceRepository.flashKnownApp(
+        this._deviceRepository.flashKnownApp(
           deviceID,
           postBody.app_id,
         );
         return this.ok({ id: deviceID, status: 'Update started' });
       }
-
+console.log(postBody);
       // TODO not implemented yet
       // 3 flash device with precompiled binary
-      if (this.request.files) {
-        await this._deviceRepository.flashBinary(deviceID, this.request.files);
+      if (postBody.file_type === 'binary' && this.request.files.file) {
+        this._deviceRepository.flashBinary(deviceID, this.request.files.file);
         return this.ok({ id: deviceID, status: 'Update started' });
       }
+
+      throw new Error('Did not update device');
     } catch (exception) {
       return this.bad(exception);
     }

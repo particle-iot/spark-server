@@ -31,7 +31,7 @@ declare class express$Request extends http$IncomingMessage mixins express$Reques
   baseUrl: string;
   body: Object;
   cookies: {[cookie: string]: string};
-  files: Array<$File>,
+  files: {[key: string]: Array<$File>},
   fresh: boolean;
   hostname: boolean;
   ip: string;
