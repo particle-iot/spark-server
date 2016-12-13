@@ -7,6 +7,7 @@ import type { Device, DeviceAttributes, Repository } from '../../types';
 import Moniker from 'moniker';
 import ursa from 'ursa';
 import logger from '../logger';
+import HttpError from '../HttpError';
 
 const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
 
@@ -32,10 +33,10 @@ class DeviceRepository {
     const deviceAttributes = await this._deviceAttributeRepository.getById(deviceID);
 
     if (!deviceAttributes) {
-      throw new Error('No device found');
+      throw new HttpError('No device found', 404);
     }
     if (deviceAttributes.ownerID && deviceAttributes.ownerID !== userID) {
-      throw new Error('The device belongs to someone else.');
+      throw new HttpError('The device belongs to someone else.');
     }
 
     const attributesToSave = {
@@ -53,7 +54,7 @@ class DeviceRepository {
       await this._deviceAttributeRepository.getById(deviceID, userID);
 
     if (!deviceAttributes) {
-      throw new Error('No device found');
+      throw new Error('No device found', 404);
     }
 
     const attributesToSave = {

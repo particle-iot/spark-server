@@ -9,6 +9,7 @@ import type {
 } from 'express';
 import type { Settings } from '../types';
 import type Controller from './controllers/Controller';
+import type HttpError from './HttpError';
 
 import OAuthModel from './OAuthModel';
 import OAuthServer from 'express-oauth-server';
@@ -94,18 +95,32 @@ export default (
             access_token,
             ...body
           } = request.body;
-          const result = mappedFunction.call(
-            controllerContext,
-            ...values,
-            body,
-          );
-          if (result.then) {
-            // eslint-disable-next-line no-shadow
-            result.then((result: Object): void => {
+
+          try {
+            const result = mappedFunction.call(
+              controllerContext,
+              ...values,
+              body,
+            );
+
+            if (result.then) {
+              // eslint-disable-next-line no-shadow
+              result.then((result: Object): void => {
+                response.status(result.status).json(result.data);
+              }).catch((error: HttpError) => {
+                response.status(error.status).json({
+                  error: error.message,
+                  ok: false,
+                });
+              });
+            } else {
               response.status(result.status).json(result.data);
+            }
+          } catch (error) {
+            response.status(error.status).json({
+              error: error.message,
+              ok: false,
             });
-          } else {
-            response.status(result.status).json(result.data);
           }
         });
     });
@@ -119,13 +134,13 @@ export default (
     error: string,
     request: $Request,
     response: $Response,
-    next: NextFunction
-  ): void => {
+    next: NextFunction,
+  ) => {
     response
       .status(400)
       .json({
         error: error.code ? error.code : error,
         ok: false,
       });
-  })
+  });
 };

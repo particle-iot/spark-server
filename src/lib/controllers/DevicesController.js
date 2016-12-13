@@ -21,30 +21,21 @@ class DevicesController extends Controller {
 
   @httpVerb('post')
   @route('/v1/devices')
-  async claimDevice(postBody: { id: string}): Promise<*> {
-    try {
-      const deviceID = postBody.id;
-      const userID = this.user.id;
+  async claimDevice(postBody: { id: string }): Promise<*> {
+    const deviceID = postBody.id;
+    const userID = this.user.id;
+    await this._deviceRepository.claimDevice(deviceID, userID);
 
-      await this._deviceRepository.claimDevice(deviceID, userID);
-
-      return this.ok({ ok: true });
-    } catch (exception) {
-      return this.bad(exception.message);
-    }
+    return this.ok({ ok: true });
   }
 
   @httpVerb('delete')
   @route('/v1/devices/:deviceID')
   async unclaimDevice(deviceID: string): Promise<*> {
-    try {
-      const userID = this.user.id;
-      await this._deviceRepository.unclaimDevice(deviceID, userID);
+    const userID = this.user.id;
+    await this._deviceRepository.unclaimDevice(deviceID, userID);
 
-      return this.ok({ ok: true });
-    } catch (exception) {
-      return this.bad(exception.message);
-    }
+    return this.ok({ ok: true });
   }
 
   @httpVerb('get')
@@ -70,7 +61,7 @@ class DevicesController extends Controller {
       const device = await this._deviceRepository.getDetailsByID(deviceID);
       return this.ok(deviceToAPI(device));
     } catch (exception) {
-      return this.bad(exception.message);
+      return this.bad(exception);
     }
   }
 
