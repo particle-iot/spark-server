@@ -85,7 +85,7 @@
     "flow-bin": "^0.36.0",
     "nodemon": "^1.11.0",
     "rimraf": "^2.5.4",
-    "superset": "^1.0.1",
+    "supertest": "^2.0.1",
     "supertest-as-promised": "^4.0.2"
   }
 }
