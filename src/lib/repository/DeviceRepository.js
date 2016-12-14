@@ -100,24 +100,25 @@ class DeviceRepository {
       throw new HttpError('No device found', 404);
     }
 
-    return Promise.all([
+    const [ attributes, description ] = await Promise.all([
       this._deviceAttributeRepository.getById(deviceID, userID),
       core.onApiMessage(
         deviceID,
         { cmd: 'Describe' },
       ),
-    ]).then(([attributes, description]): Device => {
-      if (!attributes) {
-        throw new HttpError('No device found', 404);
-      }
-      return ({
-        ...attributes,
-        connected: true,
-        functions: description.f,
-        lastFlashedAppName: null,
-        lastHeard: new Date(),
-        variables: description.v,
-      });
+    ]);
+
+    if (!attributes) {
+      throw new HttpError('No device found', 404);
+    }
+
+    return ({
+      ...attributes,
+      connected: true,
+      functions: description.f,
+      lastFlashedAppName: null,
+      lastHeard: new Date(),
+      variables: description.v,
     });
   };
 
@@ -148,15 +149,13 @@ class DeviceRepository {
     return Promise.all(devicePromises);
   };
 
-  callFunction= async (
+  callFunction = async (
     deviceID: string,
     userID: string,
     functionName: string,
     functionArguments: Object,
   ): Promise<*> => {
-    const doesCoreBelongsToUser =
-      await this._deviceAttributeRepository.getById(deviceID, userID);
-    if (!doesCoreBelongsToUser) {
+    if (!this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
       throw new HttpError('No device found', 404);
     }
 
