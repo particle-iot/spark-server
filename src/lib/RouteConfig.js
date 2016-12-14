@@ -109,7 +109,7 @@ export default (
                   response.status(result.status).json(result.data);
                 })
                 .catch((error: HttpError) => {
-                  response.status(error.status).json({
+                  response.status(error.status || 400).json({
                     error: error.message,
                     ok: false,
                   });
@@ -118,7 +118,7 @@ export default (
               response.status(functionResult.status).json(functionResult.data);
             }
           } catch (error) {
-            response.status(error.status).json({
+            response.status(error.status || 400).json({
               error: error.message,
               ok: false,
             });
