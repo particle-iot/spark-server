@@ -22,18 +22,13 @@ class ProvisioningController extends Controller {
     coreID: string,
     postBody: { publicKey: string },
   ): Promise<*> {
-    try {
-      const device = await this._deviceRepository.provision(
-        coreID,
-        this.user.id,
-        postBody.publicKey,
-      );
+    const device = await this._deviceRepository.provision(
+      coreID,
+      this.user.id,
+      postBody.publicKey,
+    );
 
-      return this.ok(deviceToAPI(device));
-    } catch (exception) {
-      // I wish we could return no devices found but meh :/
-      return this.ok([]);
-    }
+    return this.ok(deviceToAPI(device));
   }
 }
 

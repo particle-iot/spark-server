@@ -1,12 +1,13 @@
 // @flow
 
-import type {File} from 'express';
+import type { File } from 'express';
 import type { DeviceServer } from 'spark-protocol';
 import type { Device, DeviceAttributes, Repository } from '../../types';
 
 import Moniker from 'moniker';
 import ursa from 'ursa';
 import logger from '../logger';
+import HttpError from '../HttpError';
 
 const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
 
@@ -25,8 +26,46 @@ class DeviceRepository {
     this._deviceServer = deviceServer;
   }
 
-  getByID = async (deviceID: string): Promise<Device> => {
-    const attributes = await this._deviceAttributeRepository.getById(deviceID);
+  claimDevice = async (
+    deviceID: string,
+    userID: string,
+  ): Promise<DeviceAttributes> => {
+    const deviceAttributes = await this._deviceAttributeRepository.getById(deviceID);
+
+    if (!deviceAttributes) {
+      throw new HttpError('No device found', 404);
+    }
+    if (deviceAttributes.ownerID && deviceAttributes.ownerID !== userID) {
+      throw new HttpError('The device belongs to someone else.');
+    }
+
+    const attributesToSave = {
+      ...deviceAttributes,
+      ownerID: userID,
+    };
+    return await this._deviceAttributeRepository.update(attributesToSave);
+  };
+
+  unclaimDevice = async (
+    deviceID: string,
+    userID: string,
+  ): Promise<DeviceAttributes> => {
+    const deviceAttributes =
+      await this._deviceAttributeRepository.getById(deviceID, userID);
+
+    if (!deviceAttributes) {
+      throw new HttpError('No device found', 404);
+    }
+
+    const attributesToSave = {
+      ...deviceAttributes,
+      ownerID: null,
+    };
+    return await this._deviceAttributeRepository.update(attributesToSave);
+  };
+
+  getByID = async (deviceID: string, userID: string): Promise<Device> => {
+    const attributes = await this._deviceAttributeRepository.getById(deviceID, userID);
     const core = this._deviceServer.getCore(attributes.deviceID);
     // TODO: Not sure if this should actually be the core ID that gets sent
     // but that's what the old source code does :/
@@ -51,7 +90,7 @@ class DeviceRepository {
   getDetailsByID = async (deviceID: string): Promise<Device> => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      throw new Error('Could not get device for ID');
+      throw new HttpError('Could not get device for ID', 404);
     }
 
     return Promise.all([
@@ -70,8 +109,8 @@ class DeviceRepository {
     }));
   };
 
-  getAll = async (): Promise<Array<Device>> => {
-    const devicesAttributes = await this._deviceAttributeRepository.getAll();
+  getAll = async (userID: string): Promise<Array<Device>> => {
+    const devicesAttributes = await this._deviceAttributeRepository.getAll(userID);
     const devicePromises = devicesAttributes.map(async attributes => {
       const core = this._deviceServer.getCore(attributes.deviceID);
       // TODO: Not sure if this should actually be the core ID that gets sent
@@ -104,7 +143,7 @@ class DeviceRepository {
   ): Promise<*> => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      return null;
+      throw new HttpError('Could not get device for ID', 404);
     }
     const result = await core.onApiMessage(
       deviceID,
@@ -124,7 +163,7 @@ class DeviceRepository {
   ) => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      return null;
+      throw new HttpError('Could not get device for ID', 404);
     }
 
     const result = await core.onApiMessage(
@@ -146,7 +185,7 @@ class DeviceRepository {
     // TODO not implemented yet
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      return null;
+      throw new HttpError('Could not get device for ID', 404);
     }
 
     const result = await core.onApiMessage(
@@ -167,17 +206,17 @@ class DeviceRepository {
     publicKey: string,
   ): Promise<*> => {
     if (!deviceID) {
-      throw new Error('No deviceID provided');
+      throw new HttpError('No deviceID provided');
     }
 
     try {
       const createdKey = ursa.createPublicKey(publicKey);
       if (!publicKey || !ursa.isPublicKey(createdKey)) {
-        throw new Error('No key provided');
+        throw new HttpError('No key provided');
       }
-    } catch (exception) {
-      logger.error('error while parsing publicKey', exception);
-      throw new Error(`Key error ${exception}`);
+    } catch (error) {
+      logger.error('error while parsing publicKey', error);
+      throw new HttpError(`Key error ${error}`);
     }
     this._deviceKeyRepository.update(deviceID, publicKey);
     const existingAttributes = this._deviceAttributeRepository.getById(
@@ -187,19 +226,26 @@ class DeviceRepository {
       deviceID,
       name: NAME_GENERATOR.choose(),
       ...existingAttributes,
+      ownerID: userID,
       registrar: userID,
       timestamp: new Date(),
     };
-    this._deviceAttributeRepository.update(attributes);
+    await this._deviceAttributeRepository.update(attributes);
 
-    return await this.getByID(deviceID);
+    return await this.getByID(deviceID, userID);
   };
 
   renameDevice = async (
     deviceID: string,
+    userID: string,
     name: string,
   ): Promise<DeviceAttributes> => {
-    const attributes = await this._deviceAttributeRepository.getById(deviceID);
+    const attributes = await this._deviceAttributeRepository.getById(deviceID, userID);
+
+    if (!attributes) {
+      throw new HttpError('No device found', 404);
+    }
+
     const attributesToSave = {
       ...attributes,
       name,

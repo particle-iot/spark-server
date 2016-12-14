@@ -5,6 +5,7 @@ import type { DeviceAPIType } from '../deviceToAPI';
 
 
 import Controller from './Controller';
+import HttpError from '../HttpError';
 import allowUpload from '../decorators/allowUpload';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
@@ -19,15 +20,35 @@ class DevicesController extends Controller {
     this._deviceRepository = deviceRepository;
   }
 
+  @httpVerb('post')
+  @route('/v1/devices')
+  async claimDevice(postBody: { id: string }): Promise<*> {
+    const deviceID = postBody.id;
+    const userID = this.user.id;
+    await this._deviceRepository.claimDevice(deviceID, userID);
+
+    return this.ok({ ok: true });
+  }
+
+  @httpVerb('delete')
+  @route('/v1/devices/:deviceID')
+  async unclaimDevice(deviceID: string): Promise<*> {
+    const userID = this.user.id;
+    await this._deviceRepository.unclaimDevice(deviceID, userID);
+
+    return this.ok({ ok: true });
+  }
+
   @httpVerb('get')
   @route('/v1/devices')
   async getDevices(): Promise<*> {
     try {
-      const devices = await this._deviceRepository.getAll();
-
+      const userID = this.user.id;
+      const devices = await this._deviceRepository.getAll(userID);
       return this.ok(devices.map((device: Device): DeviceAPIType =>
-        deviceToAPI(device)));
-    } catch (exception) {
+        deviceToAPI(device)),
+      );
+    } catch (error) {
       // I wish we could return no devices found but meh :/
       return this.ok([]);
     }
@@ -36,12 +57,9 @@ class DevicesController extends Controller {
   @httpVerb('get')
   @route('/v1/devices/:deviceID')
   async getDevice(deviceID: string): Promise<*> {
-    try {
-      const device = await this._deviceRepository.getDetailsByID(deviceID);
-      return this.ok(deviceToAPI(device));
-    } catch (exception) {
-      return this.bad(exception);
-    }
+    // TODO add userID checking
+    const device = await this._deviceRepository.getDetailsByID(deviceID);
+    return this.ok(deviceToAPI(device));
   }
 
   @httpVerb('put')
@@ -51,18 +69,20 @@ class DevicesController extends Controller {
     deviceID: string,
     postBody: { app_id?: string, name?: string, file_type?: 'binary' },
   ): Promise<*> {
-    try {
-      // 1 rename device
-      if (postBody.name) {
-        const updatedAttributes = await this._deviceRepository.renameDevice(
-          deviceID,
-          postBody.name,
-        );
+    const userID = this.user.id;
+    // 1 rename device
+    if (postBody.name) {
+      const updatedAttributes = await this._deviceRepository.renameDevice(
+        deviceID,
+        userID,
+        postBody.name,
+      );
 
-        return this.ok({ name: updatedAttributes.name, ok: true });
-      }
-      // TODO not implemented yet
-      // 2 flash device with known app
+      return this.ok({ name: updatedAttributes.name, ok: true });
+    }
+    // TODO not implemented yet
+    // 2 flash device with known app
+    try {
       if (postBody.app_id) {
         this._deviceRepository.flashKnownApp(
           deviceID,
@@ -70,18 +90,18 @@ class DevicesController extends Controller {
         );
         return this.ok({ id: deviceID, status: 'Update started' });
       }
-console.log(postBody);
+
       // TODO not implemented yet
       // 3 flash device with precompiled binary
       if (postBody.file_type === 'binary' && this.request.files.file) {
-        this._deviceRepository.flashBinary(deviceID, this.request.files.file);
+        await this._deviceRepository.flashBinary(deviceID, this.request.files.file);
         return this.ok({ id: deviceID, status: 'Update started' });
       }
-
-      throw new Error('Did not update device');
-    } catch (exception) {
-      return this.bad(exception);
+    } catch (error) {
+      throw new HttpError(error.message);
     }
+
+    throw new HttpError('Did not update device');
   }
 
   @httpVerb('post')
@@ -98,17 +118,14 @@ console.log(postBody);
         postBody,
       );
 
+      // TODO add userID checking
       const device = await this._deviceRepository.getByID(deviceID);
       return this.ok(deviceToAPI(device, result));
-    } catch (exception) {
-      if (exception.indexOf('Unknown Function') >= 0) {
-        return this.bad(
-          'Function not found',
-          404,
-        );
+    } catch (error) {
+      if (error.indexOf('Unknown Function') >= 0) {
+        throw new HttpError('Function not found', 404);
       }
-
-      return this.bad(exception);
+      throw new HttpError(error.message);
     }
   }
 }

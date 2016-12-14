@@ -30,9 +30,8 @@ test.serial('should throw an error if username already in use', async t => {
   const response = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
-
   t.is(response.status, 400);
-  t.is(response.body.message, 'user with the username is already exist');
+  t.is(response.body.error, 'user with the username is already exist');
 });
 
 test.serial('should login the user', async t => {
