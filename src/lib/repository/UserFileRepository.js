@@ -34,26 +34,28 @@ class UserFileRepository {
     return modelToSave;
   };
 
-  create = (user: User): User => {
+  create = (user: User): Promise<User> => {
     throw 'Not implemented';
   };
 
-  update = (user: User): User => {
+  update = (user: User): Promise<User> => {
     throw 'Not implemented';
   };
 
-  getAll = (): Array<User> =>
+  getAll = (): Promise<Array<User>> =>
     this._fileManager.getAllData();
 
-  getById = (id: string): User =>
+  getById = (id: string): Promise<?User> =>
     this._fileManager.getFile(`${id}.json`);
 
-  getByUsername = (username: string): ?User =>
-    this.getAll().find((user: User): boolean => user.username === username);
+  getByUsername = async (username: string): Promise<?User> =>
+    (await this.getAll()).find(
+      (user: User): boolean => user.username === username,
+    );
 
   validateLogin = async (username: string, password: string): Promise<User> => {
     try {
-      const user = this.getByUsername(username);
+      const user = await this.getByUsername(username);
       if (!user) {
         throw new Error('User doesn\'t exist');
       }
@@ -69,8 +71,8 @@ class UserFileRepository {
     }
   };
 
-  getByAccessToken = (accessToken: string): ?User =>
-    this.getAll().find((user: User): boolean =>
+  getByAccessToken = async (accessToken: string): Promise<?User> =>
+    (await this.getAll()).find((user: User): boolean =>
       user.accessTokens.some((tokenObject: TokenObject): boolean =>
         tokenObject.accessToken === accessToken,
       ),
@@ -88,23 +90,31 @@ class UserFileRepository {
     this._fileManager.writeFile(`${user.id}.json`, userToSave);
   };
 
-  deleteById = (id: string): void =>
+  deleteById = (id: string): Promise<void> =>
     this._fileManager.deleteFile(`${id}.json`);
 
 
-  isUserNameInUse = (username: string): boolean =>
-    this.getAll().some((user: User): boolean =>
+  isUserNameInUse = async (username: string): Promise<boolean> =>
+    (await this.getAll()).some((user: User): boolean =>
       user.username === username,
     );
 
-  saveAccessToken = (userId: string, tokenObject: TokenObject): void => {
-    const user = this.getById(userId);
+  saveAccessToken = async (
+    userID: string,
+    tokenObject: TokenObject,
+  ): Promise<*> => {
+    const user = await this.getById(userID);
+
+    if (!user) {
+      throw new HttpError('Could not find user for user ID');
+    }
+
     const userToSave = {
       ...user,
       accessTokens: [...user.accessTokens, tokenObject],
     };
 
-    this._fileManager.writeFile(`${userId}.json`, userToSave);
+    this._fileManager.writeFile(`${userID}.json`, userToSave);
   }
 }
 

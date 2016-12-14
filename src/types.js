@@ -38,6 +38,7 @@ export type DeviceAttributes = {
   deviceID: string,
   ip: string,
   name: string,
+  ownerID: ?string,
   particleProductId: number,
   productFirmwareVersion: string,
   registrar: string,
@@ -80,19 +81,19 @@ export type Device = DeviceAttributes & {
 };
 
 export type Repository<TModel> = {
-  create: (model: TModel) => TModel,
-  deleteById: (id: string) => void,
-  getAll: () => Array<TModel>,
-  getById: (id: string) => TModel,
-  update: (model: TModel) => TModel,
+  create: (model: TModel) => Promise<TModel>,
+  deleteById: (id: string) => Promise<void>,
+  getAll: () => Promise<Array<TModel>>,
+  getById: (id: string) => Promise<?TModel>,
+  update: (model: TModel) => Promise<TModel>,
 };
 
 export type UserRepository = Repository<User> & {
   createWithCredentials(credentials: UserCredentials): Promise<User>,
   deleteAccessToken(user: User, accessToken: string): void,
-  getByAccessToken(accessToken: string): ?User,
-  getByUsername(username: string): ?User,
-  isUserNameInUse(username: string): boolean,
+  getByAccessToken(accessToken: string): Promise<?User>,
+  getByUsername(username: string): Promise<?User>,
+  isUserNameInUse(username: string): Promise<boolean>,
   saveAccessToken(userId: string, tokenObject: TokenObject): void,
   validateLogin(username: string, password: string): Promise<User>,
 };
