@@ -94,26 +94,31 @@ class DeviceRepository {
     };
   };
 
-  getDetailsByID = async (deviceID: string): Promise<Device> => {
+  getDetailsByID = async (deviceID: string, userID: string): Promise<Device> => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
-      throw new HttpError('Could not get device for ID', 404);
+      throw new HttpError('No device found', 404);
     }
 
     return Promise.all([
-      this._deviceAttributeRepository.getById(deviceID),
+      this._deviceAttributeRepository.getById(deviceID, userID),
       core.onApiMessage(
         deviceID,
         { cmd: 'Describe' },
       ),
-    ]).then(([attributes, description]): Device => ({
-      ...attributes,
-      connected: true,
-      functions: description.f,
-      lastFlashedAppName: null,
-      lastHeard: new Date(),
-      variables: description.v,
-    }));
+    ]).then(([attributes, description]): Device => {
+      if (!attributes) {
+        throw new HttpError('No device found', 404);
+      }
+      return ({
+        ...attributes,
+        connected: true,
+        functions: description.f,
+        lastFlashedAppName: null,
+        lastHeard: new Date(),
+        variables: description.v,
+      });
+    });
   };
 
   getAll = async (userID: string): Promise<Array<Device>> => {
