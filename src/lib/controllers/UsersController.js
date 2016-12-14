@@ -26,7 +26,7 @@ class UsersController extends Controller {
   async createUser(userCredentials: UserCredentials): Promise<*> {
     try {
       const isUserNameInUse =
-        this._userRepository.isUserNameInUse(userCredentials.username);
+        await this._userRepository.isUserNameInUse(userCredentials.username);
 
       if (isUserNameInUse) {
         throw new HttpError('user with the username is already exist');

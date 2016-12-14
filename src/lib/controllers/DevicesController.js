@@ -24,18 +24,21 @@ class DevicesController extends Controller {
   @route('/v1/devices')
   async claimDevice(postBody: { id: string }): Promise<*> {
     const deviceID = postBody.id;
-    const userID = this.user.id;
-    await this._deviceRepository.claimDevice(deviceID, userID);
+    await this._deviceRepository.claimDevice(deviceID, this.user.id);
 
     return this.ok({ ok: true });
+  }
+
+  @httpVerb('post')
+  @route('/v1/binaries')
+  compileSources() {
+    throw new HttpError('not supported in the current server version');
   }
 
   @httpVerb('delete')
   @route('/v1/devices/:deviceID')
   async unclaimDevice(deviceID: string): Promise<*> {
-    const userID = this.user.id;
-    await this._deviceRepository.unclaimDevice(deviceID, userID);
-
+    await this._deviceRepository.unclaimDevice(deviceID, this.user.id);
     return this.ok({ ok: true });
   }
 
@@ -43,8 +46,7 @@ class DevicesController extends Controller {
   @route('/v1/devices')
   async getDevices(): Promise<*> {
     try {
-      const userID = this.user.id;
-      const devices = await this._deviceRepository.getAll(userID);
+      const devices = await this._deviceRepository.getAll(this.user.id);
       return this.ok(devices.map((device: Device): DeviceAPIType =>
         deviceToAPI(device)),
       );
@@ -57,8 +59,10 @@ class DevicesController extends Controller {
   @httpVerb('get')
   @route('/v1/devices/:deviceID')
   async getDevice(deviceID: string): Promise<*> {
-    // TODO add userID checking
-    const device = await this._deviceRepository.getDetailsByID(deviceID);
+    const device = await this._deviceRepository.getDetailsByID(
+      deviceID,
+      this.user.id,
+    );
     return this.ok(deviceToAPI(device));
   }
 
@@ -69,12 +73,11 @@ class DevicesController extends Controller {
     deviceID: string,
     postBody: { app_id?: string, name?: string, file_type?: 'binary' },
   ): Promise<*> {
-    const userID = this.user.id;
     // 1 rename device
     if (postBody.name) {
       const updatedAttributes = await this._deviceRepository.renameDevice(
         deviceID,
-        userID,
+        this.user.id,
         postBody.name,
       );
 
@@ -114,18 +117,18 @@ class DevicesController extends Controller {
     try {
       const result = await this._deviceRepository.callFunction(
         deviceID,
+        this.user.id,
         functionName,
         postBody,
       );
 
-      // TODO add userID checking
       const device = await this._deviceRepository.getByID(
         deviceID,
         this.user.id,
       );
       return this.ok(deviceToAPI(device, result));
     } catch (error) {
-      if (error.indexOf('Unknown Function') >= 0) {
+      if (error.indexOf && error.indexOf('Unknown Function') >= 0) {
         throw new HttpError('Function not found', 404);
       }
       throw new HttpError(error.message);

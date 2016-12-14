@@ -12,7 +12,7 @@ class WebhookFileRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
-  create = (model: Webhook): Promise<Webhook> => {
+  create = async (model: Webhook): Promise<Webhook> => {
     const modelToSave = {
       ...model,
       created_at: new Date(),
@@ -20,17 +20,17 @@ class WebhookFileRepository {
     };
 
     this._fileManager.createFile(`${modelToSave.id}.json`, modelToSave);
-    return Promise.resolve(modelToSave);
+    return modelToSave;
   };
 
   deleteById = async (id: string): Promise<void> =>
     this._fileManager.deleteFile(`${id}.json`);
 
-  getAll = (): Promise<Array<Webhook>> =>
-    Promise.resolve(this._fileManager.getAllData());
+  getAll = async (): Promise<Array<Webhook>> =>
+    this._fileManager.getAllData();
 
-  getById = (id: string): Promise<?Webhook> =>
-    Promise.resolve(this._fileManager.getFile(`${id}.json`));
+  getById = async (id: string): Promise<?Webhook> =>
+    this._fileManager.getFile(`${id}.json`);
 
   update = (model: Webhook): Promise<Webhook> => {
     throw new HttpError('Not implemented');

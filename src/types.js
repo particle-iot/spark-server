@@ -123,6 +123,7 @@ export type Settings = {
 export type DeviceRepository = {
   callFunction(
     deviceID: string,
+    userID: string,
     functionName: string,
     functionArguments: Object,
   ): Promise<*>,
@@ -131,7 +132,7 @@ export type DeviceRepository = {
   flashKnownApp(deviceID: string, app: string): Promise<*>,
   getAll(userID: string): Promise<Array<Device>>,
   getByID(deviceID: string, userID: string): Promise<Device>,
-  getDetailsByID(deviceID: string): Promise<*>,
+  getDetailsByID(deviceID: string, userID: string): Promise<*>,
   provision(deviceID: string, userID: string, publicKey: string): Promise<*>,
   renameDevice(deviceID: string, userID: string, name: string): Promise<DeviceAttributes>,
   unclaimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
