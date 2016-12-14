@@ -4,6 +4,7 @@ import type { TokenObject, User, UserCredentials } from '../../types';
 
 import { JSONFileManager, uuid } from 'spark-protocol';
 import PasswordHasher from '../PasswordHasher';
+import HttpError from '../HttpError';
 
 class UserFileRepository {
   _fileManager: JSONFileManager;
@@ -35,11 +36,11 @@ class UserFileRepository {
   };
 
   create = (user: User): User => {
-    throw 'Not implemented';
+    throw new HttpError('Not implemented');
   };
 
   update = (user: User): User => {
-    throw 'Not implemented';
+    throw new HttpError('Not implemented');
   };
 
   getAll = (): Array<User> =>
@@ -76,7 +77,7 @@ class UserFileRepository {
       ),
     );
 
-  deleteAccessToken = (user: User, token: string): void => {
+  deleteAccessToken = (user: User, token: string) => {
     const userToSave = {
       ...user,
       accessTokens: user.accessTokens.filter(
@@ -97,7 +98,7 @@ class UserFileRepository {
       user.username === username,
     );
 
-  saveAccessToken = (userId: string, tokenObject: TokenObject): void => {
+  saveAccessToken = (userId: string, tokenObject: TokenObject) => {
     const user = this.getById(userId);
     const userToSave = {
       ...user,

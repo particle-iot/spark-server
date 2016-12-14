@@ -3,6 +3,7 @@
 import type { Webhook } from '../../types';
 
 import { JSONFileManager, uuid } from 'spark-protocol';
+import HttpError from '../HttpError';
 
 class WebhookFileRepository {
   _fileManager: JSONFileManager;
@@ -32,7 +33,7 @@ class WebhookFileRepository {
     this._fileManager.getFile(`${id}.json`);
 
   update = (model: Webhook): Webhook => {
-    throw 'Not implemented';
+    throw new HttpError('Not implemented');
   };
 }
 

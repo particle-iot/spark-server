@@ -68,7 +68,7 @@ test('should throw an error if event isn\'t provided', async t => {
     });
 
   t.is(response.status, 400);
-  t.is(response.body.message, 'no event name provided');
+  t.is(response.body.error, 'no event name provided');
 });
 
 test('should throw an error if url isn\'t provided', async t => {
@@ -81,7 +81,7 @@ test('should throw an error if url isn\'t provided', async t => {
     });
 
   t.is(response.status, 400);
-  t.is(response.body.message, 'no url provided');
+  t.is(response.body.error, 'no url provided');
 });
 
 test('should throw an error if requestType isn\'t provided', async t => {
@@ -94,7 +94,7 @@ test('should throw an error if requestType isn\'t provided', async t => {
     });
 
   t.is(response.status, 400);
-  t.is(response.body.message, 'no requestType provided');
+  t.is(response.body.error, 'no requestType provided');
 });
 
 test('should throw an error if requestType is wrong', async t => {
@@ -108,7 +108,7 @@ test('should throw an error if requestType is wrong', async t => {
     });
 
   t.is(response.status, 400);
-  t.is(response.body.message, 'wrong requestType');
+  t.is(response.body.error, 'wrong requestType');
 });
 
 test.serial('should return all webhooks', async t => {
