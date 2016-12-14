@@ -119,7 +119,10 @@ class DevicesController extends Controller {
       );
 
       // TODO add userID checking
-      const device = await this._deviceRepository.getByID(deviceID);
+      const device = await this._deviceRepository.getByID(
+        deviceID,
+        this.user.id,
+      );
       return this.ok(deviceToAPI(device, result));
     } catch (error) {
       if (error.indexOf('Unknown Function') >= 0) {

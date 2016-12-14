@@ -65,7 +65,14 @@ class DeviceRepository {
   };
 
   getByID = async (deviceID: string, userID: string): Promise<Device> => {
-    const attributes = await this._deviceAttributeRepository.getById(deviceID, userID);
+    const attributes = await this._deviceAttributeRepository.getById(
+      deviceID,
+      userID,
+    );
+    if (!attributes) {
+      throw new HttpError('No device found', 404);
+    }
+
     const core = this._deviceServer.getCore(attributes.deviceID);
     // TODO: Not sure if this should actually be the core ID that gets sent
     // but that's what the old source code does :/
@@ -218,8 +225,8 @@ class DeviceRepository {
       logger.error('error while parsing publicKey', error);
       throw new HttpError(`Key error ${error}`);
     }
-    this._deviceKeyRepository.update(deviceID, publicKey);
-    const existingAttributes = this._deviceAttributeRepository.getById(
+    await this._deviceKeyRepository.update(deviceID, publicKey);
+    const existingAttributes = await this._deviceAttributeRepository.getById(
       deviceID,
     );
     const attributes = {

@@ -79,7 +79,7 @@ class UserFileRepository {
       ),
     );
 
-  deleteAccessToken = (user: User, token: string) => {
+  deleteAccessToken = async (user: User, token: string): Promise<*> => {
     const userToSave = {
       ...user,
       accessTokens: user.accessTokens.filter(

@@ -23,14 +23,14 @@ class WebhookFileRepository {
     return Promise.resolve(modelToSave);
   };
 
-  deleteById = (id: string): Promise<void> =>
+  deleteById = async (id: string): Promise<void> =>
     this._fileManager.deleteFile(`${id}.json`);
 
   getAll = (): Promise<Array<Webhook>> =>
-    this._fileManager.getAllData();
+    Promise.resolve(this._fileManager.getAllData());
 
-  getById = (id: string): Promise<Webhook> =>
-    this._fileManager.getFile(`${id}.json`);
+  getById = (id: string): Promise<?Webhook> =>
+    Promise.resolve(this._fileManager.getFile(`${id}.json`));
 
   update = (model: Webhook): Promise<Webhook> => {
     throw new HttpError('Not implemented');

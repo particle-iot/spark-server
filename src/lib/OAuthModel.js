@@ -16,8 +16,8 @@ class OauthModel {
     this._userRepository = userRepository;
   }
 
-  getAccessToken = (bearerToken: string): ?Object => {
-    const user = this._userRepository.getByAccessToken(bearerToken);
+  getAccessToken = async (bearerToken: string): ?Object => {
+    const user = await this._userRepository.getByAccessToken(bearerToken);
     if (!user) {
       return null;
     }

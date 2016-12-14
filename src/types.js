@@ -40,7 +40,7 @@ export type DeviceAttributes = {
   name: string,
   ownerID: ?string,
   particleProductId: number,
-  productFirmwareVersion: string,
+  productFirmwareVersion: number,
   registrar: string,
   timestamp: Date,
 };
@@ -90,11 +90,11 @@ export type Repository<TModel> = {
 
 export type UserRepository = Repository<User> & {
   createWithCredentials(credentials: UserCredentials): Promise<User>,
-  deleteAccessToken(user: User, accessToken: string): void,
+  deleteAccessToken(user: User, accessToken: string): Promise<void>,
   getByAccessToken(accessToken: string): Promise<?User>,
   getByUsername(username: string): Promise<?User>,
   isUserNameInUse(username: string): Promise<boolean>,
-  saveAccessToken(userId: string, tokenObject: TokenObject): void,
+  saveAccessToken(userId: string, tokenObject: TokenObject): Promise<void>,
   validateLogin(username: string, password: string): Promise<User>,
 };
 
