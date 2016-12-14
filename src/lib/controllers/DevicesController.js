@@ -112,20 +112,21 @@ class DevicesController extends Controller {
     postBody: Object,
   ): Promise<*> {
     try {
+      const userID = this.user.id;
       const result = await this._deviceRepository.callFunction(
         deviceID,
+        userID,
         functionName,
         postBody,
       );
 
-      // TODO add userID checking
       const device = await this._deviceRepository.getByID(
         deviceID,
         this.user.id,
       );
       return this.ok(deviceToAPI(device, result));
     } catch (error) {
-      if (error.indexOf('Unknown Function') >= 0) {
+      if (error.indexOf && error.indexOf('Unknown Function') >= 0) {
         throw new HttpError('Function not found', 404);
       }
       throw new HttpError(error.message);

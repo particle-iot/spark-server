@@ -150,9 +150,16 @@ class DeviceRepository {
 
   callFunction= async (
     deviceID: string,
+    userID: string,
     functionName: string,
     functionArguments: Object,
   ): Promise<*> => {
+    const doesCoreBelongsToUser =
+      await this._deviceAttributeRepository.getById(deviceID, userID);
+    if (!doesCoreBelongsToUser) {
+      throw new HttpError('No device found', 404);
+    }
+
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
       throw new HttpError('Could not get device for ID', 404);
