@@ -30,6 +30,12 @@ class DevicesController extends Controller {
     return this.ok({ ok: true });
   }
 
+  @httpVerb('post')
+  @route('/v1/binaries')
+  compileSources() {
+    throw new HttpError('not supported in the current server version');
+  }
+
   @httpVerb('delete')
   @route('/v1/devices/:deviceID')
   async unclaimDevice(deviceID: string): Promise<*> {
