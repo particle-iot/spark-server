@@ -94,10 +94,9 @@ class DevicesController extends Controller {
         return this.ok({ id: deviceID, status: 'Update started' });
       }
 
-      // TODO not implemented yet
-      // 3 flash device with precompiled binary
-      if (postBody.file_type === 'binary' && this.request.files.file) {
-        await this._deviceRepository.flashBinary(deviceID, this.request.files.file);
+      const file = this.request.files.file[0];
+      if (file && file.originalname.endsWith('.bin')) {
+        await this._deviceRepository.flashBinary(deviceID, file);
         return this.ok({ id: deviceID, status: 'Update started' });
       }
     } catch (error) {
