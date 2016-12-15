@@ -177,7 +177,7 @@ class DeviceRepository {
 
   flashBinary = async (
     deviceID: string,
-    files: Array<File>,
+    file: File,
   ) => {
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
@@ -186,7 +186,7 @@ class DeviceRepository {
 
     const result = await core.onApiMessage(
       deviceID,
-      { cmd: 'UFlash', args: { data: files[0].buffer } },
+      { cmd: 'UFlash', args: { data: file.buffer } },
     );
 
     if (result.error) {

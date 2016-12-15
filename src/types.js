@@ -128,7 +128,7 @@ export type DeviceRepository = {
     functionArguments: Object,
   ): Promise<*>,
   claimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
-  flashBinary(deviceID: string, files: Array<$File>): Promise<*>,
+  flashBinary(deviceID: string, files: File): Promise<*>,
   flashKnownApp(deviceID: string, app: string): Promise<*>,
   getAll(userID: string): Promise<Array<Device>>,
   getByID(deviceID: string, userID: string): Promise<Device>,
