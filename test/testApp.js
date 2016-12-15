@@ -2,7 +2,9 @@
 
 import createApp from '../src/app';
 import settings from './settings';
+import DeviceServerMock from './DeviceServerMock';
 
-// TODO: mock the server or create a bootstrapper so there is only one instance
-// of the device server
-export default createApp(settings, {});
+const deviceServer = new DeviceServerMock();
+const app = createApp(settings, deviceServer);
+
+export default app;

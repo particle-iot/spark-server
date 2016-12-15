@@ -3,6 +3,7 @@
 import path from 'path';
 import WebhookFileRepository from '../src/lib/repository/WebhookFileRepository';
 import UsersFileRepository from '../src/lib/repository/UserFileRepository';
+import { DeviceAttributeFileRepository, DeviceKeyFileRepository } from 'spark-protocol';
 
 export default {
   accessTokenLifetime: 7776000, // 90 days,
@@ -16,6 +17,12 @@ export default {
   logRequests: false,
   maxHooksPerDevice: 10,
   maxHooksPerUser: 20,
+  deviceAttributeRepository: new DeviceAttributeFileRepository(
+    path.join(__dirname, '__test_data__/core_keys'),
+  ),
+  deviceKeyFileRepository: new DeviceKeyFileRepository(
+    path.join(__dirname, '__test_data__/core_keys'),
+  ),
   usersRepository: new UsersFileRepository(
     path.join(__dirname, '__test_data__/users'),
   ),
