@@ -3,8 +3,8 @@ import type {  TokenObject, UserCredentials } from '../src/types';
 import test from 'ava';
 import request from 'supertest-as-promised';
 import ouathClients from '../src/oauthClients.json';
-import app from './testApp';
-import settings from './settings';
+import app from './setup/testApp';
+import settings from './setup/settings';
 
 const USER_CREDENTIALS: UserCredentials = {
   password: 'password',
