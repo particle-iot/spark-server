@@ -41,6 +41,10 @@ test.before(async () => {
     });
 
   userToken = tokenResponse.body.access_token;
+
+  if(!userToken) {
+    throw new Error('test user creation fails');
+  }
 });
 
 // TODO come up better test name

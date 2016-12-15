@@ -40,6 +40,10 @@ test.before(async () => {
     });
 
   userToken = tokenResponse.body.access_token;
+
+  if(!userToken) {
+    throw new Error('test user creation fails');
+  }
 });
 
 test.serial('should create a new webhook object', async t => {
