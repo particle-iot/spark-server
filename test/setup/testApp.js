@@ -1,6 +1,6 @@
 // @flow
 
-import createApp from '../src/app';
+import createApp from '../../src/app';
 import settings from './settings';
 import DeviceServerMock from './DeviceServerMock';
 
