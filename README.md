@@ -111,6 +111,18 @@ The spark-server module aims to provide a HTTP rest interface that is API compat
 programs you write to run against the Spark Cloud should also work on the Local Cloud.  Some features aren't here yet, but may be
 coming down the road, right now the endpoints exposed are:
 
+Claim Core
+
+`POST /v1/devices`
+
+Release Core
+
+`DELETE /v1/devices/:coreid`
+
+Provision Core and save Core's keys.
+
+`/v1/provisioning/:coreID`
+
 List devices
 
 `GET /v1/devices`
@@ -138,8 +150,6 @@ Get all Events
  GET /v1/events/:event_name
 ```
 
-
-
 Get all my Events
 
 ```
@@ -160,12 +170,6 @@ Publish an event
 
 What features will be added soon?
 ====================================
-
-- Release a Core
-    DELETE /v1/devices/:coreid
-
-- Claim a core
-    POST /v1/devices
 
 - per-user / per-core ownership and access restrictions.  Right now ANY user on your local cloud can access ANY device.
 
