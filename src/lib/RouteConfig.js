@@ -77,7 +77,7 @@ export default (
         allowedUploads
           ? injectFilesMiddleware.fields(allowedUploads)
           : defaultMiddleware,
-        (request: $Request, response: $Response) => {
+        async (request: $Request, response: $Response) => {
           const argumentNames = (route.match(/:[\w]*/g) || []).map(
             (argumentName: string): string => argumentName.replace(':', ''),
           );
@@ -104,16 +104,8 @@ export default (
             );
 
             if (functionResult.then) {
-              functionResult
-                .then((result: Object) => {
-                  response.status(result.status).json(result.data);
-                })
-                .catch((error: HttpError) => {
-                  response.status(error.status).json({
-                    error: error.message,
-                    ok: false,
-                  });
-                });
+              const result = await functionResult;
+              response.status(result.status).json(result.data);
             } else {
               response.status(functionResult.status).json(functionResult.data);
             }
