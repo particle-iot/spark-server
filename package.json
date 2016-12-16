@@ -32,8 +32,8 @@
     "prebuild": "npm run build:clean",
     "start": "nodemon --exec babel-node ./src/main.js --watch src --watch ../spark-protocol/lib --ignore core_keys --ignore users --ignore webhooks",
     "start:prod": "npm run build && node ./build/main.js",
-    "test": "ava",
-    "test:watch": "ava --watch"
+    "test": "ava --serial",
+    "test:watch": "ava --watch --serial"
   },
   "pre-commit": "test",
   "ava": {
@@ -83,7 +83,7 @@
     "eslint-plugin-flowtype": "^2.28.2",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-sorting": "^0.3.0",
-    "flow-bin": "^0.36.0",
+    "flow-bin": "^0.37.0",
     "nodemon": "^1.11.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.5.4",

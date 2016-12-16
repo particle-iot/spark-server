@@ -41,20 +41,22 @@ test.before(async () => {
     });
 
   userToken = tokenResponse.body.access_token;
-});
 
-// TODO come up better test name
-test.serial('provision test', async t => {
-  const response = await request(app)
+  if (!userToken) {
+    throw new Error('test user creation fails');
+  }
+
+  const provisionResponse = await request(app)
     .post(`/v1/provisioning/${DEVICE_ID}`)
     .query({ access_token: userToken })
     .send({ publicKey: TEST_PUBLIC_KEY });
 
-  deviceToApiAttributes = response.body;
-  t.is(response.status, 200);
-  t.is(response.body.id, DEVICE_ID);
+  deviceToApiAttributes = provisionResponse.body;
+
+  if (!deviceToApiAttributes.id) {
+    throw new Error('test device creation fails');
+  }
 });
-// TODO write test for checking the error if publicKey is in wrong format.
 
 test('should throw an error for compile source code endpoint', async t => {
   const response = await request(app)

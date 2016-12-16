@@ -223,19 +223,15 @@ class DeviceRepository {
     userID: string,
     publicKey: string,
   ): Promise<*> => {
-    if (!deviceID) {
-      throw new HttpError('No deviceID provided');
-    }
-
     try {
       const createdKey = ursa.createPublicKey(publicKey);
-      if (!publicKey || !ursa.isPublicKey(createdKey)) {
-        throw new HttpError('No key provided');
+      if (!ursa.isPublicKey(createdKey)) {
+        throw new HttpError('Not a public key');
       }
     } catch (error) {
-      logger.error('error while parsing publicKey', error);
       throw new HttpError(`Key error ${error}`);
     }
+
     await this._deviceKeyRepository.update(deviceID, publicKey);
     const existingAttributes = await this._deviceAttributeRepository.getById(
       deviceID,

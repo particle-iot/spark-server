@@ -1,10 +1,11 @@
 // @flow
 
-import type { Decorator } from './types';
+import type { Decorator, Descriptor } from './types';
+import type Controller from '../controllers/Controller';
 
-export default (): Decorator =>
-  (target, name, descriptor): Object => {
-    // eslint-disable-next-line no-param-reassign
+/* eslint-disable no-param-reassign */
+export default (): Decorator<Controller> =>
+  (target: Controller, name: string, descriptor: Descriptor): Descriptor => {
     target[name].anonymous = true;
     return descriptor;
   };

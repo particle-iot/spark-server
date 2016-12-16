@@ -65,21 +65,31 @@ This will create an account on the local cloud
 
 Perform CTRL + C once you logon with Particle-CLI asking you to send Wifi-credentials etc...
 
-6) Put your core into listening mode, and run `spark identify` to get your core id. You'll need this id later
+6) Put your core into listening mode, and run 
+```
+particle identify
+```
+to get your core id. You'll need this id later
 
-7) `mkdir ..\temp` and `cd ..\temp` - A bunch of keys will be generated in the next steps.
+7) The next steps will generate a bunch of keys for your device.  I recommend `mkdir ..\temp` and `cd ..\temp`
 
 8) Change server keys to local cloud key + IP Address
 
 ```
 particle keys server ..\spark-server\default_key.pub.pem IP_ADDRESS
 ```
+**Note You can go back to using the particle cloud by [downlading the public key here](https://s3.amazonaws.com/spark-website/cloud_public.der).**
+You'll need to run `particle config particle`, `particle keys server cloud_public.der`, and `particle keys doctor your_core_id` while your device is in DFU mode.
 
 9) Create and provision access on your local cloud with the keys doctor:
 
 ```
    particle keys doctor your_core_id
 ```
+
+***
+
+At this point you should be able to run normal cloud commands and flash binaries.  You can add any webhooks you need, call functions, or get variable values.
 
 
 What kind of project is this?

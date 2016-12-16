@@ -6,6 +6,7 @@ import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 import deviceToAPI from '../deviceToAPI';
+import HttpError from '../HttpError';
 
 class ProvisioningController extends Controller {
   _deviceRepository: DeviceRepository;
@@ -22,6 +23,10 @@ class ProvisioningController extends Controller {
     coreID: string,
     postBody: { publicKey: string },
   ): Promise<*> {
+    if (!postBody.publicKey) {
+      throw new HttpError('No key provided');
+    }
+
     const device = await this._deviceRepository.provision(
       coreID,
       this.user.id,
