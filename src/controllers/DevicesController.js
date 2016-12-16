@@ -81,7 +81,8 @@ class DevicesController extends Controller {
 
       return this.ok({ result: varValue });
     } catch (error) {
-      if (error.indexOf && error.indexOf('Variable not found') >= 0) {
+      const errorMessage = error.message;
+      if (errorMessage.indexOf('Variable not found') >= 0) {
         throw new HttpError('Variable not found', 404);
       }
       throw error;
@@ -145,7 +146,8 @@ class DevicesController extends Controller {
       );
       return this.ok(deviceToAPI(device, result));
     } catch (error) {
-      if (error.indexOf && error.indexOf('Unknown Function') >= 0) {
+      const errorMessage = error.message;
+      if (errorMessage.indexOf('Unknown Function') >= 0) {
         throw new HttpError('Function not found', 404);
       }
       throw error;
