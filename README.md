@@ -78,7 +78,8 @@ to get your core id. You'll need this id later
 ```
 particle keys server ..\spark-server\default_key.pub.pem IP_ADDRESS
 ```
-**Note You can go back to using the particle cloud by [downlading the public key here](https://s3.amazonaws.com/spark-website/cloud_public.der)**  You'll need to run `particle config particle`, `particle keys server cloud_public.der`, and `particle keys doctor your_core_id` while your device is in DFU mode.
+**Note You can go back to using the particle cloud by [downlading the public key here](https://s3.amazonaws.com/spark-website/cloud_public.der).**
+You'll need to run `particle config particle`, `particle keys server cloud_public.der`, and `particle keys doctor your_core_id` while your device is in DFU mode.
 
 9) Create and provision access on your local cloud with the keys doctor:
 
