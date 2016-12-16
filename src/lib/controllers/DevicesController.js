@@ -66,6 +66,28 @@ class DevicesController extends Controller {
     return this.ok(deviceToAPI(device));
   }
 
+  @httpVerb('get')
+  @route('/v1/devices/:deviceID/:varName/')
+  async getVariableValue(
+    deviceID: string,
+    varName: string,
+  ): Promise<*> {
+    try {
+      const varValue = await this._deviceRepository.getVariableValue(
+        deviceID,
+        this.user.id,
+        varName,
+      );
+
+      return this.ok({ result: varValue });
+    } catch (error) {
+      if (error.indexOf && error.indexOf('Variable not found') >= 0) {
+        throw new HttpError('Variable not found', 404);
+      }
+      throw error;
+    }
+  }
+
   @httpVerb('put')
   @route('/v1/devices/:deviceID')
   @allowUpload('file', 1)

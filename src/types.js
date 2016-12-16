@@ -120,6 +120,10 @@ export type Settings = {
   webhookRepository: Repository<*>,
 };
 
+export type DeviceAttributeRepository = Repository<DeviceAttributes> & {
+  doesUserHaveAccess(deviceID: string, userID: string): Promise<boolean>,
+};
+
 export type DeviceRepository = {
   callFunction(
     deviceID: string,
@@ -133,6 +137,7 @@ export type DeviceRepository = {
   getAll(userID: string): Promise<Array<Device>>,
   getByID(deviceID: string, userID: string): Promise<Device>,
   getDetailsByID(deviceID: string, userID: string): Promise<*>,
+  getVariableValue(deviceID: string, userID: string, varName: string): Promise<Object>,
   provision(deviceID: string, userID: string, publicKey: string): Promise<*>,
   renameDevice(deviceID: string, userID: string, name: string): Promise<DeviceAttributes>,
   unclaimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
