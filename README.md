@@ -52,7 +52,7 @@ This will create a new profile to point to your server and switching back to the
 
 4) We will now point over to the local cloud using 
 ```
-particle config {profile_name}
+particle config profile_name
 ```
 
 5) On a separate CMD from the one running the server, type
@@ -78,7 +78,7 @@ to get your core id. You'll need this id later
 ```
 particle keys server ..\spark-server\default_key.pub.pem IP_ADDRESS
 ```
-**Note** You can go back to using the particle server by [downlading the public key here](https://s3.amazonaws.com/spark-website/cloud_public.der)
+**Note You can go back to using the particle cloud by [downlading the public key here](https://s3.amazonaws.com/spark-website/cloud_public.der)**  You'll need to run `particle config particle`, `particle keys server cloud_public.der`, and `particle keys doctor your_core_id` while your device is in DFU mode.
 
 9) Create and provision access on your local cloud with the keys doctor:
 
