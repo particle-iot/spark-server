@@ -66,7 +66,9 @@ This will create an account on the local cloud
 Perform CTRL + C once you logon with Particle-CLI asking you to send Wifi-credentials etc...
 
 6) Put your core into listening mode, and run 
-```particle identify```
+```
+particle identify
+```
 to get your core id. You'll need this id later
 
 7) `mkdir ..\temp` and `cd ..\temp` - A bunch of keys will be generated in the next steps.
