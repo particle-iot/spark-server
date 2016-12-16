@@ -52,7 +52,7 @@ This will create a new profile to point to your server and switching back to the
 
 4) We will now point over to the local cloud using 
 ```
-particle config profile_name
+particle config {profile_name}
 ```
 
 5) On a separate CMD from the one running the server, type
@@ -65,7 +65,9 @@ This will create an account on the local cloud
 
 Perform CTRL + C once you logon with Particle-CLI asking you to send Wifi-credentials etc...
 
-6) Put your core into listening mode, and run `spark identify` to get your core id. You'll need this id later
+6) Put your core into listening mode, and run 
+```particle identify```
+to get your core id. You'll need this id later
 
 7) `mkdir ..\temp` and `cd ..\temp` - A bunch of keys will be generated in the next steps.
 
