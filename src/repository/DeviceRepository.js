@@ -5,13 +5,12 @@ import type { DeviceServer } from 'spark-protocol';
 import type {
   Device,
   DeviceAttributes,
-  DeviceAttributeRepository,
   Repository,
- } from '../../types';
+} from '../types';
 
 import Moniker from 'moniker';
 import ursa from 'ursa';
-import HttpError from '../HttpError';
+import HttpError from '../lib/HttpError';
 
 const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
 

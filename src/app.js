@@ -17,18 +17,18 @@ import api from './views/api_v1';
 import eventsV1 from './views/EventViews001';
 
 // Repositories
-import DeviceRepository from './lib/repository/DeviceRepository';
+import DeviceRepository from './repository/DeviceRepository';
 import {
   DeviceAttributeFileRepository,
   DeviceKeyFileRepository,
 } from 'spark-protocol';
 
 // Routing
-import routeConfig from './lib/RouteConfig';
-import DevicesController from './lib/controllers/DevicesController';
-import ProvisioningController from './lib/controllers/ProvisioningController';
-import UsersController from './lib/controllers/UsersController';
-import WebhooksController from './lib/controllers/WebhooksController';
+import routeConfig from './RouteConfig';
+import DevicesController from './controllers/DevicesController';
+import ProvisioningController from './controllers/ProvisioningController';
+import UsersController from './controllers/UsersController';
+import WebhooksController from './controllers/WebhooksController';
 
 export default (settings: Settings, deviceServer: Object): $Application => {
   const app = express();

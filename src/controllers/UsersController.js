@@ -3,11 +3,11 @@
 import type {
   UserCredentials,
   UserRepository,
-} from '../../types';
+} from '../types';
 
 import basicAuthParser from 'basic-auth-parser';
 import Controller from './Controller';
-import HttpError from '../HttpError';
+import HttpError from '../lib/HttpError';
 import anonymous from '../decorators/anonymous';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';

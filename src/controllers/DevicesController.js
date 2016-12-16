@@ -1,15 +1,15 @@
 // @flow
 
-import type { Device, DeviceRepository } from '../../types';
-import type { DeviceAPIType } from '../deviceToAPI';
+import type { Device, DeviceRepository } from '../types';
+import type { DeviceAPIType } from '../lib/deviceToAPI';
 
 
 import Controller from './Controller';
-import HttpError from '../HttpError';
+import HttpError from '../lib/HttpError';
 import allowUpload from '../decorators/allowUpload';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
-import deviceToAPI from '../deviceToAPI';
+import deviceToAPI from '../lib/deviceToAPI';
 
 class DevicesController extends Controller {
   _deviceRepository: DeviceRepository;

@@ -7,13 +7,13 @@ import type {
   Middleware,
   NextFunction,
 } from 'express';
-import type { Settings } from '../types';
+import type { Settings } from './types';
 import type Controller from './controllers/Controller';
 
 import OAuthServer from 'express-oauth-server';
 import multer from 'multer';
 import OAuthModel from './OAuthModel';
-import HttpError from './HttpError';
+import HttpError from './lib/HttpError';
 
 // TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>

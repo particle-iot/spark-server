@@ -5,9 +5,9 @@ import type {
   TokenObject,
   User,
   UserRepository,
-} from '../types';
+} from './types';
 
-import ouathClients from '../oauthClients.json';
+import ouathClients from './oauthClients.json';
 
 class OauthModel {
   _userRepository: UserRepository;
