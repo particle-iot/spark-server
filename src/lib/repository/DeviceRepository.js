@@ -2,22 +2,26 @@
 
 import type { File } from 'express';
 import type { DeviceServer } from 'spark-protocol';
-import type { Device, DeviceAttributes, Repository } from '../../types';
+import type {
+  Device,
+  DeviceAttributes,
+  DeviceAttributeRepository,
+  Repository,
+ } from '../../types';
 
 import Moniker from 'moniker';
 import ursa from 'ursa';
-import logger from '../logger';
 import HttpError from '../HttpError';
 
 const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
 
 class DeviceRepository {
-  _deviceAttributeRepository: Repository<DeviceAttributes>;
+  _deviceAttributeRepository: DeviceAttributeRepository;
   _deviceKeyRepository: Repository<string>;
   _deviceServer: DeviceServer;
 
   constructor(
-    deviceAttributeRepository: Repository<DeviceAttributes>,
+    deviceAttributeRepository: DeviceAttributeRepository,
     deviceKeyRepository: Repository<string>,
     deviceServer: DeviceServer,
   ) {
@@ -100,7 +104,7 @@ class DeviceRepository {
       throw new HttpError('No device found', 404);
     }
 
-    const [ attributes, description ] = await Promise.all([
+    const [attributes, description] = await Promise.all([
       this._deviceAttributeRepository.getById(deviceID, userID),
       core.onApiMessage(
         deviceID,
@@ -173,6 +177,31 @@ class DeviceRepository {
     }
 
     return result.result;
+  };
+
+  getVariableValue = async (
+    deviceID: string,
+    userID: string,
+    varName: string,
+  ): Promise<Object> => {
+    if (!this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
+      throw new HttpError('No device found', 404);
+    }
+
+    const core = this._deviceServer.getCore(deviceID);
+    if (!core) {
+      throw new HttpError('Could not get device for ID', 404);
+    }
+    const result = await core.onApiMessage(
+      deviceID,
+      { cmd: 'GetVar', name: varName },
+    );
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    return result;
   };
 
   flashBinary = async (
