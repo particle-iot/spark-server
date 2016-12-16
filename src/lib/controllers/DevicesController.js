@@ -31,7 +31,7 @@ class DevicesController extends Controller {
 
   @httpVerb('post')
   @route('/v1/binaries')
-  compileSources() {
+  compileSources() { // eslint-disable-line class-methods-use-this
     throw new HttpError('not supported in the current server version');
   }
 
@@ -107,22 +107,18 @@ class DevicesController extends Controller {
     }
     // TODO not implemented yet
     // 2 flash device with known app
-    try {
-      if (postBody.app_id) {
-        this._deviceRepository.flashKnownApp(
-          deviceID,
-          postBody.app_id,
-        );
-        return this.ok({ id: deviceID, status: 'Update started' });
-      }
+    if (postBody.app_id) {
+      this._deviceRepository.flashKnownApp(
+        deviceID,
+        postBody.app_id,
+      );
+      return this.ok({ id: deviceID, status: 'Update started' });
+    }
 
-      const file = this.request.files.file[0];
-      if (file && file.originalname.endsWith('.bin')) {
-        await this._deviceRepository.flashBinary(deviceID, file);
-        return this.ok({ id: deviceID, status: 'Update started' });
-      }
-    } catch (error) {
-      throw new HttpError(error.message);
+    const file = this.request.files.file[0];
+    if (file && file.originalname.endsWith('.bin')) {
+      await this._deviceRepository.flashBinary(deviceID, file);
+      return this.ok({ id: deviceID, status: 'Update started' });
     }
 
     throw new HttpError('Did not update device');
@@ -152,7 +148,7 @@ class DevicesController extends Controller {
       if (error.indexOf && error.indexOf('Unknown Function') >= 0) {
         throw new HttpError('Function not found', 404);
       }
-      throw new HttpError(error.message);
+      throw error;
     }
   }
 }
