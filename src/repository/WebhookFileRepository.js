@@ -1,9 +1,9 @@
 // @flow
 
-import type { Webhook } from '../../types';
+import type { Webhook } from '../types';
 
 import { JSONFileManager, uuid } from 'spark-protocol';
-import HttpError from '../HttpError';
+import HttpError from '../lib/HttpError';
 
 class WebhookFileRepository {
   _fileManager: JSONFileManager;

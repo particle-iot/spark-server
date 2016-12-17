@@ -1,10 +1,10 @@
 // @flow
 
-import type { TokenObject, User, UserCredentials } from '../../types';
+import type { TokenObject, User, UserCredentials } from '../types';
 
 import { JSONFileManager, uuid } from 'spark-protocol';
-import PasswordHasher from '../PasswordHasher';
-import HttpError from '../HttpError';
+import PasswordHasher from '../lib/PasswordHasher';
+import HttpError from '../lib/HttpError';
 
 class UserFileRepository {
   _fileManager: JSONFileManager;

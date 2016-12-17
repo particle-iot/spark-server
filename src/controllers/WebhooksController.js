@@ -5,10 +5,10 @@ import type {
   RequestType,
   Webhook,
   WebhookMutator,
-} from '../../types';
+} from '../types';
 
 import Controller from './Controller';
-import HttpError from '../HttpError';
+import HttpError from '../lib/HttpError';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 

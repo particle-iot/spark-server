@@ -1,6 +1,6 @@
 // @flow
 
-import type { Decorator, Descriptor } from './types';
+import type { Decorator, Descriptor, HttpVerb } from './types';
 import type Controller from '../controllers/Controller';
 
 /* eslint-disable no-param-reassign */

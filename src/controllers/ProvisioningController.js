@@ -1,12 +1,12 @@
 // @flow
 
-import type { DeviceRepository } from '../../types';
+import type { DeviceRepository } from '../types';
 
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
-import deviceToAPI from '../deviceToAPI';
-import HttpError from '../HttpError';
+import deviceToAPI from '../lib/deviceToAPI';
+import HttpError from '../lib/HttpError';
 
 class ProvisioningController extends Controller {
   _deviceRepository: DeviceRepository;

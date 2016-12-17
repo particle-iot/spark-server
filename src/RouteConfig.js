@@ -7,13 +7,13 @@ import type {
   Middleware,
   NextFunction,
 } from 'express';
-import type { Settings } from '../types';
+import type { Settings } from './types';
 import type Controller from './controllers/Controller';
-import type HttpError from './HttpError';
 
-import OAuthModel from './OAuthModel';
 import OAuthServer from 'express-oauth-server';
 import multer from 'multer';
+import OAuthModel from './OAuthModel';
+import HttpError from './lib/HttpError';
 
 // TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
@@ -77,7 +77,7 @@ export default (
         allowedUploads
           ? injectFilesMiddleware.fields(allowedUploads)
           : defaultMiddleware,
-        async (request: $Request, response: $Response) => {
+        async (request: $Request, response: $Response): Promise<void> => {
           const argumentNames = (route.match(/:[\w]*/g) || []).map(
             (argumentName: string): string => argumentName.replace(':', ''),
           );
@@ -110,8 +110,9 @@ export default (
               response.status(functionResult.status).json(functionResult.data);
             }
           } catch (error) {
-            response.status(error.status).json({
-              error: error.message,
+            const httpError = new HttpError(error);
+            response.status(httpError.status).json({
+              error: httpError.message,
               ok: false,
             });
           }

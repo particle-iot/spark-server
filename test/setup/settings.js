@@ -1,8 +1,8 @@
 // @flow
 
 import path from 'path';
-import WebhookFileRepository from '../../src/lib/repository/WebhookFileRepository';
-import UsersFileRepository from '../../src/lib/repository/UserFileRepository';
+import WebhookFileRepository from '../../src/repository/WebhookFileRepository';
+import UsersFileRepository from '../../src/repository/UserFileRepository';
 import { DeviceAttributeFileRepository, DeviceKeyFileRepository } from 'spark-protocol';
 
 export default {
