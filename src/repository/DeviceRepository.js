@@ -9,6 +9,7 @@ import type {
   Repository,
 } from '../types';
 
+import crypto from 'crypto';
 import Moniker from 'moniker';
 import ursa from 'ursa';
 import HttpError from '../lib/HttpError';
@@ -48,6 +49,12 @@ class DeviceRepository {
       ownerID: userID,
     };
     return await this._deviceAttributeRepository.update(attributesToSave);
+  };
+
+  generateClaimCode = async (userID: string): Promise<string> => {
+    // TODO - we should probably save this to a repository so we can use it in
+    // subsequent requests
+    return crypto.randomBytes(63).toString();
   };
 
   unclaimDevice = async (
@@ -127,7 +134,8 @@ class DeviceRepository {
   };
 
   getAll = async (userID: string): Promise<Array<Device>> => {
-    const devicesAttributes = await this._deviceAttributeRepository.getAll(userID);
+    const devicesAttributes =
+      await this._deviceAttributeRepository.getAll(userID);
     const devicePromises = devicesAttributes.map(async attributes => {
       const core = this._deviceServer.getCore(attributes.deviceID);
       // TODO: Not sure if this should actually be the core ID that gets sent

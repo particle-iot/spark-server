@@ -25,6 +25,7 @@ import {
 
 // Routing
 import routeConfig from './RouteConfig';
+import DeviceClaimsController from './controllers/DeviceClaimsController';
 import DevicesController from './controllers/DevicesController';
 import ProvisioningController from './controllers/ProvisioningController';
 import UsersController from './controllers/UsersController';
@@ -73,6 +74,7 @@ export default (settings: Settings, deviceServer: Object): $Application => {
   routeConfig(
     app,
     [
+      new DeviceClaimsController(deviceRepository),
       new DevicesController(deviceRepository),
       new ProvisioningController(deviceRepository),
       new UsersController(settings.usersRepository),
