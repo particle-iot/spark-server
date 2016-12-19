@@ -2,7 +2,7 @@
 
 export type Decorator<TType> = (
   target: TType,
-  name: string,
+  name: $Keys<TType>,
   descriptor: Descriptor,
 ) => Descriptor;
 

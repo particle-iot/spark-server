@@ -8,13 +8,13 @@ export default (
   fileName: string,
   maxCount: number = 0,
 ): Decorator<Controller> =>
-  (target: Controller, name: string, descriptor: Descriptor): Descriptor => {
-    const allowedUploads = target[name].allowedUploads || [];
+  (target: Controller, name: $Keys<Controller>, descriptor: Descriptor): Descriptor => {
+    const allowedUploads = (target: any)[name].allowedUploads || [];
     allowedUploads.push({
       maxCount,
       name: fileName,
     });
 
-    target[name].allowedUploads = allowedUploads;
+    (target: any)[name].allowedUploads = allowedUploads;
     return descriptor;
   };

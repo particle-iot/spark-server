@@ -4,6 +4,7 @@ import type { File } from 'express';
 import type { DeviceServer } from 'spark-protocol';
 import type {
   Device,
+  DeviceAttributeRepository,
   DeviceAttributes,
   Repository,
 } from '../types';
