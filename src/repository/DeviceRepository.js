@@ -8,6 +8,7 @@ import type {
   DeviceAttributes,
   Repository,
 } from '../types';
+import type DeviceFirmwareRepository from './DeviceFirmwareFileRepository';
 
 import crypto from 'crypto';
 import Moniker from 'moniker';
@@ -18,15 +19,18 @@ const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
 
 class DeviceRepository {
   _deviceAttributeRepository: DeviceAttributeRepository;
+  _deviceFirmwareRepository: DeviceFirmwareRepository;
   _deviceKeyRepository: Repository<string>;
   _deviceServer: DeviceServer;
 
   constructor(
     deviceAttributeRepository: DeviceAttributeRepository,
+    deviceFirmwareRepository: DeviceFirmwareRepository,
     deviceKeyRepository: Repository<string>,
     deviceServer: DeviceServer,
   ) {
     this._deviceAttributeRepository = deviceAttributeRepository;
+    this._deviceFirmwareRepository = deviceFirmwareRepository;
     this._deviceKeyRepository = deviceKeyRepository;
     this._deviceServer = deviceServer;
   }
@@ -235,9 +239,19 @@ class DeviceRepository {
 
   flashKnownApp = async (
     deviceID: string,
-    app: string,
+    userID: string,
+    appName: string,
   ) => {
-    // TODO not implemented yet
+    if (!this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
+      throw new HttpError('No device found', 404);
+    }
+
+    const knownFirmware = this._deviceFirmwareRepository.getByName(appName);
+
+    if (!knownFirmware) {
+      throw new HttpError(`No firmware ${appName} found`);
+    }
+
     const core = this._deviceServer.getCore(deviceID);
     if (!core) {
       throw new HttpError('Could not get device for ID', 404);
@@ -245,7 +259,7 @@ class DeviceRepository {
 
     const result = await core.onApiMessage(
       deviceID,
-      { cmd: 'FlashKnown', app },
+      { cmd: 'UFlash', args: { data: knownFirmware } },
     );
 
     if (result.error) {

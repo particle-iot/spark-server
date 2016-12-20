@@ -20,6 +20,7 @@
 */
 
 import path from 'path';
+import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
 import WebhookFileRepository from './repository/WebhookFileRepository';
 import UsersFileRepository from './repository/UserFileRepository';
 
@@ -35,6 +36,9 @@ export default {
   logRequests: true,
   maxHooksPerDevice: 10,
   maxHooksPerUser: 20,
+  deviceFirmwareRepository: new DeviceFirmwareFileRepository(
+    path.join(__dirname, 'known_apps'),
+  ),
   webhookRepository: new WebhookFileRepository(
     path.join(__dirname, 'webhooks'),
   ),
