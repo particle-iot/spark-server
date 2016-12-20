@@ -106,13 +106,14 @@ class DevicesController extends Controller {
 
       return this.ok({ name: updatedAttributes.name, ok: true });
     }
-    // TODO not implemented yet
     // 2 flash device with known app
     if (postBody.app_id) {
-      this._deviceRepository.flashKnownApp(
+      await this._deviceRepository.flashKnownApp(
         deviceID,
+        this.user.id,
         postBody.app_id,
       );
+
       return this.ok({ id: deviceID, status: 'Update started' });
     }
 

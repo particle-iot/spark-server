@@ -67,6 +67,7 @@ export default (settings: Settings, deviceServer: Object): $Application => {
 
   const deviceRepository = new DeviceRepository(
     deviceAttributeRepository,
+    settings.deviceFirmwareRepository,
     new DeviceKeyFileRepository(settings.coreKeysDir),
     deviceServer,
   );

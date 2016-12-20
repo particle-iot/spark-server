@@ -1,6 +1,7 @@
 // @flow
 
 import type { File } from 'express';
+import type DeviceFirmwareRepository from './repository/DeviceFirmwareFileRepository';
 
 export type Webhook = WebhookMutator & {
   created_at: Date,
@@ -106,6 +107,7 @@ export type Settings = {
   coreRequestTimeout: number,
   coreSignalTimeout: number,
   cryptoSalt: string,
+  deviceFirmwareRepository: DeviceFirmwareRepository,
   HOST: string,
   isCoreOnlineTimeout: number,
   loginRoute: string,

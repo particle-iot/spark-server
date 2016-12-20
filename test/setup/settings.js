@@ -1,6 +1,7 @@
 // @flow
 
 import path from 'path';
+import DeviceFirmwareFileRepository from '../../src/repository/DeviceFirmwareFileRepository';
 import WebhookFileRepository from '../../src/repository/WebhookFileRepository';
 import UsersFileRepository from '../../src/repository/UserFileRepository';
 import { DeviceAttributeFileRepository, DeviceKeyFileRepository } from 'spark-protocol';
@@ -19,6 +20,9 @@ export default {
   maxHooksPerUser: 20,
   deviceAttributeRepository: new DeviceAttributeFileRepository(
     path.join(__dirname, '../__test_data__/core_keys'),
+  ),
+  deviceFirmwareRepository: new DeviceFirmwareFileRepository(
+    path.join(__dirname, 'known_apps'),
   ),
   deviceKeyFileRepository: new DeviceKeyFileRepository(
     path.join(__dirname, '../__test_data__/core_keys'),
