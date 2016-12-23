@@ -70,6 +70,9 @@ var Api = {
 	},
 
 	getUserID: function (res) {
+	  if(!res.locals) {
+	    return null;
+    }
 		if (!res.locals.oauth) {
 			logger.log("User obj was empty");
 			return null;

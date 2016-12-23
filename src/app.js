@@ -27,6 +27,7 @@ import {
 import routeConfig from './RouteConfig';
 import DeviceClaimsController from './controllers/DeviceClaimsController';
 import DevicesController from './controllers/DevicesController';
+import EventsController from './controllers/EventsController';
 import ProvisioningController from './controllers/ProvisioningController';
 import UsersController from './controllers/UsersController';
 import WebhooksController from './controllers/WebhooksController';
@@ -77,15 +78,13 @@ export default (settings: Settings, deviceServer: Object): $Application => {
     [
       new DeviceClaimsController(deviceRepository),
       new DevicesController(deviceRepository),
+      new EventsController(),
       new ProvisioningController(deviceRepository),
       new UsersController(settings.usersRepository),
       new WebhooksController(settings.webhookRepository),
     ],
     settings,
   );
-
-  eventsV1.loadViews(app);
-  api.loadViews(app);
 
   return app;
 };

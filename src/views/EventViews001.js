@@ -36,12 +36,12 @@ var EventsApi = {
 		//  GET /v1/devices/events[/:event_name]
 		//  GET /v1/devices/:device_id/events[/:event_name]
 
-		app.get('/v1/events', EventsApi.get_events);
-		app.get('/v1/events/:event_name', EventsApi.get_events);
+		//app.get('/v1/events', EventsApi.get_events);
+		//app.get('/v1/events/:event_name', EventsApi.get_events);
 
-		app.get('/v1/devices/events', EventsApi.get_my_events);
-		app.post('/v1/devices/events', EventsApi.send_an_event);
-		app.get('/v1/devices/events/:event_name', EventsApi.get_my_events);
+	//	app.get('/v1/devices/events', EventsApi.get_my_events);
+	//	app.post('/v1/devices/events', EventsApi.send_an_event);
+	//	app.get('/v1/devices/events/:event_name', EventsApi.get_my_events);
 
 		app.get('/v1/devices/:coreid/events', EventsApi.get_core_events);
 		app.get('/v1/devices/:coreid/events/:event_name', EventsApi.get_core_events);
