@@ -15,6 +15,8 @@ import multer from 'multer';
 import OAuthModel from './OAuthModel';
 import HttpError from './lib/HttpError';
 
+import eventsV1 from './views/EventViews001';
+
 // TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
   (request: $Request, response: $Response, next: NextFunction) => {
@@ -54,6 +56,9 @@ export default (
   app.all('/v1/devices*', oauth.authenticate());
   app.all('/v1/provisioning*', oauth.authenticate());
   app.all('/v1/events*', oauth.authenticate());
+
+  eventsV1.loadViews(app);
+
   // end temporary
 
   const injectFilesMiddleware = multer();
