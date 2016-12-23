@@ -22,6 +22,12 @@ npm install
 node main.js
 ```
 
+**Windows Setup**  
+You'll need to install Python 2.7 and OpenSSL 1.0.2 or older.  
+*The newer version doesn't have the lib files needed to build the project*.  
+[Python Download](https://www.python.org/downloads/)  
+[OpenSSL Download](http://slproweb.com/products/Win32OpenSSL.html)  
+
 [Raspberry pi Quick Install](doc/raspberryPi.md)
 
 
