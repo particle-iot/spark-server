@@ -46,6 +46,13 @@ export type DeviceAttributes = {
   timestamp: Date,
 };
 
+export type Event = {
+  data: Object,
+  name: string,
+  private: boolean,
+  ttl: number,
+};
+
 export type GrantType =
   'bearer_token'|
   'password'|

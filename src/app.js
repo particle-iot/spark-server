@@ -23,6 +23,9 @@ import {
   DeviceKeyFileRepository,
 } from 'spark-protocol';
 
+// Managers
+import EventManager from './managers/EventManager';
+
 // Routing
 import routeConfig from './RouteConfig';
 import DeviceClaimsController from './controllers/DeviceClaimsController';
@@ -78,7 +81,7 @@ export default (settings: Settings, deviceServer: Object): $Application => {
     [
       new DeviceClaimsController(deviceRepository),
       new DevicesController(deviceRepository),
-      new EventsController(),
+      new EventsController(new EventManager()),
       new ProvisioningController(deviceRepository),
       new UsersController(settings.usersRepository),
       new WebhooksController(settings.webhookRepository),

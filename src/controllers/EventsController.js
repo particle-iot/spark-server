@@ -1,176 +1,107 @@
 // @flow
 
-import moment from 'moment';
+import type { Event } from '../types';
+import type EventManager from '../managers/EventManager';
+
 import Controller from './Controller';
-import CoreController from '../lib/CoreController';
 import route from '../decorators/route';
 import httpVerb from '../decorators/httpVerb';
-
-import v1Api from '../views/api_v1';
 import logger from '../lib/logger';
 
 class EventsController extends Controller {
-  _aliveInterval: ?string;
+  _aliveInterval: ?number;
+  _eventManager: EventManager;
   _lastMessage: ?Date;
-  _socket: ?Object;
 
-  _cleanup() {
-    try {
-      if (this._socket) {
-        this._socket.close();
-        this._socket = null;
-      }
+  constructor(eventManager: EventManager) {
+    super();
 
-      if (this.response && this.response.socket) {
-        this.response.socket.end();
-        this.response.end();
-      }
-
-      if (this._aliveInterval) {
-        clearInterval(this._aliveInterval);
-        this._aliveInterval = null;
-      }
-    } catch (error) {
-      logger.error(`pipeEvents cleanup error: ${error}`);
-    }
+    this._eventManager = eventManager;
   }
 
   _keepAlive() {
     if (((new Date()) - this._lastMessage) >= 9000) {
       this._lastMessage = new Date();
       this.response.write('\n');
-      this._checkSocket();
     }
   }
 
-  _checkSocket() {
+  _pipeEvent = (response) => (
+    isPublic: boolean,
+    name: string,
+    data: ?Object,
+    ttl: ?number,
+    publishedAt: ?Date,
+    coreId: ?string,
+  ) => {
     try {
-      if (!this._socket) {
-        this._cleanup();
-        return false;
-      }
+      this._lastMessage = new Date();
 
-      if (this.response.socket.destroyed) {
-        logger.log('Socket destroyed, cleaning up Event listener');
-        this._cleanup();
-        return false;
-      }
+      const eventData = {
+        coreid: coreId || null,
+        data: data || null,
+        published_at: publishedAt || null,
+        ttl: ttl || null,
+      };
 
-      return true;
+      response.write(`event: ${name} \n`);
+      response.write(`data: ${JSON.stringify(eventData)}\n`);
     } catch (error) {
-      logger.error(`pipeEvents - error checking socket ${error}`);
-      return false;
-    }
-  }
-
-  _writeEventGen() {
-    return (
-      name: string,
-      data: ?Object,
-      ttl: ?number,
-      publishedAt: ?Date,
-      coreid: ? string,
-    ) => {
-      // if (filterCoreId && (filterCoreId !== coreid)) {
-      //   return;
-      // }
-      if (!this._checkSocket()) {
-        return;
-      }
-
-      try {
-        this._lastMessage = new Date();
-
-        const eventData = {
-          coreid: coreid || null,
-          data: data || null,
-          published_at: publishedAt || null,
-          ttl: ttl || null,
-        };
-
-        this.response.write(`event: ${name} \n`);
-        this.response.write(`data: ${JSON.stringify(eventData)} \n\n`);
-      } catch (error) {
-        logger.error(`pipeEvents - write error: ${error}`);
-      }
-    };
-  }
-
-  _pipeEvents() {
-    try {
-      this.request.socket.setNoDelay();
-      console.log('headers sent', this.response.headersSent);
-      this.response.writeHead(200, {
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-        'Content-Type': 'text/event-stream',
-      });
-
-      console.log('headers sent', this.response.headersSent);
-
-      this.response.write(':ok\n\n');
-
-      this._aliveInterval = setInterval(this._keepAlive, 3000);
-
-      if (this._socket) {
-        this._socket.on('public', this._writeEventGen(true));
-        this._socket.on('private', this._writeEventGen(false));
-      }
-
-      this.request.on('close', this._cleanup);
-      this.request.on('end', this._cleanup);
-      this.response.on('close', this._cleanup);
-      this.response.on('finish', this._cleanup);
-    } catch(error) {
-      console.log('pipeEvents error', error.message);
+      logger.error(`pipeEvents - write error: ${error}`);
       throw error;
     }
-  }
+  };
 
   @httpVerb('get')
-  @route('/v1/events/:eventPrefix?')
-  async getEvents(eventPrefix: string) {
-    try {
-      // todo if eventPrefix doesn't exist, in getEvents args it becomes empty body object
-      // need to fix this in routeConfig somehow, or do 2 endpoints
-      const prefix = Object.keys(eventPrefix).length === 0 ? '' : eventPrefix;
+  @route('/v1/events/:eventName?')
+  async getEvents(eventName: string) {
+    this.response.set({
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'Content-Type': 'text/event-stream',
+    });
 
-      this._socket = new CoreController(v1Api.getSocketID(this.user.id));
-      this._socket.subscribe(false, prefix, this.user.id);
+    this._aliveInterval = setInterval(this._keepAlive, 3000);
 
-      await this._pipeEvents();
-    //  return this.ok();
-    } catch (error) {
-      throw error;
-    }
+    // todo if eventName doesn't exist, in getEvents args it becomes empty body object
+    // need to fix this in routeConfig somehow, or do 2 endpoints
+    const evName = Object.keys(eventName).length === 0 ? '' : eventName;
+
+    this._eventManager.subscribe(
+      evName,
+      this.user.id,
+      null,
+      this._pipeEvent(this.response),
+    );
+
+    const closeStream = new Promise((resolve: () => void) => {
+      this.request.on('close', () => {
+        this._eventManager.unsubscribe(evName, this.user.id, null);
+        resolve();
+      });
+      this.request.on('end', () => {
+        this._eventManager.unsubscribe(evName, this.user.id, null);
+        resolve();
+      });
+      this.response.on('finish', () => {
+        this._eventManager.unsubscribe(evName, this.user.id, null);
+        resolve();
+      });
+      this.response.on('end', () => {
+        this._eventManager.unsubscribe(evName, this.user.id, null);
+        resolve();
+      });
+    });
+
+    await closeStream;
+    return this.ok();
   }
 
   @httpVerb('post')
   @route('/v1/devices/events')
-  async sendEvent(postBody: {
-    name: string,
-    data: Object,
-    private: boolean,
-    ttl: number,
-  }): Promise<*> {
-    const { data, name, ttl } = postBody;
-
-    this._socket = new CoreController(v1Api.getSocketID(this.user.id));
-
-    const success = this._socket.sendEvent(
-      postBody.private,
-      name,
-      this.user.id,
-      data,
-      ttl,
-      moment().toISOString(),
-      // todo according to sendEvent() it should be core id, but they pass userID here
-      // actually seems in current implementation it doesn't affect anything anyways.
-      this.user.id,
-    );
-
-    this._socket.close();
-    return this.ok({ ok: success });
+  async sendEvent(event: Event): Promise<*> {
+    await this._eventManager.sendEvent(this.user.id, event);
+    return this.ok({ ok: true });
   }
 }
 

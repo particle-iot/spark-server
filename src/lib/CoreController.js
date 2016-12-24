@@ -131,20 +131,12 @@ CoreController.prototype = {
 		core.on(that.socketID, handler);
 	},
 
-	subscribe: function (isPublic, name, userid,coreid) {
-		global.publisher.subscribe(name, userid, coreid, this);
+	subscribe: function (name, userid, coreid, eventHandler) {
+		global.publisher.subscribe(name, userid, coreid, this, eventHandler);
   },
 
-	unsubscribe: function (isPublic, name, userid) {
-		if (userid && (userid !== "")) {
-			name = userid + "/" + name;
-		}
-
-//        if (!sock) {
-//            return;
-//        }
-
-		global.publisher.unsubscribe(name, this);
+	unsubscribe: function (name, userId, coreId) {
+		global.publisher.unsubscribe(name, userId, coreId, this);
 	},
 
 	//isPublic, obj.name, obj.userid, obj.data, obj.ttl, obj.published_at
@@ -174,7 +166,7 @@ CoreController.prototype = {
 	},
 
 	close: function () {
-
+    global.publisher.close();
 	}
 };
 
