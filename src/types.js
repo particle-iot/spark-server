@@ -56,6 +56,7 @@ export type EventData = {
   isPublic: boolean,
   name: string,
   ttl: number,
+  userID?: ?string,
 };
 
 export type GrantType =

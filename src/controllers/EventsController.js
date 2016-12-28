@@ -98,6 +98,7 @@ class EventsController extends Controller {
       isPublic: !postBody.private,
       name: postBody.name,
       ttl: postBody.ttl,
+      userID: this.user.id,
     };
 
     this._eventManager.publish(eventData);
