@@ -7,14 +7,12 @@ import type {
   Middleware,
   NextFunction,
 } from 'express';
+import type { EventPublisher, DeviceServer } from 'spark-protocol';
 import type { Settings } from './types';
 
 import bodyParser from 'body-parser';
 import express from 'express';
 import morgan from 'morgan';
-
-import api from './views/api_v1';
-import eventsV1 from './views/EventViews001';
 
 // Repositories
 import DeviceRepository from './repository/DeviceRepository';
@@ -22,6 +20,9 @@ import {
   DeviceAttributeFileRepository,
   DeviceKeyFileRepository,
 } from 'spark-protocol';
+
+// Managers
+import EventManager from './managers/EventManager';
 
 // Routing
 import routeConfig from './RouteConfig';
@@ -32,7 +33,11 @@ import ProvisioningController from './controllers/ProvisioningController';
 import UsersController from './controllers/UsersController';
 import WebhooksController from './controllers/WebhooksController';
 
-export default (settings: Settings, deviceServer: Object): $Application => {
+export default (
+  settings: Settings,
+  deviceServer: DeviceServer,
+  eventPublisher: EventPublisher,
+): $Application => {
   const app = express();
 
   const setCORSHeaders: Middleware = (
@@ -73,12 +78,19 @@ export default (settings: Settings, deviceServer: Object): $Application => {
     deviceServer,
   );
 
+  const eventManager = new EventManager(
+    deviceAttributeRepository,
+    eventPublisher,
+  );
+
   routeConfig(
     app,
     [
       new DeviceClaimsController(deviceRepository),
+      // to avoid routes collisions EventsController should be placed
+      // before DevicesController
+      new EventsController(eventManager),
       new DevicesController(deviceRepository),
-      new EventsController(),
       new ProvisioningController(deviceRepository),
       new UsersController(settings.usersRepository),
       new WebhooksController(settings.webhookRepository),
