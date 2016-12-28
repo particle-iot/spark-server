@@ -46,10 +46,15 @@ export type DeviceAttributes = {
   timestamp: Date,
 };
 
-export type Event = {
-  data: Object,
+export type Event = EventData & {
+  publishedAt: Date,
+};
+
+export type EventData = {
+  data: ?Object,
+  deviceID?: ?string,
+  isPublic: boolean,
   name: string,
-  private: boolean,
   ttl: number,
 };
 
