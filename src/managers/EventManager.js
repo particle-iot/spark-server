@@ -54,8 +54,8 @@ class EventManager {
   unsubscribe = (subscriptionID: string): void =>
     this._eventPublisher.unsubscribe(subscriptionID);
 
-  publish = async (eventData: EventData): Promise<void> =>
-    await this._eventPublisher.publish(eventData);
+  publish = (eventData: EventData): void =>
+    this._eventPublisher.publish(eventData);
 }
 
 export default EventManager;

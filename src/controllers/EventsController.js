@@ -100,7 +100,7 @@ class EventsController extends Controller {
       ttl: postBody.ttl,
     };
 
-    await this._eventManager.publish(eventData);
+    this._eventManager.publish(eventData);
     return this.ok({ ok: true });
   }
 }
