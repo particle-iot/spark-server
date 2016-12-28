@@ -83,12 +83,12 @@ export default (
     eventPublisher,
   );
 
-  // to avoid routes collisions eventController should be placed
-  // before DevicesController
   routeConfig(
     app,
     [
       new DeviceClaimsController(deviceRepository),
+      // to avoid routes collisions EventsController should be placed
+      // before DevicesController
       new EventsController(eventManager),
       new DevicesController(deviceRepository),
       new ProvisioningController(deviceRepository),

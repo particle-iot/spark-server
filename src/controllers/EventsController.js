@@ -21,23 +21,15 @@ class EventsController extends Controller {
 
   _closeStream(subscriptionID: string): Promise<void> {
     return new Promise((resolve: () => void) => {
-      // TODO i'm not sure if we need all 4 listens here
-      this.request.on('close', () => {
+      const closeStreamHandler = () => {
         this._eventManager.unsubscribe(subscriptionID);
         resolve();
-      });
-      this.request.on('end', () => {
-        this._eventManager.unsubscribe(subscriptionID);
-        resolve();
-      });
-      this.response.on('finish', () => {
-        this._eventManager.unsubscribe(subscriptionID);
-        resolve();
-      });
-      this.response.on('end', () => {
-        this._eventManager.unsubscribe(subscriptionID);
-        resolve();
-      });
+      };
+
+      this.request.on('close', closeStreamHandler);
+      this.request.on('end', closeStreamHandler);
+      this.response.on('finish', closeStreamHandler);
+      this.response.on('end', closeStreamHandler);
     });
   }
 

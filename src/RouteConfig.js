@@ -36,7 +36,10 @@ const injectUserMiddleware = (): Middleware =>
     next();
   };
 
-
+// in old codebase there was _keepAlive() function in controllers , which
+// prevents of closing server-sent-events stream if there aren't events for
+// a long time, but according to the docs sse keep connection alive automatically.
+// if there will be related issues in the future, we can return _keepAlive() back.
 const serverSentEventsMiddleware = (): Middleware =>
   (request: $Request, response: $Response, next: NextFunction) => {
     request.socket.setNoDelay();
