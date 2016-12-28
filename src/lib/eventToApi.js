@@ -7,7 +7,7 @@ export type EventAPIType = {|
   data: ?Object,
   published_at: Date,
   ttl: number,
-  |};
+|};
 
 const eventToApi = (event: Event): EventAPIType => ({
   coreid: event.deviceID || null,
