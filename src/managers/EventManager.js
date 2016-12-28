@@ -29,15 +29,14 @@ class EventManager {
           userID,
         )
       ) {
-        return Promise.resolve();
+        return;
       }
 
       if (deviceID && deviceID !== event.deviceID) {
-        return Promise.resolve();
+        return;
       }
 
       eventHandler(event);
-      return Promise.resolve();
     };
 
   subscribe = (
