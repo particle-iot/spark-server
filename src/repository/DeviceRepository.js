@@ -171,7 +171,7 @@ class DeviceRepository {
     functionName: string,
     functionArguments: Object,
   ): Promise<*> => {
-    if (!this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
+    if (await !this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
       throw new HttpError('No device found', 404);
     }
 
@@ -196,7 +196,7 @@ class DeviceRepository {
     userID: string,
     varName: string,
   ): Promise<Object> => {
-    if (!this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
+    if (!await this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
       throw new HttpError('No device found', 404);
     }
 
@@ -242,7 +242,7 @@ class DeviceRepository {
     userID: string,
     appName: string,
   ) => {
-    if (!this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
+    if (await !this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
       throw new HttpError('No device found', 404);
     }
 
