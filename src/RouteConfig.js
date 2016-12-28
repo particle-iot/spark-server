@@ -15,8 +15,6 @@ import multer from 'multer';
 import OAuthModel from './OAuthModel';
 import HttpError from './lib/HttpError';
 
-import eventsV1 from './views/EventViews001';
-
 // TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
   (request: $Request, response: $Response, next: NextFunction) => {
@@ -37,6 +35,23 @@ const injectUserMiddleware = (): Middleware =>
     }
     next();
   };
+
+
+const serverSentEventsMiddleware = (): Middleware =>
+  (request: $Request, response: $Response, next: NextFunction) => {
+    request.socket.setNoDelay();
+    response.writeHead(
+      200,
+      {
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+        'Content-Type': 'text/event-stream',
+      },
+    );
+
+    next();
+  };
+
 const defaultMiddleware =
   (request: $Request, response: $Response, next: NextFunction): mixed => next();
 
@@ -50,17 +65,6 @@ export default (
     allowBearerTokensInQueryString: true,
     model: new OAuthModel(settings.usersRepository),
   });
-
-  // TODO this is temporary authentication for api_v1 and events routes
-  // until we move them in our controllers:
-  app.all('/v1/devices*', oauth.authenticate());
-  app.all('/v1/provisioning*', oauth.authenticate());
-  app.all('/v1/events*', oauth.authenticate());
-
-  eventsV1.loadViews(app);
-
-  // end temporary
-
   const injectFilesMiddleware = multer();
 
   app.post(settings.loginRoute, oauth.token());
@@ -70,7 +74,14 @@ export default (
       (Object.getPrototypeOf(controller): any),
     ).forEach((functionName: string) => {
       const mappedFunction = (controller: any)[functionName];
-      const { allowedUploads, anonymous, httpVerb, route } = mappedFunction;
+      const {
+        allowedUploads,
+        anonymous,
+        httpVerb,
+        route,
+        serverSentEvents,
+      } = mappedFunction;
+
       if (!httpVerb) {
         return;
       }
@@ -78,6 +89,7 @@ export default (
       (app: any)[httpVerb](
         route,
         maybe(oauth.authenticate(), !anonymous),
+        maybe(serverSentEventsMiddleware(), serverSentEvents),
         injectUserMiddleware(),
         allowedUploads
           ? injectFilesMiddleware.fields(allowedUploads)
@@ -87,8 +99,7 @@ export default (
             (argumentName: string): string => argumentName.replace(':', ''),
           );
           const values = argumentNames
-            .map((argument: string): string => request.params[argument])
-            .filter((value: ?Object): boolean => value !== undefined);
+            .map((argument: string): string => request.params[argument]);
 
           const controllerContext = Object.create(controller);
           controllerContext.request = request;
