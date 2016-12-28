@@ -3,6 +3,7 @@
 import {
   DeviceAttributeFileRepository,
   DeviceServer,
+  EventPublisher,
   ServerConfigFileRepository,
 } from 'spark-protocol';
 import utilities from './lib/utilities';
@@ -26,25 +27,30 @@ process.on('uncaughtException', (exception: Error) => {
   logger.error(`Caught exception: ${exception.toString()} ${exception.stack}`);
 });
 
-const deviceServer = new DeviceServer({
-  coreKeysDir: settings.coreKeysDir,
-  deviceAttributeRepository: new DeviceAttributeFileRepository(
-    settings.coreKeysDir,
-  ),
-  host: settings.HOST,
-  port: settings.PORT,
-  serverConfigRepository: new ServerConfigFileRepository(
-    settings.serverKeyFile,
-  ),
-  serverKeyFile: settings.serverKeyFile,
-  serverKeyPassEnvVar: settings.serverKeyPassEnvVar,
-  serverKeyPassFile: settings.serverKeyPassFile,
-});
+const eventPublisher = new EventPublisher();
+
+const deviceServer = new DeviceServer(
+  {
+    coreKeysDir: settings.coreKeysDir,
+    deviceAttributeRepository: new DeviceAttributeFileRepository(
+      settings.coreKeysDir,
+    ),
+    host: settings.HOST,
+    port: settings.PORT,
+    serverConfigRepository: new ServerConfigFileRepository(
+      settings.serverKeyFile,
+    ),
+    serverKeyFile: settings.serverKeyFile,
+    serverKeyPassEnvVar: settings.serverKeyPassEnvVar,
+    serverKeyPassFile: settings.serverKeyPassFile,
+  },
+  eventPublisher,
+);
 
 global.server = deviceServer;
 deviceServer.start();
 
-const app = createApp(settings, deviceServer);
+const app = createApp(settings, deviceServer, eventPublisher);
 
 app.listen(
   NODE_PORT,

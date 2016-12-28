@@ -1,17 +1,17 @@
 // @flow
 
-import type { Event } from '../types';
+import type { Event, EventData } from '../types';
 import type EventManager from '../managers/EventManager';
 
 import Controller from './Controller';
 import route from '../decorators/route';
 import httpVerb from '../decorators/httpVerb';
+import serverSentEvents from '../decorators/serverSentEvents';
 import logger from '../lib/logger';
+import eventToApi from '../lib/eventToApi';
 
 class EventsController extends Controller {
-  _aliveInterval: ?number;
   _eventManager: EventManager;
-  _lastMessage: ?Date;
 
   constructor(eventManager: EventManager) {
     super();
@@ -19,90 +19,101 @@ class EventsController extends Controller {
     this._eventManager = eventManager;
   }
 
-  _keepAlive() {
-    if (((new Date()) - this._lastMessage) >= 9000) {
-      this._lastMessage = new Date();
-      this.response.write('\n');
-    }
+  _closeStream(subscriptionID: string): Promise<void> {
+    return new Promise((resolve: () => void) => {
+      // TODO i'm not sure if we need all 4 listens here
+      this.request.on('close', () => {
+        this._eventManager.unsubscribe(subscriptionID);
+        resolve();
+      });
+      this.request.on('end', () => {
+        this._eventManager.unsubscribe(subscriptionID);
+        resolve();
+      });
+      this.response.on('finish', () => {
+        this._eventManager.unsubscribe(subscriptionID);
+        resolve();
+      });
+      this.response.on('end', () => {
+        this._eventManager.unsubscribe(subscriptionID);
+        resolve();
+      });
+    });
   }
 
-  _pipeEvent = (response) => (
-    isPublic: boolean,
-    name: string,
-    data: ?Object,
-    ttl: ?number,
-    publishedAt: ?Date,
-    coreId: ?string,
-  ) => {
+  _pipeEvent(event: Event) {
     try {
-      this._lastMessage = new Date();
-
-      const eventData = {
-        coreid: coreId || null,
-        data: data || null,
-        published_at: publishedAt || null,
-        ttl: ttl || null,
-      };
-
-      response.write(`event: ${name} \n`);
-      response.write(`data: ${JSON.stringify(eventData)}\n`);
+      this.response.write(`event: ${event.name} \n\n`);
+      this.response.write(`data: ${JSON.stringify(eventToApi(event))}\n\n`);
     } catch (error) {
       logger.error(`pipeEvents - write error: ${error}`);
       throw error;
     }
-  };
+  }
 
   @httpVerb('get')
   @route('/v1/events/:eventName?')
-  async getEvents(eventName: string) {
-    this.response.set({
-      'Cache-Control': 'no-cache',
-      Connection: 'keep-alive',
-      'Content-Type': 'text/event-stream',
-    });
-
-    this._aliveInterval = setInterval(this._keepAlive, 3000);
-
-    // todo if eventName doesn't exist, in getEvents args it becomes empty body object
-    // need to fix this in routeConfig somehow, or do 2 endpoints
-    const evName = Object.keys(eventName).length === 0 ? '' : eventName;
-
-    this._eventManager.subscribe(
-      evName,
-      this.user.id,
-      null,
-      this._pipeEvent(this.response),
+  @serverSentEvents()
+  async getEvents(eventName: ?string): Promise<*> {
+    const subscriptionID = this._eventManager.subscribe(
+      eventName,
+      this._pipeEvent.bind(this),
     );
 
-    const closeStream = new Promise((resolve: () => void) => {
-      this.request.on('close', () => {
-        this._eventManager.unsubscribe(evName, this.user.id, null);
-        resolve();
-      });
-      this.request.on('end', () => {
-        this._eventManager.unsubscribe(evName, this.user.id, null);
-        resolve();
-      });
-      this.response.on('finish', () => {
-        this._eventManager.unsubscribe(evName, this.user.id, null);
-        resolve();
-      });
-      this.response.on('end', () => {
-        this._eventManager.unsubscribe(evName, this.user.id, null);
-        resolve();
-      });
-    });
+    await this._closeStream(subscriptionID);
+    return this.ok();
+  }
 
-    await closeStream;
+  @httpVerb('get')
+  @route('/v1/devices/events/:eventName?')
+  @serverSentEvents()
+  async getMyEvents(eventName: ?string): Promise<*> {
+    const subscriptionID = this._eventManager.subscribe(
+      eventName,
+      this._pipeEvent.bind(this),
+      this.user.id,
+    );
+
+    await this._closeStream(subscriptionID);
+    return this.ok();
+  }
+
+  @httpVerb('get')
+  @route('/v1/devices/:deviceID/events/:eventName?/')
+  @serverSentEvents()
+  async getDeviceEvents(deviceID: string, eventName: ?string): Promise<*> {
+    const subscriptionID = this._eventManager.subscribe(
+      eventName,
+      this._pipeEvent.bind(this),
+      this.user.id,
+      deviceID,
+    );
+
+    await this._closeStream(subscriptionID);
     return this.ok();
   }
 
   @httpVerb('post')
   @route('/v1/devices/events')
-  async sendEvent(event: Event): Promise<*> {
-    await this._eventManager.sendEvent(this.user.id, event);
+  async publish(postBody: {
+    name: string,
+    data: ?Object,
+    private: boolean,
+    ttl: number,
+  }): Promise<*> {
+    const eventData: EventData = {
+      data: postBody.data,
+      isPublic: !postBody.private,
+      name: postBody.name,
+      ttl: postBody.ttl,
+    };
+
+    await this._eventManager.publish(eventData);
     return this.ok({ ok: true });
   }
 }
 
 export default EventsController;
+
+
+// todo TEST

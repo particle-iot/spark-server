@@ -1,46 +1,62 @@
 // @flow
 
-import type { Event } from '../types';
-
-import moment from 'moment';
-import CoreController from '../lib/CoreController';
+import type { EventPublisher } from 'spark-protocol';
+import type { DeviceAttributeRepository, Event, EventData } from '../types';
 
 class EventManager {
-  _socket: ?Object;
+  _eventPublisher: EventPublisher;
+  _deviceAttributeRepository: DeviceAttributeRepository;
 
-  subscribe = (eventName: string, userID: string, coreID: string, callback): void => {
-    this._socket = new CoreController();
-    this._socket.subscribe(eventName, userID, coreID, callback);
-  };
+  constructor(
+    deviceAttributeRepository: DeviceAttributeRepository,
+    eventPublisher: EventPublisher,
+  ) {
+    this._deviceAttributeRepository = deviceAttributeRepository;
+    this._eventPublisher = eventPublisher;
+  }
 
-  unsubscribe = (eventName: string, userID: string, coreID: string) => {
-    if (!this._socket) {
-      return;
-    }
-    this._socket.unsubscribe(eventName, userID, coreID);
-    this._socket.close();
-    this._socket = null;
-  };
+  _filterEvents = (
+    eventHandler: (event: Event) => void,
+    userID?: string,
+    deviceID?: string,
+  ): (event: Event) => Promise<void> =>
+    async (event: Event): Promise<void> => {
+      if (
+        event.deviceID &&
+        userID &&
+        !await this._deviceAttributeRepository.doesUserHaveAccess(
+          event.deviceID,
+          userID,
+        )
+      ) {
+        return Promise.resolve();
+      }
 
-  sendEvent = async (userID: string, event: Event): Promise<void> => {
-    const socket = new CoreController();
+      if (deviceID && deviceID !== event.deviceID) {
+        return Promise.resolve();
+      }
 
-    // todo make sendEvent() async
-    const result = await socket.sendEvent(
-      event.private,
-      event.name,
-      userID,
-      event.data,
-      event.ttl,
-      moment().toISOString(),
-      // todo according to sendEvent() it should be core id, but they pass userID here
-      // actually seems in current implementation it doesn't affect anything anyways.
-      userID,
+      eventHandler(event);
+      return Promise.resolve();
+    };
+
+  subscribe = (
+    eventName: ?string,
+    eventHandler: (event: Event) => void,
+    userID?: string,
+    deviceID?: string,
+  ): string =>
+    this._eventPublisher.subscribe(
+      eventName,
+      this._filterEvents(eventHandler, userID, deviceID),
+      deviceID,
     );
-    // todo send event errors handling
-    // todo make close() async
-    await socket.close();
-  };
+
+  unsubscribe = (subscriptionID: string): void =>
+    this._eventPublisher.unsubscribe(subscriptionID);
+
+  publish = async (eventData: EventData): Promise<void> =>
+    await this._eventPublisher.publish(eventData);
 }
 
 export default EventManager;
