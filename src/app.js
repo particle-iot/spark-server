@@ -78,10 +78,7 @@ export default (
     deviceServer,
   );
 
-  const eventManager = new EventManager(
-    deviceAttributeRepository,
-    eventPublisher,
-  );
+  const eventManager = new EventManager(eventPublisher);
 
   routeConfig(
     app,
