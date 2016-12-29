@@ -3,6 +3,11 @@
 import type { EventPublisher } from 'spark-protocol';
 import type { Event, EventData } from '../types';
 
+type FilterOptions = {
+  deviceID?: string,
+  userID?: string,
+};
+
 class EventManager {
   _eventPublisher: EventPublisher;
 
@@ -10,36 +15,15 @@ class EventManager {
     this._eventPublisher = eventPublisher;
   }
 
-  _filterEvents = (
-    eventHandler: (event: Event) => void,
-    userID?: string,
-    deviceID?: string,
-  ): (event: Event) => void =>
-    (event: Event) => {
-      if (
-        event.deviceID &&
-        userID && userID !== event.userID
-      ) {
-        return;
-      }
-
-      if (deviceID && deviceID !== event.deviceID) {
-        return;
-      }
-
-      eventHandler(event);
-    };
-
   subscribe = (
     eventName: ?string,
     eventHandler: (event: Event) => void,
-    userID?: string,
-    deviceID?: string,
+    filterOptions?: FilterOptions,
   ): string =>
     this._eventPublisher.subscribe(
       eventName,
-      this._filterEvents(eventHandler, userID, deviceID),
-      deviceID,
+      eventHandler,
+      filterOptions,
     );
 
   unsubscribe = (subscriptionID: string): void =>
