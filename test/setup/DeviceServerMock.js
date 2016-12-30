@@ -3,7 +3,7 @@
 import SparkCoreMock from './SparkCoreMock';
 
 class DeviceServerMock {
-  getCore(): SparkCoreMock {
+  getDevice(): SparkCoreMock {
     return new SparkCoreMock();
   }
 }

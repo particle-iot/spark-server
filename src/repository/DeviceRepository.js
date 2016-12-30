@@ -88,11 +88,11 @@ class DeviceRepository {
       throw new HttpError('No device found', 404);
     }
 
-    const core = this._deviceServer.getCore(attributes.deviceID);
+    const device = this._deviceServer.getDevice(attributes.deviceID);
     // TODO: Not sure if this should actually be the core ID that gets sent
     // but that's what the old source code does :/
-    const response = core
-      ? await core.onApiMessage(
+    const response = device
+      ? await device.onApiMessage(
         attributes.deviceID,
         { cmd: 'Ping' },
       )
@@ -110,14 +110,14 @@ class DeviceRepository {
   };
 
   getDetailsByID = async (deviceID: string, userID: string): Promise<Device> => {
-    const core = this._deviceServer.getCore(deviceID);
-    if (!core) {
+    const device = this._deviceServer.getDevice(deviceID);
+    if (!device) {
       throw new HttpError('No device found', 404);
     }
 
     const [attributes, description] = await Promise.all([
       this._deviceAttributeRepository.getById(deviceID, userID),
-      core.onApiMessage(
+      device.onApiMessage(
         deviceID,
         { cmd: 'Describe' },
       ),
@@ -141,11 +141,11 @@ class DeviceRepository {
     const devicesAttributes =
       await this._deviceAttributeRepository.getAll(userID);
     const devicePromises = devicesAttributes.map(async attributes => {
-      const core = this._deviceServer.getCore(attributes.deviceID);
+      const device = this._deviceServer.getDevice(attributes.deviceID);
       // TODO: Not sure if this should actually be the core ID that gets sent
       // but that's what the old source code does :/
-      const response = core
-        ? await core.onApiMessage(
+      const response = device
+        ? await device.onApiMessage(
           attributes.deviceID,
           { cmd: 'Ping' },
         )
@@ -175,11 +175,11 @@ class DeviceRepository {
       throw new HttpError('No device found', 404);
     }
 
-    const core = this._deviceServer.getCore(deviceID);
-    if (!core) {
+    const device = this._deviceServer.getDevice(deviceID);
+    if (!device) {
       throw new HttpError('Could not get device for ID', 404);
     }
-    const result = await core.onApiMessage(
+    const result = await device.onApiMessage(
       deviceID,
       { cmd: 'CallFn', name: functionName, args: functionArguments },
     );
@@ -200,11 +200,11 @@ class DeviceRepository {
       throw new HttpError('No device found', 404);
     }
 
-    const core = this._deviceServer.getCore(deviceID);
-    if (!core) {
+    const device = this._deviceServer.getDevice(deviceID);
+    if (!device) {
       throw new HttpError('Could not get device for ID', 404);
     }
-    const result = await core.onApiMessage(
+    const result = await device.onApiMessage(
       deviceID,
       { cmd: 'GetVar', name: varName },
     );
@@ -220,12 +220,12 @@ class DeviceRepository {
     deviceID: string,
     file: File,
   ) => {
-    const core = this._deviceServer.getCore(deviceID);
-    if (!core) {
+    const device = this._deviceServer.getDevice(deviceID);
+    if (!device) {
       throw new HttpError('Could not get device for ID', 404);
     }
 
-    const result = await core.onApiMessage(
+    const result = await device.onApiMessage(
       deviceID,
       { cmd: 'UFlash', args: { data: file.buffer } },
     );
@@ -252,12 +252,12 @@ class DeviceRepository {
       throw new HttpError(`No firmware ${appName} found`);
     }
 
-    const core = this._deviceServer.getCore(deviceID);
-    if (!core) {
+    const device = this._deviceServer.getDevice(deviceID);
+    if (!device) {
       throw new HttpError('Could not get device for ID', 404);
     }
 
-    const result = await core.onApiMessage(
+    const result = await device.onApiMessage(
       deviceID,
       { cmd: 'UFlash', args: { data: knownFirmware } },
     );
