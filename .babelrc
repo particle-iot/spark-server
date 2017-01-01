@@ -4,7 +4,8 @@
       "transform-decorators-legacy",
       "transform-es2015-destructuring",
       "transform-es2015-spread",
-      "transform-flow-strip-types"
+      "transform-flow-strip-types",
+      "transform-runtime"
     ],
     "presets": ["es2015", "latest", "stage-0", "stage-1"]
 }
