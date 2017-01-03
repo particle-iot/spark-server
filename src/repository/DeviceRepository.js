@@ -84,18 +84,15 @@ class DeviceRepository {
       deviceID,
       userID,
     );
+
     if (!attributes) {
       throw new HttpError('No device found', 404);
     }
 
     const device = this._deviceServer.getDevice(attributes.deviceID);
-    // TODO: Not sure if this should actually be the core ID that gets sent
-    // but that's what the old source code does :/
-    const response = device
-      ? await device.onApiMessage(
-        attributes.deviceID,
-        { cmd: 'Ping' },
-      )
+
+    const pingResponse = device
+      ? device.ping()
       : {
         connected: false,
         lastPing: null,
@@ -103,9 +100,9 @@ class DeviceRepository {
 
     return {
       ...attributes,
-      connected: response.connected,
+      connected: pingResponse.connected,
       lastFlashedAppName: null,
-      lastHeard: response.lastPing,
+      lastHeard: pingResponse.lastPing,
     };
   };
 
@@ -139,13 +136,9 @@ class DeviceRepository {
       await this._deviceAttributeRepository.getAll(userID);
     const devicePromises = devicesAttributes.map(async attributes => {
       const device = this._deviceServer.getDevice(attributes.deviceID);
-      // TODO: Not sure if this should actually be the core ID that gets sent
-      // but that's what the old source code does :/
-      const response = device
-        ? await device.onApiMessage(
-          attributes.deviceID,
-          { cmd: 'Ping' },
-        )
+
+      const pingResponse = device
+        ? device.ping()
         : {
           connected: false,
           lastPing: null,
@@ -153,9 +146,9 @@ class DeviceRepository {
 
       return {
         ...attributes,
-        connected: response.connected,
+        connected: pingResponse.connected,
         lastFlashedAppName: null,
-        lastHeard: response.lastPing,
+        lastHeard: pingResponse.lastPing,
       };
     });
 

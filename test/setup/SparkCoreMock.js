@@ -15,6 +15,11 @@ class SparkCoreMock {
       v: null,
     },
   });
+
+  ping = (): Object => ({
+    connected: false,
+    lastPing: new Date(),
+  });
 }
 
 export default SparkCoreMock;
