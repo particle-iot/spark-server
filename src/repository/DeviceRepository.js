@@ -117,10 +117,7 @@ class DeviceRepository {
 
     const [attributes, description] = await Promise.all([
       this._deviceAttributeRepository.getById(deviceID, userID),
-      device.onApiMessage(
-        deviceID,
-        { cmd: 'Describe' },
-      ),
+      device.getDescription(),
     ]);
 
     if (!attributes) {
@@ -130,10 +127,10 @@ class DeviceRepository {
     return ({
       ...attributes,
       connected: true,
-      functions: description.f,
+      functions: description.state.f,
       lastFlashedAppName: null,
       lastHeard: new Date(),
-      variables: description.v,
+      variables: description.state.v,
     });
   };
 
