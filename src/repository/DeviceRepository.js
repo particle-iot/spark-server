@@ -176,16 +176,11 @@ class DeviceRepository {
     if (!device) {
       throw new HttpError('Could not get device for ID', 404);
     }
-    const result = await device.onApiMessage(
-      deviceID,
-      { cmd: 'CallFn', name: functionName, args: functionArguments },
+
+    return await device.callFunction(
+      functionName,
+      functionArguments,
     );
-
-    if (result.error) {
-      throw result.error;
-    }
-
-    return result.result;
   };
 
   getVariableValue = async (
