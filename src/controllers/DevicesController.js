@@ -108,19 +108,21 @@ class DevicesController extends Controller {
     }
     // 2 flash device with known app
     if (postBody.app_id) {
-      await this._deviceRepository.flashKnownApp(
+      const flashStatus = await this._deviceRepository.flashKnownApp(
         deviceID,
         this.user.id,
         postBody.app_id,
       );
 
-      return this.ok({ id: deviceID, status: 'Update started' });
+      return this.ok({ id: deviceID, status: flashStatus });
     }
 
     const file = this.request.files.file[0];
     if (file && file.originalname.endsWith('.bin')) {
-      await this._deviceRepository.flashBinary(deviceID, file);
-      return this.ok({ id: deviceID, status: 'Update started' });
+      const flashStatus = await this._deviceRepository
+        .flashBinary(deviceID, file);
+
+      return this.ok({ id: deviceID, status: flashStatus });
     }
 
     throw new HttpError('Did not update device');

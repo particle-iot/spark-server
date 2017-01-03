@@ -209,16 +209,7 @@ class DeviceRepository {
       throw new HttpError('Could not get device for ID', 404);
     }
 
-    const result = await device.onApiMessage(
-      deviceID,
-      { cmd: 'UFlash', args: { data: file.buffer } },
-    );
-
-    if (result.error) {
-      throw result.error;
-    }
-
-    return result.result;
+    return await device.flash(file.buffer);
   };
 
   flashKnownApp = async (
@@ -241,16 +232,7 @@ class DeviceRepository {
       throw new HttpError('Could not get device for ID', 404);
     }
 
-    const result = await device.onApiMessage(
-      deviceID,
-      { cmd: 'UFlash', args: { data: knownFirmware } },
-    );
-
-    if (result.error) {
-      throw result.error;
-    }
-
-    return result.result;
+    return await device.flash(knownFirmware);
   };
 
   provision = async (
