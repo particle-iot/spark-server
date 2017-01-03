@@ -204,16 +204,8 @@ class DeviceRepository {
     if (!device) {
       throw new HttpError('Could not get device for ID', 404);
     }
-    const result = await device.onApiMessage(
-      deviceID,
-      { cmd: 'GetVar', name: varName },
-    );
 
-    if (result.error) {
-      throw result.error;
-    }
-
-    return result;
+    return await device.getVariableValue(varName);
   };
 
   flashBinary = async (

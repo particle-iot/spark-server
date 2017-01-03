@@ -82,7 +82,7 @@ class DevicesController extends Controller {
       return this.ok({ result: varValue });
     } catch (error) {
       const errorMessage = error.message;
-      if (errorMessage.indexOf('Variable not found') >= 0) {
+      if (errorMessage.match('Variable not found')) {
         throw new HttpError('Variable not found', 404);
       }
       throw error;
