@@ -115,7 +115,7 @@ class DevicesController extends Controller {
     if (postBody.app_id) {
       const flashStatus = await this._deviceRepository.flashKnownApp(
         deviceID,
-        this.user.id,
+        this.user.id, 
         postBody.app_id,
       );
 
