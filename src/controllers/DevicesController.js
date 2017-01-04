@@ -94,7 +94,12 @@ class DevicesController extends Controller {
   @allowUpload('file', 1)
   async updateDevice(
     deviceID: string,
-    postBody: { app_id?: string, name?: string, file_type?: 'binary' },
+    postBody: {
+      app_id?: string,
+      name?: string,
+      file_type?: 'binary',
+      signal: boolean,
+    },
   ): Promise<*> {
     // 1 rename device
     if (postBody.name) {
@@ -117,12 +122,26 @@ class DevicesController extends Controller {
       return this.ok({ id: deviceID, status: flashStatus });
     }
 
-    const file = this.request.files.file[0];
+    const file =
+      this.request.files &&
+      this.request.files.file[0];
+
     if (file && file.originalname.endsWith('.bin')) {
       const flashStatus = await this._deviceRepository
         .flashBinary(deviceID, file);
 
       return this.ok({ id: deviceID, status: flashStatus });
+    }
+
+    // If signal exists then we want to toggle nyan mode. This just makes the
+    // LED change colors.
+    if (!Number.isNaN(postBody.signal)) {
+      await this._deviceRepository.raiseYourHand(
+        deviceID,
+        this.user.id,
+        !!parseInt(postBody.signal, 10),
+      );
+      return this.ok({id: deviceID, ok: true});
     }
 
     throw new HttpError('Did not update device');

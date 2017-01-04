@@ -210,7 +210,10 @@ class DeviceRepository {
     userID: string,
     appName: string,
   ) => {
-    if (await !this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
+    if (await !this._deviceAttributeRepository.doesUserHaveAccess(
+      deviceID,
+      userID,
+    )) {
       throw new HttpError('No device found', 404);
     }
 
@@ -257,6 +260,26 @@ class DeviceRepository {
     await this._deviceAttributeRepository.update(attributes);
 
     return await this.getByID(deviceID, userID);
+  };
+
+  raiseYourHand = async (
+    deviceID: string,
+    userID: string,
+    shouldShowSignal: boolean,
+  ): Promise<void> => {
+    if (await !this._deviceAttributeRepository.doesUserHaveAccess(
+      deviceID,
+      userID,
+    )) {
+      throw new HttpError('No device found', 404);
+    }
+
+    const device = this._deviceServer.getDevice(deviceID);
+    if (!device) {
+      throw new HttpError('Could not get device for ID', 404);
+    }
+
+    return await device.raiseYourHand(shouldShowSignal);
   };
 
   renameDevice = async (
