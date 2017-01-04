@@ -30,7 +30,7 @@
     "build:clean": "rimraf ./build",
     "lint": "eslint -- .",
     "prebuild": "npm run build:clean",
-    "start": "nodemon --exec babel-node ./src/main.js --watch src --watch ../spark-protocol/lib --ignore core_keys --ignore users --ignore webhooks --ignore known_apps",
+    "start": "nodemon --exec babel-node ./src/main.js --watch src --watch ../spark-protocol/dist --ignore core_keys --ignore users --ignore webhooks --ignore known_apps",
     "start:prod": "npm run build && node ./build/main.js",
     "test": "ava --serial",
     "test:watch": "ava --watch --serial"
