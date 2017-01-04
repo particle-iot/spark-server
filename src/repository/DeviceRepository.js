@@ -84,18 +84,15 @@ class DeviceRepository {
       deviceID,
       userID,
     );
+
     if (!attributes) {
       throw new HttpError('No device found', 404);
     }
 
     const device = this._deviceServer.getDevice(attributes.deviceID);
-    // TODO: Not sure if this should actually be the core ID that gets sent
-    // but that's what the old source code does :/
-    const response = device
-      ? await device.onApiMessage(
-        attributes.deviceID,
-        { cmd: 'Ping' },
-      )
+
+    const pingResponse = device
+      ? device.ping()
       : {
         connected: false,
         lastPing: null,
@@ -103,9 +100,9 @@ class DeviceRepository {
 
     return {
       ...attributes,
-      connected: response.connected,
+      connected: pingResponse.connected,
       lastFlashedAppName: null,
-      lastHeard: response.lastPing,
+      lastHeard: pingResponse.lastPing,
     };
   };
 
@@ -117,10 +114,7 @@ class DeviceRepository {
 
     const [attributes, description] = await Promise.all([
       this._deviceAttributeRepository.getById(deviceID, userID),
-      device.onApiMessage(
-        deviceID,
-        { cmd: 'Describe' },
-      ),
+      device.getDescription(),
     ]);
 
     if (!attributes) {
@@ -130,10 +124,10 @@ class DeviceRepository {
     return ({
       ...attributes,
       connected: true,
-      functions: description.f,
+      functions: description.state.f,
       lastFlashedAppName: null,
       lastHeard: new Date(),
-      variables: description.v,
+      variables: description.state.v,
     });
   };
 
@@ -142,13 +136,9 @@ class DeviceRepository {
       await this._deviceAttributeRepository.getAll(userID);
     const devicePromises = devicesAttributes.map(async attributes => {
       const device = this._deviceServer.getDevice(attributes.deviceID);
-      // TODO: Not sure if this should actually be the core ID that gets sent
-      // but that's what the old source code does :/
-      const response = device
-        ? await device.onApiMessage(
-          attributes.deviceID,
-          { cmd: 'Ping' },
-        )
+
+      const pingResponse = device
+        ? device.ping()
         : {
           connected: false,
           lastPing: null,
@@ -156,9 +146,9 @@ class DeviceRepository {
 
       return {
         ...attributes,
-        connected: response.connected,
+        connected: pingResponse.connected,
         lastFlashedAppName: null,
-        lastHeard: response.lastPing,
+        lastHeard: pingResponse.lastPing,
       };
     });
 
@@ -179,16 +169,11 @@ class DeviceRepository {
     if (!device) {
       throw new HttpError('Could not get device for ID', 404);
     }
-    const result = await device.onApiMessage(
-      deviceID,
-      { cmd: 'CallFn', name: functionName, args: functionArguments },
+
+    return await device.callFunction(
+      functionName,
+      functionArguments,
     );
-
-    if (result.error) {
-      throw result.error;
-    }
-
-    return result.result;
   };
 
   getVariableValue = async (
@@ -204,16 +189,8 @@ class DeviceRepository {
     if (!device) {
       throw new HttpError('Could not get device for ID', 404);
     }
-    const result = await device.onApiMessage(
-      deviceID,
-      { cmd: 'GetVar', name: varName },
-    );
 
-    if (result.error) {
-      throw result.error;
-    }
-
-    return result;
+    return await device.getVariableValue(varName);
   };
 
   flashBinary = async (
@@ -225,16 +202,7 @@ class DeviceRepository {
       throw new HttpError('Could not get device for ID', 404);
     }
 
-    const result = await device.onApiMessage(
-      deviceID,
-      { cmd: 'UFlash', args: { data: file.buffer } },
-    );
-
-    if (result.error) {
-      throw result.error;
-    }
-
-    return result.result;
+    return await device.flash(file.buffer);
   };
 
   flashKnownApp = async (
@@ -257,16 +225,7 @@ class DeviceRepository {
       throw new HttpError('Could not get device for ID', 404);
     }
 
-    const result = await device.onApiMessage(
-      deviceID,
-      { cmd: 'UFlash', args: { data: knownFirmware } },
-    );
-
-    if (result.error) {
-      throw result.error;
-    }
-
-    return result.result;
+    return await device.flash(knownFirmware);
   };
 
   provision = async (
