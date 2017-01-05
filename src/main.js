@@ -2,6 +2,7 @@
 
 import {
   DeviceAttributeFileRepository,
+  DeviceKeyFileRepository,
   DeviceServer,
   EventPublisher,
   ServerConfigFileRepository,
@@ -33,6 +34,9 @@ const deviceServer = new DeviceServer(
   {
     coreKeysDir: settings.coreKeysDir,
     deviceAttributeRepository: new DeviceAttributeFileRepository(
+      settings.coreKeysDir,
+    ),
+    deviceKeyRepository: new DeviceKeyFileRepository(
       settings.coreKeysDir,
     ),
     host: settings.HOST,
