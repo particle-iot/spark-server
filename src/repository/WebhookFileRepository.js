@@ -1,8 +1,9 @@
 // @flow
 
-import type { Webhook } from '../types';
+import type { Webhook, WebhookMutator } from '../types';
 
-import { JSONFileManager, uuid } from 'spark-protocol';
+import uuid from 'uuid';
+import { JSONFileManager } from 'spark-protocol';
 import HttpError from '../lib/HttpError';
 
 class WebhookFileRepository {
@@ -12,11 +13,16 @@ class WebhookFileRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
-  create = async (model: Webhook): Promise<Webhook> => {
+  create = async (model: WebhookMutator): Promise<Webhook> => {
+    let id = uuid();
+    while (await this.getById(id)) {
+      id = uuid();
+    }
+
     const modelToSave = {
       ...model,
       created_at: new Date(),
-      id: uuid(),
+      id,
     };
 
     this._fileManager.createFile(`${modelToSave.id}.json`, modelToSave);
@@ -32,7 +38,7 @@ class WebhookFileRepository {
   getById = async (id: string): Promise<?Webhook> =>
     this._fileManager.getFile(`${id}.json`);
 
-  update = (model: Webhook): Promise<Webhook> => {
+  update = async (model: WebhookMutator): Promise<Webhook> => {
     throw new HttpError('Not implemented');
   };
 }
