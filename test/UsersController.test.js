@@ -81,6 +81,6 @@ test.serial('should deleteById access token for the user', async t => {
   ));
 });
 
-test.after.always(() => {
-  settings.usersRepository.deleteById(user.id);
+test.after.always(async (): Promise<void> => {
+  await settings.usersRepository.deleteById(user.id);
 });

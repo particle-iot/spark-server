@@ -59,6 +59,7 @@
     "request": "*",
     "spark-protocol": "../spark-protocol",
     "ursa": "*",
+    "uuid": "^3.0.1",
     "when": "*",
     "xtend": "*"
   },

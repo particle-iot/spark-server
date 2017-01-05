@@ -62,11 +62,8 @@ class WebhooksController extends Controller {
       throw validateError;
     }
 
-    const newWebhook = await this._webhookRepository.create({
-      ...model,
-      created_at: new Date(),
-      id: '',
-    });
+    const newWebhook = await this._webhookRepository.create(model);
+
     return this.ok({
       created_at: newWebhook.created_at,
       event: newWebhook.event,
