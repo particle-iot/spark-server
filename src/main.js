@@ -30,10 +30,10 @@ process.on('uncaughtException', (exception: Error) => {
 
 
 const deviceAttributeRepository = new DeviceAttributeFileRepository(
-  settings.coreKeysDir,
+  settings.deviceKeysDir,
 );
 const deviceKeyRepository = new DeviceKeyFileRepository(
-  settings.coreKeysDir,
+  settings.deviceKeysDir,
 );
 const serverKeyRepository = new ServerKeyFileRepository(
   settings.serverKeysDir,

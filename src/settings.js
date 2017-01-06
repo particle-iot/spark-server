@@ -28,30 +28,30 @@ export default {
   accessTokenLifetime: 7776000, // 90 days,
   baseUrl: 'http://localhost',
   coreFlashTimeout: 90000,
-  coreKeysDir: path.join(__dirname, 'core_keys'),
   coreRequestTimeout: 30000,
   coreSignalTimeout: 30000,
+  deviceKeysDir: path.join(__dirname, './data/deviceKeys'),
   isCoreOnlineTimeout: 2000,
   loginRoute: '/oauth/token',
   logRequests: true,
   maxHooksPerDevice: 10,
   maxHooksPerUser: 20,
   deviceFirmwareRepository: new DeviceFirmwareFileRepository(
-    path.join(__dirname, 'known_apps'),
+    path.join(__dirname, './data/knownApps'),
   ),
   webhookRepository: new WebhookFileRepository(
-    path.join(__dirname, 'webhooks'),
+    path.join(__dirname, './data/webhooks'),
   ),
   usersRepository: new UsersFileRepository(
-    path.join(__dirname, 'users'),
+    path.join(__dirname, './data/users'),
   ),
 
   /**
    * Your server crypto keys!
    */
   cryptoSalt: 'aes-128-cbc',
-  serverKeyFile: "default_key.pem",
-  serverKeysDir: './',
+  serverKeyFile: 'default_key.pem',
+  serverKeysDir: path.join(__dirname, './data'),
   serverKeyPassFile: null,
   serverKeyPassEnvVar: null,
 

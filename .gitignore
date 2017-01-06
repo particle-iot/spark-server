@@ -28,10 +28,7 @@ build/Release
 node_modules
 
 # Spark generated files/directories which contain secrets
-known_apps
-core_keys
-users
-webhooks
+data
 __test_data__
 *.der
 *.pem
