@@ -68,13 +68,13 @@ export default (
   app.use(setCORSHeaders);
 
   const deviceAttributeRepository = new DeviceAttributeFileRepository(
-    settings.coreKeysDir,
+    settings.deviceKeysDir,
   );
 
   const deviceRepository = new DeviceRepository(
     deviceAttributeRepository,
     settings.deviceFirmwareRepository,
-    new DeviceKeyFileRepository(settings.coreKeysDir),
+    new DeviceKeyFileRepository(settings.deviceKeysDir),
     deviceServer,
   );
 
