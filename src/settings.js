@@ -51,6 +51,7 @@ export default {
    */
   cryptoSalt: 'aes-128-cbc',
   serverKeyFile: "default_key.pem",
+  serverKeysDir: './',
   serverKeyPassFile: null,
   serverKeyPassEnvVar: null,
 
