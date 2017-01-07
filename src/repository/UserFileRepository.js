@@ -2,7 +2,8 @@
 
 import type { TokenObject, User, UserCredentials } from '../types';
 
-import { JSONFileManager, uuid } from 'spark-protocol';
+import uuid from 'uuid';
+import { JSONFileManager } from 'spark-protocol';
 import PasswordHasher from '../lib/PasswordHasher';
 import HttpError from '../lib/HttpError';
 
@@ -20,12 +21,16 @@ class UserFileRepository {
 
     const salt = await PasswordHasher.generateSalt();
     const passwordHash = await PasswordHasher.hash(password, salt);
+    let id = uuid();
+    while (await this.getById(id)) {
+      id = uuid();
+    }
 
     const modelToSave = {
       accessTokens: [],
       created_at: new Date(),
       created_by: null,
-      id: uuid(),
+      id,
       passwordHash,
       salt,
       username,
@@ -43,10 +48,10 @@ class UserFileRepository {
     throw new HttpError('Not implemented');
   };
 
-  getAll = (): Promise<Array<User>> =>
+  getAll = async (): Promise<Array<User>> =>
     this._fileManager.getAllData();
 
-  getById = (id: string): Promise<?User> =>
+  getById = async (id: string): Promise<?User> =>
     this._fileManager.getFile(`${id}.json`);
 
   getByUsername = async (username: string): Promise<?User> =>
@@ -91,7 +96,7 @@ class UserFileRepository {
     this._fileManager.writeFile(`${user.id}.json`, userToSave);
   };
 
-  deleteById = (id: string): Promise<void> =>
+  deleteById = async (id: string): Promise<void> =>
     this._fileManager.deleteFile(`${id}.json`);
 
 

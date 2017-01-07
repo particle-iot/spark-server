@@ -2,9 +2,10 @@
 
 import {
   DeviceAttributeFileRepository,
+  DeviceKeyFileRepository,
   DeviceServer,
   EventPublisher,
-  ServerConfigFileRepository,
+  ServerKeyFileRepository,
 } from 'spark-protocol';
 import utilities from './lib/utilities';
 import logger from './lib/logger';
@@ -27,24 +28,28 @@ process.on('uncaughtException', (exception: Error) => {
   logger.error(`Caught exception: ${exception.toString()} ${exception.stack}`);
 });
 
+
+const deviceAttributeRepository = new DeviceAttributeFileRepository(
+  settings.deviceKeysDir,
+);
+const deviceKeyRepository = new DeviceKeyFileRepository(
+  settings.deviceKeysDir,
+);
+const serverKeyRepository = new ServerKeyFileRepository(
+  settings.serverKeysDir,
+  settings.serverKeyFile,
+);
 const eventPublisher = new EventPublisher();
 
 const deviceServer = new DeviceServer(
+  deviceAttributeRepository,
+  deviceKeyRepository,
+  serverKeyRepository,
+  eventPublisher,
   {
-    coreKeysDir: settings.coreKeysDir,
-    deviceAttributeRepository: new DeviceAttributeFileRepository(
-      settings.coreKeysDir,
-    ),
     host: settings.HOST,
     port: settings.PORT,
-    serverConfigRepository: new ServerConfigFileRepository(
-      settings.serverKeyFile,
-    ),
-    serverKeyFile: settings.serverKeyFile,
-    serverKeyPassEnvVar: settings.serverKeyPassEnvVar,
-    serverKeyPassFile: settings.serverKeyPassFile,
   },
-  eventPublisher,
 );
 
 global.server = deviceServer;

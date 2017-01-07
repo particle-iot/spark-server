@@ -75,8 +75,8 @@ test('should throw an error if public key is not provided', async t => {
   t.is(response.body.error, 'No key provided');
 });
 
-test.after.always(() => {
-  settings.usersRepository.deleteById(testUser.id);
-  settings.deviceAttributeRepository.deleteById(DEVICE_ID);
-  settings.deviceKeyFileRepository.delete(DEVICE_ID);
+test.after.always(async (): Promise<void> => {
+  await settings.usersRepository.deleteById(testUser.id);
+  await settings.deviceAttributeRepository.deleteById(DEVICE_ID);
+  await settings.deviceKeyFileRepository.delete(DEVICE_ID);
 });

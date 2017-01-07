@@ -157,7 +157,7 @@ test.serial('should delete webhook', async t => {
   ));
 });
 
-test.after.always(() => {
-  settings.webhookRepository.deleteById(testWebhook.id);
-  settings.usersRepository.deleteById(testUser.id);
+test.after.always(async (): Promise<void> => {
+  await settings.webhookRepository.deleteById(testWebhook.id);
+  await settings.usersRepository.deleteById(testUser.id);
 });

@@ -134,8 +134,8 @@ test.serial('should claim device', async t => {
 // TODO write test for checking the error if device belongs to somebody else
 // TODO write tests for updateDevice & callFunction
 
-test.after.always(() => {
-  settings.usersRepository.deleteById(testUser.id);
-  settings.deviceAttributeRepository.deleteById(DEVICE_ID);
-  settings.deviceKeyFileRepository.delete(DEVICE_ID);
+test.after.always(async (): Promise<void> => {
+  await settings.usersRepository.deleteById(testUser.id);
+  await settings.deviceAttributeRepository.deleteById(DEVICE_ID);
+  await settings.deviceKeyFileRepository.delete(DEVICE_ID);
 });
