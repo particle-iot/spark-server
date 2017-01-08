@@ -107,10 +107,19 @@ export default (
           const values = argumentNames
             .map((argument: string): string => request.params[argument]);
 
-          const controllerContext = Object.create(controller);
-          controllerContext.request = request;
-          controllerContext.response = response;
-          controllerContext.user = (request: any).user;
+          const controllerInstance = container.constitute(controllerName);
+
+          // In order parallel requests on the controller, the state
+          // (request/response/user) must be added to the controller.
+          if (controllerInstance === controller) {
+            throw new Error(
+              '`Transient.with` must be used when binding controllers',
+            );
+          }
+
+          controllerInstance.request = request;
+          controllerInstance.response = response;
+          controllerInstance.user = (request: any).user;
 
           // Take access token out if it's posted.
           const {
@@ -120,7 +129,7 @@ export default (
 
           try {
             const functionResult = mappedFunction.call(
-              controllerContext,
+              controllerInstance,
               ...values,
               body,
             );

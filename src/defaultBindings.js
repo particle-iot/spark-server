@@ -2,9 +2,8 @@
 
 import type {Container} from 'constitute';
 
-import {
-  defaultBindings,
-} from 'spark-protocol';
+import {defaultBindings} from 'spark-protocol';
+import {Transient} from 'constitute';
 import DeviceClaimsController from './controllers/DeviceClaimsController';
 import DevicesController from './controllers/DevicesController';
 import EventsController from './controllers/EventsController';
@@ -34,46 +33,46 @@ export default (container: Container): void => {
   container.bindClass(
     'DeviceClaimsController',
     DeviceClaimsController,
-    ['DeviceRepository']
+    Transient.with(['DeviceRepository']),
   );
   container.bindClass(
     'DevicesController',
     DevicesController,
-    ['DeviceRepository']
+    Transient.with(['DeviceRepository']),
   );
   container.bindClass(
     'EventsController',
     EventsController,
-    ['EventManager']
+    Transient.with(['EventManager']),
   );
   container.bindClass(
     'ProvisioningController',
     ProvisioningController,
-    ['DeviceRepository']
+    Transient.with(['DeviceRepository']),
   );
   container.bindClass(
     'UsersController',
     UsersController,
-    ['UserRepository']
+    Transient.with(['UserRepository']),
   );
   container.bindClass(
     'WebhooksController',
     WebhooksController,
-    ['WebhookRepository']
+    Transient.with(['WebhookRepository']),
   );
 
   // managers
   container.bindClass(
     'EventManager',
     EventManager,
-    ['EventPublisher']
+    ['EventPublisher'],
   );
 
   // Repositories
   container.bindClass(
     'DeviceFirmwareRepository',
     DeviceFirmwareFileRepository,
-    ['FIRMWARE_DIRECTORY']
+    ['FIRMWARE_DIRECTORY'],
   );
   container.bindClass(
     'DeviceRepository',
@@ -83,16 +82,16 @@ export default (container: Container): void => {
       'DeviceFirmwareRepository',
       'DeviceKeyRepository',
       'DeviceServer',
-    ]
+    ],
   );
   container.bindClass(
     'UserRepository',
     UserFileRepository,
-    ['USERS_DIRECTORY']
+    ['USERS_DIRECTORY'],
   );
   container.bindClass(
     'WebhookRepository',
     WebhookFileRepository,
-    ['WEBHOOKS_DIRECTORY']
+    ['WEBHOOKS_DIRECTORY'],
   );
 };
