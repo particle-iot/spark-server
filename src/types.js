@@ -119,8 +119,6 @@ export type Settings = {
   coreRequestTimeout: number,
   coreSignalTimeout: number,
   cryptoSalt: string,
-  deviceFirmwareRepository: DeviceFirmwareRepository,
-  deviceKeysDir: string,
   HOST: string,
   isCoreOnlineTimeout: number,
   loginRoute: string,
@@ -128,11 +126,8 @@ export type Settings = {
   maxHooksPerDevice: number,
   maxHooksPerUser: number,
   PORT: number,
-  serverKeyFile: string,
   serverKeyPassEnvVar: ?string,
   serverKeyPassFile: ?string,
-  usersRepository: UserRepository,
-  webhookRepository: Repository<*>,
 };
 
 export type DeviceAttributeRepository = Repository<DeviceAttributes> & {

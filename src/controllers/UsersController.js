@@ -29,7 +29,7 @@ class UsersController extends Controller {
         await this._userRepository.isUserNameInUse(userCredentials.username);
 
       if (isUserNameInUse) {
-        throw new HttpError('user with the username is already exist');
+        throw new HttpError('user with the username already exists');
       }
 
       const newUser = await this._userRepository.createWithCredentials(

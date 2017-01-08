@@ -7,6 +7,7 @@ import type {
   Middleware,
   NextFunction,
 } from 'express';
+import type {Container} from 'constitute';
 import type { EventPublisher, DeviceServer } from 'spark-protocol';
 import type { Settings } from './types';
 
@@ -34,9 +35,8 @@ import UsersController from './controllers/UsersController';
 import WebhooksController from './controllers/WebhooksController';
 
 export default (
+  container: Container,
   settings: Settings,
-  deviceServer: DeviceServer,
-  eventPublisher: EventPublisher,
 ): $Application => {
   const app = express();
 
@@ -67,30 +67,18 @@ export default (
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(setCORSHeaders);
 
-  const deviceAttributeRepository = new DeviceAttributeFileRepository(
-    settings.deviceKeysDir,
-  );
-
-  const deviceRepository = new DeviceRepository(
-    deviceAttributeRepository,
-    settings.deviceFirmwareRepository,
-    new DeviceKeyFileRepository(settings.deviceKeysDir),
-    deviceServer,
-  );
-
-  const eventManager = new EventManager(eventPublisher);
-
   routeConfig(
     app,
+    container,
     [
-      new DeviceClaimsController(deviceRepository),
+      'DeviceClaimsController',
       // to avoid routes collisions EventsController should be placed
       // before DevicesController
-      new EventsController(eventManager),
-      new DevicesController(deviceRepository),
-      new ProvisioningController(deviceRepository),
-      new UsersController(settings.usersRepository),
-      new WebhooksController(settings.webhookRepository),
+      'EventsController',
+      'DevicesController',
+      'ProvisioningController',
+      'UsersController',
+      'WebhooksController',
     ],
     settings,
   );

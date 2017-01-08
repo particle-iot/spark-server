@@ -1,15 +1,10 @@
 // @flow
 
-import {
-  DeviceAttributeFileRepository,
-  DeviceKeyFileRepository,
-  DeviceServer,
-  EventPublisher,
-  ServerKeyFileRepository,
-} from 'spark-protocol';
+import {Container} from 'constitute';
 import utilities from './lib/utilities';
 import logger from './lib/logger';
 import createApp from './app';
+import defaultBindings from './defaultBindings';
 import settings from './settings';
 
 const NODE_PORT = process.env.NODE_PORT || 8080;
@@ -28,34 +23,24 @@ process.on('uncaughtException', (exception: Error) => {
   logger.error(`Caught exception: ${exception.toString()} ${exception.stack}`);
 });
 
+/* This is the container used app-wide for dependency injection. If you want to
+ * override any of the implementations, create your module with the new
+ * implementation and use:
+ *
+ * container.bindAlias(DefaultImplementation, MyNewImplementation);
+ *
+ * You can also set a new value
+ * container.bindAlias(DefaultValue, 12345);
+ *
+ * See https://github.com/justmoon/constitute for more info
+ */
+const container = new Container();
+defaultBindings(container);
 
-const deviceAttributeRepository = new DeviceAttributeFileRepository(
-  settings.deviceKeysDir,
-);
-const deviceKeyRepository = new DeviceKeyFileRepository(
-  settings.deviceKeysDir,
-);
-const serverKeyRepository = new ServerKeyFileRepository(
-  settings.serverKeysDir,
-  settings.serverKeyFile,
-);
-const eventPublisher = new EventPublisher();
-
-const deviceServer = new DeviceServer(
-  deviceAttributeRepository,
-  deviceKeyRepository,
-  serverKeyRepository,
-  eventPublisher,
-  {
-    host: settings.HOST,
-    port: settings.PORT,
-  },
-);
-
-global.server = deviceServer;
+const deviceServer = container.constitute('DeviceServer');
 deviceServer.start();
 
-const app = createApp(settings, deviceServer, eventPublisher);
+const app = createApp(container, settings);
 
 app.listen(
   NODE_PORT,

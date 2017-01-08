@@ -7,6 +7,7 @@ import type {
   Middleware,
   NextFunction,
 } from 'express';
+import type {Container} from 'constitute';
 import type { Settings } from './types';
 import type Controller from './controllers/Controller';
 
@@ -60,19 +61,21 @@ const defaultMiddleware =
 
 export default (
   app: $Application,
-  controllers: Array<Controller>,
+  container: Container,
+  controllers: Array<string>,
   settings: Settings,
 ) => {
   const oauth = new OAuthServer({
     accessTokenLifetime: settings.accessTokenLifetime,
     allowBearerTokensInQueryString: true,
-    model: new OAuthModel(settings.usersRepository),
+    model: new OAuthModel(container.constitute('UserRepository')),
   });
   const injectFilesMiddleware = multer();
 
   app.post(settings.loginRoute, oauth.token());
 
-  controllers.forEach((controller: Controller) => {
+  controllers.forEach((controllerName: string) => {
+    const controller = container.constitute(controllerName);
     Object.getOwnPropertyNames(
       (Object.getPrototypeOf(controller): any),
     ).forEach((functionName: string) => {

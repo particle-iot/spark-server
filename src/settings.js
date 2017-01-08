@@ -20,38 +20,34 @@
 */
 
 import path from 'path';
-import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
+import {Value} from 'constitute'
+//import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
 import WebhookFileRepository from './repository/WebhookFileRepository';
 import UsersFileRepository from './repository/UserFileRepository';
 
 export default {
+  DEVICE_DIRECTORY: path.join(__dirname, './data/deviceKeys'),
+  FIRMWARE_DIRECTORY: path.join(__dirname, './data/knownApps'),
+  SERVER_KEY_FILENAME: 'default_key.pem',
+  SERVER_KEYS_DIRECTORY: path.join(__dirname, './data'),
+  USERS_DIRECTORY: path.join(__dirname, './data/users'),
+  WEBHOOKS_DIRECTORY: path.join(__dirname, './data/webhooks'),
+
   accessTokenLifetime: 7776000, // 90 days,
   baseUrl: 'http://localhost',
   coreFlashTimeout: 90000,
   coreRequestTimeout: 30000,
   coreSignalTimeout: 30000,
-  deviceKeysDir: path.join(__dirname, './data/deviceKeys'),
   isCoreOnlineTimeout: 2000,
   loginRoute: '/oauth/token',
   logRequests: true,
   maxHooksPerDevice: 10,
   maxHooksPerUser: 20,
-  deviceFirmwareRepository: new DeviceFirmwareFileRepository(
-    path.join(__dirname, './data/knownApps'),
-  ),
-  webhookRepository: new WebhookFileRepository(
-    path.join(__dirname, './data/webhooks'),
-  ),
-  usersRepository: new UsersFileRepository(
-    path.join(__dirname, './data/users'),
-  ),
 
   /**
    * Your server crypto keys!
    */
   cryptoSalt: 'aes-128-cbc',
-  serverKeyFile: 'default_key.pem',
-  serverKeysDir: path.join(__dirname, './data'),
   serverKeyPassFile: null,
   serverKeyPassEnvVar: null,
 

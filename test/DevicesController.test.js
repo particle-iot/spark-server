@@ -2,7 +2,6 @@ import test from 'ava';
 import request from 'supertest-as-promised';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
-import settings from './setup/settings';
 
 const USER_CREDENTIALS = {
   password: 'password',
@@ -134,8 +133,10 @@ test.serial('should claim device', async t => {
 // TODO write test for checking the error if device belongs to somebody else
 // TODO write tests for updateDevice & callFunction
 
+// Used to get implementations
+const container = app.container;
 test.after.always(async (): Promise<void> => {
-  await settings.usersRepository.deleteById(testUser.id);
-  await settings.deviceAttributeRepository.deleteById(DEVICE_ID);
-  await settings.deviceKeyFileRepository.delete(DEVICE_ID);
+  await container.constitute('UserRepository').deleteById(testUser.id);
+  await container.constitute('DeviceAttributeRepository').deleteById(DEVICE_ID);
+  await container.constitute('DeviceKeyRepository').delete(DEVICE_ID);
 });
