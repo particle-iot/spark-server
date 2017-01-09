@@ -4,8 +4,9 @@ import test from 'ava';
 import request from 'supertest-as-promised';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
+import TestData from './setup/TestData';
 
-const USER_CREDENTIALS: UserCredentials = {
+let USER_CREDENTIALS: UserCredentials = {
   password: 'password',
   username: 'newUser@test.com',
 };
@@ -14,6 +15,7 @@ let user;
 let userToken;
 
 test.serial('should return a new user object', async t => {
+  USER_CREDENTIALS = TestData.getUser();
   const response = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);

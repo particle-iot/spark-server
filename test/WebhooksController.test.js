@@ -5,8 +5,9 @@ import request from 'supertest-as-promised';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
 import settings from './setup/settings';
+import TestData from './setup/TestData';
 
-const USER_CREDENTIALS = {
+let USER_CREDENTIALS = {
   password: 'password',
   username: 'webhookTestUser@test.com',
 };
@@ -22,6 +23,7 @@ let userToken;
 let testWebhook;
 
 test.before(async () => {
+  USER_CREDENTIALS = TestData.getUser();
   const userResponse = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);

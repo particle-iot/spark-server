@@ -2,14 +2,15 @@ import test from 'ava';
 import request from 'supertest-as-promised';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
+import TestData from './setup/TestData';
 
-const USER_CREDENTIALS = {
+let USER_CREDENTIALS = {
   password: 'password',
   username: 'provisionTestUser@test.com',
 };
 
-const DEVICE_ID = '350023001951353337343733';
-const TEST_PUBLIC_KEY =
+let DEVICE_ID = '350023001951353337343733';
+let TEST_PUBLIC_KEY =
   '-----BEGIN PUBLIC KEY-----\n' +
   'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCsxJFqlUOxK5bsEfTtBCe9sXBa' +
   '43q9QoSPFXEG5qY/+udOpf2SKacgfUVdUbK4WOkLou7FQ+DffpwztBk5fWM9qfzF' +
@@ -21,6 +22,9 @@ let testUser;
 let userToken;
 
 test.before(async () => {
+  USER_CREDENTIALS = TestData.getUser();
+  DEVICE_ID = TestData.getID();
+  TEST_PUBLIC_KEY = TestData.getPublicKey();
   const userResponse = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
