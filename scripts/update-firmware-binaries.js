@@ -8,7 +8,8 @@ const rmfr = require('rmfr');
 const settings = require('../src/settings');
 
 const GITHUB_USER = 'spark';
-const GITHUB_REPOSITORY = 'firmware';
+const GITHUB_FIRMWARE_REPOSITORY = 'firmware';
+const GITHUB_CLI_REPOSITORY = 'particle-cli';
 const SETTINGS_FILE = settings.BINARIES_DIRECTORY + '/settings.json';
 
 // This default is here so that the regex will work when updating these files.
@@ -126,6 +127,16 @@ const verifyBinariesMatch = data => {
 	}
 }
 
+const downloadAppBinaries = () => {
+  githubAPI.repos.getContent({
+    owner: GITHUB_USER,
+    repo: GITHUB_CLI_REPOSITORY,
+    path: 'binaries'
+  }).then(assets => Promise.all(
+    assets.map(asset => downloadFile(asset.download_url))
+  )).catch(console.log);
+}
+
 // Start running process. If you pass `0.6.0` it will install that version of
 // the firmware.
 let versionTag = process.argv[2];
@@ -135,29 +146,59 @@ if (versionTag && versionTag[0] !== 'v') {
 
 const githubAPI = new github();
 
-const promise = process.argv.length !== 3
-  ? githubAPI.repos.getLatestRelease({
-    owner: GITHUB_USER,
-    repo: GITHUB_REPOSITORY
+const clearBinariesPromise = cleanBinariesDirectory().then(() => {
+  if (!fs.existsSync(settings.BINARIES_DIRECTORY)) {
+    mkdirp.sync(settings.BINARIES_DIRECTORY);
+  }
+});
+
+// Download app binaries
+const appPromise = clearBinariesPromise.then(() => downloadAppBinaries());
+
+// Download firmware binaries
+const promise = clearBinariesPromise.then(
+  () => process.argv.length !== 3
+    ? githubAPI.repos.getTags({
+      owner: GITHUB_USER,
+      page: 0,
+      perPage: 30,
+      repo: GITHUB_FIRMWARE_REPOSITORY
+    }).then(tags => {
+      tags = tags.filter(tag =>
+        !tag.name.includes('-rc') &&
+        !tag.name.includes('-pi')
+      );
+
+      tags.sort((a, b) => {
+        if (a.name < b.name) {
+          return 1;
+        }
+        if (a.name > b.name) {
+          return -1;
+        }
+        return 0;
+      });
+
+      versionTag = tags[0].name;
+    })
+    : Promise.resolve()
+).then(() =>
+  githubAPI.repos.getReleaseByTag({
+   owner: GITHUB_USER,
+   repo: GITHUB_FIRMWARE_REPOSITORY,
+   tag: versionTag
   })
-  : githubAPI.repos.getReleaseByTag({
-    owner: GITHUB_USER,
-    repo: GITHUB_REPOSITORY,
-    tag: versionTag,
-  });
+);
 
 promise.then(release => {
-  versionTag = release.tag_name;
-  return cleanBinariesDirectory()
-    .then(() => {
-      if (!fs.existsSync(settings.BINARIES_DIRECTORY)) {
-        mkdirp.sync(settings.BINARIES_DIRECTORY);
-      }
-      return downloadFirmwareBinaries(release.assets);
-    });
+  return downloadFirmwareBinaries(release.assets);
 })
 .then(downloadedBinaries => ({
   downloadedBinaries,
   settingsBinaries: updateSettings(),
 }))
-.then(fileData => verifyBinariesMatch(fileData))
+.then(fileData => verifyBinariesMatch(fileData));
+
+Promise.all([appPromise, promise])
+  .then(() => console.log('\r\nCompleted Sync'))
+  .catch(console.log);
