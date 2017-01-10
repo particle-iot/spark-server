@@ -16,6 +16,7 @@ import ursa from 'ursa';
 import HttpError from '../lib/HttpError';
 
 const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
+const CLAIM_CODE_LENGTH = 63;
 
 class DeviceRepository {
   _deviceAttributeRepository: DeviceAttributeRepository;
@@ -55,11 +56,11 @@ class DeviceRepository {
     return await this._deviceAttributeRepository.update(attributesToSave);
   };
 
-  generateClaimCode = async (userID: string): Promise<string> => {
-    // TODO - we should probably save this to a repository so we can use it in
-    // subsequent requests
-    return crypto.randomBytes(63).toString();
-  };
+  generateClaimCode = (): string =>
+    crypto
+      .randomBytes(CLAIM_CODE_LENGTH)
+      .toString('base64')
+      .substring(0, CLAIM_CODE_LENGTH);
 
   unclaimDevice = async (
     deviceID: string,
@@ -74,6 +75,7 @@ class DeviceRepository {
 
     const attributesToSave = {
       ...deviceAttributes,
+      claimCode: null,
       ownerID: null,
     };
     return await this._deviceAttributeRepository.update(attributesToSave);

@@ -1,9 +1,9 @@
 // @flow
 
-import type {Container} from 'constitute';
+import type { Container } from 'constitute';
 
-import {defaultBindings} from 'spark-protocol';
-import {Transient} from 'constitute';
+import { defaultBindings } from 'spark-protocol';
+import { Transient } from 'constitute';
 import DeviceClaimsController from './controllers/DeviceClaimsController';
 import DevicesController from './controllers/DevicesController';
 import EventsController from './controllers/EventsController';
@@ -17,7 +17,7 @@ import UserFileRepository from './repository/UserFileRepository';
 import WebhookFileRepository from './repository/WebhookFileRepository';
 import settings from './settings';
 
-export default (container: Container): void => {
+export default (container: Container) => {
   // spark protocol container bindings
   defaultBindings(container);
 
@@ -33,7 +33,10 @@ export default (container: Container): void => {
   container.bindClass(
     'DeviceClaimsController',
     DeviceClaimsController,
-    Transient.with(['DeviceRepository']),
+    Transient.with([
+      'DeviceRepository',
+      'UserRepository',
+    ]),
   );
   container.bindClass(
     'DevicesController',
