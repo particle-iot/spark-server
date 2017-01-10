@@ -19,13 +19,10 @@
 *
 */
 
-import path from 'path';
-import {Value} from 'constitute'
-//import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
-import WebhookFileRepository from './repository/WebhookFileRepository';
-import UsersFileRepository from './repository/UserFileRepository';
+const path = require('path');
 
-export default {
+module.exports = {
+  BINARIES_DIRECTORY: path.join(__dirname, './data/binaries'),
   DEVICE_DIRECTORY: path.join(__dirname, './data/deviceKeys'),
   FIRMWARE_DIRECTORY: path.join(__dirname, './data/knownApps'),
   SERVER_KEY_FILENAME: 'default_key.pem',
