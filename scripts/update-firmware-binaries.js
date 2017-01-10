@@ -10,7 +10,8 @@ const settings = require('../src/settings');
 const GITHUB_USER = 'spark';
 const GITHUB_FIRMWARE_REPOSITORY = 'firmware';
 const GITHUB_CLI_REPOSITORY = 'particle-cli';
-const SETTINGS_FILE = settings.BINARIES_DIRECTORY + '/settings.json';
+const SPECIFICATIONS_FILE = settings.BINARIES_DIRECTORY + '/specifications.js';
+const SETTINGS_FILE = settings.BINARIES_DIRECTORY + '/settings.js';
 
 // This default is here so that the regex will work when updating these files.
 const DEFAULT_SETTINGS = {
@@ -91,7 +92,7 @@ const updateSettings = () => {
   if (!fs.exists(SETTINGS_FILE)) {
     fs.writeFileSync(
       SETTINGS_FILE,
-      JSON.stringify(DEFAULT_SETTINGS, null, 2),
+      `module.exports = ${JSON.stringify(DEFAULT_SETTINGS, null, 2)};`,
       { flag: 'wx' }
     );
   }
@@ -156,7 +157,7 @@ const clearBinariesPromise = cleanBinariesDirectory().then(() => {
 const appPromise = clearBinariesPromise.then(() => downloadAppBinaries());
 
 // Download firmware binaries
-const promise = clearBinariesPromise.then(
+const firmwarePromise = clearBinariesPromise.then(
   () => process.argv.length !== 3
     ? githubAPI.repos.getTags({
       owner: GITHUB_USER,
@@ -190,7 +191,7 @@ const promise = clearBinariesPromise.then(
   })
 );
 
-promise.then(release => {
+firmwarePromise.then(release => {
   return downloadFirmwareBinaries(release.assets);
 })
 .then(downloadedBinaries => ({
@@ -199,6 +200,18 @@ promise.then(release => {
 }))
 .then(fileData => verifyBinariesMatch(fileData));
 
-Promise.all([appPromise, promise])
+const specificationsPromise = githubAPI.repos.getContent({
+  owner: GITHUB_USER,
+  path: 'lib/deviceSpecs/specifications.js',
+  repo: GITHUB_CLI_REPOSITORY
+}).then(response => {
+  fs.writeFileSync(
+    SPECIFICATIONS_FILE,
+    new Buffer(response.content, 'base64').toString(),
+    { flag: 'wx' }
+  );
+})
+
+Promise.all([appPromise, firmwarePromise, specificationsPromise])
   .then(() => console.log('\r\nCompleted Sync'))
   .catch(console.log);
