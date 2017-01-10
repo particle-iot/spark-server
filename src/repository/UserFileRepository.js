@@ -40,7 +40,7 @@ class UserFileRepository {
       ...user,
       claimCodes: user.claimCodes.filter(
         (code: string): boolean =>
-        code !== claimCode,
+          code !== claimCode,
       ),
     });
   };
