@@ -14,37 +14,6 @@ class UserFileRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
-  addClaimCode = async (
-    userID: string,
-    claimCode: string,
-  ): Promise<User> => {
-    const user = await this.getById(userID);
-    if (!user) {
-      throw new Error('no user found');
-    }
-    return await this.update({
-      ...user,
-      claimCodes: [...user.claimCodes, claimCode],
-    });
-  };
-
-  removeClaimCode = async (
-    userID: string,
-    claimCode: string,
-  ): Promise<?User> => {
-    const user = await this.getById(userID);
-    if (!user) {
-      return null;
-    }
-    return await this.update({
-      ...user,
-      claimCodes: user.claimCodes.filter(
-        (code: string): boolean =>
-          code !== claimCode,
-      ),
-    });
-  };
-
   createWithCredentials = async (
     userCredentials: UserCredentials,
   ): Promise<User> => {
@@ -59,7 +28,6 @@ class UserFileRepository {
 
     const modelToSave = {
       accessTokens: [],
-      claimCodes: [],
       created_at: new Date(),
       created_by: null,
       id,
@@ -86,14 +54,6 @@ class UserFileRepository {
 
   getById = async (id: string): Promise<?User> =>
     this._fileManager.getFile(`${id}.json`);
-
-  getByClaimCode = async (claimCode: string): Promise<?User> =>
-    (await this.getAll()).find(
-      (user: User): boolean =>
-        user.claimCodes.some((code: string): boolean =>
-          code === claimCode,
-        ),
-    );
 
   getByUsername = async (username: string): Promise<?User> =>
     (await this.getAll()).find(

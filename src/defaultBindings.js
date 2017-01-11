@@ -35,7 +35,7 @@ export default (container: Container) => {
     DeviceClaimsController,
     Transient.with([
       'DeviceRepository',
-      'UserRepository',
+      'ClaimCodeManager',
     ]),
   );
   container.bindClass(
