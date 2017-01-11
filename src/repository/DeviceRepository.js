@@ -11,7 +11,6 @@ import type {
 import type DeviceFirmwareRepository from './DeviceFirmwareFileRepository';
 
 import fs from 'fs';
-import crypto from 'crypto';
 import Moniker from 'moniker';
 import ursa from 'ursa';
 import HttpError from '../lib/HttpError';
@@ -19,7 +18,6 @@ import FirmwareManager from '../managers/FirmwareManager';
 import settings from '../settings';
 
 const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
-const CLAIM_CODE_LENGTH = 63;
 
 class DeviceRepository {
   _deviceAttributeRepository: DeviceAttributeRepository;
@@ -59,12 +57,6 @@ class DeviceRepository {
     return await this._deviceAttributeRepository.update(attributesToSave);
   };
 
-  generateClaimCode = (): string =>
-    crypto
-      .randomBytes(CLAIM_CODE_LENGTH)
-      .toString('base64')
-      .substring(0, CLAIM_CODE_LENGTH);
-
   unclaimDevice = async (
     deviceID: string,
     userID: string,
@@ -78,7 +70,6 @@ class DeviceRepository {
 
     const attributesToSave = {
       ...deviceAttributes,
-      claimCode: null,
       ownerID: null,
     };
     return await this._deviceAttributeRepository.update(attributesToSave);
@@ -209,7 +200,7 @@ class DeviceRepository {
 
     // TODO make FirmwareManager stateless
     const firmwareManager = new FirmwareManager(device.getSystemInformation());
-    const otaUpdateConfig = firmwareManager.getOtaUpdateConfig();
+    const otaUpdateConfig = null; // firmwareManager.getOtaUpdateConfig();
 
     console.log(otaUpdateConfig);
 
