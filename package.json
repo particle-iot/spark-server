@@ -28,7 +28,7 @@
   "scripts": {
     "build": "babel ./src --out-dir ./build",
     "build:clean": "rimraf ./build",
-    "update": "node ./scripts/update-firmware-binaries",
+    "update-firmware": "babel-node ./scripts/update-firmware-binaries",
     "lint": "eslint -- .",
     "postinstall": "npm run update-firmware",
     "prebuild": "npm run build:clean",
@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "basic-auth-parser": "0.0.2",
+    "binary-version-reader": "^0.5.0",
     "body-parser": "^1.15.2",
     "constitute": "^1.6.2",
     "express": "^4.14.0",
