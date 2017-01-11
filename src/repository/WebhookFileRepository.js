@@ -36,11 +36,9 @@ class WebhookFileRepository {
     const allData = this._fileManager.getAllData();
 
     if (userID) {
-      return Promise.resolve(
-        allData.filter(
-          (webhook: Webhook): boolean =>
+      return allData.filter(
+        (webhook: Webhook): boolean =>
           webhook.ownerID === userID,
-        ),
       );
     }
     return allData;
