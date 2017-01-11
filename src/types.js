@@ -18,6 +18,7 @@ export type WebhookMutator = {
   json?: { [key: string]: Object },
   mydevices?: boolean,
   noDefaults?: boolean,
+  ownerID: string,
   productIdOrSlug?: string,
   query?: { [key: string]: Object },
   rejectUnauthorized?: boolean,

@@ -1,11 +1,10 @@
 // @flow
 
 import type {
-  Repository,
   RequestType,
-  Webhook,
   WebhookMutator,
 } from '../types';
+import type WebhookManager from '../managers/WebhookManager';
 
 import Controller from './Controller';
 import HttpError from '../lib/HttpError';
@@ -34,24 +33,31 @@ const validateWebhookMutator = (webhookMutator: WebhookMutator): ?HttpError => {
 };
 
 class WebhooksController extends Controller {
-  _webhookRepository: Repository<Webhook>;
+  _webhookManager: WebhookManager;
 
-  constructor(webhookRepository: Repository<Webhook>) {
+  constructor(webhookManager: WebhookManager) {
     super();
 
-    this._webhookRepository = webhookRepository;
+    this._webhookManager = webhookManager;
   }
 
   @httpVerb('get')
   @route('/v1/webhooks')
   async getAll(): Promise<*> {
-    return this.ok(await this._webhookRepository.getAll());
+    return this.ok(
+      await this._webhookManager.getAll(this.user.id),
+    );
   }
 
   @httpVerb('get')
   @route('/v1/webhooks/:webhookId')
   async getById(webhookId: string): Promise<*> {
-    return this.ok(await this._webhookRepository.getById(webhookId));
+    return this.ok(
+      await this._webhookManager.getByID(
+        webhookId,
+        this.user.id,
+      ),
+    );
   }
 
   @httpVerb('post')
@@ -62,7 +68,10 @@ class WebhooksController extends Controller {
       throw validateError;
     }
 
-    const newWebhook = await this._webhookRepository.create(model);
+    const newWebhook = await this._webhookManager.create({
+      ...model,
+      ownerID: this.user.id,
+    });
 
     return this.ok({
       created_at: newWebhook.created_at,
@@ -76,8 +85,8 @@ class WebhooksController extends Controller {
   @httpVerb('delete')
   @route('/v1/webhooks/:webhookId')
   async deleteById(webhookId: string): Promise<*> {
-    this._webhookRepository.deleteById(webhookId);
-    return this.ok();
+    await this._webhookManager.deleteByID(webhookId, this.user.id);
+    return this.ok({ ok: true });
   }
 }
 

@@ -32,11 +32,33 @@ class WebhookFileRepository {
   deleteById = async (id: string): Promise<void> =>
     this._fileManager.deleteFile(`${id}.json`);
 
-  getAll = async (): Promise<Array<Webhook>> =>
-    this._fileManager.getAllData();
+  getAll = async (userID: ?string = null): Promise<Array<Webhook>> => {
+    const allData = this._fileManager.getAllData();
 
-  getById = async (id: string): Promise<?Webhook> =>
-    this._fileManager.getFile(`${id}.json`);
+    if (userID) {
+      return Promise.resolve(
+        allData.filter(
+          (webhook: Webhook): boolean =>
+          webhook.ownerID === userID,
+        ),
+      );
+    }
+    return allData;
+  };
+
+  getById = async (
+    id: string,
+    userID: ?string = null,
+  ): Promise<?Webhook> => {
+    const webhook = this._fileManager.getFile(`${id}.json`);
+    if (
+      !webhook ||
+      webhook.ownerID !== userID
+    ) {
+      return null;
+    }
+    return webhook;
+  };
 
   update = async (model: WebhookMutator): Promise<Webhook> => {
     throw new HttpError('Not implemented');
