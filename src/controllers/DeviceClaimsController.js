@@ -23,8 +23,8 @@ class DeviceClaimsController extends Controller {
 
   @httpVerb('post')
   @route('/v1/device_claims')
-  async generateClaimCode(): Promise<*> {
-    const claimCode = this._claimCodeManager.addClaimCode(
+  async createClaimCode(): Promise<*> {
+    const claimCode = this._claimCodeManager.createClaimCode(
       this.user.id,
     );
 
