@@ -10,6 +10,7 @@ import EventsController from './controllers/EventsController';
 import ProvisioningController from './controllers/ProvisioningController';
 import UsersController from './controllers/UsersController';
 import WebhooksController from './controllers/WebhooksController';
+import WebhookManager from './managers/WebhookManager';
 import EventManager from './managers/EventManager';
 import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
 import DeviceRepository from './repository/DeviceRepository';
@@ -61,7 +62,7 @@ export default (container: Container) => {
   container.bindClass(
     'WebhooksController',
     WebhooksController,
-    Transient.with(['WebhookRepository']),
+    Transient.with(['WebhookManager']),
   );
 
   // managers
@@ -69,6 +70,11 @@ export default (container: Container) => {
     'EventManager',
     EventManager,
     ['EventPublisher'],
+  );
+  container.bindClass(
+    'WebhookManager',
+    WebhookManager,
+    ['WebhookRepository', 'EventPublisher'],
   );
 
   // Repositories
