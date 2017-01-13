@@ -34,10 +34,16 @@ class WebhookManager {
       (webhook: Webhook): void => this._subscribeWebhook(webhook),
     );
   };
-  // todo figure MY_DEVICES webhooks.
+
   _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
     (event: Event) => {
       try {
+        if (
+          webhook.mydevices &&
+          webhook.ownerID !== event.userID
+        ) {
+          return;
+        }
 
         const defaultWebhookVariables = {
           // todo add old defaults for compatibility
@@ -105,6 +111,7 @@ class WebhookManager {
             if (errorResponseTopic) {
               this._eventPublisher.publish({
                 name: errorResponseTopic,
+                userID: event.userID,
               });
             }
             throw error;
@@ -112,6 +119,7 @@ class WebhookManager {
 
           this._eventPublisher.publish({
             name: `hook-sent/${event.name}`,
+            userID: event.userID,
           });
 
           const responseTemplate = webhook.responseTemplate && hogan
@@ -122,6 +130,7 @@ class WebhookManager {
             this._eventPublisher.publish({
               data: webhook.responseTemplate && responseTemplate,
               name: responseTopic,
+              userID: event.userID,
             });
           }
         };
