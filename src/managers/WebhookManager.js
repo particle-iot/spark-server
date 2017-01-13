@@ -46,11 +46,15 @@ class WebhookManager {
         }
 
         const defaultWebhookVariables = {
-          // todo add old defaults for compatibility
           PARTICLE_DEVICE_ID: event.deviceID,
           PARTICLE_EVENT_NAME: event.name,
           PARTICLE_EVENT_VALUE: event.data,
           PARTICLE_PUBLISHED_AT: event.publishedAt,
+          // old event names, added for compatibility
+          SPARK_CORE_ID: event.deviceID,
+          SPARK_EVENT_NAME: event.name,
+          SPARK_EVENT_VALUE: event.data,
+          SPARK_PUBLISHED_AT: event.publishedAt,
         };
 
         let eventDataVariables = {};
