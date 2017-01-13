@@ -200,7 +200,7 @@ class DeviceRepository {
 
     // TODO make FirmwareManager stateless
     const firmwareManager = new FirmwareManager(device.getSystemInformation());
-    const otaUpdateConfig = null; // firmwareManager.getOtaUpdateConfig();
+    const otaUpdateConfig = null;// firmwareManager.getOtaUpdateConfig();
 
     console.log(otaUpdateConfig);
 
@@ -208,15 +208,14 @@ class DeviceRepository {
       // TODO use a repository instead of just fetching from disk
       for (var i = 0; i < otaUpdateConfig.length; i++) {
         const config = otaUpdateConfig[i];
-        const file = fs.readFileSync(
+        const systemFile = fs.readFileSync(
           settings.BINARIES_DIRECTORY + '/' + config.binaryFileName,
         );
-        console.log('FLASHING', file.length, config.binaryFileName)
-        await device.flash(file, config.address);
-        await new Promise(resolve => setTimeout(() => resolve(), 2000));
+        console.log('FLASHING', systemFile.length, config.binaryFileName)
+        await device.flash(systemFile, config.address);
+        await new Promise(resolve => setTimeout(() => resolve(), 15000));
       };
     }
-
     return await device.flash(file.buffer);
   };
 
