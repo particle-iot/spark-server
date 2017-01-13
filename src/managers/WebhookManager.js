@@ -34,10 +34,11 @@ class WebhookManager {
       (webhook: Webhook): void => this._subscribeWebhook(webhook),
     );
   };
-
+  // todo figure MY_DEVICES webhooks.
   _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
     (event: Event) => {
       try {
+
         const defaultWebhookVariables = {
           // todo add old defaults for compatibility
           PARTICLE_DEVICE_ID: event.deviceID,
@@ -103,20 +104,14 @@ class WebhookManager {
             // on 1 min or so..
             if (errorResponseTopic) {
               this._eventPublisher.publish({
-                // todo not sure if we need to provide deviceID here
-                deviceID: event.deviceID,
                 name: errorResponseTopic,
-                ttl: 60,
               });
             }
             throw error;
           }
 
           this._eventPublisher.publish({
-            // todo not sure if we need to provide deviceID here
-            deviceID: event.deviceID,
             name: `hook-sent/${event.name}`,
-            ttl: 60,
           });
 
           const responseTemplate = webhook.responseTemplate && hogan
@@ -125,11 +120,8 @@ class WebhookManager {
 
           if (responseTopic) {
             this._eventPublisher.publish({
-              // todo not sure if we need to provide deviceID here
               data: webhook.responseTemplate && responseTemplate,
-              deviceID: event.deviceID,
               name: responseTopic,
-              ttl: 60,
             });
           }
         };
