@@ -57,6 +57,7 @@
     "express": "^4.14.0",
     "express-oauth-server": "^2.0.0-b1",
     "hogan.js": "^3.0.2",
+    "lodash": "^4.17.4",
     "moment": "*",
     "moniker": "^0.1.2",
     "morgan": "^1.7.0",
