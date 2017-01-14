@@ -45,7 +45,7 @@ class WebhookManager {
     this._errorsCountByWebhookID.set(webhookID, errorsCount + 1);
   };
 
-  _resetWebhookErrorCounter = (webhookID: string): void =>
+  _resetWebhookErrorCounter = (webhookID: string): Map<string, number> =>
     this._errorsCountByWebhookID.set(webhookID, 0);
 
   // todo annotate arguments
@@ -54,8 +54,11 @@ class WebhookManager {
     responseHandler: Function,
   ): void => request(requestOptions, responseHandler);
 
-  _throttledWebhookHandler =
-    throttle(this._webhookHandler, WEBHOOK_THROTTLE_TIME);
+  _throttledWebhookHandler = throttle(
+    this._webhookHandler,
+    WEBHOOK_THROTTLE_TIME,
+    { leading: false, trailing: true },
+  );
 
   _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
     (event: Event) => {
@@ -81,7 +84,9 @@ class WebhookManager {
 
         let eventDataVariables = {};
         try {
-          eventDataVariables = JSON.parse(event.data);
+          if (event.data) {
+            eventDataVariables = JSON.parse(event.data);
+          }
         } catch (error) {
           eventDataVariables = {};
         }
@@ -138,7 +143,6 @@ class WebhookManager {
               userID: event.userID,
             });
 
-            return;
             throw error;
           }
 
@@ -164,6 +168,7 @@ class WebhookManager {
 
 
         const requestOptions = {
+          auth: webhook.auth,
           body: requestJSON || event.data,
           formData: requestFormData,
           headers: webhook.headers,
@@ -171,11 +176,10 @@ class WebhookManager {
           method: webhook.requestType,
           qs: requestQuery,
           url: requestUrl,
-          // todo add auth
         };
 
         const isWebhookDisabled =
-          this._errorsCountByWebhookID.get(webhook.id) >= MAX_WEBHOOK_ERRORS_COUNT;
+          (this._errorsCountByWebhookID.get(webhook.id) || 0) >= MAX_WEBHOOK_ERRORS_COUNT;
 
         if (isWebhookDisabled) {
           this._eventPublisher.publish({
@@ -188,8 +192,7 @@ class WebhookManager {
         } else {
           this._webhookHandler(requestOptions, responseHandler);
         }
-      }
-      catch (error) {
+      } catch (error) {
         logger.error(`webhookError: ${error}`);
       }
     };
