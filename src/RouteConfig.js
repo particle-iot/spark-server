@@ -16,7 +16,6 @@ import multer from 'multer';
 import OAuthModel from './OAuthModel';
 import HttpError from './lib/HttpError';
 
-// TODO fix flow errors, come up with better name;
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
   (request: $Request, response: $Response, next: NextFunction) => {
     if (condition) {

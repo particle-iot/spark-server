@@ -27,7 +27,6 @@ const KEY_LENGTH = 64;
 
 class PasswordHasher {
   static generateSalt(size: number = 64): Promise<*> {
-    // todo better annotate promise resolve, reject
     return new Promise((resolve: Function, reject: Function) => {
       crypto.randomBytes(size, (error: ?Error, buffer: Buffer) => {
         if (error) {
@@ -43,7 +42,6 @@ class PasswordHasher {
     password: string,
     salt: string,
   ): Promise<*> {
-    // todo better annotate promise resolve, reject
     return new Promise((resolve: Function, reject: Function) => {
       crypto.pbkdf2(
         password,

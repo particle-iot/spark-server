@@ -172,6 +172,7 @@ class DevicesController extends Controller {
       if (errorMessage.indexOf('Unknown Function') >= 0) {
         throw new HttpError('Function not found', 404);
       }
+      console.log(error);
       throw error;
     }
   }

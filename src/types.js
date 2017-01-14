@@ -53,8 +53,12 @@ export type Client = {
 };
 
 export type DeviceAttributes = {
+  currentBuildTarget: string,
   deviceID: string,
+  imei?: string,
   ip: string,
+  isCellular: boolean,
+  last_iccid?: string,
   name: string,
   ownerID: ?string,
   particleProductId: number,
@@ -157,7 +161,7 @@ export type DeviceRepository = {
     deviceID: string,
     userID: string,
     functionName: string,
-    functionArguments: Object,
+    functionArguments: {[key: string]: string},
   ): Promise<*>,
   claimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
   flashBinary(deviceID: string, files: File): Promise<*>,

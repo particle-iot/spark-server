@@ -40,7 +40,8 @@ class DeviceRepository {
     deviceID: string,
     userID: string,
   ): Promise<DeviceAttributes> => {
-    const deviceAttributes = await this._deviceAttributeRepository.getById(deviceID);
+    const deviceAttributes =
+      await this._deviceAttributeRepository.getById(deviceID);
 
     if (!deviceAttributes) {
       throw new HttpError('No device found', 404);
@@ -101,7 +102,10 @@ class DeviceRepository {
     };
   };
 
-  getDetailsByID = async (deviceID: string, userID: string): Promise<Device> => {
+  getDetailsByID = async (
+    deviceID: string,
+    userID: string,
+  ): Promise<Device> => {
     const device = this._deviceServer.getDevice(deviceID);
     if (!device) {
       throw new HttpError('No device found', 404);
@@ -154,9 +158,14 @@ class DeviceRepository {
     deviceID: string,
     userID: string,
     functionName: string,
-    functionArguments: Object,
+    functionArguments: {[key: string]: string},
   ): Promise<*> => {
-    if (await !this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
+    const doesUserHaveAccess =
+      await this._deviceAttributeRepository.doesUserHaveAccess(
+        deviceID,
+        userID,
+      );
+    if (!doesUserHaveAccess) {
       throw new HttpError('No device found', 404);
     }
 
@@ -176,7 +185,12 @@ class DeviceRepository {
     userID: string,
     varName: string,
   ): Promise<*> => {
-    if (!await this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
+    const doesUserHaveAccess =
+      await this._deviceAttributeRepository.doesUserHaveAccess(
+        deviceID,
+        userID,
+      );
+    if (!doesUserHaveAccess) {
       throw new HttpError('No device found', 404);
     }
 
@@ -282,7 +296,10 @@ class DeviceRepository {
     userID: string,
     name: string,
   ): Promise<DeviceAttributes> => {
-    const attributes = await this._deviceAttributeRepository.getById(deviceID, userID);
+    const attributes = await this._deviceAttributeRepository.getById(
+      deviceID,
+      userID,
+    );
 
     if (!attributes) {
       throw new HttpError('No device found', 404);

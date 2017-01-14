@@ -1,7 +1,8 @@
 // @flow
 
 import {Container} from 'constitute';
-import utilities from './lib/utilities';
+import os from 'os';
+import arrayFlatten from 'array-flatten';
 import logger from './lib/logger';
 import createApp from './app';
 import defaultBindings from './defaultBindings';
@@ -9,18 +10,12 @@ import settings from './settings';
 
 const NODE_PORT = process.env.NODE_PORT || 8080;
 
-// TODO wny do we need this? (Anton Puko)
-global._socket_counter = 1;
-
-// TODO: something better here
 process.on('uncaughtException', (exception: Error) => {
-  let details = '';
-  try {
-    details = JSON.stringify(exception);
-  } catch (stringifyException) {
-    logger.error(`Caught exception: ${stringifyException}`);
-  }
-  logger.error(`Caught exception: ${exception.toString()} ${exception.stack}`);
+  logger.error(
+    'uncaughtException',
+    { message : exception.message, stack : exception.stack },
+  ); // logging with MetaData
+  process.exit(1); // exit with failure
 });
 
 /* This is the container used app-wide for dependency injection. If you want to
@@ -47,6 +42,16 @@ app.listen(
   (): void => console.log(`express server started on port ${NODE_PORT}`),
 );
 
-utilities.getIPAddresses().forEach((ip: string): void =>
-  console.log(`Your device server IP address is: ${ip}`),
+const addresses = arrayFlatten(
+  Object.entries(os.networkInterfaces()).map(([name, nic]) =>
+    (nic: any)
+      .filter(address =>
+        address.family === 'IPv4' &&
+        address.address !== '127.0.0.1',
+      )
+      .map(address => address.address),
+    ),
+);
+addresses.forEach((address: string): void =>
+  console.log(`Your device server IP address is: ${address}`),
 );
