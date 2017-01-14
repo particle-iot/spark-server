@@ -45,7 +45,7 @@ class WebhookManager {
     this._errorsCountByWebhookID.set(webhookID, errorsCount + 1);
   };
 
-  _resetWebhookErrorCounter = (webhookID: string): void =>
+  _resetWebhookErrorCounter = (webhookID: string): Map<string, number> =>
     this._errorsCountByWebhookID.set(webhookID, 0);
 
   // todo annotate arguments
@@ -84,7 +84,9 @@ class WebhookManager {
 
         let eventDataVariables = {};
         try {
-          eventDataVariables = JSON.parse(event.data);
+          if (event.data) {
+            eventDataVariables = JSON.parse(event.data);
+          }
         } catch (error) {
           eventDataVariables = {};
         }
@@ -177,7 +179,7 @@ class WebhookManager {
         };
 
         const isWebhookDisabled =
-          this._errorsCountByWebhookID.get(webhook.id) >= MAX_WEBHOOK_ERRORS_COUNT;
+          (this._errorsCountByWebhookID.get(webhook.id) || 0) >= MAX_WEBHOOK_ERRORS_COUNT;
 
         if (isWebhookDisabled) {
           this._eventPublisher.publish({
