@@ -8,13 +8,19 @@ import type {
 } from '../types';
 import type { EventPublisher } from 'spark-protocol';
 
-import request from 'request';
-import logger from '../lib/logger';
+import hogan from 'hogan.js';
 import HttpError from '../lib/HttpError';
+import logger from '../lib/logger';
+import request from 'request';
+import throttle from 'lodash/throttle';
+
+const MAX_WEBHOOK_ERRORS_COUNT = 10;
+const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 
 class WebhookManager {
   _eventPublisher: EventPublisher;
   _subscriptionIDsByWebhookID: Map<string, string> = new Map();
+  _errorsCountByWebhookID: Map<string, number> = new Map();
   _webhookRepository: Repository<Webhook>;
 
   constructor(
@@ -34,29 +40,157 @@ class WebhookManager {
     );
   };
 
+  _incrementWebhookErrorCounter = (webhookID: string) => {
+    const errorsCount = this._errorsCountByWebhookID.get(webhookID) || 0;
+    this._errorsCountByWebhookID.set(webhookID, errorsCount + 1);
+  };
+
+  _resetWebhookErrorCounter = (webhookID: string): void =>
+    this._errorsCountByWebhookID.set(webhookID, 0);
+
+  // todo annotate arguments
+  _webhookHandler = (
+    requestOptions: Object,
+    responseHandler: Function,
+  ): void => request(requestOptions, responseHandler);
+
+  _throttledWebhookHandler =
+    throttle(this._webhookHandler, WEBHOOK_THROTTLE_TIME);
+
   _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
     (event: Event) => {
       try {
-        const responseHandler = (error, response) => {
+        if (
+          webhook.mydevices &&
+          webhook.ownerID !== event.userID
+        ) {
+          return;
+        }
+
+        const defaultWebhookVariables = {
+          PARTICLE_DEVICE_ID: event.deviceID,
+          PARTICLE_EVENT_NAME: event.name,
+          PARTICLE_EVENT_VALUE: event.data,
+          PARTICLE_PUBLISHED_AT: event.publishedAt,
+          // old event names, added for compatibility
+          SPARK_CORE_ID: event.deviceID,
+          SPARK_EVENT_NAME: event.name,
+          SPARK_EVENT_VALUE: event.data,
+          SPARK_PUBLISHED_AT: event.publishedAt,
+        };
+
+        let eventDataVariables = {};
+        try {
+          eventDataVariables = JSON.parse(event.data);
+        } catch (error) {
+          eventDataVariables = {};
+        }
+
+
+        const webhookVariablesObject = webhook.noDefaults
+          ? eventDataVariables
+          : {
+            ...defaultWebhookVariables,
+            ...eventDataVariables,
+          };
+
+        const requestJSON = webhook.json && JSON.parse(
+            hogan
+              .compile(JSON.stringify(webhook.json))
+              .render(webhookVariablesObject),
+          );
+
+        const requestFormData = webhook.form && JSON.parse(
+            hogan
+              .compile(JSON.stringify(webhook.form))
+              .render(webhookVariablesObject),
+          );
+
+        const requestUrl = hogan
+          .compile(webhook.url)
+          .render(webhookVariablesObject);
+
+        const requestQuery = webhook.query && JSON.parse(
+            hogan
+              .compile(JSON.stringify(webhook.query))
+              .render(webhookVariablesObject),
+          );
+
+        const responseTopic = webhook.responseTopic && hogan
+            .compile(webhook.responseTopic)
+            .render(webhookVariablesObject);
+
+        const errorResponseTopic = webhook.errorResponseTopic && hogan
+            .compile(webhook.responseTopic)
+            .render(webhookVariablesObject) || `hook-error/${event.name}`;
+
+        const responseHandler = (
+          error: ?Error,
+          response: http$IncomingMessage,
+          responseBody: string | Buffer | Object,
+        ) => {
           if (error) {
-            // todo block the webhook calls after some amount of fails
-            // on 1 min or so..
-            // todo responseTemplates
+            this._incrementWebhookErrorCounter(webhook.id);
+
+            this._eventPublisher.publish({
+              data: error.message,
+              name: errorResponseTopic,
+              userID: event.userID,
+            });
+
+            return;
             throw error;
+          }
+
+          this._resetWebhookErrorCounter(webhook.id);
+
+          this._eventPublisher.publish({
+            name: `hook-sent/${event.name}`,
+            userID: event.userID,
+          });
+
+          const responseTemplate = webhook.responseTemplate && hogan
+              .compile(webhook.responseTemplate)
+              .render(responseBody);
+
+          if (responseTopic) {
+            this._eventPublisher.publish({
+              data: webhook.responseTemplate && responseTemplate,
+              name: responseTopic,
+              userID: event.userID,
+            });
           }
         };
 
-        // todo request <-> webhooks options
-        request({
-          body: webhook.json,
-          formData: webhook.form,
+
+        const requestOptions = {
+          body: requestJSON || event.data,
+          formData: requestFormData,
           headers: webhook.headers,
-          json: !!webhook.json,
+          json: !!requestJSON,
           method: webhook.requestType,
-          url: webhook.url,
-        }, responseHandler);
-      } catch (error) {
-        logger.error(`webhook error: ${error}`);
+          qs: requestQuery,
+          url: requestUrl,
+          // todo add auth
+        };
+
+        const isWebhookDisabled =
+          this._errorsCountByWebhookID.get(webhook.id) >= MAX_WEBHOOK_ERRORS_COUNT;
+
+        if (isWebhookDisabled) {
+          this._eventPublisher.publish({
+            data: 'Too many errors, webhook disabled',
+            name: errorResponseTopic,
+            userID: event.userID,
+          });
+
+          this._throttledWebhookHandler(requestOptions, responseHandler);
+        } else {
+          this._webhookHandler(requestOptions, responseHandler);
+        }
+      }
+      catch (error) {
+        logger.error(`webhookError: ${error}`);
       }
     };
 
