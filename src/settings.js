@@ -22,7 +22,6 @@
 const path = require('path');
 
 module.exports = {
-  BINARIES_DIRECTORY: path.join(__dirname, './data/binaries'),
   DEVICE_DIRECTORY: path.join(__dirname, './data/deviceKeys'),
   FIRMWARE_DIRECTORY: path.join(__dirname, './data/knownApps'),
   SERVER_KEY_FILENAME: 'default_key.pem',

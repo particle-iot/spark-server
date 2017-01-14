@@ -14,7 +14,6 @@ import fs from 'fs';
 import Moniker from 'moniker';
 import ursa from 'ursa';
 import HttpError from '../lib/HttpError';
-import FirmwareManager from '../managers/FirmwareManager';
 import settings from '../settings';
 
 const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
@@ -198,24 +197,6 @@ class DeviceRepository {
       throw new HttpError('Could not get device for ID', 404);
     }
 
-    // TODO make FirmwareManager stateless
-    const firmwareManager = new FirmwareManager(device.getSystemInformation());
-    const otaUpdateConfig = null;// firmwareManager.getOtaUpdateConfig();
-
-    console.log(otaUpdateConfig);
-
-    if (otaUpdateConfig) {
-      // TODO use a repository instead of just fetching from disk
-      for (var i = 0; i < otaUpdateConfig.length; i++) {
-        const config = otaUpdateConfig[i];
-        const systemFile = fs.readFileSync(
-          settings.BINARIES_DIRECTORY + '/' + config.binaryFileName,
-        );
-        console.log('FLASHING', systemFile.length, config.binaryFileName)
-        await device.flash(systemFile, config.address);
-        await new Promise(resolve => setTimeout(() => resolve(), 15000));
-      };
-    }
     return await device.flash(file.buffer);
   };
 

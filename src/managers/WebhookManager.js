@@ -45,8 +45,9 @@ class WebhookManager {
     this._errorsCountByWebhookID.set(webhookID, errorsCount + 1);
   };
 
-  _resetWebhookErrorCounter = (webhookID: string): void =>
+  _resetWebhookErrorCounter = (webhookID: string): void => {
     this._errorsCountByWebhookID.set(webhookID, 0);
+  };
 
   // todo annotate arguments
   _webhookHandler = (
