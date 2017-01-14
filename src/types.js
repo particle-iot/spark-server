@@ -25,7 +25,7 @@ export type Webhook = {
 };
 
 export type WebhookMutator = {
-  auth?: { Authorization: string },
+  auth?: { password: string, username: string },
   deviceID?: string,
   errorResponseTopic?: string,
   event: string,
@@ -69,7 +69,7 @@ export type Event = EventData & {
 };
 
 export type EventData = {
-  data: ?Object | string,
+  data?: string,
   deviceID?: ?string,
   isPublic: boolean,
   name: string,

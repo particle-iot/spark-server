@@ -18,7 +18,6 @@
 var os = require('os');
 var when = require('when');
 var logger = require('./logger.js');
-var extend = require('xtend');
 var path = require('path');
 var fs = require('fs');
 
@@ -190,7 +189,7 @@ module.exports = that = {
 
 	tryMixin: function (destObj, newObj) {
 		try {
-			return extend(destObj, newObj);
+			return {...destObj, ...newObj};
 		}
 		catch (ex) {
 			logger.error("tryMixin error" + ex);
