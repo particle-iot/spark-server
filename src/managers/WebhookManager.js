@@ -54,8 +54,11 @@ class WebhookManager {
     responseHandler: Function,
   ): void => request(requestOptions, responseHandler);
 
-  _throttledWebhookHandler =
-    throttle(this._webhookHandler, WEBHOOK_THROTTLE_TIME);
+  _throttledWebhookHandler = throttle(
+    this._webhookHandler,
+    WEBHOOK_THROTTLE_TIME,
+    { leading: false, trailing: true },
+  );
 
   _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
     (event: Event) => {
@@ -138,7 +141,6 @@ class WebhookManager {
               userID: event.userID,
             });
 
-            return;
             throw error;
           }
 
@@ -188,8 +190,7 @@ class WebhookManager {
         } else {
           this._webhookHandler(requestOptions, responseHandler);
         }
-      }
-      catch (error) {
+      } catch (error) {
         logger.error(`webhookError: ${error}`);
       }
     };
