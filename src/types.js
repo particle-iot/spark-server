@@ -3,9 +3,25 @@
 import type { File } from 'express';
 import type DeviceFirmwareRepository from './repository/DeviceFirmwareFileRepository';
 
-export type Webhook = WebhookMutator & {
+export type Webhook = {
+  auth?: { Authorization: string },
   created_at: Date,
+  deviceID?: string,
+  errorResponseTopic?: string,
+  event: string,
+  form?: { [key: string]: Object },
+  headers?: { [key: string]: string },
   id: string,
+  json?: { [key: string]: Object },
+  mydevices?: boolean,
+  noDefaults?: boolean,
+  productIdOrSlug?: string,
+  query?: { [key: string]: Object },
+  rejectUnauthorized?: boolean,
+  requestType: RequestType,
+  responseTemplate?: string,
+  responseTopic?: string,
+  url: string,
 };
 
 export type WebhookMutator = {
@@ -95,7 +111,7 @@ export type Device = DeviceAttributes & {
 };
 
 export type Repository<TModel> = {
-  create: (model: TModel) => Promise<TModel>,
+  create: (model: TModel | $Shape<TModel>) => Promise<TModel>,
   deleteById: (id: string) => Promise<void>,
   getAll: () => Promise<Array<TModel>>,
   getById: (id: string) => Promise<?TModel>,

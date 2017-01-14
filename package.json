@@ -61,7 +61,7 @@
     "morgan": "^1.7.0",
     "multer": "^1.2.1",
     "request": "*",
-    "spark-protocol": "../spark-protocol",
+    "spark-protocol": "git+https://github.com/Brewskey/spark-protocol.git",
     "ursa": "*",
     "uuid": "^3.0.1",
     "when": "*",

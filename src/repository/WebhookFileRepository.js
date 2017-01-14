@@ -13,7 +13,7 @@ class WebhookFileRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
-  create = async (model: WebhookMutator): Promise<Webhook> => {
+  create = async (model: $Shape<Webhook>): Promise<Webhook> => {
     let id = uuid();
     while (await this.getById(id)) {
       id = uuid();

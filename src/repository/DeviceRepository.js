@@ -176,7 +176,7 @@ class DeviceRepository {
     deviceID: string,
     userID: string,
     varName: string,
-  ): Promise<Object> => {
+  ): Promise<*> => {
     if (!await this._deviceAttributeRepository.doesUserHaveAccess(deviceID, userID)) {
       throw new HttpError('No device found', 404);
     }

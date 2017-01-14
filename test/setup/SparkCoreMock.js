@@ -5,7 +5,7 @@ class SparkCoreMock {
     return true;
   }
 
-  getVariableValue = (): Object => 0;
+  getVariableValue = (): any => 0;
 
   getDescription = (): Object => ({
     firmware_version: '0.6.0',
