@@ -4,7 +4,7 @@ import type { File } from 'express';
 import type DeviceFirmwareRepository from './repository/DeviceFirmwareFileRepository';
 
 export type Webhook = {
-  auth?: { Authorization: string },
+  auth?: { password: string, username: string },
   created_at: Date,
   deviceID?: string,
   errorResponseTopic?: string,
@@ -15,6 +15,7 @@ export type Webhook = {
   json?: { [key: string]: Object },
   mydevices?: boolean,
   noDefaults?: boolean,
+  ownerID: string,
   productIdOrSlug?: string,
   query?: { [key: string]: Object },
   rejectUnauthorized?: boolean,
