@@ -93,7 +93,7 @@ class EventsController extends Controller {
     name: string,
     data: ?Object,
     private: boolean,
-    ttl: number,
+    ttl?: number,
   }): Promise<*> {
     const eventData: EventData = {
       data: postBody.data,
