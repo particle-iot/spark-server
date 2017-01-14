@@ -164,6 +164,7 @@ class WebhookManager {
 
 
         const requestOptions = {
+          auth: webhook.auth,
           body: requestJSON || event.data,
           formData: requestFormData,
           headers: webhook.headers,
@@ -171,7 +172,6 @@ class WebhookManager {
           method: webhook.requestType,
           qs: requestQuery,
           url: requestUrl,
-          // todo add auth
         };
 
         const isWebhookDisabled =

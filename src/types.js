@@ -9,7 +9,7 @@ export type Webhook = WebhookMutator & {
 };
 
 export type WebhookMutator = {
-  auth?: { Authorization: string },
+  auth?: { password: string, username: string },
   deviceID?: string,
   errorResponseTopic?: string,
   event: string,
