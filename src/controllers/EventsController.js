@@ -44,11 +44,11 @@ class EventsController extends Controller {
   }
 
   @httpVerb('get')
-  @route('/v1/events/:eventName?')
+  @route('/v1/events/:eventNamePrefix?')
   @serverSentEvents()
-  async getEvents(eventName: ?string): Promise<*> {
+  async getEvents(eventNamePrefix: ?string): Promise<*> {
     const subscriptionID = this._eventManager.subscribe(
-      eventName,
+      eventNamePrefix,
       this._pipeEvent.bind(this),
     );
 
@@ -57,11 +57,11 @@ class EventsController extends Controller {
   }
 
   @httpVerb('get')
-  @route('/v1/devices/events/:eventName?')
+  @route('/v1/devices/events/:eventNamePrefix?')
   @serverSentEvents()
-  async getMyEvents(eventName: ?string): Promise<*> {
+  async getMyEvents(eventNamePrefix: ?string): Promise<*> {
     const subscriptionID = this._eventManager.subscribe(
-      eventName,
+      eventNamePrefix,
       this._pipeEvent.bind(this),
       { userID: this.user.id },
     );
@@ -73,9 +73,12 @@ class EventsController extends Controller {
   @httpVerb('get')
   @route('/v1/devices/:deviceID/events/:eventName?/')
   @serverSentEvents()
-  async getDeviceEvents(deviceID: string, eventName: ?string): Promise<*> {
+  async getDeviceEvents(
+    deviceID: string,
+    eventNamePrefix: ?string,
+  ): Promise<*> {
     const subscriptionID = this._eventManager.subscribe(
-      eventName,
+      eventNamePrefix,
       this._pipeEvent.bind(this),
       {
         deviceID,
@@ -91,7 +94,7 @@ class EventsController extends Controller {
   @route('/v1/devices/events')
   async publish(postBody: {
     name: string,
-    data: ?Object,
+    data: ?string,
     private: boolean,
     ttl?: number,
   }): Promise<*> {
