@@ -53,6 +53,7 @@ export type Client = {
 };
 
 export type DeviceAttributes = {
+  appHash: ?string,
   currentBuildTarget: string,
   deviceID: string,
   imei?: string,
