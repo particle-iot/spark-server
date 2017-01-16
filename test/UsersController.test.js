@@ -65,7 +65,7 @@ test.serial('should return all access tokens for the user', async t => {
 });
 
 
-test.serial('should deleteById access token for the user', async t => {
+test.serial('should delete the access token for the user', async t => {
   const deleteResponse = await request(app)
     .delete(`/v1/access_tokens/${userToken}`)
     .auth(USER_CREDENTIALS.username, USER_CREDENTIALS.password);

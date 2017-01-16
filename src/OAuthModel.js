@@ -42,11 +42,16 @@ class OauthModel {
       client.clientId === clientId && client.clientSecret === clientSecret,
     );
 
-  getUser = async (username: string, password: string): Promise<User> =>
-    await this._userRepository.validateLogin(username, password);
+  getUser = async (username: string, password: string): Promise<User> => {
+    return await this._userRepository.validateLogin(username, password);
+  }
 
 
-  saveToken = (tokenObject: TokenObject, client: Client, user: User): Object => {
+  saveToken = (
+    tokenObject: TokenObject,
+    client: Client,
+    user: User,
+  ): Object => {
     this._userRepository.saveAccessToken(user.id, tokenObject);
     return {
       accessToken: tokenObject.accessToken,

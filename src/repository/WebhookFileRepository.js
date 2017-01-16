@@ -3,7 +3,7 @@
 import type { Webhook, WebhookMutator } from '../types';
 
 import uuid from 'uuid';
-import { JSONFileManager } from 'spark-protocol';
+import { JSONFileManager, memoizeGet, memoizeSet  } from 'spark-protocol';
 import HttpError from '../lib/HttpError';
 
 class WebhookFileRepository {
@@ -13,9 +13,10 @@ class WebhookFileRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
-  create = async (model: $Shape<Webhook>): Promise<Webhook> => {
+  @memoizeSet()
+  async create(model: $Shape<Webhook>): Promise<Webhook> {
     let id = uuid();
-    while (await this.getById(id)) {
+    while (await this._fileManager.hasFile(`${id}.json`)) {
       id = uuid();
     }
 
@@ -29,11 +30,13 @@ class WebhookFileRepository {
     return modelToSave;
   };
 
-  deleteById = async (id: string): Promise<void> =>
+  @memoizeSet(['id'])
+  async deleteById(id: string): Promise<void> {
     this._fileManager.deleteFile(`${id}.json`);
+  }
 
   getAll = async (userID: ?string = null): Promise<Array<Webhook>> => {
-    const allData = this._fileManager.getAllData();
+    const allData = await this._getAll();
 
     if (userID) {
       return allData.filter(
@@ -44,23 +47,34 @@ class WebhookFileRepository {
     return allData;
   };
 
-  getById = async (
-    id: string,
-    userID: ?string = null,
-  ): Promise<?Webhook> => {
-    const webhook = this._fileManager.getFile(`${id}.json`);
+  getById = async (id: string, userID: ?string = null): Promise<?Webhook> => {
+    const webhook = await this._getByID(id);
+
     if (
       !webhook ||
       webhook.ownerID !== userID
     ) {
       return null;
     }
+
     return webhook;
   };
 
   update = async (model: WebhookMutator): Promise<Webhook> => {
     throw new HttpError('Not implemented');
   };
+
+  @memoizeGet()
+  async _getAll(): Promise<Array<Webhook>> {
+    return this._fileManager.getAllData();
+  }
+
+  @memoizeGet(['id'])
+  async _getByID(
+    id: string,
+  ): Promise<?Webhook> {
+    return this._fileManager.getFile(`${id}.json`);
+  }
 }
 
 export default WebhookFileRepository;

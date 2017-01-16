@@ -15,6 +15,7 @@ export type Webhook = {
   json?: { [key: string]: Object },
   mydevices?: boolean,
   noDefaults?: boolean,
+  ownerID: string,
   productIdOrSlug?: string,
   query?: { [key: string]: Object },
   rejectUnauthorized?: boolean,
@@ -127,11 +128,11 @@ export type Repository<TModel> = {
 
 export type UserRepository = Repository<User> & {
   createWithCredentials(credentials: UserCredentials): Promise<User>,
-  deleteAccessToken(user: User, accessToken: string): Promise<void>,
+  deleteAccessToken(userID: string, accessToken: string): Promise<void>,
   getByAccessToken(accessToken: string): Promise<?User>,
   getByUsername(username: string): Promise<?User>,
   isUserNameInUse(username: string): Promise<boolean>,
-  saveAccessToken(userId: string, tokenObject: TokenObject): Promise<void>,
+  saveAccessToken(userID: string, tokenObject: TokenObject): Promise<User>,
   validateLogin(username: string, password: string): Promise<User>,
 };
 

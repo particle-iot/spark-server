@@ -1,6 +1,6 @@
 // @flow
 
-import { FileManager } from 'spark-protocol';
+import { FileManager, memoizeGet } from 'spark-protocol';
 
 class DeviceFirmwareFileRepository {
   _fileManager: FileManager;
@@ -9,8 +9,10 @@ class DeviceFirmwareFileRepository {
     this._fileManager = new FileManager(path, false);
   }
 
-  getByName = (appName: string): ?Buffer =>
-    this._fileManager.getFileBuffer(`${appName}.bin`);
+  @memoizeGet([], {promise: false})
+  getByName(appName: string): ?Buffer {
+    return this._fileManager.getFileBuffer(`${appName}.bin`);
+  }
 }
 
 export default DeviceFirmwareFileRepository;

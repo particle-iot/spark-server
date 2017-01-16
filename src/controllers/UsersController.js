@@ -53,7 +53,7 @@ class UsersController extends Controller {
       password,
     );
 
-    this._userRepository.deleteAccessToken(user, token);
+    this._userRepository.deleteAccessToken(user.id, token);
 
     return this.ok({ ok: true });
   }
