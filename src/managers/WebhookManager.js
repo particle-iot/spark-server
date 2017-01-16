@@ -167,10 +167,9 @@ class WebhookManager {
           }
         };
 
-
         const requestOptions = {
           auth: webhook.auth,
-          body: requestJSON || event.data,
+          body: requestFormData ? null : requestJSON || event.data,
           formData: requestFormData,
           headers: webhook.headers,
           json: !!requestJSON,

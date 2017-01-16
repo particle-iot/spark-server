@@ -16,12 +16,12 @@ class EventManager {
   }
 
   subscribe = (
-    eventName: ?string,
+    eventNamePrefix: ?string,
     eventHandler: (event: Event) => void,
     filterOptions?: FilterOptions,
   ): string =>
     this._eventPublisher.subscribe(
-      eventName,
+      eventNamePrefix,
       eventHandler,
       filterOptions,
     );
