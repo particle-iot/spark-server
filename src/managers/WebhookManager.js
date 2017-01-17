@@ -14,8 +14,22 @@ import logger from '../lib/logger';
 import request from 'request';
 import throttle from 'lodash/throttle';
 
+const splitBufferIntoChunks = (
+  buffer: Buffer,
+  chunkSize: number,
+): Array<Buffer> => {
+  const chunks = [];
+  let i = 0;
+  while (i < buffer.length) {
+    chunks.push(buffer.slice(i, i += chunkSize));
+  }
+
+  return chunks;
+};
+
 const MAX_WEBHOOK_ERRORS_COUNT = 10;
 const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
+const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
 
 class WebhookManager {
   _eventPublisher: EventPublisher;
@@ -30,7 +44,7 @@ class WebhookManager {
     this._webhookRepository = webhookRepository;
     this._eventPublisher = eventPublisher;
 
-    (async (): Promise<void> => this._init())();
+    (async (): Promise<void> => await this._init())();
   }
 
   _init = async (): Promise<void> => {
@@ -45,7 +59,7 @@ class WebhookManager {
     this._errorsCountByWebhookID.set(webhookID, errorsCount + 1);
   };
 
-  _resetWebhookErrorCounter = (webhookID: string): void => {
+  _resetWebhookErrorCounter = (webhookID: string) => {
     this._errorsCountByWebhookID.set(webhookID, 0);
   };
 
@@ -92,7 +106,6 @@ class WebhookManager {
           eventDataVariables = {};
         }
 
-
         const webhookVariablesObject = webhook.noDefaults
           ? eventDataVariables
           : {
@@ -135,6 +148,7 @@ class WebhookManager {
           response: http$IncomingMessage,
           responseBody: string | Buffer | Object,
         ) => {
+          // todo check response.statusCode > 300 also.
           if (error) {
             this._incrementWebhookErrorCounter(webhook.id);
 
@@ -154,17 +168,30 @@ class WebhookManager {
             userID: event.userID,
           });
 
+          if (!responseBody) {
+            return;
+          }
+
           const responseTemplate = webhook.responseTemplate && hogan
               .compile(webhook.responseTemplate)
               .render(responseBody);
 
-          if (responseTopic) {
+          const chunks = splitBufferIntoChunks(
+            Buffer.from(responseTemplate || responseBody),
+            MAX_RESPONSE_MESSAGE_CHUNK_SIZE,
+          );
+
+          chunks.forEach((chunk: Buffer, index: number) => {
+            const responseEventName =
+              responseTopic && `${responseTopic}/$${index}` ||
+              `hook-response/${event.name}/${index}`;
+
             this._eventPublisher.publish({
-              data: webhook.responseTemplate && responseTemplate,
-              name: responseTopic,
+              data: chunk,
+              name: responseEventName,
               userID: event.userID,
             });
-          }
+          });
         };
 
         const requestOptions = {
