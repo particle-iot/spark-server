@@ -19,7 +19,6 @@ type DefaultWebhookVariables = {
   PARTICLE_EVENT_NAME: string,
   PARTICLE_EVENT_VALUE: ?string,
   PARTICLE_PUBLISHED_AT: Date,
-  // old event names, added for compatibility
   SPARK_CORE_ID: ?string,
   SPARK_EVENT_NAME: string,
   SPARK_EVENT_VALUE: ?string,
@@ -53,9 +52,9 @@ const splitBufferIntoChunks = (
   chunkSize: number,
 ): Array<Buffer> => {
   const chunks = [];
-  let i = 0;
-  while (i < buffer.length) {
-    chunks.push(buffer.slice(i, i += chunkSize));
+  let ii = 0;
+  while (ii < buffer.length) {
+    chunks.push(buffer.slice(ii, ii += chunkSize));
   }
 
   return chunks;
