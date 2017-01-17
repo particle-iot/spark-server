@@ -14,6 +14,32 @@ import logger from '../lib/logger';
 import request from 'request';
 import throttle from 'lodash/throttle';
 
+type DefaultWebhookVariables = {
+  PARTICLE_DEVICE_ID: ?string,
+  PARTICLE_EVENT_NAME: string,
+  PARTICLE_EVENT_VALUE: ?string,
+  PARTICLE_PUBLISHED_AT: Date,
+  // old event names, added for compatibility
+  SPARK_CORE_ID: ?string,
+  SPARK_EVENT_NAME: string,
+  SPARK_EVENT_VALUE: ?string,
+  SPARK_PUBLISHED_AT: Date,
+};
+
+const eventToDefaultWebhookVariables = (
+  event: Event,
+): DefaultWebhookVariables => ({
+  PARTICLE_DEVICE_ID: event.deviceID,
+  PARTICLE_EVENT_NAME: event.name,
+  PARTICLE_EVENT_VALUE: event.data,
+  PARTICLE_PUBLISHED_AT: event.publishedAt,
+  // old event names, added for compatibility
+  SPARK_CORE_ID: event.deviceID,
+  SPARK_EVENT_NAME: event.name,
+  SPARK_EVENT_VALUE: event.data,
+  SPARK_PUBLISHED_AT: event.publishedAt,
+});
+
 const parseVariables = (data: string | Buffer): Object => {
   try {
     return JSON.parse(data.toString());
@@ -94,18 +120,7 @@ class WebhookManager {
           return;
         }
 
-        const defaultWebhookVariables = {
-          PARTICLE_DEVICE_ID: event.deviceID,
-          PARTICLE_EVENT_NAME: event.name,
-          PARTICLE_EVENT_VALUE: event.data,
-          PARTICLE_PUBLISHED_AT: event.publishedAt,
-          // old event names, added for compatibility
-          SPARK_CORE_ID: event.deviceID,
-          SPARK_EVENT_NAME: event.name,
-          SPARK_EVENT_VALUE: event.data,
-          SPARK_PUBLISHED_AT: event.publishedAt,
-        };
-
+        const defaultWebhookVariables = eventToDefaultWebhookVariables(event);
         const eventDataVariables = event.data
         ? parseVariables(event.data)
         : {};
