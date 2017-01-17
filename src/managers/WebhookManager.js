@@ -38,6 +38,7 @@ const splitBufferIntoChunks = (
 const MAX_WEBHOOK_ERRORS_COUNT = 10;
 const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
+const MAX_RESPONSE_MESSAGE_SIZE = 100000; // 100kb;
 
 class WebhookManager {
   _eventPublisher: EventPublisher;
@@ -180,7 +181,9 @@ class WebhookManager {
               .render(parseVariables(responseBody));
 
           const chunks = splitBufferIntoChunks(
-            Buffer.from(responseTemplate || responseBody),
+            Buffer
+              .from(responseTemplate || responseBody)
+              .slice(0, MAX_RESPONSE_MESSAGE_SIZE),
             MAX_RESPONSE_MESSAGE_CHUNK_SIZE,
           );
 
