@@ -121,8 +121,8 @@ class WebhookManager {
 
         const defaultWebhookVariables = eventToDefaultWebhookVariables(event);
         const eventDataVariables = event.data
-        ? parseVariables(event.data)
-        : {};
+          ? parseVariables(event.data)
+          : {};
 
         const webhookVariablesObject = webhook.noDefaults
           ? eventDataVariables
@@ -131,11 +131,9 @@ class WebhookManager {
             ...eventDataVariables,
           };
 
-        const requestJSON = webhook.json && JSON.parse(
-            hogan
-              .compile(JSON.stringify(webhook.json))
-              .render(webhookVariablesObject),
-          );
+        const requestJSON = webhook.json && hogan
+          .compile(JSON.stringify(webhook.json))
+          .render(webhookVariablesObject);
 
         const requestFormData = webhook.form && JSON.parse(
             hogan
@@ -154,12 +152,12 @@ class WebhookManager {
           );
 
         const responseTopic = webhook.responseTopic && hogan
-            .compile(webhook.responseTopic)
-            .render(webhookVariablesObject);
+          .compile(webhook.responseTopic)
+          .render(webhookVariablesObject);
 
         const errorResponseTopic = webhook.errorResponseTopic && hogan
-            .compile(webhook.responseTopic)
-            .render(webhookVariablesObject) || `hook-error/${event.name}`;
+          .compile(webhook.responseTopic)
+          .render(webhookVariablesObject) || `hook-error/${event.name}`;
 
         const responseHandler = (
           error: ?Error,
@@ -196,7 +194,7 @@ class WebhookManager {
 
           const chunks = splitBufferIntoChunks(
             Buffer
-              .from(responseTemplate || responseBody)
+              .from(responseTemplate || responseBody.toString())
               .slice(0, MAX_RESPONSE_MESSAGE_SIZE),
             MAX_RESPONSE_MESSAGE_CHUNK_SIZE,
           );
@@ -218,8 +216,10 @@ class WebhookManager {
           auth: webhook.auth,
           body: requestFormData ? null : requestJSON || event.data,
           formData: requestFormData,
-          headers: webhook.headers,
-          json: !!requestJSON,
+          headers: {
+            'Content-type': requestJSON && 'application/json',
+            ...webhook.headers,
+          },
           method: webhook.requestType,
           qs: requestQuery,
           url: requestUrl,
