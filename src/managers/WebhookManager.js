@@ -14,6 +14,14 @@ import logger from '../lib/logger';
 import request from 'request';
 import throttle from 'lodash/throttle';
 
+const parseVariables = (data: string | Buffer): Object => {
+  try {
+    return JSON.parse(data.toString());
+  } catch (error) {
+    return {};
+  }
+};
+
 const splitBufferIntoChunks = (
   buffer: Buffer,
   chunkSize: number,
@@ -97,14 +105,9 @@ class WebhookManager {
           SPARK_PUBLISHED_AT: event.publishedAt,
         };
 
-        let eventDataVariables = {};
-        try {
-          if (event.data) {
-            eventDataVariables = JSON.parse(event.data);
-          }
-        } catch (error) {
-          eventDataVariables = {};
-        }
+        const eventDataVariables = event.data
+        ? parseVariables(event.data)
+        : {};
 
         const webhookVariablesObject = webhook.noDefaults
           ? eventDataVariables
@@ -146,7 +149,7 @@ class WebhookManager {
         const responseHandler = (
           error: ?Error,
           response: http$IncomingMessage,
-          responseBody: string | Buffer | Object,
+          responseBody: string | Buffer,
         ) => {
           // todo check response.statusCode > 300 also.
           if (error) {
@@ -174,7 +177,7 @@ class WebhookManager {
 
           const responseTemplate = webhook.responseTemplate && hogan
               .compile(webhook.responseTemplate)
-              .render(responseBody);
+              .render(parseVariables(responseBody));
 
           const chunks = splitBufferIntoChunks(
             Buffer.from(responseTemplate || responseBody),
