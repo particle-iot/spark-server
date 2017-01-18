@@ -1,3 +1,5 @@
+import type { Event, RequestOptions, Webhook } from '../src/types';
+
 import test from 'ava';
 import sinon from 'sinon';
 
@@ -28,7 +30,7 @@ const WEBHOOK_BASE = {
   url: 'https://test.com/',
 };
 
-const getEvent = (data?: string) => ({
+const getEvent = (data?: string): Event => ({
   data,
   deviceID: TestData.getID(),
   name: 'test-event',
@@ -51,10 +53,14 @@ test(
   async t => {
     const manager =
       new WebhookManager(t.context.repository, t.context.eventPublisher);
-    const data = 'testData'
+    const data = 'testData';
     const event = getEvent(data);
 
-    manager._callWebhook = sinon.spy((webhook, event, requestOptions) => {
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
       t.is(requestOptions.form, undefined);
@@ -74,20 +80,24 @@ test(
   async t => {
     const manager =
       new WebhookManager(t.context.repository, t.context.eventPublisher);
-    const data = '{"t":"123"}'
+    const data = '{"t":"123"}';
     const event = getEvent(data);
     const webhook = {
       ...WEBHOOK_BASE,
       json: {
-        "testValue": "{{t}}",
+        testValue: '{{t}}',
       },
     };
 
-    manager._callWebhook = sinon.spy((webhook, event, requestOptions) => {
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
       t.is(requestOptions.auth, undefined);
       t.is(
         JSON.stringify(requestOptions.body),
-        JSON.stringify({testValue: '123'}),
+        JSON.stringify({ testValue: '123' }),
       );
       t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
@@ -106,21 +116,25 @@ test(
   async t => {
     const manager =
       new WebhookManager(t.context.repository, t.context.eventPublisher);
-    const data = '{"t":"123","g": "foo bar"}'
+    const data = '{"t":"123","g": "foo bar"}';
     const event = getEvent(data);
     const webhook = {
       ...WEBHOOK_BASE,
       form: {
-        "testValue": "{{t}}",
-        "testValue2": "{{g}}",
+        testValue: '{{t}}',
+        testValue2: '{{g}}',
       },
     };
-    manager._callWebhook = sinon.spy((webhook, event, requestOptions) => {
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
       t.is(
         JSON.stringify(requestOptions.form),
-        JSON.stringify({testValue: '123', testValue2: 'foo bar'}),
+        JSON.stringify({ testValue: '123', testValue2: 'foo bar' }),
       );
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.json, false);
@@ -138,16 +152,20 @@ test(
   async t => {
     const manager =
       new WebhookManager(t.context.repository, t.context.eventPublisher);
-    const data = '{"t":"123","g": "foobar"}'
+    const data = '{"t":"123","g": "foobar"}';
     const event = getEvent(data);
     const webhook = {
       ...WEBHOOK_BASE,
       url: 'https://test.com/{{t}}/{{g}}',
     };
-    manager._callWebhook = sinon.spy((webhook, event, requestOptions) => {
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(requestOptions.form, undefined),
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.json, false);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
@@ -164,25 +182,29 @@ test(
   async t => {
     const manager =
       new WebhookManager(t.context.repository, t.context.eventPublisher);
-    const data = '{"t":"123","g": "foobar"}'
+    const data = '{"t":"123","g": "foobar"}';
     const event = getEvent(data);
     const webhook = {
       ...WEBHOOK_BASE,
       query: {
-        "testValue": "{{t}}",
-        "testValue2": "{{g}}",
+        testValue: '{{t}}',
+        testValue2: '{{g}}',
       },
     };
-    manager._callWebhook = sinon.spy((webhook, event, requestOptions) => {
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(requestOptions.form, undefined),
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.json, false);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(
         JSON.stringify(requestOptions.qs),
-        JSON.stringify({testValue: '123', testValue2: 'foobar'}),
+        JSON.stringify({ testValue: '123', testValue2: 'foobar' }),
       );
       t.is(requestOptions.url, WEBHOOK_BASE.url);
     });
@@ -192,10 +214,45 @@ test(
 );
 
 test(
+  'should publish sent event',
+  async t => {
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const event = getEvent();
+
+    t.context.eventPublisher.publish = sinon.spy(({
+      data,
+      name,
+      userID,
+    }) => {
+      t.is(data, undefined);
+      t.is(name, `hook-sent/${event.name}`);
+      t.is(userID, event.userID);
+    });
+
+    manager.runWebhook(WEBHOOK_BASE, event);
+  },
+);
+
+test(
   'should publish default topic',
   async t => {
-    // TODO: Make sure that the default topic publishes. You should be able to
-    // use the next test as an example (copy/paste and tweak it)
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const event = getEvent();
+    manager._callWebhook = sinon.stub().returns('data');
+
+    t.context.eventPublisher.publish = sinon.spy(({
+      data,
+      name,
+      userID,
+    }) => {
+      t.is(data.toString(), 'data');
+      t.is(name, `hook-response/${event.name}/0`);
+      t.is(userID, event.userID);
+    });
+
+    manager.runWebhook(WEBHOOK_BASE, event);
   },
 );
 
@@ -228,7 +285,28 @@ test(
 test(
   'should compile response body and publish',
   async t => {
-    // TODO run most of the same code as the last test but use a
-    // responseTemplate
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const event = getEvent();
+    const webhook = {
+      ...WEBHOOK_BASE,
+      responseTemplate: 'testVar: {{t}}, testVar2: {{g}}',
+    };
+    manager._callWebhook = sinon.stub().returns({
+      g: 'foobar',
+      t: 123,
+    });
+
+    t.context.eventPublisher.publish = sinon.spy(({
+      data,
+      name,
+      userID,
+    }) => {
+      t.is(data.toString(), 'testVar: 123, testVar2: foobar');
+      t.is(name, `hook-response/${event.name}/0`);
+      t.is(userID, event.userID);
+    });
+
+    manager.runWebhook(webhook, event);
   },
 );

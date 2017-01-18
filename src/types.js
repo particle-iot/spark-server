@@ -177,3 +177,15 @@ export type DeviceRepository = {
   renameDevice(deviceID: string, userID: string, name: string): Promise<DeviceAttributes>,
   unclaimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
 };
+
+export type RequestOptions = {
+  auth: { password: string, username: string },
+  body: ?Object,
+  form: ?Object,
+  headers: ?Object,
+  json: boolean,
+  method: RequestType,
+  qs: ?Object,
+  strictSSL: boolean,
+  url: string,
+};
