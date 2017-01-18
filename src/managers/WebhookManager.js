@@ -14,14 +14,47 @@ import logger from '../lib/logger';
 import request from 'request';
 import throttle from 'lodash/throttle';
 
+type DefaultWebhookVariables = {
+  PARTICLE_DEVICE_ID: ?string,
+  PARTICLE_EVENT_NAME: string,
+  PARTICLE_EVENT_VALUE: ?string,
+  PARTICLE_PUBLISHED_AT: Date,
+  SPARK_CORE_ID: ?string,
+  SPARK_EVENT_NAME: string,
+  SPARK_EVENT_VALUE: ?string,
+  SPARK_PUBLISHED_AT: Date,
+};
+
+const eventToDefaultWebhookVariables = (
+  event: Event,
+): DefaultWebhookVariables => ({
+  PARTICLE_DEVICE_ID: event.deviceID,
+  PARTICLE_EVENT_NAME: event.name,
+  PARTICLE_EVENT_VALUE: event.data,
+  PARTICLE_PUBLISHED_AT: event.publishedAt,
+  // old event names, added for compatibility
+  SPARK_CORE_ID: event.deviceID,
+  SPARK_EVENT_NAME: event.name,
+  SPARK_EVENT_VALUE: event.data,
+  SPARK_PUBLISHED_AT: event.publishedAt,
+});
+
+const parseVariables = (data: string | Buffer): Object => {
+  try {
+    return JSON.parse(data.toString());
+  } catch (error) {
+    return {};
+  }
+};
+
 const splitBufferIntoChunks = (
   buffer: Buffer,
   chunkSize: number,
 ): Array<Buffer> => {
   const chunks = [];
-  let i = 0;
-  while (i < buffer.length) {
-    chunks.push(buffer.slice(i, i += chunkSize));
+  let ii = 0;
+  while (ii < buffer.length) {
+    chunks.push(buffer.slice(ii, ii += chunkSize));
   }
 
   return chunks;
@@ -30,6 +63,7 @@ const splitBufferIntoChunks = (
 const MAX_WEBHOOK_ERRORS_COUNT = 10;
 const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
+const MAX_RESPONSE_MESSAGE_SIZE = 100000; // 100kb;
 
 class WebhookManager {
   _eventPublisher: EventPublisher;
@@ -85,26 +119,10 @@ class WebhookManager {
           return;
         }
 
-        const defaultWebhookVariables = {
-          PARTICLE_DEVICE_ID: event.deviceID,
-          PARTICLE_EVENT_NAME: event.name,
-          PARTICLE_EVENT_VALUE: event.data,
-          PARTICLE_PUBLISHED_AT: event.publishedAt,
-          // old event names, added for compatibility
-          SPARK_CORE_ID: event.deviceID,
-          SPARK_EVENT_NAME: event.name,
-          SPARK_EVENT_VALUE: event.data,
-          SPARK_PUBLISHED_AT: event.publishedAt,
-        };
-
-        let eventDataVariables = {};
-        try {
-          if (event.data) {
-            eventDataVariables = JSON.parse(event.data);
-          }
-        } catch (error) {
-          eventDataVariables = {};
-        }
+        const defaultWebhookVariables = eventToDefaultWebhookVariables(event);
+        const eventDataVariables = event.data
+          ? parseVariables(event.data)
+          : {};
 
         const webhookVariablesObject = webhook.noDefaults
           ? eventDataVariables
@@ -113,11 +131,9 @@ class WebhookManager {
             ...eventDataVariables,
           };
 
-        const requestJSON = webhook.json && JSON.parse(
-            hogan
-              .compile(JSON.stringify(webhook.json))
-              .render(webhookVariablesObject),
-          );
+        const requestJSON = webhook.json && hogan
+          .compile(JSON.stringify(webhook.json))
+          .render(webhookVariablesObject);
 
         const requestFormData = webhook.form && JSON.parse(
             hogan
@@ -136,17 +152,17 @@ class WebhookManager {
           );
 
         const responseTopic = webhook.responseTopic && hogan
-            .compile(webhook.responseTopic)
-            .render(webhookVariablesObject);
+          .compile(webhook.responseTopic)
+          .render(webhookVariablesObject);
 
         const errorResponseTopic = webhook.errorResponseTopic && hogan
-            .compile(webhook.responseTopic)
-            .render(webhookVariablesObject) || `hook-error/${event.name}`;
+          .compile(webhook.responseTopic)
+          .render(webhookVariablesObject) || `hook-error/${event.name}`;
 
         const responseHandler = (
           error: ?Error,
           response: http$IncomingMessage,
-          responseBody: string | Buffer | Object,
+          responseBody: string | Buffer,
         ) => {
           // todo check response.statusCode > 300 also.
           if (error) {
@@ -174,10 +190,12 @@ class WebhookManager {
 
           const responseTemplate = webhook.responseTemplate && hogan
               .compile(webhook.responseTemplate)
-              .render(responseBody);
+              .render(parseVariables(responseBody));
 
           const chunks = splitBufferIntoChunks(
-            Buffer.from(responseTemplate || responseBody),
+            Buffer
+              .from(responseTemplate || responseBody.toString())
+              .slice(0, MAX_RESPONSE_MESSAGE_SIZE),
             MAX_RESPONSE_MESSAGE_CHUNK_SIZE,
           );
 
@@ -198,8 +216,10 @@ class WebhookManager {
           auth: webhook.auth,
           body: requestFormData ? null : requestJSON || event.data,
           formData: requestFormData,
-          headers: webhook.headers,
-          json: !!requestJSON,
+          headers: {
+            'Content-type': requestJSON && 'application/json',
+            ...webhook.headers,
+          },
           method: webhook.requestType,
           qs: requestQuery,
           url: requestUrl,
