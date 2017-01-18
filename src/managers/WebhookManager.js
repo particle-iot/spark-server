@@ -3,26 +3,37 @@
 import type {
   Event,
   Repository,
+  RequestOptions,
   Webhook,
   WebhookMutator,
 } from '../types';
 import type { EventPublisher } from 'spark-protocol';
 
-import querystring from 'querystring';
 import hogan from 'hogan.js';
 import HttpError from '../lib/HttpError';
 import logger from '../lib/logger';
 import request from 'request';
 import throttle from 'lodash/throttle';
 
+const parseEventData = (event: Event): Object => {
+  try {
+    if (event.data) {
+      return JSON.parse(event.data);
+    }
+    return {};
+  } catch (error) {
+    return {};
+  }
+};
+
 const splitBufferIntoChunks = (
   buffer: Buffer,
   chunkSize: number,
 ): Array<Buffer> => {
   const chunks = [];
-  let i = 0;
-  while (i < buffer.length) {
-    chunks.push(buffer.slice(i, i += chunkSize));
+  let ii = 0;
+  while (ii < buffer.length) {
+    chunks.push(buffer.slice(ii, ii += chunkSize));
   }
 
   return chunks;
@@ -31,6 +42,7 @@ const splitBufferIntoChunks = (
 const MAX_WEBHOOK_ERRORS_COUNT = 10;
 const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
+const MAX_RESPONSE_MESSAGE_SIZE = 100000;
 
 class WebhookManager {
   _eventPublisher: EventPublisher;
@@ -134,6 +146,8 @@ class WebhookManager {
           ),
           userID: event.userID,
         });
+
+        this.runWebhookThrottled(webhook, event);
       } catch (error) {
         logger.error(`webhookError: ${error}`);
       }
@@ -142,29 +156,29 @@ class WebhookManager {
   runWebhook = async (webhook: Webhook, event: Event): Promise<void> => {
     try {
       const webhookVariablesObject =
-        this._getEventData(event, webhook.noDefaults);
+        this._getEventVariables(event);
 
-      const requestJson = this._compileJsonTopic(
+      const requestJson = this._compileJsonTemplate(
         webhook.json,
         webhookVariablesObject,
       );
 
-      const requestFormData = this._compileJsonTopic(
+      const requestFormData = this._compileJsonTemplate(
         webhook.form,
         webhookVariablesObject,
       );
 
-      const requestUrl = this._compileTopic(
+      const requestUrl = this._compileTemplate(
         webhook.url,
         webhookVariablesObject,
       );
 
-      const requestQuery = this._compileJsonTopic(
+      const requestQuery = this._compileJsonTemplate(
         webhook.query,
         webhookVariablesObject,
       );
 
-      const responseTopic = this._compileTopic(
+      const responseTopic = this._compileTemplate(
         webhook.responseTopic,
         webhookVariablesObject,
       );
@@ -173,9 +187,11 @@ class WebhookManager {
       const requestOptions = {
         auth: webhook.auth,
         body: isJsonRequest
-          ? requestJson
+          ? this._getRequestData(requestJson, event, webhook.noDefaults)
           : undefined,
-        form: !isJsonRequest ? requestFormData : undefined,
+        form: !isJsonRequest
+          ? this._getRequestData(requestFormData, event, webhook.noDefaults)
+          : undefined,
         headers: webhook.headers,
         json: isJsonRequest,
         method: webhook.requestType,
@@ -200,7 +216,10 @@ class WebhookManager {
         .render(responseBody);
 
       const chunks = splitBufferIntoChunks(
-        Buffer.from(responseTemplate || responseBody),
+        Buffer
+          .from(responseTemplate || responseBody)
+          .slice(0, MAX_RESPONSE_MESSAGE_SIZE)
+        ,
         MAX_RESPONSE_MESSAGE_CHUNK_SIZE,
       );
 
@@ -220,17 +239,16 @@ class WebhookManager {
     }
   };
 
-  _throttledWebhookHandler = throttle(
+  runWebhookThrottled = throttle(
     this.runWebhook,
     WEBHOOK_THROTTLE_TIME,
     { leading: false, trailing: true },
   );
 
-  // todo annotate requestOptions
   _callWebhook = (
     webhook: Webhook,
     event: Event,
-    requestOptions: Object,
+    requestOptions: RequestOptions,
   ): Promise<*> => new Promise(
     (resolve, reject) => request(
       requestOptions,
@@ -267,7 +285,7 @@ class WebhookManager {
     ),
   );
 
-  _getEventData = (event: Event, noDefaults: boolean = false): Object => {
+  _getEventVariables = (event: Event): Object => {
     const defaultWebhookVariables = {
       PARTICLE_DEVICE_ID: event.deviceID,
       PARTICLE_EVENT_NAME: event.name,
@@ -280,48 +298,55 @@ class WebhookManager {
       SPARK_PUBLISHED_AT: event.publishedAt,
     };
 
-    const eventDataVariables = this._parseEventData(event);
+    const eventDataVariables = parseEventData(event);
 
-    return noDefaults
-      ? eventDataVariables
-      : {
-        ...defaultWebhookVariables,
-        ...eventDataVariables,
-      };
+    return {
+      ...defaultWebhookVariables,
+      ...eventDataVariables,
+    };
   };
 
-  _parseEventData = (event: Event): Object => {
-    try {
-      if (event.data) {
-        return JSON.parse(event.data);
-      }
-      return {};
-    } catch (error) {
-      return {};
-    }
-  }
+  _getRequestData = (
+    customData: ?Object,
+    event: Event,
+    noDefaults: boolean,
+  ): ?Object => {
+    const defaultEventData = {
+      coreid: event.deviceID,
+      data: event.data,
+      event: event.name,
+      published_at: event.publishedAt,
+    };
 
-  _compileTopic = (topic?: ?string, variables: Object): ?string =>
-    topic && hogan
-      .compile(topic)
+    return noDefaults
+      ? customData
+      : { ...defaultEventData, ...(customData || {}) };
+  };
+
+  _compileTemplate = (template?: ?string, variables: Object): ?string =>
+    template && hogan
+      .compile(template)
       .render(variables);
 
-  _compileJsonTopic = (topic?: ?Object, variables: Object): ?Object => {
-    if (!topic) {
+  _compileJsonTemplate = (template?: ?Object, variables: Object): ?Object => {
+    if (!template) {
       return;
     }
 
-    const compiledTopic = this._compileTopic(JSON.stringify(topic), variables);
-    if (!compiledTopic) {
-      return null;
+    const compiledTemplate = this._compileTemplate(
+      JSON.stringify(template),
+      variables,
+    );
+    if (!compiledTemplate) {
+      return;
     }
 
-    return JSON.parse(compiledTopic);
+    return JSON.parse(compiledTemplate);
   };
 
   _compileErrorResponseTopic = (webhook: Webhook, event: Event): string => {
-    const variables = this._getEventData(event, webhook.noDefaults);
-    return this._compileTopic(
+    const variables = this._getEventVariables(event);
+    return this._compileTemplate(
       webhook.errorResponseTopic,
       variables,
     ) || `hook-error/${event.name}`;
