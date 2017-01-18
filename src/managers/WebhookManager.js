@@ -8,53 +8,21 @@ import type {
 } from '../types';
 import type { EventPublisher } from 'spark-protocol';
 
+import querystring from 'querystring';
 import hogan from 'hogan.js';
 import HttpError from '../lib/HttpError';
 import logger from '../lib/logger';
 import request from 'request';
 import throttle from 'lodash/throttle';
 
-type DefaultWebhookVariables = {
-  PARTICLE_DEVICE_ID: ?string,
-  PARTICLE_EVENT_NAME: string,
-  PARTICLE_EVENT_VALUE: ?string,
-  PARTICLE_PUBLISHED_AT: Date,
-  SPARK_CORE_ID: ?string,
-  SPARK_EVENT_NAME: string,
-  SPARK_EVENT_VALUE: ?string,
-  SPARK_PUBLISHED_AT: Date,
-};
-
-const eventToDefaultWebhookVariables = (
-  event: Event,
-): DefaultWebhookVariables => ({
-  PARTICLE_DEVICE_ID: event.deviceID,
-  PARTICLE_EVENT_NAME: event.name,
-  PARTICLE_EVENT_VALUE: event.data,
-  PARTICLE_PUBLISHED_AT: event.publishedAt,
-  // old event names, added for compatibility
-  SPARK_CORE_ID: event.deviceID,
-  SPARK_EVENT_NAME: event.name,
-  SPARK_EVENT_VALUE: event.data,
-  SPARK_PUBLISHED_AT: event.publishedAt,
-});
-
-const parseVariables = (data: string | Buffer): Object => {
-  try {
-    return JSON.parse(data.toString());
-  } catch (error) {
-    return {};
-  }
-};
-
 const splitBufferIntoChunks = (
   buffer: Buffer,
   chunkSize: number,
 ): Array<Buffer> => {
   const chunks = [];
-  let ii = 0;
-  while (ii < buffer.length) {
-    chunks.push(buffer.slice(ii, ii += chunkSize));
+  let i = 0;
+  while (i < buffer.length) {
+    chunks.push(buffer.slice(i, i += chunkSize));
   }
 
   return chunks;
@@ -63,7 +31,6 @@ const splitBufferIntoChunks = (
 const MAX_WEBHOOK_ERRORS_COUNT = 10;
 const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
-const MAX_RESPONSE_MESSAGE_SIZE = 100000; // 100kb;
 
 class WebhookManager {
   _eventPublisher: EventPublisher;
@@ -80,192 +47,6 @@ class WebhookManager {
 
     (async (): Promise<void> => await this._init())();
   }
-
-  _init = async (): Promise<void> => {
-    const allWebhooks = await this._webhookRepository.getAll();
-    allWebhooks.forEach(
-      (webhook: Webhook): void => this._subscribeWebhook(webhook),
-    );
-  };
-
-  _incrementWebhookErrorCounter = (webhookID: string) => {
-    const errorsCount = this._errorsCountByWebhookID.get(webhookID) || 0;
-    this._errorsCountByWebhookID.set(webhookID, errorsCount + 1);
-  };
-
-  _resetWebhookErrorCounter = (webhookID: string) => {
-    this._errorsCountByWebhookID.set(webhookID, 0);
-  };
-
-  // todo annotate arguments
-  _webhookHandler = (
-    requestOptions: Object,
-    responseHandler: Function,
-  ): void => request(requestOptions, responseHandler);
-
-  _throttledWebhookHandler = throttle(
-    this._webhookHandler,
-    WEBHOOK_THROTTLE_TIME,
-    { leading: false, trailing: true },
-  );
-
-  _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
-    (event: Event) => {
-      try {
-        if (
-          webhook.mydevices &&
-          webhook.ownerID !== event.userID
-        ) {
-          return;
-        }
-
-        const defaultWebhookVariables = eventToDefaultWebhookVariables(event);
-        const eventDataVariables = event.data
-          ? parseVariables(event.data)
-          : {};
-
-        const webhookVariablesObject = webhook.noDefaults
-          ? eventDataVariables
-          : {
-            ...defaultWebhookVariables,
-            ...eventDataVariables,
-          };
-
-        const requestJSON = webhook.json && hogan
-          .compile(JSON.stringify(webhook.json))
-          .render(webhookVariablesObject);
-
-        const requestFormData = webhook.form && JSON.parse(
-            hogan
-              .compile(JSON.stringify(webhook.form))
-              .render(webhookVariablesObject),
-          );
-
-        const requestUrl = hogan
-          .compile(webhook.url)
-          .render(webhookVariablesObject);
-
-        const requestQuery = webhook.query && JSON.parse(
-            hogan
-              .compile(JSON.stringify(webhook.query))
-              .render(webhookVariablesObject),
-          );
-
-        const responseTopic = webhook.responseTopic && hogan
-          .compile(webhook.responseTopic)
-          .render(webhookVariablesObject);
-
-        const errorResponseTopic = webhook.errorResponseTopic && hogan
-          .compile(webhook.responseTopic)
-          .render(webhookVariablesObject) || `hook-error/${event.name}`;
-
-        const responseHandler = (
-          error: ?Error,
-          response: http$IncomingMessage,
-          responseBody: string | Buffer,
-        ) => {
-          // todo check response.statusCode > 300 also.
-          if (error) {
-            this._incrementWebhookErrorCounter(webhook.id);
-
-            this._eventPublisher.publish({
-              data: error.message,
-              name: errorResponseTopic,
-              userID: event.userID,
-            });
-
-            throw error;
-          }
-
-          this._resetWebhookErrorCounter(webhook.id);
-
-          this._eventPublisher.publish({
-            name: `hook-sent/${event.name}`,
-            userID: event.userID,
-          });
-
-          if (!responseBody) {
-            return;
-          }
-
-          const responseTemplate = webhook.responseTemplate && hogan
-              .compile(webhook.responseTemplate)
-              .render(parseVariables(responseBody));
-
-          const chunks = splitBufferIntoChunks(
-            Buffer
-              .from(responseTemplate || responseBody.toString())
-              .slice(0, MAX_RESPONSE_MESSAGE_SIZE),
-            MAX_RESPONSE_MESSAGE_CHUNK_SIZE,
-          );
-
-          chunks.forEach((chunk: Buffer, index: number) => {
-            const responseEventName =
-              responseTopic && `${responseTopic}/$${index}` ||
-              `hook-response/${event.name}/${index}`;
-
-            this._eventPublisher.publish({
-              data: chunk,
-              name: responseEventName,
-              userID: event.userID,
-            });
-          });
-        };
-
-        const requestOptions = {
-          auth: webhook.auth,
-          body: requestFormData ? null : requestJSON || event.data,
-          formData: requestFormData,
-          headers: {
-            'Content-type': requestJSON && 'application/json',
-            ...webhook.headers,
-          },
-          method: webhook.requestType,
-          qs: requestQuery,
-          url: requestUrl,
-        };
-
-        const isWebhookDisabled =
-          (this._errorsCountByWebhookID.get(webhook.id) || 0) >= MAX_WEBHOOK_ERRORS_COUNT;
-
-        if (isWebhookDisabled) {
-          this._eventPublisher.publish({
-            data: 'Too many errors, webhook disabled',
-            name: errorResponseTopic,
-            userID: event.userID,
-          });
-
-          this._throttledWebhookHandler(requestOptions, responseHandler);
-        } else {
-          this._webhookHandler(requestOptions, responseHandler);
-        }
-      } catch (error) {
-        logger.error(`webhookError: ${error}`);
-      }
-    };
-
-  _subscribeWebhook = (webhook: Webhook) => {
-    const subscriptionID = this._eventPublisher.subscribe(
-      webhook.event,
-      this._onNewWebhookEvent(webhook),
-      // todo separate filtering for MY_DEVICES and for public/private events
-      {
-        deviceID: webhook.deviceID,
-        userID: webhook.ownerID,
-      },
-    );
-    this._subscriptionIDsByWebhookID.set(webhook.id, subscriptionID);
-  };
-
-  _unsubscribeWebhookByID = (webhookID: string) => {
-    const subscriptionID = this._subscriptionIDsByWebhookID.get(webhookID);
-    if (!subscriptionID) {
-      return;
-    }
-
-    this._eventPublisher.unsubscribe(subscriptionID);
-    this._subscriptionIDsByWebhookID.delete(webhookID);
-  };
 
   create = async (model: WebhookMutator): Promise<Webhook> => {
     const webhook = await this._webhookRepository.create(model);
@@ -295,6 +76,264 @@ class WebhookManager {
     }
 
     return webhook;
+  };
+
+  _init = async (): Promise<void> => {
+    const allWebhooks = await this._webhookRepository.getAll();
+    allWebhooks.forEach(
+      (webhook: Webhook): void => this._subscribeWebhook(webhook),
+    );
+  };
+
+  _subscribeWebhook = (webhook: Webhook) => {
+    const subscriptionID = this._eventPublisher.subscribe(
+      webhook.event,
+      this._onNewWebhookEvent(webhook),
+      // todo separate filtering for MY_DEVICES and for public/private events
+      {
+        deviceID: webhook.deviceID,
+        userID: webhook.ownerID,
+      },
+    );
+    this._subscriptionIDsByWebhookID.set(webhook.id, subscriptionID);
+  };
+
+  _unsubscribeWebhookByID = (webhookID: string) => {
+    const subscriptionID = this._subscriptionIDsByWebhookID.get(webhookID);
+    if (!subscriptionID) {
+      return;
+    }
+
+    this._eventPublisher.unsubscribe(subscriptionID);
+    this._subscriptionIDsByWebhookID.delete(webhookID);
+  };
+
+  _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
+    (event: Event) => {
+      try {
+        if (
+          webhook.mydevices &&
+          webhook.ownerID !== event.userID
+        ) {
+          return;
+        }
+
+        const webhookErrorCount =
+          this._errorsCountByWebhookID.get(webhook.id) || 0;
+
+        if (webhookErrorCount < MAX_WEBHOOK_ERRORS_COUNT) {
+          this.runWebhook(webhook, event);
+          return;
+        }
+
+        this._eventPublisher.publish({
+          data: 'Too many errors, webhook disabled',
+          name: this._compileErrorResponseTopic(
+            webhook,
+            event,
+          ),
+          userID: event.userID,
+        });
+      } catch (error) {
+        logger.error(`webhookError: ${error}`);
+      }
+    };
+
+  runWebhook = async (webhook: Webhook, event: Event): Promise<void> => {
+    try {
+      const webhookVariablesObject =
+        this._getEventData(event, webhook.noDefaults);
+
+      const requestJson = this._compileJsonTopic(
+        webhook.json,
+        webhookVariablesObject,
+      );
+
+      const requestFormData = this._compileJsonTopic(
+        webhook.form,
+        webhookVariablesObject,
+      );
+
+      const requestUrl = this._compileTopic(
+        webhook.url,
+        webhookVariablesObject,
+      );
+
+      const requestQuery = this._compileJsonTopic(
+        webhook.query,
+        webhookVariablesObject,
+      );
+
+      const responseTopic = this._compileTopic(
+        webhook.responseTopic,
+        webhookVariablesObject,
+      );
+
+      const isJsonRequest = !!requestJson;
+      const requestOptions = {
+        auth: webhook.auth,
+        body: isJsonRequest
+          ? requestJson
+          : undefined,
+        form: !isJsonRequest ? requestFormData : undefined,
+        headers: webhook.headers,
+        json: isJsonRequest,
+        method: webhook.requestType,
+        qs: requestQuery,
+        strictSSL: webhook.rejectUnauthorized,
+        url: requestUrl,
+      };
+
+      const responseBody = await this._callWebhook(
+        webhook,
+        event,
+        requestOptions,
+      );
+      if (!responseBody) {
+        return;
+      }
+
+      // TODO: responseBody is a string/buffer.
+      // We should only render this if it has been converted to a JSON object
+      const responseTemplate = webhook.responseTemplate && hogan
+        .compile(webhook.responseTemplate)
+        .render(responseBody);
+
+      const chunks = splitBufferIntoChunks(
+        Buffer.from(responseTemplate || responseBody),
+        MAX_RESPONSE_MESSAGE_CHUNK_SIZE,
+      );
+
+      chunks.forEach((chunk: Buffer, index: number) => {
+        const responseEventName =
+          responseTopic && `${responseTopic}/${index}` ||
+          `hook-response/${event.name}/${index}`;
+
+        this._eventPublisher.publish({
+          data: chunk,
+          name: responseEventName,
+          userID: event.userID,
+        });
+      });
+    } catch (error) {
+      logger.error(`webhookError: ${error}`);
+    }
+  };
+
+  _throttledWebhookHandler = throttle(
+    this.runWebhook,
+    WEBHOOK_THROTTLE_TIME,
+    { leading: false, trailing: true },
+  );
+
+  // todo annotate requestOptions
+  _callWebhook = (
+    webhook: Webhook,
+    event: Event,
+    requestOptions: Object,
+  ): Promise<*> => new Promise(
+    (resolve, reject) => request(
+      requestOptions,
+      (
+        error: ?Error,
+        response: http$IncomingMessage,
+        responseBody: string | Buffer | Object,
+      ) => {
+        // todo check response.statusCode > 300 also.
+        if (error) {
+          this._incrementWebhookErrorCounter(webhook.id);
+
+          this._eventPublisher.publish({
+            data: error.message,
+            name: this._compileErrorResponseTopic(
+              webhook,
+              event,
+            ),
+            userID: event.userID,
+          });
+
+          reject(error);
+        }
+
+        this._resetWebhookErrorCounter(webhook.id);
+
+        this._eventPublisher.publish({
+          name: `hook-sent/${event.name}`,
+          userID: event.userID,
+        });
+
+        resolve(responseBody);
+      },
+    ),
+  );
+
+  _getEventData = (event: Event, noDefaults: boolean = false): Object => {
+    const defaultWebhookVariables = {
+      PARTICLE_DEVICE_ID: event.deviceID,
+      PARTICLE_EVENT_NAME: event.name,
+      PARTICLE_EVENT_VALUE: event.data,
+      PARTICLE_PUBLISHED_AT: event.publishedAt,
+      // old event names, added for compatibility
+      SPARK_CORE_ID: event.deviceID,
+      SPARK_EVENT_NAME: event.name,
+      SPARK_EVENT_VALUE: event.data,
+      SPARK_PUBLISHED_AT: event.publishedAt,
+    };
+
+    const eventDataVariables = this._parseEventData(event);
+
+    return noDefaults
+      ? eventDataVariables
+      : {
+        ...defaultWebhookVariables,
+        ...eventDataVariables,
+      };
+  };
+
+  _parseEventData = (event: Event): Object => {
+    try {
+      if (event.data) {
+        return JSON.parse(event.data);
+      }
+      return {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  _compileTopic = (topic?: ?string, variables: Object): ?string =>
+    topic && hogan
+      .compile(topic)
+      .render(variables);
+
+  _compileJsonTopic = (topic?: ?Object, variables: Object): ?Object => {
+    if (!topic) {
+      return;
+    }
+
+    const compiledTopic = this._compileTopic(JSON.stringify(topic), variables);
+    if (!compiledTopic) {
+      return null;
+    }
+
+    return JSON.parse(compiledTopic);
+  };
+
+  _compileErrorResponseTopic = (webhook: Webhook, event: Event): string => {
+    const variables = this._getEventData(event, webhook.noDefaults);
+    return this._compileTopic(
+      webhook.errorResponseTopic,
+      variables,
+    ) || `hook-error/${event.name}`;
+  };
+
+  _incrementWebhookErrorCounter = (webhookID: string) => {
+    const errorsCount = this._errorsCountByWebhookID.get(webhookID) || 0;
+    this._errorsCountByWebhookID.set(webhookID, errorsCount + 1);
+  };
+
+  _resetWebhookErrorCounter = (webhookID: string) => {
+    this._errorsCountByWebhookID.set(webhookID, 0);
   };
 }
 
