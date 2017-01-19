@@ -193,7 +193,7 @@ class WebhookManager {
           ? this._getRequestData(requestFormData, event, webhook.noDefaults)
           : undefined,
         headers: webhook.headers,
-        json: isJsonRequest,
+        json: true,
         method: webhook.requestType,
         qs: requestQuery,
         strictSSL: webhook.rejectUnauthorized,
@@ -205,21 +205,26 @@ class WebhookManager {
         event,
         requestOptions,
       );
+
       if (!responseBody) {
         return;
       }
 
-      // TODO: responseBody is a string/buffer.
-      // We should only render this if it has been converted to a JSON object
-      const responseTemplate = webhook.responseTemplate && hogan
-        .compile(webhook.responseTemplate)
-        .render(responseBody);
+      const isResponseBodyAnObject = responseBody === Object(responseBody);
+
+      const responseTemplate =
+        webhook.responseTemplate && isResponseBodyAnObject && hogan
+          .compile(webhook.responseTemplate)
+          .render(responseBody);
+
+      const responseEventData = responseTemplate || (isResponseBodyAnObject
+        ? JSON.stringify(responseBody)
+        : responseBody);
 
       const chunks = splitBufferIntoChunks(
         Buffer
-          .from(responseTemplate || responseBody)
-          .slice(0, MAX_RESPONSE_MESSAGE_SIZE)
-        ,
+          .from(responseEventData)
+          .slice(0, MAX_RESPONSE_MESSAGE_SIZE),
         MAX_RESPONSE_MESSAGE_CHUNK_SIZE,
       );
 
@@ -257,12 +262,11 @@ class WebhookManager {
         response: http$IncomingMessage,
         responseBody: string | Buffer | Object,
       ) => {
-        // todo check response.statusCode > 300 also.
-        if (error) {
+        const onResponseError = (errorMessage: ?string) => {
           this._incrementWebhookErrorCounter(webhook.id);
 
           this._eventPublisher.publish({
-            data: error.message,
+            data: errorMessage,
             name: this._compileErrorResponseTopic(
               webhook,
               event,
@@ -270,7 +274,16 @@ class WebhookManager {
             userID: event.userID,
           });
 
-          reject(error);
+          reject(new Error(errorMessage));
+        };
+
+        if (error) {
+          onResponseError(error.message);
+          return;
+        }
+        if (response.statusCode >= 400) {
+          onResponseError(response.statusMessage);
+          return;
         }
 
         this._resetWebhookErrorCounter(webhook.id);
