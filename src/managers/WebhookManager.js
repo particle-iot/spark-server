@@ -10,6 +10,7 @@ import type {
 import type { EventPublisher } from 'spark-protocol';
 
 import hogan from 'hogan.js';
+import nullthrows from 'nullthrows';
 import HttpError from '../lib/HttpError';
 import logger from '../lib/logger';
 import request from 'request';
@@ -197,7 +198,7 @@ class WebhookManager {
         method: webhook.requestType,
         qs: requestQuery,
         strictSSL: webhook.rejectUnauthorized,
-        url: requestUrl,
+        url: nullthrows(requestUrl),
       };
 
       const responseBody = await this._callWebhook(
@@ -262,11 +263,11 @@ class WebhookManager {
         response: http$IncomingMessage,
         responseBody: string | Buffer | Object,
       ) => {
-        const onResponseError = (errorMessage: ?string) => {
+        if (error) {
           this._incrementWebhookErrorCounter(webhook.id);
 
           this._eventPublisher.publish({
-            data: errorMessage,
+            data: error.message,
             name: this._compileErrorResponseTopic(
               webhook,
               event,
@@ -274,17 +275,9 @@ class WebhookManager {
             userID: event.userID,
           });
 
-          reject(new Error(errorMessage));
+          reject(error);
+          return;
         };
-
-        if (error) {
-          onResponseError(error.message);
-          return;
-        }
-        if (response.statusCode >= 400) {
-          onResponseError(response.statusMessage);
-          return;
-        }
 
         this._resetWebhookErrorCounter(webhook.id);
 
@@ -322,7 +315,7 @@ class WebhookManager {
   _getRequestData = (
     customData: ?Object,
     event: Event,
-    noDefaults: boolean,
+    noDefaults: ?boolean = false,
   ): ?Object => {
     const defaultEventData = {
       coreid: event.deviceID,

@@ -179,13 +179,13 @@ export type DeviceRepository = {
 };
 
 export type RequestOptions = {
-  auth: { password: string, username: string },
+  auth?: { password: string, username: string },
   body: ?Object,
   form: ?Object,
   headers: ?Object,
   json: boolean,
   method: RequestType,
   qs: ?Object,
-  strictSSL: boolean,
+  strictSSL?: boolean,
   url: string,
 };

@@ -9,22 +9,6 @@ import WebhookFileRepository from '../src/repository/WebhookFileRepository';
 import WebhookManager from '../src/managers/WebhookManager';
 import TestData from './setup/TestData';
 
-/*
-auth
-deviceID
-errorResponseTopic
-headers
-mydevices
-noDefaults
-productIdOrSlug
-query
-rejectUnauthorized
-requestType
-responseTemplate
-responseTopic
-url
-*/
-
 const WEBHOOK_BASE = {
   event: 'test-event',
   requestType: 'POST',
