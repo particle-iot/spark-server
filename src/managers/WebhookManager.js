@@ -262,12 +262,11 @@ class WebhookManager {
         response: http$IncomingMessage,
         responseBody: string | Buffer | Object,
       ) => {
-        // todo check response.statusCode > 300 also.
-        if (error) {
+        const onResponseError = (errorMessage: ?string) => {
           this._incrementWebhookErrorCounter(webhook.id);
 
           this._eventPublisher.publish({
-            data: error.message,
+            data: errorMessage,
             name: this._compileErrorResponseTopic(
               webhook,
               event,
@@ -275,7 +274,15 @@ class WebhookManager {
             userID: event.userID,
           });
 
-          reject(error);
+          reject(new Error(errorMessage));
+        };
+
+        if (error) {
+          onResponseError(error.message);
+          return;
+        }
+        if (response.statusCode >= 400) {
+          onResponseError(response.statusMessage);
           return;
         }
 
