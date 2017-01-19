@@ -289,6 +289,45 @@ test(
 );
 
 test(
+  'should set request headers',
+  async t => {
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const event = getEvent();
+    const webhook = {
+      ...WEBHOOK_BASE,
+      headers: {
+        'Custom-Header-1': '123',
+        'Custom-Header-2': '123',
+      },
+    };
+    const defaultRequestData = getDefaultRequestData(event);
+
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
+      t.is(requestOptions.auth, undefined);
+      t.is(requestOptions.body, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
+      t.is(
+        requestOptions.headers,
+        webhook.headers,
+      );
+      t.is(requestOptions.method, WEBHOOK_BASE.requestType);
+      t.is(requestOptions.qs, undefined);
+      t.is(requestOptions.url, WEBHOOK_BASE.url);
+    });
+
+    manager.runWebhook(webhook, event);
+  },
+);
+
+test(
   'should publish default topic',
   async t => {
     const manager =
