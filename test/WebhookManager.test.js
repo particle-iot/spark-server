@@ -77,7 +77,6 @@ test(
         JSON.stringify(defaultRequestData),
       );
       t.is(requestOptions.headers, undefined);
-      t.is(requestOptions.json, false);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
       t.is(requestOptions.url, WEBHOOK_BASE.url);
@@ -108,7 +107,6 @@ test(
       t.is(requestOptions.body, undefined);
       t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
-      t.is(requestOptions.json, false);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
       t.is(requestOptions.url, WEBHOOK_BASE.url);
@@ -145,7 +143,6 @@ test(
       );
       t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
-      t.is(requestOptions.json, true);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
       t.is(requestOptions.url, WEBHOOK_BASE.url);
@@ -187,7 +184,6 @@ test(
         }),
       );
       t.is(requestOptions.headers, undefined);
-      t.is(requestOptions.json, false);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
       t.is(requestOptions.url, WEBHOOK_BASE.url);
@@ -222,7 +218,6 @@ test(
         JSON.stringify(defaultRequestData),
       );
       t.is(requestOptions.headers, undefined);
-      t.is(requestOptions.json, false);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
       t.is(requestOptions.url, 'https://test.com/123/foobar');
@@ -260,7 +255,6 @@ test(
         JSON.stringify(defaultRequestData),
       );
       t.is(requestOptions.headers, undefined);
-      t.is(requestOptions.json, false);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(
         JSON.stringify(requestOptions.qs),
