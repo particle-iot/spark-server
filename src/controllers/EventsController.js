@@ -50,6 +50,7 @@ class EventsController extends Controller {
     const subscriptionID = this._eventManager.subscribe(
       eventNamePrefix,
       this._pipeEvent.bind(this),
+      { userID: this.user.id },
     );
 
     await this._closeStream(subscriptionID);
@@ -63,7 +64,10 @@ class EventsController extends Controller {
     const subscriptionID = this._eventManager.subscribe(
       eventNamePrefix,
       this._pipeEvent.bind(this),
-      { userID: this.user.id },
+      {
+        mydevices: true,
+        userID: this.user.id,
+      },
     );
 
     await this._closeStream(subscriptionID);

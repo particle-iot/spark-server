@@ -101,9 +101,9 @@ class WebhookManager {
     const subscriptionID = this._eventPublisher.subscribe(
       webhook.event,
       this._onNewWebhookEvent(webhook),
-      // todo separate filtering for MY_DEVICES and for public/private events
       {
         deviceID: webhook.deviceID,
+        mydevices: webhook.mydevices,
         userID: webhook.ownerID,
       },
     );
@@ -123,13 +123,6 @@ class WebhookManager {
   _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
     (event: Event) => {
       try {
-        if (
-          webhook.mydevices &&
-          webhook.ownerID !== event.userID
-        ) {
-          return;
-        }
-
         const webhookErrorCount =
           this._errorsCountByWebhookID.get(webhook.id) || 0;
 
@@ -140,6 +133,7 @@ class WebhookManager {
 
         this._eventPublisher.publish({
           data: 'Too many errors, webhook disabled',
+          isPublic: false,
           name: this._compileErrorResponseTopic(
             webhook,
             event,
@@ -235,6 +229,7 @@ class WebhookManager {
 
         this._eventPublisher.publish({
           data: chunk,
+          isPublic: false,
           name: responseEventName,
           userID: event.userID,
         });
@@ -267,6 +262,7 @@ class WebhookManager {
 
           this._eventPublisher.publish({
             data: errorMessage,
+            isPublic: false,
             name: this._compileErrorResponseTopic(
               webhook,
               event,
@@ -289,6 +285,7 @@ class WebhookManager {
         this._resetWebhookErrorCounter(webhook.id);
 
         this._eventPublisher.publish({
+          isPublic: false,
           name: `hook-sent/${event.name}`,
           userID: event.userID,
         });

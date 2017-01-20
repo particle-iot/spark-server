@@ -5,7 +5,8 @@ import type { Event, EventData } from '../types';
 
 type FilterOptions = {
   deviceID?: string,
-  userID?: string,
+  mydevices?: boolean,
+  userID: string,
 };
 
 class EventManager {
@@ -18,7 +19,7 @@ class EventManager {
   subscribe = (
     eventNamePrefix: ?string,
     eventHandler: (event: Event) => void,
-    filterOptions?: FilterOptions,
+    filterOptions: FilterOptions,
   ): string =>
     this._eventPublisher.subscribe(
       eventNamePrefix,
