@@ -61,7 +61,7 @@ test.before(async () => {
   }
 });
 
-test.only('should throw an error for compile source code endpoint', async t => {
+test('should throw an error for compile source code endpoint', async t => {
   const response = await request(app)
     .post('/v1/binaries')
     .query({ access_token: userToken });
