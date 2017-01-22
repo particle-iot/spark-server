@@ -44,22 +44,9 @@ class EventsController extends Controller {
   }
 
   @httpVerb('get')
-  @route('/v1/events/:eventNamePrefix?')
+  @route('/v1/events/:eventNamePrefix?*')
   @serverSentEvents()
   async getEvents(eventNamePrefix: ?string): Promise<*> {
-    const subscriptionID = this._eventManager.subscribe(
-      eventNamePrefix,
-      this._pipeEvent.bind(this),
-    );
-
-    await this._closeStream(subscriptionID);
-    return this.ok();
-  }
-
-  @httpVerb('get')
-  @route('/v1/devices/events/:eventNamePrefix?')
-  @serverSentEvents()
-  async getMyEvents(eventNamePrefix: ?string): Promise<*> {
     const subscriptionID = this._eventManager.subscribe(
       eventNamePrefix,
       this._pipeEvent.bind(this),
@@ -71,7 +58,24 @@ class EventsController extends Controller {
   }
 
   @httpVerb('get')
-  @route('/v1/devices/:deviceID/events/:eventName?/')
+  @route('/v1/devices/events/:eventNamePrefix?*')
+  @serverSentEvents()
+  async getMyEvents(eventNamePrefix: ?string): Promise<*> {
+    const subscriptionID = this._eventManager.subscribe(
+      eventNamePrefix,
+      this._pipeEvent.bind(this),
+      {
+        mydevices: true,
+        userID: this.user.id,
+      },
+    );
+
+    await this._closeStream(subscriptionID);
+    return this.ok();
+  }
+
+  @httpVerb('get')
+  @route('/v1/devices/:deviceID/events/:eventNamePrefix?*')
   @serverSentEvents()
   async getDeviceEvents(
     deviceID: string,

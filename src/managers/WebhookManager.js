@@ -10,7 +10,6 @@ import type {
 import type { EventPublisher } from 'spark-protocol';
 
 import hogan from 'hogan.js';
-import nullthrows from 'nullthrows';
 import HttpError from '../lib/HttpError';
 import logger from '../lib/logger';
 import request from 'request';
@@ -102,9 +101,9 @@ class WebhookManager {
     const subscriptionID = this._eventPublisher.subscribe(
       webhook.event,
       this._onNewWebhookEvent(webhook),
-      // todo separate filtering for MY_DEVICES and for public/private events
       {
         deviceID: webhook.deviceID,
+        mydevices: webhook.mydevices,
         userID: webhook.ownerID,
       },
     );
@@ -124,13 +123,6 @@ class WebhookManager {
   _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
     (event: Event) => {
       try {
-        if (
-          webhook.mydevices &&
-          webhook.ownerID !== event.userID
-        ) {
-          return;
-        }
-
         const webhookErrorCount =
           this._errorsCountByWebhookID.get(webhook.id) || 0;
 
@@ -141,6 +133,7 @@ class WebhookManager {
 
         this._eventPublisher.publish({
           data: 'Too many errors, webhook disabled',
+          isPublic: false,
           name: this._compileErrorResponseTopic(
             webhook,
             event,
@@ -198,7 +191,7 @@ class WebhookManager {
         method: webhook.requestType,
         qs: requestQuery,
         strictSSL: webhook.rejectUnauthorized,
-        url: nullthrows(requestUrl),
+        url: requestUrl,
       };
 
       const responseBody = await this._callWebhook(
@@ -236,6 +229,7 @@ class WebhookManager {
 
         this._eventPublisher.publish({
           data: chunk,
+          isPublic: false,
           name: responseEventName,
           userID: event.userID,
         });
@@ -263,11 +257,12 @@ class WebhookManager {
         response: http$IncomingMessage,
         responseBody: string | Buffer | Object,
       ) => {
-        if (error) {
+        const onResponseError = (errorMessage: ?string) => {
           this._incrementWebhookErrorCounter(webhook.id);
 
           this._eventPublisher.publish({
-            data: error.message,
+            data: errorMessage,
+            isPublic: false,
             name: this._compileErrorResponseTopic(
               webhook,
               event,
@@ -275,13 +270,22 @@ class WebhookManager {
             userID: event.userID,
           });
 
-          reject(error);
-          return;
+          reject(new Error(errorMessage));
         };
+
+        if (error) {
+          onResponseError(error.message);
+          return;
+        }
+        if (response.statusCode >= 400) {
+          onResponseError(response.statusMessage);
+          return;
+        }
 
         this._resetWebhookErrorCounter(webhook.id);
 
         this._eventPublisher.publish({
+          isPublic: false,
           name: `hook-sent/${event.name}`,
           userID: event.userID,
         });
@@ -315,7 +319,7 @@ class WebhookManager {
   _getRequestData = (
     customData: ?Object,
     event: Event,
-    noDefaults: ?boolean = false,
+    noDefaults: boolean,
   ): ?Object => {
     const defaultEventData = {
       coreid: event.deviceID,
