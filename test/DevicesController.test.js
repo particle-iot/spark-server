@@ -61,13 +61,12 @@ test.before(async () => {
   }
 });
 
-test('should throw an error for compile source code endpoint', async t => {
+test.only('should throw an error for compile source code endpoint', async t => {
   const response = await request(app)
     .post('/v1/binaries')
     .query({ access_token: userToken });
 
   t.is(response.status, 400);
-  t.is(response.body.error, 'not supported in the current server version');
 });
 
 test.serial('should return device details', async t => {

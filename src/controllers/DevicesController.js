@@ -3,13 +3,19 @@
 import type { Device, DeviceRepository } from '../types';
 import type { DeviceAPIType } from '../lib/deviceToAPI';
 
-
+import nullthrows from 'nullthrows';
 import Controller from './Controller';
 import HttpError from '../lib/HttpError';
+import FirmwareCompilationManager from '../managers/FirmwareCompilationManager';
 import allowUpload from '../decorators/allowUpload';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 import deviceToAPI from '../lib/deviceToAPI';
+
+type CompileConfig = {
+  platform_id?: string,
+  product_id?: string,
+};
 
 class DevicesController extends Controller {
   _deviceRepository: DeviceRepository;
@@ -29,10 +35,30 @@ class DevicesController extends Controller {
     return this.ok({ ok: true });
   }
 
+  @httpVerb('get')
+  @route('/v1/binaries/:binaryID')
+  async getAppFirmware(binaryID: string): Promise<*> {
+    return this.ok(FirmwareCompilationManager.getBinaryForID(binaryID));
+  }
+
   @httpVerb('post')
   @route('/v1/binaries')
-  compileSources() { // eslint-disable-line class-methods-use-this
-    throw new HttpError('not supported in the current server version');
+  @allowUpload()
+  async compileSources(postBody: CompileConfig): Promise<*> {
+    const response = await FirmwareCompilationManager.compileSource(
+      nullthrows(postBody.platform_id || postBody.product_id),
+      this.request.files,
+    );
+
+    if (!response) {
+      throw new HttpError('Error during compilation');
+    }
+
+    return this.ok({
+      ...response,
+      binary_url: `/v1/binaries/${response.binary_id}`,
+      ok: true,
+    });
   }
 
   @httpVerb('delete')

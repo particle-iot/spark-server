@@ -97,7 +97,9 @@ export default (
         maybe(serverSentEventsMiddleware(), serverSentEvents),
         injectUserMiddleware(),
         allowedUploads
-          ? injectFilesMiddleware.fields(allowedUploads)
+          ? allowedUploads.length
+            ? injectFilesMiddleware.fields(allowedUploads)
+            : injectFilesMiddleware.any()
           : defaultMiddleware,
         async (request: $Request, response: $Response): Promise<void> => {
           const argumentNames = (route.match(/:[\w]*/g) || []).map(
