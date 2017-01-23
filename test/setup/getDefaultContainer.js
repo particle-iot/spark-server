@@ -1,6 +1,6 @@
 // @flow
 
-import {Container} from 'constitute';
+import { Container } from 'constitute';
 import defaultBindings from '../../src/defaultBindings';
 import settings from './settings';
 import DeviceServerMock from './DeviceServerMock';
@@ -21,4 +21,4 @@ container.bindValue('WEBHOOKS_DIRECTORY', settings.WEBHOOKS_DIRECTORY);
 
 container.bindAlias('DeviceServer', DeviceServerMock);
 
-export default () => container;
+export default (): Container => container;

@@ -10,11 +10,9 @@ import type {
 } from '../types';
 import type DeviceFirmwareRepository from './DeviceFirmwareFileRepository';
 
-import fs from 'fs';
 import Moniker from 'moniker';
 import ursa from 'ursa';
 import HttpError from '../lib/HttpError';
-import settings from '../settings';
 
 const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
 
@@ -133,23 +131,25 @@ class DeviceRepository {
   getAll = async (userID: string): Promise<Array<Device>> => {
     const devicesAttributes =
       await this._deviceAttributeRepository.getAll(userID);
-    const devicePromises = devicesAttributes.map(async attributes => {
-      const device = this._deviceServer.getDevice(attributes.deviceID);
+    const devicePromises = devicesAttributes.map(
+      async (attributes: DeviceAttributes): Promise<Object> => {
+        const device = this._deviceServer.getDevice(attributes.deviceID);
 
-      const pingResponse = device
-        ? device.ping()
-        : {
-          connected: false,
-          lastPing: null,
+        const pingResponse = device
+          ? device.ping()
+          : {
+            connected: false,
+            lastPing: null,
+          };
+
+        return {
+          ...attributes,
+          connected: pingResponse.connected,
+          lastFlashedAppName: null,
+          lastHeard: pingResponse.lastPing,
         };
-
-      return {
-        ...attributes,
-        connected: pingResponse.connected,
-        lastFlashedAppName: null,
-        lastHeard: pingResponse.lastPing,
-      };
-    });
+      },
+    );
 
     return Promise.all(devicePromises);
   };
@@ -205,7 +205,7 @@ class DeviceRepository {
   flashBinary = async (
     deviceID: string,
     file: File,
-  ) => {
+  ): Promise<string> => {
     const device = this._deviceServer.getDevice(deviceID);
     if (!device) {
       throw new HttpError('Could not get device for ID', 404);
@@ -218,7 +218,7 @@ class DeviceRepository {
     deviceID: string,
     userID: string,
     appName: string,
-  ) => {
+  ): Promise<string> => {
     if (await !this._deviceAttributeRepository.doesUserHaveAccess(
       deviceID,
       userID,

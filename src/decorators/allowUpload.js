@@ -16,7 +16,7 @@ export default (
         name: fileName,
       });
     }
-    
+
     (target: any)[name].allowedUploads = allowedUploads;
     return descriptor;
   };

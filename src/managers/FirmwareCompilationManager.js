@@ -2,12 +2,12 @@
 
 import type { File } from 'express';
 
-import fs from 'fs';
-import rmfr from 'rmfr';
-import {spawn} from 'child_process';
-import path from 'path';
 import crypto from 'crypto';
-import {knownPlatforms} from 'spark-protocol';
+import fs from 'fs';
+import path from 'path';
+import rmfr from 'rmfr';
+import { spawn } from 'child_process';
+import { knownPlatforms } from 'spark-protocol';
 import settings from '../settings';
 
 const USER_APP_PATH = path.join(
@@ -31,12 +31,13 @@ type CompilationResponse = {
 };
 
 const FILE_NAME_BY_KEY = new Map();
-const getKey = () => crypto
+
+const getKey = (): string => crypto
   .randomBytes(24)
   .toString('hex')
   .substring(0, 24);
 
-const getUniqueKey = () => {
+const getUniqueKey = (): string => {
   let key = getKey();
   while (FILE_NAME_BY_KEY.has(key)) {
     key = getKey();
@@ -45,9 +46,8 @@ const getUniqueKey = () => {
 };
 
 class FirmwareCompilationManager {
-  static firmwareDirectorExists = (): boolean => {
-    return fs.existsSync(settings.FIRMWARE_REPOSITORY_DIRECTORY);
-  };
+  static firmwareDirectorExists = (): boolean =>
+    fs.existsSync(settings.FIRMWARE_REPOSITORY_DIRECTORY);
 
   static getBinaryForID = (id: string): ?Buffer => {
     const binaryPath = path.join(BIN_PATH, id);
@@ -56,14 +56,14 @@ class FirmwareCompilationManager {
     }
 
     const binFileName = fs.readdirSync(binaryPath)
-      .find(file => file.endsWith('.bin'));
+      .find((file: string): boolean => file.endsWith('.bin'));
 
     if (!binFileName) {
       return null;
     }
 
     return fs.readFileSync(path.join(binaryPath, binFileName));
-  }
+  };
 
   static compileSource = async (
     platformID: string,
@@ -80,11 +80,11 @@ class FirmwareCompilationManager {
 
     platformName = platformName.toLowerCase();
     const appFolder =
-      `${platformName}_firmware_${(new Date).getTime()}`.toLowerCase();
+      `${platformName}_firmware_${(new Date()).getTime()}`.toLowerCase();
     const appPath = path.join(USER_APP_PATH, appFolder);
     fs.mkdirSync(appPath);
 
-    files.forEach(file => {
+    files.forEach((file: File) => {
       const fileName = file.originalname;
       const fileExtension = path.extname(fileName);
       let iterator = 0;
@@ -93,35 +93,34 @@ class FirmwareCompilationManager {
       while (fs.existsSync(combinedPath)) {
         combinedPath = path.join(
           appPath,
-          path.basename(fileName, fileExtension) +
-            `_${iterator++}` +
-            fileExtension,
+          `${path.basename(fileName, fileExtension)}` +
+            `_${iterator++}${fileExtension}`, // eslint-disable-line no-plusplus
         );
       }
 
       fs.writeFileSync(combinedPath, file.buffer);
     });
 
-    let id = getUniqueKey();
+    const id = getUniqueKey();
     const binPath = path.join(BIN_PATH, id);
     const makeProcess = spawn(
       'make',
       [
         `APP=${appFolder}`,
         `PLATFORM_ID=${platformID}`,
-        `TARGET_DIR=${path.relative(MAKE_PATH, binPath).replace(/\\/g,'/')}`,
+        `TARGET_DIR=${path.relative(MAKE_PATH, binPath).replace(/\\/g, '/')}`,
       ],
-      {cwd: MAKE_PATH},
+      { cwd: MAKE_PATH },
     );
 
     const errors = [];
-    makeProcess.stderr.on('data', data => {
-      console.log(`${data}`)
+    makeProcess.stderr.on('data', (data: string) => {
+      console.log(`${data}`);
       errors.push(`${data}`);
     });
 
-    let sizeInfo = 'not implemented'
-    makeProcess.stdout.on('data', data => {
+    let sizeInfo = 'not implemented';
+    makeProcess.stdout.on('data', (data: string) => {
       const output = `${data}`;
 
       if (output.includes('text\t')) {
@@ -129,10 +128,12 @@ class FirmwareCompilationManager {
       }
     });
 
-    await new Promise(resolve => makeProcess.on('exit', () => resolve()));
+    await new Promise((resolve: () => void): void =>
+      makeProcess.on('exit', (): void => resolve()),
+    );
 
     const date = new Date();
-    date.setDate(date.getDate() + 1)
+    date.setDate(date.getDate() + 1);
     const config = {
       binary_id: id,
       errors,
@@ -164,7 +165,7 @@ class FirmwareCompilationManager {
     const difference =
       new Date(config.expires_at).getTime() - currentDate.getTime();
     setTimeout(
-      () => rmfr(appFolderPath),
+      (): void => rmfr(appFolderPath),
       difference,
     );
   }
@@ -178,7 +179,7 @@ if (!fs.existsSync(BIN_PATH)) {
   fs.mkdirSync(BIN_PATH);
 }
 
-fs.readdirSync(USER_APP_PATH).forEach(file => {
+fs.readdirSync(USER_APP_PATH).forEach((file: string) => {
   const appFolder = path.join(USER_APP_PATH, file);
   const configPath = path.join(appFolder, 'config.json');
   if (!fs.existsSync(configPath)) {
@@ -195,7 +196,7 @@ fs.readdirSync(USER_APP_PATH).forEach(file => {
     // files in firmare/build/target/user & firmware/build/target/user-part
     // It might make the most sense to just create a custom MAKE file to do this
     rmfr(configPath);
-    rmfr(path.join(BIN_PATH, config.binary_id))
+    rmfr(path.join(BIN_PATH, config.binary_id));
   } else {
     FirmwareCompilationManager.addFirmwareCleanupTask(
       appFolder,

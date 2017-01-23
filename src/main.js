@@ -1,6 +1,6 @@
 // @flow
 
-import {Container} from 'constitute';
+import { Container } from 'constitute';
 import os from 'os';
 import arrayFlatten from 'array-flatten';
 import logger from './lib/logger';
@@ -13,7 +13,7 @@ const NODE_PORT = process.env.NODE_PORT || 8080;
 process.on('uncaughtException', (exception: Error) => {
   logger.error(
     'uncaughtException',
-    { message : exception.message, stack : exception.stack },
+    { message: exception.message, stack: exception.stack },
   ); // logging with MetaData
   process.exit(1); // exit with failure
 });
@@ -43,14 +43,16 @@ app.listen(
 );
 
 const addresses = arrayFlatten(
-  Object.entries(os.networkInterfaces()).map(([name, nic]) =>
-    (nic: any)
-      .filter(address =>
-        address.family === 'IPv4' &&
-        address.address !== '127.0.0.1',
-      )
-      .map(address => address.address),
-    ),
+  Object.entries(os.networkInterfaces()).map(
+    // eslint-disable-next-line no-unused-vars
+    ([name, nic]: Array<Object>): Array<string> =>
+      (nic: any)
+        .filter((address: Object): boolean =>
+          address.family === 'IPv4' &&
+          address.address !== '127.0.0.1',
+        )
+        .map((address: Object): boolean => address.address),
+  ),
 );
 addresses.forEach((address: string): void =>
   console.log(`Your device server IP address is: ${address}`),

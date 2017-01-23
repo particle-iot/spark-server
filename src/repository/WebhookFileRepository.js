@@ -3,7 +3,7 @@
 import type { Webhook, WebhookMutator } from '../types';
 
 import uuid from 'uuid';
-import { JSONFileManager, memoizeGet, memoizeSet  } from 'spark-protocol';
+import { JSONFileManager, memoizeGet, memoizeSet } from 'spark-protocol';
 import HttpError from '../lib/HttpError';
 
 class WebhookFileRepository {
@@ -28,7 +28,7 @@ class WebhookFileRepository {
 
     this._fileManager.createFile(`${modelToSave.id}.json`, modelToSave);
     return modelToSave;
-  };
+  }
 
   @memoizeSet(['id'])
   async deleteById(id: string): Promise<void> {
@@ -60,6 +60,7 @@ class WebhookFileRepository {
     return webhook;
   };
 
+  // eslint-disable-next-line no-unused-vars
   update = async (model: WebhookMutator): Promise<Webhook> => {
     throw new HttpError('Not implemented');
   };

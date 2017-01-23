@@ -7,12 +7,10 @@ const uuidSet = new Set();
 const privateKeys = new Set();
 
 class TestData {
-  static getUser = (): {password: string, username: string} => {
-    return {
-      password: 'password',
-      username: `testUser+${TestData.getID()}@test.com`,
-    };
-  };
+  static getUser = (): { password: string, username: string } => ({
+    password: 'password',
+    username: `testUser+${TestData.getID()}@test.com`,
+  });
 
   static getID = (): string => {
     let newID = uuid();
