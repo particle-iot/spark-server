@@ -57,6 +57,8 @@ export default (
       // before DevicesController
       'EventsController',
       'DevicesController',
+      'OauthClientsController',
+      'ProductsController',
       'ProvisioningController',
       'UsersController',
       'WebhooksController',
