@@ -66,7 +66,6 @@ export default (
     model: new OAuthModel(container.constitute('UserRepository')),
   });
 
-  // eslint-disable-next-line no-confusing-arrow
   const filesMiddleware = (allowedUploads: ?Array<{
     maxCount: number,
     name: string,
