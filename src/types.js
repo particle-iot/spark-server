@@ -189,3 +189,16 @@ export type RequestOptions = {
   strictSSL?: boolean,
   url: string,
 };
+
+export type Product = {
+  config_id: string,
+  description: string,
+  hardware_version: string,
+  id: string,
+  name: string,
+  organization: string,
+  product_id: number,
+  requires_activation_codes: boolean,
+  slug: string,
+  type: 'Consumer' | 'Hobbyist' | 'Industrial',
+}
