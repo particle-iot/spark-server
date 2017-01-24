@@ -42,10 +42,8 @@ class OauthModel {
       client.clientId === clientId && client.clientSecret === clientSecret,
     );
 
-  getUser = async (username: string, password: string): Promise<User> => {
-    return await this._userRepository.validateLogin(username, password);
-  }
-
+  getUser = async (username: string, password: string): Promise<User> =>
+    await this._userRepository.validateLogin(username, password);
 
   saveToken = (
     tokenObject: TokenObject,
@@ -60,7 +58,7 @@ class OauthModel {
     };
   };
 
-  // todo figure out this function
+  // eslint-disable-next-line no-unused-vars
   validateScope = (user: User, client: Client, scope: string): string => 'true';
 }
 

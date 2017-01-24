@@ -1,7 +1,6 @@
 // @flow
 
 import type { File } from 'express';
-import type DeviceFirmwareRepository from './repository/DeviceFirmwareFileRepository';
 
 export type Webhook = {
   auth?: { password: string, username: string },

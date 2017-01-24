@@ -7,6 +7,8 @@ import { Transient } from 'constitute';
 import DeviceClaimsController from './controllers/DeviceClaimsController';
 import DevicesController from './controllers/DevicesController';
 import EventsController from './controllers/EventsController';
+import OauthClientsController from './controllers/OauthClientsController';
+import ProductsController from './controllers/ProductsController';
 import ProvisioningController from './controllers/ProvisioningController';
 import UsersController from './controllers/UsersController';
 import WebhooksController from './controllers/WebhooksController';
@@ -48,6 +50,16 @@ export default (container: Container) => {
     'EventsController',
     EventsController,
     Transient.with(['EventManager']),
+  );
+  container.bindClass(
+    'OauthClientsController',
+    OauthClientsController,
+    Transient.with([]),
+  );
+  container.bindClass(
+    'ProductsController',
+    ProductsController,
+    Transient.with([]),
   );
   container.bindClass(
     'ProvisioningController',

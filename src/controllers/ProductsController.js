@@ -1,11 +1,11 @@
 // @flow
+/* eslint-disable */
 
 import type { DeviceRepository } from '../types';
 
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
-import deviceToAPI from '../lib/deviceToAPI';
 import HttpError from '../lib/HttpError';
 
 class ProductsController extends Controller {
@@ -19,9 +19,16 @@ class ProductsController extends Controller {
 
   @httpVerb('get')
   @route('/v1/products')
-  async getAll(
-  ): Promise<*> {
-    throw new HttpError('Not implemented');
+  // eslint-disable-next-line class-methods-use-this
+  async getProducts(): Promise<*> {
+    throw new HttpError('not supported in the current server version');
+  }
+
+  @httpVerb('post')
+  @route('/v1/products')
+  // eslint-disable-next-line class-methods-use-this
+  async createProduct(): Promise<*> {
+    throw new HttpError('not supported in the current server version');
   }
 
   @httpVerb('get')
@@ -31,6 +38,16 @@ class ProductsController extends Controller {
   ): Promise<*> {
     throw new HttpError('Not implemented');
   }
+
+  @httpVerb('post')
+  @route('/v1/products/:productIdOrSlug/device_claims')
+  // eslint-disable-next-line class-methods-use-this
+  async generateClaimCode(
+    productIdOrSlug: string,
+  ): Promise<*> {
+    throw new HttpError('not supported in the current server version');
+  }
+
   @httpVerb('get')
   @route('/v1/products/:productIdOrSlug/firmware')
   async getFirmware(
@@ -105,6 +122,16 @@ class ProductsController extends Controller {
     throw new HttpError('Not implemented');
   }
 
+  @httpVerb('delete')
+  @route('/v1/products/:productIdOrSlug/devices/:deviceID')
+  // eslint-disable-next-line class-methods-use-this
+  async removeDeviceFromProduct(
+    productIdOrSlug: string,
+    deviceID: string,
+  ): Promise<*> {
+    throw new HttpError('not supported in the current server version');
+  }
+
   @httpVerb('get')
   @route('/v1/products/:productIdOrSlug/config')
   async getConfig(
@@ -133,6 +160,17 @@ class ProductsController extends Controller {
   ): Promise<*> {
     throw new HttpError('Not implemented');
   }
+
+  @httpVerb('delete')
+  @route('/v1/products/:productIdOrSlug/team/:username')
+  // eslint-disable-next-line class-methods-use-this
+  async removeTeamMember(
+    productIdOrSlug: string,
+    username: string,
+  ): Promise<*> {
+    throw new HttpError('not supported in the current server version');
+  }
 }
 
 export default ProductsController;
+/* eslint-enable */

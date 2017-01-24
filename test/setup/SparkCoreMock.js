@@ -1,9 +1,7 @@
 // @flow
 
 class SparkCoreMock {
-  onApiMessage() {
-    return true;
-  }
+  onApiMessage = (): boolean => true;
 
   getVariableValue = (): any => 0;
 

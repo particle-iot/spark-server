@@ -3,6 +3,7 @@ flow-typed
 # Don't check auto-generated stuff
 coverage
 build
+binaries
 node_modules
 
 # Cruft

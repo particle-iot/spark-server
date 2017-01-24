@@ -7,9 +7,8 @@ import type {
   Middleware,
   NextFunction,
 } from 'express';
-import type {Container} from 'constitute';
+import type { Container } from 'constitute';
 import type { Settings } from './types';
-import type Controller from './controllers/Controller';
 
 import OAuthServer from 'express-oauth-server';
 import multer from 'multer';
@@ -55,9 +54,6 @@ const serverSentEventsMiddleware = (): Middleware =>
     next();
   };
 
-const defaultMiddleware =
-  (request: $Request, response: $Response, next: NextFunction): mixed => next();
-
 export default (
   app: $Application,
   container: Container,
@@ -69,7 +65,13 @@ export default (
     allowBearerTokensInQueryString: true,
     model: new OAuthModel(container.constitute('UserRepository')),
   });
-  const injectFilesMiddleware = multer();
+
+  const filesMiddleware = (allowedUploads: ?Array<{
+    maxCount: number,
+    name: string,
+  }> = []): Middleware => allowedUploads.length
+    ? multer().fields(allowedUploads)
+    : multer().any();
 
   app.post(settings.loginRoute, oauth.token());
 
@@ -90,17 +92,12 @@ export default (
       if (!httpVerb) {
         return;
       }
-
       (app: any)[httpVerb](
         route,
         maybe(oauth.authenticate(), !anonymous),
         maybe(serverSentEventsMiddleware(), serverSentEvents),
         injectUserMiddleware(),
-        allowedUploads
-          ? allowedUploads.length
-            ? injectFilesMiddleware.fields(allowedUploads)
-            : injectFilesMiddleware.any()
-          : defaultMiddleware,
+        maybe(filesMiddleware(allowedUploads), allowedUploads),
         async (request: $Request, response: $Response): Promise<void> => {
           const argumentNames = (route.match(/:[\w]*/g) || []).map(
             (argumentName: string): string => argumentName.replace(':', ''),

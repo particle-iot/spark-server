@@ -167,7 +167,7 @@ class DevicesController extends Controller {
         this.user.id,
         !!parseInt(postBody.signal, 10),
       );
-      return this.ok({id: deviceID, ok: true});
+      return this.ok({ id: deviceID, ok: true });
     }
 
     throw new HttpError('Did not update device');

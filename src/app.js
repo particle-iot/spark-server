@@ -7,8 +7,8 @@ import type {
   Middleware,
   NextFunction,
 } from 'express';
-import type {Container} from 'constitute';
-import type {Settings} from './types';
+import type { Container } from 'constitute';
+import type { Settings } from './types';
 
 import bodyParser from 'body-parser';
 import express from 'express';
@@ -57,6 +57,8 @@ export default (
       // before DevicesController
       'EventsController',
       'DevicesController',
+      'OauthClientsController',
+      'ProductsController',
       'ProvisioningController',
       'UsersController',
       'WebhooksController',

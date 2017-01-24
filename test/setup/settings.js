@@ -1,11 +1,8 @@
 // @flow
 
 import path from 'path';
-import DeviceFirmwareFileRepository from '../../src/repository/DeviceFirmwareFileRepository';
-import WebhookFileRepository from '../../src/repository/WebhookFileRepository';
-import UsersFileRepository from '../../src/repository/UserFileRepository';
-import { DeviceAttributeFileRepository, DeviceKeyFileRepository } from 'spark-protocol';
 
+/* eslint-disable sorting/sort-object-props */
 export default {
   DEVICE_DIRECTORY: path.join(__dirname, '../__test_data__/deviceKeys'),
   FIRMWARE_DIRECTORY: path.join(__dirname, '../__test_data__/knownApps'),
@@ -29,10 +26,10 @@ export default {
    * Your server crypto keys!
    */
   cryptoSalt: 'aes-128-cbc',
-  serverKeyFile: "default_key.pem",
+  serverKeyFile: 'default_key.pem',
   serverKeyPassFile: null,
   serverKeyPassEnvVar: null,
 
   PORT: 5683,
-  HOST: "localhost",
+  HOST: 'localhost',
 };
