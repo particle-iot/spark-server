@@ -1,6 +1,5 @@
 // @flow
 
-import {Container} from 'constitute';
 import createApp from '../../src/app';
 import settings from './settings';
 import getDefaultContainer from './getDefaultContainer';

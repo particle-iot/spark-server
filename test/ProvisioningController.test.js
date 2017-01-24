@@ -1,3 +1,4 @@
+/* eslint-disable */
 import test from 'ava';
 import request from 'supertest-as-promised';
 import ouathClients from '../src/oauthClients.json';

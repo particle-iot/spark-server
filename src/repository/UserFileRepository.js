@@ -47,13 +47,13 @@ class UserFileRepository {
 
     this._fileManager.createFile(`${modelToSave.id}.json`, modelToSave);
     return modelToSave;
-  };
+  }
 
   @memoizeSet()
   async update(model: User): Promise<User> {
     this._fileManager.writeFile(`${model.id}.json`, model);
     return model;
-  };
+  }
 
   @memoizeGet()
   async getAll(): Promise<Array<User>> {
@@ -93,13 +93,12 @@ class UserFileRepository {
 
   // This isn't a good one to memoize as we can't key off user ID and there
   // isn't a good way to clear the cache.
-  getByAccessToken = async (accessToken: string): Promise<?User> => {
-    return (await this.getAll()).find((user: User): boolean =>
+  getByAccessToken = async (accessToken: string): Promise<?User> =>
+    (await this.getAll()).find((user: User): boolean =>
       user.accessTokens.some((tokenObject: TokenObject): boolean =>
         tokenObject.accessToken === accessToken,
       ),
     );
-  }
 
   deleteAccessToken = async (userID: string, token: string): Promise<*> => {
     const user = await this.getById(userID);
@@ -116,7 +115,7 @@ class UserFileRepository {
     };
 
     await this.update(userToSave);
-  }
+  };
 
   @memoizeSet(['id'])
   async deleteById(id: string): Promise<void> {

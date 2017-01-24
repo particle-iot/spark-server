@@ -9,7 +9,7 @@ class DeviceFirmwareFileRepository {
     this._fileManager = new FileManager(path, false);
   }
 
-  @memoizeGet([], {promise: false})
+  @memoizeGet([], { promise: false })
   getByName(appName: string): ?Buffer {
     return this._fileManager.getFileBuffer(`${appName}.bin`);
   }

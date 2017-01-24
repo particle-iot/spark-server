@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { Webhook, WebhookMutator } from '../src/types';
 
 import test from 'ava';

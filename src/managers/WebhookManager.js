@@ -250,7 +250,10 @@ class WebhookManager {
     event: Event,
     requestOptions: RequestOptions,
   ): Promise<*> => new Promise(
-    (resolve, reject) => request(
+    (
+      resolve: (responseBody: string | Buffer | Object) => void,
+      reject: (error: Error) => void,
+    ): void => request(
       requestOptions,
       (
         error: ?Error,
@@ -340,7 +343,7 @@ class WebhookManager {
 
   _compileJsonTemplate = (template?: ?Object, variables: Object): ?Object => {
     if (!template) {
-      return;
+      return undefined;
     }
 
     const compiledTemplate = this._compileTemplate(
@@ -348,7 +351,7 @@ class WebhookManager {
       variables,
     );
     if (!compiledTemplate) {
-      return;
+      return undefined;
     }
 
     return JSON.parse(compiledTemplate);

@@ -35,7 +35,10 @@
     "test": "ava --serial",
     "test:watch": "ava --watch --serial"
   },
-  "pre-commit": "test",
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
   "ava": {
     "verbose": true,
     "babel": "inherit",

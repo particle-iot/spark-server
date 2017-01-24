@@ -1,3 +1,4 @@
+/* eslint-disable */
 import test from 'ava';
 import sinon from 'sinon';
 import TestData from './setup/TestData';

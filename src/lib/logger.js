@@ -14,13 +14,21 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 *    You can download the source here: https://github.com/spark/spark-server
+*
+* @flow
+*
 */
 
-module.exports = {
-	log: function() {
-		console.log.apply(console, arguments);
-	},
-	error: function() {
-		console.error.apply(console, arguments);
-	},
-};
+class Logger {
+  static log() {
+    // eslint-disable-next-line prefer-rest-params
+    console.log(...arguments);
+  }
+
+  static error() {
+    // eslint-disable-next-line prefer-rest-params
+    console.error(...arguments);
+  }
+}
+
+export default Logger;

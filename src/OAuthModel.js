@@ -58,6 +58,7 @@ class OauthModel {
     };
   };
 
+  // eslint-disable-next-line no-unused-vars
   validateScope = (user: User, client: Client, scope: string): string => 'true';
 }
 

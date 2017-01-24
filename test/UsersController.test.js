@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type {  TokenObject, UserCredentials } from '../src/types';
 
 import test from 'ava';
