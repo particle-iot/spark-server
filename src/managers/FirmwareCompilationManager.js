@@ -128,7 +128,7 @@ class FirmwareCompilationManager {
       }
     });
 
-    await new Promise((resolve: () => void): void =>
+    await new Promise((resolve: () => void): events$EventEmitter =>
       makeProcess.on('exit', (): void => resolve()),
     );
 

@@ -4,7 +4,7 @@ import type { Event } from '../types';
 
 export type EventAPIType = {|
   coreid: ?string,
-  data: ?Object,
+  data: ?string,
   published_at: Date,
   ttl: number,
 |};
