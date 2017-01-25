@@ -47,7 +47,7 @@ class DevicesController extends Controller {
   async compileSources(postBody: CompileConfig): Promise<*> {
     const response = await FirmwareCompilationManager.compileSource(
       nullthrows(postBody.platform_id || postBody.product_id),
-      this.request.files,
+      (this.request.files: any),
     );
 
     if (!response) {
@@ -150,7 +150,7 @@ class DevicesController extends Controller {
 
     const file =
       this.request.files &&
-      this.request.files.file[0];
+      (this.request.files: any).file[0];
 
     if (file && file.originalname.endsWith('.bin')) {
       const flashStatus = await this._deviceRepository
