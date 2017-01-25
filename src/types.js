@@ -74,7 +74,7 @@ export type Event = EventData & {
 };
 
 export type EventData = {
-  data?: ?string,
+  data?: string,
   deviceID?: ?string,
   isPublic: boolean,
   name: string,
