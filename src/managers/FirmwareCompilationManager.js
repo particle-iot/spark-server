@@ -5,10 +5,14 @@ import type { File } from 'express';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import mkdirp from 'mkdirp';
 import rmfr from 'rmfr';
 import { spawn } from 'child_process';
 import { knownPlatforms } from 'spark-protocol';
 import settings from '../settings';
+
+const IS_COMPILATION_ENABLED =
+  fs.existsSync(settings.FIRMWARE_REPOSITORY_DIRECTORY);
 
 const USER_APP_PATH = path.join(
   settings.FIRMWARE_REPOSITORY_DIRECTORY,
@@ -50,6 +54,10 @@ class FirmwareCompilationManager {
     fs.existsSync(settings.FIRMWARE_REPOSITORY_DIRECTORY);
 
   static getBinaryForID = (id: string): ?Buffer => {
+    if (!FirmwareCompilationManager.firmwareDirectorExists()) {
+      return null;
+    }
+
     const binaryPath = path.join(BIN_PATH, id);
     if (!fs.existsSync(binaryPath)) {
       return null;
@@ -82,7 +90,7 @@ class FirmwareCompilationManager {
     const appFolder =
       `${platformName}_firmware_${(new Date()).getTime()}`.toLowerCase();
     const appPath = path.join(USER_APP_PATH, appFolder);
-    fs.mkdirSync(appPath);
+    mkdirp.sync(appPath);
 
     files.forEach((file: File) => {
       const fileName = file.originalname;
@@ -128,9 +136,9 @@ class FirmwareCompilationManager {
       }
     });
 
-    await new Promise((resolve: () => void): void =>
-      makeProcess.on('exit', (): void => resolve()),
-    );
+    await new Promise((resolve: () => void): void => {
+      makeProcess.on('exit', (): void => resolve());
+    });
 
     const date = new Date();
     date.setDate(date.getDate() + 1);
@@ -171,38 +179,40 @@ class FirmwareCompilationManager {
   }
 }
 
-// Delete all expired binaries or queue them up to eventually be deleted.
-if (!fs.existsSync(settings.BUILD_DIRECTORY)) {
-  fs.mkdirSync(settings.BUILD_DIRECTORY);
-}
-if (!fs.existsSync(BIN_PATH)) {
-  fs.mkdirSync(BIN_PATH);
-}
-
-fs.readdirSync(USER_APP_PATH).forEach((file: string) => {
-  const appFolder = path.join(USER_APP_PATH, file);
-  const configPath = path.join(appFolder, 'config.json');
-  if (!fs.existsSync(configPath)) {
-    return;
+if (IS_COMPILATION_ENABLED) {
+  // Delete all expired binaries or queue them up to eventually be deleted.
+  if (!fs.existsSync(settings.BUILD_DIRECTORY)) {
+    mkdirp.sync(settings.BUILD_DIRECTORY);
+  }
+  if (!fs.existsSync(BIN_PATH)) {
+    mkdirp.sync(BIN_PATH);
   }
 
-  const configString = fs.readFileSync(configPath, 'utf8');
-  if (!configString) {
-    return;
-  }
-  const config = JSON.parse(configString);
-  if (config.expires_at < new Date()) {
-    // TODO - clean up artifacts in the firmware folder. Every binary will have
-    // files in firmare/build/target/user & firmware/build/target/user-part
-    // It might make the most sense to just create a custom MAKE file to do this
-    rmfr(configPath);
-    rmfr(path.join(BIN_PATH, config.binary_id));
-  } else {
-    FirmwareCompilationManager.addFirmwareCleanupTask(
-      appFolder,
-      config,
-    );
-  }
-});
+  fs.readdirSync(USER_APP_PATH).forEach((file: string) => {
+    const appFolder = path.join(USER_APP_PATH, file);
+    const configPath = path.join(appFolder, 'config.json');
+    if (!fs.existsSync(configPath)) {
+      return;
+    }
+
+    const configString = fs.readFileSync(configPath, 'utf8');
+    if (!configString) {
+      return;
+    }
+    const config = JSON.parse(configString);
+    if (config.expires_at < new Date()) {
+      // TODO - clean up artifacts in the firmware folder. Every binary will have
+      // files in firmare/build/target/user & firmware/build/target/user-part
+      // It might make the most sense to just create a custom MAKE file to do this
+      rmfr(configPath);
+      rmfr(path.join(BIN_PATH, config.binary_id));
+    } else {
+      FirmwareCompilationManager.addFirmwareCleanupTask(
+        appFolder,
+        config,
+      );
+    }
+  });
+}
 
 export default FirmwareCompilationManager;
