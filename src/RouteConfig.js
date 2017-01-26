@@ -11,6 +11,7 @@ import type { Container } from 'constitute';
 import type { Settings } from './types';
 
 import OAuthServer from 'express-oauth-server';
+import nullthrows from 'nullthrows';
 import multer from 'multer';
 import OAuthModel from './OAuthModel';
 import HttpError from './lib/HttpError';
@@ -69,7 +70,7 @@ export default (
   const filesMiddleware = (allowedUploads: ?Array<{
     maxCount: number,
     name: string,
-  }> = []): Middleware => allowedUploads.length
+  }> = []): Middleware => nullthrows(allowedUploads).length
     ? multer().fields(allowedUploads)
     : multer().any();
 

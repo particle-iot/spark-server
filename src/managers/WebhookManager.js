@@ -12,6 +12,7 @@ import type { EventPublisher } from 'spark-protocol';
 import hogan from 'hogan.js';
 import HttpError from '../lib/HttpError';
 import logger from '../lib/logger';
+import nullthrows from 'nullthrows';
 import request from 'request';
 import throttle from 'lodash/throttle';
 
@@ -191,7 +192,7 @@ class WebhookManager {
         method: webhook.requestType,
         qs: requestQuery,
         strictSSL: webhook.rejectUnauthorized,
-        url: requestUrl,
+        url: nullthrows(requestUrl),
       };
 
       const responseBody = await this._callWebhook(
@@ -281,7 +282,7 @@ class WebhookManager {
           return;
         }
         if (response.statusCode >= 400) {
-          onResponseError(response.statusMessage);
+          onResponseError((response: any).statusMessage);
           return;
         }
 
@@ -322,7 +323,7 @@ class WebhookManager {
   _getRequestData = (
     customData: ?Object,
     event: Event,
-    noDefaults: boolean,
+    noDefaults?: boolean,
   ): ?Object => {
     const defaultEventData = {
       coreid: event.deviceID,

@@ -45,7 +45,7 @@ app.listen(
 const addresses = arrayFlatten(
   Object.entries(os.networkInterfaces()).map(
     // eslint-disable-next-line no-unused-vars
-    ([name, nic]: Array<Object>): Array<string> =>
+    ([name, nic]: [string, mixed]): Array<string> =>
       (nic: any)
         .filter((address: Object): boolean =>
           address.family === 'IPv4' &&

@@ -98,7 +98,7 @@ class EventsController extends Controller {
   @route('/v1/devices/events')
   async publish(postBody: {
     name: string,
-    data: ?string,
+    data?: string,
     private: boolean,
     ttl?: number,
   }): Promise<*> {
