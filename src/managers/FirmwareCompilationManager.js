@@ -50,11 +50,11 @@ const getUniqueKey = (): string => {
 };
 
 class FirmwareCompilationManager {
-  static firmwareDirectorExists = (): boolean =>
+  static firmwareDirectoryExists = (): boolean =>
     fs.existsSync(settings.FIRMWARE_REPOSITORY_DIRECTORY);
 
   static getBinaryForID = (id: string): ?Buffer => {
-    if (!FirmwareCompilationManager.firmwareDirectorExists()) {
+    if (!FirmwareCompilationManager.firmwareDirectoryExists()) {
       return null;
     }
 
@@ -77,7 +77,7 @@ class FirmwareCompilationManager {
     platformID: string,
     files: Array<File>,
   ): Promise<?CompilationResponse> => {
-    if (!FirmwareCompilationManager.firmwareDirectorExists()) {
+    if (!FirmwareCompilationManager.firmwareDirectoryExists()) {
       return null;
     }
 
@@ -136,7 +136,7 @@ class FirmwareCompilationManager {
       }
     });
 
-    await new Promise((resolve: () => void): void => {
+    await new Promise((resolve: () => void) => {
       makeProcess.on('exit', (): void => resolve());
     });
 
