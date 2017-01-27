@@ -152,9 +152,11 @@ test.serial(
 test.serial(
   'should return function call result and device attributes',
   async t => {
+    const testFunctionName = 'testFunction';
+    const testArgument = 'testArgument';
     const device = {
       callFunction: (functionName, functionArguments) =>
-        functionArguments.arg === 'on' ? 1 : -1,
+        functionName === testFunctionName && functionArguments.argument,
       ping: () => ({
         connected: true,
         lastPing: new Date(),
@@ -166,39 +168,31 @@ test.serial(
       'getDevice',
     ).returns(device);
 
-    const callFunctionResponse1 = await request(app)
-      .post(`/v1/devices/${DEVICE_ID}/testFunction`)
+    const callFunctionResponse = await request(app)
+      .post(`/v1/devices/${DEVICE_ID}/${testFunctionName}`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send({
         access_token: userToken,
-        arg: 'on',
+        argument: testArgument,
       });
 
-    const callFunctionResponse2 = await request(app)
-      .post(`/v1/devices/${DEVICE_ID}/testFunction`)
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .send({
-        access_token: userToken,
-        arg: 'off',
-      });
 
     deviceServerStub.restore();
 
-    t.is(callFunctionResponse1.status, 200);
-    t.is(callFunctionResponse1.body.return_value, 1);
-    t.is(callFunctionResponse1.body.connected, true);
-    t.is(callFunctionResponse1.body.id, DEVICE_ID);
-
-    t.is(callFunctionResponse2.body.return_value, -1);
+    t.is(callFunctionResponse.status, 200);
+    t.is(callFunctionResponse.body.return_value, testArgument);
+    t.is(callFunctionResponse.body.connected, true);
+    t.is(callFunctionResponse.body.id, DEVICE_ID);
   },
 );
 
 test.serial(
   'should throw an error if function doesn\'t exist',
   async t => {
+    const testFunctionName = 'testFunction';
     const device = {
       callFunction: (functionName, functionArguments) => {
-        if(functionName !== 'testFunction') {
+        if(functionName !== testFunctionName) {
           throw new Error(`Unknown Function ${functionName}`)
         }
         return 1;
@@ -215,11 +209,10 @@ test.serial(
     ).returns(device);
 
     const callFunctionResponse = await request(app)
-      .post(`/v1/devices/${DEVICE_ID}/wrongTestFunction`)
+      .post(`/v1/devices/${DEVICE_ID}/wrong${testFunctionName}`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send({
         access_token: userToken,
-        arg: 'on',
       });
 
     deviceServerStub.restore();
@@ -232,8 +225,11 @@ test.serial(
 test.serial(
   'should return variable value',
   async t => {
+    const testVariableName = 'testVariable';
+    const testVariableResult = 'resultValue';
     const device = {
-      getVariableValue: () => 'resultValue',
+      getVariableValue: (variableName) =>
+        variableName === testVariableName && testVariableResult,
     };
 
     const deviceServerStub = sinon.stub(
@@ -242,23 +238,24 @@ test.serial(
     ).returns(device);
 
     const getVariableResponse = await request(app)
-      .get(`/v1/devices/${DEVICE_ID}/varName/`)
+      .get(`/v1/devices/${DEVICE_ID}/${testVariableName}/`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .query({ access_token: userToken });
 
     deviceServerStub.restore();
 
     t.is(getVariableResponse.status, 200);
-    t.is(getVariableResponse.body.result, 'resultValue');
+    t.is(getVariableResponse.body.result, testVariableResult);
   },
 );
 
 test.serial(
   'should throw an error if variable not found',
   async t => {
+    const testVariableName = 'testVariable';
     const device = {
       getVariableValue: (variableName) => {
-        if(variableName !== 'testVariable') {
+        if(variableName !== testVariableName) {
           throw new Error(`Variable not found`)
         }
         return 1;
@@ -271,7 +268,7 @@ test.serial(
     ).returns(device);
 
     const getVariableResponse = await request(app)
-      .get(`/v1/devices/${DEVICE_ID}/varName/`)
+      .get(`/v1/devices/${DEVICE_ID}/wrong${testVariableName}/`)
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .query({ access_token: userToken });
 
