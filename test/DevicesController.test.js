@@ -1,6 +1,7 @@
 /* eslint-disable */
 import test from 'ava';
 import request from 'supertest';
+import sinon from 'sinon';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
 import TestData from './setup/TestData';
@@ -124,7 +125,30 @@ test.serial('should claim device', async t => {
 
   t.is(getDeviceResponse.status, 200);
 });
-// TODO write test for checking the error if device belongs to somebody else
+
+test.serial(
+  'should throw an error if device belongs to somebody else',
+  async t => {
+    const deviceAttributesStub = sinon.stub(
+      container.constitute('DeviceAttributeRepository'),
+      'getById',
+    ).returns({ ownerID: TestData.getID()});
+
+    const claimDeviceResponse = await request(app)
+      .post('/v1/devices')
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        id: DEVICE_ID,
+      });
+
+    deviceAttributesStub.restore();
+
+    t.is(claimDeviceResponse.status, 400);
+    t.is(claimDeviceResponse.body.error, 'The device belongs to someone else.');
+  },
+);
+
 // TODO write tests for updateDevice & callFunction
 
 test.after.always(async (): Promise<void> => {
