@@ -149,7 +149,87 @@ test.serial(
   },
 );
 
-// TODO write tests for updateDevice & callFunction
+test.serial(
+  'should return function call result and device attributes',
+  async t => {
+    const device = {
+      callFunction: (functionName, functionArguments) =>
+        functionArguments.arg === 'on' ? 1 : -1,
+      ping: () => ({
+        connected: true,
+        lastPing: new Date(),
+      }),
+    };
+
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(device);
+
+    const callFunctionResponse1 = await request(app)
+      .post(`/v1/devices/${DEVICE_ID}/testFunction`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        arg: 'on',
+      });
+
+    const callFunctionResponse2 = await request(app)
+      .post(`/v1/devices/${DEVICE_ID}/testFunction`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        arg: 'off',
+      });
+
+    deviceServerStub.restore();
+
+    t.is(callFunctionResponse1.status, 200);
+    t.is(callFunctionResponse1.body.return_value, 1);
+    t.is(callFunctionResponse1.body.connected, true);
+    t.is(callFunctionResponse1.body.id, DEVICE_ID);
+
+    t.is(callFunctionResponse2.body.return_value, -1);
+  },
+);
+
+test.serial(
+  'should throw an error if function doesn\'t exist',
+  async t => {
+    const device = {
+      callFunction: (functionName, functionArguments) => {
+        if(functionName !== 'testFunction') {
+          throw new Error(`Unknown Function ${functionName}`)
+        }
+        return 1;
+      },
+      ping: () => ({
+        connected: true,
+        lastPing: new Date(),
+      }),
+    };
+
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(device);
+
+    const callFunctionResponse = await request(app)
+      .post(`/v1/devices/${DEVICE_ID}/wrongTestFunction`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        arg: 'on',
+      });
+
+    deviceServerStub.restore();
+
+    t.is(callFunctionResponse.status, 404);
+    t.is(callFunctionResponse.body.error, 'Function not found');
+  },
+);
+
+// TODO write tests for updateDevice
 
 test.after.always(async (): Promise<void> => {
   await container.constitute('UserRepository').deleteById(testUser.id);
