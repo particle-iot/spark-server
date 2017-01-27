@@ -99,7 +99,6 @@
     "rimraf": "^2.5.4",
     "sinon": "^1.17.7",
     "supertest": "^2.0.1",
-    "supertest-as-promised": "^4.0.2",
     "uglifyjs": "^2.4.10"
   }
 }
