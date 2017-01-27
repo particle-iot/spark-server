@@ -229,6 +229,59 @@ test.serial(
   },
 );
 
+test.serial(
+  'should return variable value',
+  async t => {
+    const device = {
+      getVariableValue: () => 'resultValue',
+    };
+
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(device);
+
+    const getVariableResponse = await request(app)
+      .get(`/v1/devices/${DEVICE_ID}/varName/`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .query({ access_token: userToken });
+
+    deviceServerStub.restore();
+
+    t.is(getVariableResponse.status, 200);
+    t.is(getVariableResponse.body.result, 'resultValue');
+  },
+);
+
+test.serial(
+  'should throw an error if variable not found',
+  async t => {
+    const device = {
+      getVariableValue: (variableName) => {
+        if(variableName !== 'testVariable') {
+          throw new Error(`Variable not found`)
+        }
+        return 1;
+      },
+    };
+
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(device);
+
+    const getVariableResponse = await request(app)
+      .get(`/v1/devices/${DEVICE_ID}/varName/`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .query({ access_token: userToken });
+
+    deviceServerStub.restore();
+
+    t.is(getVariableResponse.status, 404);
+    t.is(getVariableResponse.body.error, 'Variable not found');
+  },
+);
+
 // TODO write tests for updateDevice
 
 test.after.always(async (): Promise<void> => {
