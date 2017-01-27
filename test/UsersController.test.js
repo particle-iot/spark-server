@@ -7,21 +7,20 @@ import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
 import TestData from './setup/TestData';
 
-let USER_CREDENTIALS: UserCredentials = {
-  password: 'password',
-  username: 'newUser@test.com',
-};
-
+const container = app.container;
+let USER_CREDENTIALS;
 let user;
 let userToken;
 
-test.serial('should return a new user object', async t => {
+test.serial('should create new user', async t => {
   USER_CREDENTIALS = TestData.getUser();
+
   const response = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
 
-  user = response.body;
+  user = await container.constitute('UserRepository')
+    .getByUsername(USER_CREDENTIALS.username);
 
   t.is(response.status, 200);
   t.truthy(user.username === USER_CREDENTIALS.username);
@@ -83,8 +82,6 @@ test.serial('should delete the access token for the user', async t => {
   ));
 });
 
-// Used to get implementations
-const container = app.container;
 test.after.always(async (): Promise<void> => {
   await container.constitute('UserRepository').deleteById(user.id);
 });

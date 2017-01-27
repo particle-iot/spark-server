@@ -32,10 +32,11 @@ class UsersController extends Controller {
         throw new HttpError('user with the username already exists');
       }
 
-      const newUser = await this._userRepository.createWithCredentials(
+      await this._userRepository.createWithCredentials(
         userCredentials,
       );
-      return this.ok(newUser);
+
+      return this.ok({ ok: true });
     } catch (error) {
       return this.bad(error.message);
     }

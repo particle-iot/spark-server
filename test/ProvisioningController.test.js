@@ -5,32 +5,23 @@ import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
 import TestData from './setup/TestData';
 
-let USER_CREDENTIALS = {
-  password: 'password',
-  username: 'provisionTestUser@test.com',
-};
-
-let DEVICE_ID = '350023001951353337343733';
-let TEST_PUBLIC_KEY =
-  '-----BEGIN PUBLIC KEY-----\n' +
-  'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCsxJFqlUOxK5bsEfTtBCe9sXBa' +
-  '43q9QoSPFXEG5qY/+udOpf2SKacgfUVdUbK4WOkLou7FQ+DffpwztBk5fWM9qfzF' +
-  'EQRVMS8xwS4JqqD7slXwuPWFpS9SGy9kLNy/pl1dtGm556wVX431Dg7UBKiXuNGR' +
-  '7E8d2hfgeyiTtsWfUQIDAQAB\n' +
-  '-----END PUBLIC KEY-----\n';
-
+const container = app.container;
+let DEVICE_ID;
+let TEST_PUBLIC_KEY;
 let testUser;
 let userToken;
 
 test.before(async () => {
-  USER_CREDENTIALS = TestData.getUser();
+  const USER_CREDENTIALS = TestData.getUser();
   DEVICE_ID = TestData.getID();
   TEST_PUBLIC_KEY = TestData.getPublicKey();
+
   const userResponse = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
 
-  testUser = userResponse.body;
+  testUser = await container.constitute('UserRepository')
+    .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)
     .post('/oauth/token')
@@ -79,8 +70,6 @@ test('should throw an error if public key is not provided', async t => {
   t.is(response.body.error, 'No key provided');
 });
 
-// Used to get implementations
-const container = app.container;
 test.after.always(async (): Promise<void> => {
   await container.constitute('UserRepository').deleteById(testUser.id);
   await container.constitute('DeviceAttributeRepository').deleteById(DEVICE_ID);

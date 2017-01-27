@@ -8,11 +8,7 @@ import app from './setup/testApp';
 import settings from './setup/settings';
 import TestData from './setup/TestData';
 
-let USER_CREDENTIALS = {
-  password: 'password',
-  username: 'webhookTestUser@test.com',
-};
-
+const container = app.container;
 const WEBHOOK_MODEL: WebhookMutator = {
   event: 'testEvent',
   requestType: 'GET',
@@ -24,12 +20,13 @@ let userToken;
 let testWebhook;
 
 test.before(async () => {
-  USER_CREDENTIALS = TestData.getUser();
+  const USER_CREDENTIALS = TestData.getUser();
   const userResponse = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
 
-  testUser = userResponse.body;
+  testUser = await container.constitute('UserRepository')
+    .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)
     .post('/oauth/token')
@@ -160,7 +157,6 @@ test.serial('should delete webhook', async t => {
   ));
 });
 
-const container = app.container;
 test.after.always(async (): Promise<void> => {
   await container.constitute('WebhookRepository').deleteById(testWebhook.id);
   await container.constitute('UserRepository').deleteById(testUser.id);
