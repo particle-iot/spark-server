@@ -279,6 +279,24 @@ test.serial(
   },
 );
 
+test.serial(
+  'should rename device',
+  async t => {
+    const newDeviceName = 'newDeviceName';
+
+    const renameDeviceResponse = await request(app)
+      .put(`/v1/devices/${DEVICE_ID}`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        name: newDeviceName,
+      });
+
+    t.is(renameDeviceResponse.status, 200);
+    t.is(renameDeviceResponse.body.name, newDeviceName);
+  },
+);
+
 // TODO write tests for updateDevice
 
 test.after.always(async (): Promise<void> => {
