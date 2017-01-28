@@ -297,6 +297,35 @@ test.serial(
   },
 );
 
+test.serial(
+  'should call raise your hand function on device',
+  async t => {
+    const raiseYourHandSpy = sinon.spy();
+    const device = {
+      raiseYourHand: raiseYourHandSpy,
+    };
+
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(device);
+
+    const raiseYourHandResponse = await request(app)
+      .put(`/v1/devices/${DEVICE_ID}`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        signal: true,
+      });
+
+    deviceServerStub.restore();
+
+    t.is(raiseYourHandResponse.status, 200);
+    t.truthy(raiseYourHandSpy.called);
+    t.is(raiseYourHandResponse.body.id, DEVICE_ID);
+  },
+);
+
 // TODO write tests for updateDevice
 
 test.after.always(async (): Promise<void> => {
