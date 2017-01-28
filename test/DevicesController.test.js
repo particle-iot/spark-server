@@ -2,13 +2,15 @@
 import test from 'ava';
 import request from 'supertest';
 import sinon from 'sinon';
+import path from 'path';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
 import TestData from './setup/TestData';
 
-
 const container = app.container;
-let DEVICE_ID = null;
+let customFirmwareFilePath;
+let customFirmwareBuffer;
+let DEVICE_ID;
 let testUser;
 let userToken;
 let deviceToApiAttributes;
@@ -16,6 +18,9 @@ let deviceToApiAttributes;
 test.before(async () => {
   const USER_CREDENTIALS = TestData.getUser();
   DEVICE_ID = TestData.getID();
+  const { filePath, fileBuffer } = await TestData.createCustomFirmwareBinary();
+  customFirmwareFilePath = filePath;
+  customFirmwareBuffer = fileBuffer;
 
   const userResponse = await request(app)
     .post('/v1/users')
@@ -315,7 +320,7 @@ test.serial(
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send({
         access_token: userToken,
-        signal: true,
+        signal: '1',
       });
 
     deviceServerStub.restore();
@@ -323,6 +328,22 @@ test.serial(
     t.is(raiseYourHandResponse.status, 200);
     t.truthy(raiseYourHandSpy.called);
     t.is(raiseYourHandResponse.body.id, DEVICE_ID);
+  },
+);
+
+test.serial(
+  'should throw an error if signal is wrong value',
+  async t => {
+    const raiseYourHandResponse = await request(app)
+      .put(`/v1/devices/${DEVICE_ID}`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        signal: 'some wrong value',
+      });
+
+    t.is(raiseYourHandResponse.status, 400);
+    t.truthy(raiseYourHandResponse.body.error, 'Wrong signal value');
   },
 );
 
@@ -393,9 +414,66 @@ test.serial(
   },
 );
 
-// TODO write tests custom firmware flash tests
+test.serial(
+  'should start device flashing process with custom application',
+  async t => {
+    const flashStatus = 'update finished';
+    const device = {
+      flash: () => flashStatus,
+    };
+    const flashSpy = sinon.spy(device, 'flash');
+
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(device);
+
+    const flashCustomFirmwareResponse = await request(app)
+      .put(`/v1/devices/${DEVICE_ID}`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .attach('file', customFirmwareFilePath)
+      .query({ access_token: userToken });
+
+    deviceServerStub.restore();
+
+    t.is(flashCustomFirmwareResponse.status, 200);
+    t.truthy(flashSpy.calledWith(customFirmwareBuffer));
+    t.is(flashCustomFirmwareResponse.body.status, flashStatus);
+    t.is(flashCustomFirmwareResponse.body.id, DEVICE_ID);
+  },
+);
+
+test.serial(
+  'should throw an error if custom firmware file not provided',
+  async t => {
+    const flashCustomFirmwareResponse = await request(app)
+      .put(`/v1/devices/${DEVICE_ID}`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('file_type', 'binary')
+      .query({ access_token: userToken });
+
+    t.is(flashCustomFirmwareResponse.status, 400);
+    t.is(flashCustomFirmwareResponse.body.error, 'Firmware file not provided');
+  },
+);
+
+test.serial(
+  'should throw an error if custom firmware file type not binary',
+  async t => {
+    const flashCustomFirmwareResponse = await request(app)
+      .put(`/v1/devices/${DEVICE_ID}`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      // send random not binary file
+      .attach('file', path.join(__dirname, 'DevicesController.test.js'))
+      .query({ access_token: userToken });
+
+    t.is(flashCustomFirmwareResponse.status, 400);
+    t.is(flashCustomFirmwareResponse.body.error, 'Did not update device');
+  },
+);
 
 test.after.always(async (): Promise<void> => {
+  await TestData.deleteCustomFirmwareBinary(customFirmwareFilePath);
   await container.constitute('UserRepository').deleteById(testUser.id);
   await container.constitute('DeviceAttributeRepository').deleteById(DEVICE_ID);
   await container.constitute('DeviceKeyRepository').delete(DEVICE_ID);
