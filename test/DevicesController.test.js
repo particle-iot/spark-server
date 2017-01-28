@@ -393,7 +393,7 @@ test.serial(
   },
 );
 
-// TODO write tests for updateDevice
+// TODO write tests custom firmware flash tests
 
 test.after.always(async (): Promise<void> => {
   await container.constitute('UserRepository').deleteById(testUser.id);
