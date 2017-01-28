@@ -326,6 +326,73 @@ test.serial(
   },
 );
 
+test.serial(
+  'should start device flashing process with known application',
+  async t => {
+    const knownAppName = 'knownAppName';
+    const knownAppBuffer = new Buffer(knownAppName);
+    const flashStatus = 'update finished';
+    const device = {
+      flash: () => flashStatus,
+    };
+    const flashSpy = sinon.spy(device, 'flash');
+
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(device);
+
+
+    const deviceFirmwareStub = sinon.stub(
+      container.constitute('DeviceFirmwareRepository'),
+      'getByName',
+    ).returns(knownAppBuffer);
+
+    const flashKnownAppResponse = await request(app)
+      .put(`/v1/devices/${DEVICE_ID}`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        app_id: knownAppName,
+      });
+
+    deviceServerStub.restore();
+    deviceFirmwareStub.restore();
+
+    t.is(flashKnownAppResponse.status, 200);
+    t.truthy(flashSpy.calledWith(knownAppBuffer));
+    t.is(flashKnownAppResponse.body.status, flashStatus);
+    t.is(flashKnownAppResponse.body.id, DEVICE_ID);
+  },
+);
+
+test.serial(
+  'should throws an error if known application not found',
+  async t => {
+    const knownAppName = 'knownAppName';
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns({});
+
+    const flashKnownAppResponse = await request(app)
+      .put(`/v1/devices/${DEVICE_ID}`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        app_id: knownAppName,
+      });
+
+    deviceServerStub.restore();
+
+    t.is(flashKnownAppResponse.status, 404);
+    t.is(
+      flashKnownAppResponse.body.error,
+      `No firmware ${knownAppName} found`,
+    );
+  },
+);
+
 // TODO write tests for updateDevice
 
 test.after.always(async (): Promise<void> => {

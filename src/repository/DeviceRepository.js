@@ -229,7 +229,7 @@ class DeviceRepository {
     const knownFirmware = this._deviceFirmwareRepository.getByName(appName);
 
     if (!knownFirmware) {
-      throw new HttpError(`No firmware ${appName} found`);
+      throw new HttpError(`No firmware ${appName} found`, 404);
     }
 
     const device = this._deviceServer.getDevice(deviceID);
