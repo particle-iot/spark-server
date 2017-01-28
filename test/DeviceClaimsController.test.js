@@ -6,15 +6,14 @@ import app from './setup/testApp';
 import TestData from './setup/TestData';
 
 const container = app.container;
-let DEVICE_ID;
-let TEST_PUBLIC_KEY;
+let DEVICE_ID = null;
 let testUser;
 let userToken;
+let deviceToApiAttributes;
 
 test.before(async () => {
   const USER_CREDENTIALS = TestData.getUser();
   DEVICE_ID = TestData.getID();
-  TEST_PUBLIC_KEY = TestData.getPublicKey();
 
   const userResponse = await request(app)
     .post('/v1/users')
@@ -39,36 +38,36 @@ test.before(async () => {
   if (!userToken) {
     throw new Error('test user creation fails');
   }
-});
 
-test('provision and add keys for a device.', async t => {
-  const response = await request(app)
+  const provisionResponse = await request(app)
     .post(`/v1/provisioning/${DEVICE_ID}`)
     .query({ access_token: userToken })
-    .send({ publicKey: TEST_PUBLIC_KEY });
+    .send({ publicKey: TestData.getPublicKey() });
 
-  t.is(response.status, 200);
-  t.is(response.body.id, DEVICE_ID);
+  deviceToApiAttributes = provisionResponse.body;
+
+  if (!deviceToApiAttributes.id) {
+    throw new Error('test device creation fails');
+  }
 });
 
-test('should throw an error if public key has wrong format', async t => {
-  const response = await request(app)
-    .post(`/v1/provisioning/${DEVICE_ID}`)
-    .query({ access_token: userToken })
-    .send({ publicKey: `dsfsdf13${TEST_PUBLIC_KEY}` });
 
-  t.is(response.status, 400);
-  t.truthy(response.body.error);
-});
+test(
+  'should return claimCode, and user\'s devices ids',
+  async t => {
+    const response = await request(app)
+      .post(`/v1/device_claims`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({ access_token: userToken });
 
-test('should throw an error if public key is not provided', async t => {
-  const response = await request(app)
-    .post(`/v1/provisioning/${DEVICE_ID}`)
-    .query({ access_token: userToken });
-
-  t.is(response.status, 400);
-  t.is(response.body.error, 'No key provided');
-});
+    t.is(response.status, 200);
+    t.truthy(response.body.claim_code);
+    t.truthy(
+      response.body.device_ids &&
+      response.body.device_ids[0] === DEVICE_ID
+    );
+  },
+);
 
 test.after.always(async (): Promise<void> => {
   await container.constitute('UserRepository').deleteById(testUser.id);

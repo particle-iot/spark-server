@@ -1,5 +1,7 @@
 // @flow
 
+import type { UserCredentials } from '../../src/types';
+
 import uuid from 'uuid';
 import ursa from 'ursa';
 
@@ -7,7 +9,7 @@ const uuidSet = new Set();
 const privateKeys = new Set();
 
 class TestData {
-  static getUser = (): { password: string, username: string } => ({
+  static getUser = (): UserCredentials => ({
     password: 'password',
     username: `testUser+${TestData.getID()}@test.com`,
   });

@@ -124,7 +124,7 @@ class DevicesController extends Controller {
       app_id?: string,
       name?: string,
       file_type?: 'binary',
-      signal: boolean,
+      signal?: boolean,
     },
   ): Promise<*> {
     // 1 rename device
