@@ -303,7 +303,7 @@ test.serial(
 );
 
 test.serial(
-  'should call raise your hand function on device',
+  'should start raise your hand on device',
   async t => {
     const raiseYourHandSpy = sinon.spy();
     const device = {
@@ -326,7 +326,36 @@ test.serial(
     deviceServerStub.restore();
 
     t.is(raiseYourHandResponse.status, 200);
-    t.truthy(raiseYourHandSpy.called);
+    t.truthy(raiseYourHandSpy.calledWith(true));
+    t.is(raiseYourHandResponse.body.id, DEVICE_ID);
+  },
+);
+
+test.serial(
+  'should stop raise your hand on device',
+  async t => {
+    const raiseYourHandSpy = sinon.spy();
+    const device = {
+      raiseYourHand: raiseYourHandSpy,
+    };
+
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(device);
+
+    const raiseYourHandResponse = await request(app)
+      .put(`/v1/devices/${DEVICE_ID}`)
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        signal: '0',
+      });
+
+    deviceServerStub.restore();
+
+    t.is(raiseYourHandResponse.status, 200);
+    t.truthy(raiseYourHandSpy.calledWith(false));
     t.is(raiseYourHandResponse.body.id, DEVICE_ID);
   },
 );

@@ -168,7 +168,7 @@ class DevicesController extends Controller {
     // If signal exists then we want to toggle nyan mode. This just makes the
     // LED change colors.
     if (postBody.signal) {
-      if (postBody.signal !== ('1' || '0')) {
+      if (!['1', '0'].includes(postBody.signal)) {
         throw new HttpError('Wrong signal value');
       }
 
