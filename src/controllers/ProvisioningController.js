@@ -9,12 +9,12 @@ import deviceToAPI from '../lib/deviceToAPI';
 import HttpError from '../lib/HttpError';
 
 class ProvisioningController extends Controller {
-  _deviceRepository: DeviceManager;
+  _deviceManager: DeviceManager;
 
-  constructor(deviceRepository: DeviceManager) {
+  constructor(deviceManager: DeviceManager) {
     super();
 
-    this._deviceRepository = deviceRepository;
+    this._deviceManager = deviceManager;
   }
 
   @httpVerb('post')
@@ -27,7 +27,7 @@ class ProvisioningController extends Controller {
       throw new HttpError('No key provided');
     }
 
-    const device = await this._deviceRepository.provision(
+    const device = await this._deviceManager.provision(
       coreID,
       this.user.id,
       postBody.publicKey,

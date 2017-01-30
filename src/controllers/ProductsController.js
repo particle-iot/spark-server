@@ -9,12 +9,12 @@ import route from '../decorators/route';
 import HttpError from '../lib/HttpError';
 
 class ProductsController extends Controller {
-  _deviceRepository: DeviceManager;
+  _deviceManager: DeviceManager;
 
-  constructor(deviceRepository: DeviceManager) {
+  constructor(deviceManager: DeviceManager) {
     super();
 
-    this._deviceRepository = deviceRepository;
+    this._deviceManager = deviceManager;
   }
 
   @httpVerb('get')
