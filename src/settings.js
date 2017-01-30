@@ -22,14 +22,14 @@
 const path = require('path');
 /* eslint-disable sorting/sort-object-props */
 module.exports = {
-  BUILD_DIRECTORY: path.join(__dirname, './data/build'),
-  DEVICE_DIRECTORY: path.join(__dirname, './data/deviceKeys'),
-  FIRMWARE_DIRECTORY: path.join(__dirname, './data/knownApps'),
+  BUILD_DIRECTORY: path.join(__dirname, '../data/build'),
+  DEVICE_DIRECTORY: path.join(__dirname, '../data/deviceKeys'),
+  FIRMWARE_DIRECTORY: path.join(__dirname, '../data/knownApps'),
   FIRMWARE_REPOSITORY_DIRECTORY: path.join(__dirname, '../../spark-firmware'),
   SERVER_KEY_FILENAME: 'default_key.pem',
-  SERVER_KEYS_DIRECTORY: path.join(__dirname, './data'),
-  USERS_DIRECTORY: path.join(__dirname, './data/users'),
-  WEBHOOKS_DIRECTORY: path.join(__dirname, './data/webhooks'),
+  SERVER_KEYS_DIRECTORY: path.join(__dirname, '../data'),
+  USERS_DIRECTORY: path.join(__dirname, '../data/users'),
+  WEBHOOKS_DIRECTORY: path.join(__dirname, '../data/webhooks'),
 
   accessTokenLifetime: 7776000, // 90 days,
   baseUrl: 'http://localhost',
