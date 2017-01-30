@@ -1,6 +1,6 @@
 // @flow
 
-import type { Device, DeviceRepository } from '../types';
+import type { Device, DeviceManager } from '../types';
 import type { ClaimCodeManager } from 'spark-protocol';
 
 import Controller from './Controller';
@@ -8,11 +8,11 @@ import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
 class DeviceClaimsController extends Controller {
-  _deviceRepository: DeviceRepository;
+  _deviceRepository: DeviceManager;
   _claimCodeManager: ClaimCodeManager;
 
   constructor(
-    deviceRepository: DeviceRepository,
+    deviceRepository: DeviceManager,
     claimCodeManager: ClaimCodeManager,
   ) {
     super();

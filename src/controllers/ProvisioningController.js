@@ -1,6 +1,6 @@
 // @flow
 
-import type { DeviceRepository } from '../types';
+import type { DeviceManager } from '../types';
 
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
@@ -9,9 +9,9 @@ import deviceToAPI from '../lib/deviceToAPI';
 import HttpError from '../lib/HttpError';
 
 class ProvisioningController extends Controller {
-  _deviceRepository: DeviceRepository;
+  _deviceRepository: DeviceManager;
 
-  constructor(deviceRepository: DeviceRepository) {
+  constructor(deviceRepository: DeviceManager) {
     super();
 
     this._deviceRepository = deviceRepository;
