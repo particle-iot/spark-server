@@ -1,7 +1,7 @@
 // @flow
 /* eslint-disable */
 
-import type { DeviceRepository } from '../types';
+import type { DeviceManager } from '../types';
 
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
@@ -9,12 +9,12 @@ import route from '../decorators/route';
 import HttpError from '../lib/HttpError';
 
 class ProductsController extends Controller {
-  _deviceRepository: DeviceRepository;
+  _deviceManager: DeviceManager;
 
-  constructor(deviceRepository: DeviceRepository) {
+  constructor(deviceManager: DeviceManager) {
     super();
 
-    this._deviceRepository = deviceRepository;
+    this._deviceManager = deviceManager;
   }
 
   @httpVerb('get')

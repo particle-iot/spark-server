@@ -8,7 +8,7 @@ import type {
   DeviceAttributes,
   Repository,
 } from '../types';
-import type DeviceFirmwareRepository from './DeviceFirmwareFileRepository';
+import type DeviceFirmwareRepository from '../repository/DeviceFirmwareFileRepository';
 
 import Moniker from 'moniker';
 import ursa from 'ursa';
@@ -16,7 +16,7 @@ import HttpError from '../lib/HttpError';
 
 const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
 
-class DeviceRepository {
+class DeviceManager {
   _deviceAttributeRepository: DeviceAttributeRepository;
   _deviceFirmwareRepository: DeviceFirmwareRepository;
   _deviceKeyRepository: Repository<string>;
@@ -313,4 +313,4 @@ class DeviceRepository {
   }
 }
 
-export default DeviceRepository;
+export default DeviceManager;

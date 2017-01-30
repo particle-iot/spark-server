@@ -15,7 +15,7 @@ import WebhooksController from './controllers/WebhooksController';
 import WebhookManager from './managers/WebhookManager';
 import EventManager from './managers/EventManager';
 import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
-import DeviceRepository from './repository/DeviceRepository';
+import DeviceManager from './managers/DeviceManager';
 import UserFileRepository from './repository/UserFileRepository';
 import WebhookFileRepository from './repository/WebhookFileRepository';
 import settings from './settings';
@@ -37,14 +37,14 @@ export default (container: Container) => {
     'DeviceClaimsController',
     DeviceClaimsController,
     Transient.with([
-      'DeviceRepository',
+      'DeviceManager',
       'ClaimCodeManager',
     ]),
   );
   container.bindClass(
     'DevicesController',
     DevicesController,
-    Transient.with(['DeviceRepository']),
+    Transient.with(['DeviceManager']),
   );
   container.bindClass(
     'EventsController',
@@ -64,7 +64,7 @@ export default (container: Container) => {
   container.bindClass(
     'ProvisioningController',
     ProvisioningController,
-    Transient.with(['DeviceRepository']),
+    Transient.with(['DeviceManager']),
   );
   container.bindClass(
     'UsersController',
@@ -78,6 +78,16 @@ export default (container: Container) => {
   );
 
   // managers
+  container.bindClass(
+    'DeviceManager',
+    DeviceManager,
+    [
+      'DeviceAttributeRepository',
+      'DeviceFirmwareRepository',
+      'DeviceKeyRepository',
+      'DeviceServer',
+    ],
+  );
   container.bindClass(
     'EventManager',
     EventManager,
@@ -94,16 +104,6 @@ export default (container: Container) => {
     'DeviceFirmwareRepository',
     DeviceFirmwareFileRepository,
     ['FIRMWARE_DIRECTORY'],
-  );
-  container.bindClass(
-    'DeviceRepository',
-    DeviceRepository,
-    [
-      'DeviceAttributeRepository',
-      'DeviceFirmwareRepository',
-      'DeviceKeyRepository',
-      'DeviceServer',
-    ],
   );
   container.bindClass(
     'UserRepository',

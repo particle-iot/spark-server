@@ -157,7 +157,7 @@ export type DeviceAttributeRepository = Repository<DeviceAttributes> & {
   doesUserHaveAccess(deviceID: string, userID: string): Promise<boolean>,
 };
 
-export type DeviceRepository = {
+export type DeviceManager = {
   callFunction(
     deviceID: string,
     userID: string,

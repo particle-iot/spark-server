@@ -1,6 +1,6 @@
 // @flow
 
-import type { Device, DeviceRepository } from '../types';
+import type { Device, DeviceManager } from '../types';
 import type { ClaimCodeManager } from 'spark-protocol';
 
 import Controller from './Controller';
@@ -8,16 +8,16 @@ import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
 class DeviceClaimsController extends Controller {
-  _deviceRepository: DeviceRepository;
+  _deviceManager: DeviceManager;
   _claimCodeManager: ClaimCodeManager;
 
   constructor(
-    deviceRepository: DeviceRepository,
+    deviceManager: DeviceManager,
     claimCodeManager: ClaimCodeManager,
   ) {
     super();
 
-    this._deviceRepository = deviceRepository;
+    this._deviceManager = deviceManager;
     this._claimCodeManager = claimCodeManager;
   }
 
@@ -28,7 +28,7 @@ class DeviceClaimsController extends Controller {
       this.user.id,
     );
 
-    const devices = await this._deviceRepository.getAll(this.user.id);
+    const devices = await this._deviceManager.getAll(this.user.id);
     const deviceIDs = devices.map(
       (device: Device): string => device.deviceID,
     );
