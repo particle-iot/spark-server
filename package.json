@@ -61,7 +61,6 @@
     "hogan.js": "^3.0.2",
     "lodash": "^4.17.4",
     "moment": "*",
-    "moniker": "^0.1.2",
     "morgan": "^1.7.0",
     "multer": "^1.2.1",
     "nullthrows": "^1.0.0",

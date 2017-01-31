@@ -10,11 +10,8 @@ import type {
 } from '../types';
 import type DeviceFirmwareRepository from '../repository/DeviceFirmwareFileRepository';
 
-import Moniker from 'moniker';
 import ursa from 'ursa';
 import HttpError from '../lib/HttpError';
-
-const NAME_GENERATOR = Moniker.generator([Moniker.adjective, Moniker.noun]);
 
 class DeviceManager {
   _deviceAttributeRepository: DeviceAttributeRepository;
@@ -260,7 +257,6 @@ class DeviceManager {
     );
     const attributes = {
       deviceID,
-      name: NAME_GENERATOR.choose(),
       ...existingAttributes,
       ownerID: userID,
       registrar: userID,
