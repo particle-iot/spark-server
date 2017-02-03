@@ -31,6 +31,7 @@ export default {
   serverKeyPassFile: null,
   serverKeyPassEnvVar: null,
 
+  API_TIMEOUT: 30,
   PORT: 5683,
   HOST: 'localhost',
 };

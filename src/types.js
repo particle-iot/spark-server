@@ -136,19 +136,20 @@ export type UserRepository = Repository<User> & {
 };
 
 export type Settings = {
+  API_TIMEOUT: number,
+  HOST: string,
+  PORT: number,
   accessTokenLifetime: number,
   baseUrl: string,
   coreFlashTimeout: number,
   coreRequestTimeout: number,
   coreSignalTimeout: number,
   cryptoSalt: string,
-  HOST: string,
   isCoreOnlineTimeout: number,
   loginRoute: string,
   logRequests: boolean,
   maxHooksPerDevice: number,
   maxHooksPerUser: number,
-  PORT: number,
   serverKeyPassEnvVar: ?string,
   serverKeyPassFile: ?string,
 };

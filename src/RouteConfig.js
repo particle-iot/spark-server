@@ -134,8 +134,20 @@ export default (
             );
 
             if (functionResult.then) {
-              const result = await functionResult;
-              response.status(result.status).json(result.data);
+              console.log('foooooobar');
+              const result = await Promise.race([
+                functionResult,
+                new Promise(
+                  (resolve: () => void, reject: () => void): number =>
+                    setTimeout(
+                      () => reject(new Error('timeout')),
+                      settings.API_TIMEOUT * 1000,
+                    ),
+                ),
+              ]);
+              response
+                .status(nullthrows(result).status)
+                .json(nullthrows(result).data);
             } else {
               response.status(functionResult.status).json(functionResult.data);
             }

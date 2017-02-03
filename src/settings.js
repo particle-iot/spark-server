@@ -51,4 +51,5 @@ module.exports = {
 
   PORT: 5683,
   HOST: 'localhost',
+  API_TIMEOUT: 30, // Timeout for API requests.
 };
