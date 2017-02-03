@@ -134,7 +134,6 @@ export default (
             );
 
             if (functionResult.then) {
-              console.log('foooooobar');
               const result = await Promise.race([
                 functionResult,
                 new Promise(
