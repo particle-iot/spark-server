@@ -136,13 +136,15 @@ export default (
             if (functionResult.then) {
               const result = await Promise.race([
                 functionResult,
-                new Promise(
-                  (resolve: () => void, reject: () => void): number =>
-                    setTimeout(
-                      () => reject(new Error('timeout')),
-                      settings.API_TIMEOUT * 1000,
-                    ),
-                ),
+                !serverSentEvents
+                  ? new Promise(
+                    (resolve: () => void, reject: () => void): number =>
+                      setTimeout(
+                        (): void => reject(new Error('timeout')),
+                        settings.API_TIMEOUT * 1000,
+                      ),
+                  )
+                  : null,
               ]);
               response
                 .status(nullthrows(result).status)
@@ -166,9 +168,10 @@ export default (
   });
 
   (app: any).use((
-    error: string,
+    error: Error,
     request: $Request,
     response: $Response,
+    next: NextFunction, // eslint-disable-line no-unused-vars
   ) => {
     response
       .status(400)
