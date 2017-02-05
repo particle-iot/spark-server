@@ -28,7 +28,7 @@
   "scripts": {
     "build": "babel ./src --out-dir ./build",
     "build:clean": "rimraf ./build",
-    "lint": "eslint --fix -- .",
+    "lint": "eslint --fix --max-warnings 0 -- .",
     "prebuild": "npm run build:clean",
     "start": "nodemon --exec babel-node ./src/main.js --watch src --watch ../spark-protocol/dist --ignore data",
     "start:prod": "npm run build && node ./build/main.js",
