@@ -112,8 +112,6 @@ class DeviceManager {
       throw new HttpError('No device found', 404);
     }
 
-    console.log(device);
-
     return ({
       ...attributes,
       connected: !!device,

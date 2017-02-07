@@ -136,22 +136,21 @@ export type UserRepository = Repository<User> & {
 };
 
 export type Settings = {
+  ACCESS_TOKEN_LIFETIME: number,
   API_TIMEOUT: number,
+  BUILD_DIRECTORY: string,
+  CRYPTO_SALT: string,
+  DEVICE_DIRECTORY: string,
+  FIRMWARE_DIRECTORY: string,
+  FIRMWARE_REPOSITORY_DIRECTORY: string,
   HOST: string,
+  LOG_REQUESTS: boolean,
+  LOGIN_ROUTE: string,
   PORT: number,
-  accessTokenLifetime: number,
-  baseUrl: string,
-  coreFlashTimeout: number,
-  coreRequestTimeout: number,
-  coreSignalTimeout: number,
-  cryptoSalt: string,
-  isCoreOnlineTimeout: number,
-  loginRoute: string,
-  logRequests: boolean,
-  maxHooksPerDevice: number,
-  maxHooksPerUser: number,
-  serverKeyPassEnvVar: ?string,
-  serverKeyPassFile: ?string,
+  SERVER_KEY_FILENAME: string,
+  SERVER_KEYS_DIRECTORY: string,
+  USERS_DIRECTORY: string,
+  WEBHOOKS_DIRECTORY: string,
 };
 
 export type DeviceAttributeRepository = Repository<DeviceAttributes> & {

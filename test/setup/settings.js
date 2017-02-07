@@ -12,26 +12,12 @@ export default {
   USERS_DIRECTORY: path.join(__dirname, '../__test_data__/users'),
   WEBHOOKS_DIRECTORY: path.join(__dirname, '../__test_data__/webhooks'),
 
-  accessTokenLifetime: 7776000, // 90 days,
-  baseUrl: 'http://localhost',
-  coreFlashTimeout: 90000,
-  coreRequestTimeout: 30000,
-  coreSignalTimeout: 30000,
-  isCoreOnlineTimeout: 2000,
-  loginRoute: '/oauth/token',
-  logRequests: false,
-  maxHooksPerDevice: 10,
-  maxHooksPerUser: 20,
+  ACCESS_TOKEN_LIFETIME: 7776000, // 90 days,
+  API_TIMEOUT: 30000,
+  CRYPTO_SALT: 'aes-128-cbc',
+  LOG_REQUESTS: false,
+  LOGIN_ROUTE: '/oauth/token',
 
-  /**
-   * Your server crypto keys!
-   */
-  cryptoSalt: 'aes-128-cbc',
-  serverKeyFile: 'default_key.pem',
-  serverKeyPassFile: null,
-  serverKeyPassEnvVar: null,
-
-  API_TIMEOUT: 30,
   PORT: 5683,
   HOST: 'localhost',
 };
