@@ -102,26 +102,25 @@ class DeviceManager {
     userID: string,
   ): Promise<Device> => {
     const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('No device found', 404);
-    }
 
     const [attributes, description] = await Promise.all([
       this._deviceAttributeRepository.getById(deviceID, userID),
-      device.getDescription(),
+      device && device.getDescription(),
     ]);
 
     if (!attributes) {
       throw new HttpError('No device found', 404);
     }
 
+    console.log(device);
+
     return ({
       ...attributes,
-      connected: true,
-      functions: description.state.f,
+      connected: !!device,
+      functions: description ? description.state.f : null,
       lastFlashedAppName: null,
       lastHeard: new Date(),
-      variables: description.state.v,
+      variables: description ? description.state.v : null,
     });
   };
 
