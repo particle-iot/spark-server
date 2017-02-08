@@ -66,16 +66,79 @@ test('should throw an error for compile source code endpoint', async t => {
   t.is(response.status, 400);
 });
 
-test.serial('should return device details', async t => {
-  const response = await request(app)
-    .get(`/v1/devices/${DEVICE_ID}`)
-    .query({ access_token: userToken });
 
-  t.is(response.status, 200);
-  t.is(response.body.id, deviceToApiAttributes.id);
-  t.is(response.body.name, deviceToApiAttributes.name);
-  t.is(response.body.ownerID, deviceToApiAttributes.ownerID);
-});
+test.serial(
+  'should return device details for connected device',
+  async t => {
+
+    const testFunctions = ['testFunction'];
+    const testVariables = ['testVariable1', 'testVariable2'];
+    const lastHeard = new Date();
+    const device = {
+      getDescription: () => ({
+        state : {
+          f: testFunctions,
+          v: testVariables,
+        },
+      }),
+      ping: () => ({
+        connected: true,
+        lastPing: lastHeard,
+      }),
+    };
+
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(device);
+
+    const response = await request(app)
+      .get(`/v1/devices/${DEVICE_ID}`)
+      .query({ access_token: userToken });
+
+    deviceServerStub.restore();
+
+
+    t.is(response.status, 200);
+    t.is(response.body.connected, true);
+    t.is(
+      JSON.stringify(response.body.functions),
+      JSON.stringify(testFunctions),
+    );
+    t.is(response.body.id, deviceToApiAttributes.id);
+    t.is(response.body.name, deviceToApiAttributes.name);
+    t.is(response.body.ownerID, deviceToApiAttributes.ownerID);
+    t.is(
+      JSON.stringify(response.body.variables),
+      JSON.stringify(testVariables),
+    );
+    t.is(response.body.last_heard, lastHeard.toISOString());
+  },
+);
+
+test.serial(
+  'should return device details for disconnected device',
+  async t => {
+    const deviceServerStub = sinon.stub(
+      container.constitute('DeviceServer'),
+      'getDevice',
+    ).returns(null);
+
+    const response = await request(app)
+      .get(`/v1/devices/${DEVICE_ID}`)
+      .query({ access_token: userToken });
+
+    deviceServerStub.restore();
+
+    t.is(response.status, 200);
+    t.is(response.body.connected, false);
+    t.is(response.body.functions, null);
+    t.is(response.body.id, deviceToApiAttributes.id);
+    t.is(response.body.name, deviceToApiAttributes.name);
+    t.is(response.body.ownerID, deviceToApiAttributes.ownerID);
+    t.is(response.body.variables, null);
+  },
+);
 
 test.serial('should throw an error if device not found', async t => {
   const response = await request(app)
