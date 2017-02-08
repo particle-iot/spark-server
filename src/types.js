@@ -60,6 +60,7 @@ export type DeviceAttributes = {
   ip: string,
   isCellular: boolean,
   last_iccid?: string,
+  lastHeard: Date,
   name: string,
   ownerID: ?string,
   particleProductId: number,
@@ -113,7 +114,6 @@ export type Device = DeviceAttributes & {
   connected: boolean,
   functions?: Array<string>,
   lastFlashedAppName: ?string,
-  lastHeard: ?Date,
   variables?: Object,
 };
 

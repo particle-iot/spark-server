@@ -73,12 +73,17 @@ test.serial(
 
     const testFunctions = ['testFunction'];
     const testVariables = ['testVariable1', 'testVariable2'];
+    const lastHeard = new Date();
     const device = {
       getDescription: () => ({
         state : {
           f: testFunctions,
           v: testVariables,
         },
+      }),
+      ping: () => ({
+        connected: true,
+        lastPing: lastHeard,
       }),
     };
 
@@ -107,6 +112,7 @@ test.serial(
       JSON.stringify(response.body.variables),
       JSON.stringify(testVariables),
     );
+    t.is(response.body.last_heard, lastHeard.toISOString());
   },
 );
 

@@ -82,18 +82,11 @@ class DeviceManager {
 
     const device = this._deviceServer.getDevice(attributes.deviceID);
 
-    const pingResponse = device
-      ? device.ping()
-      : {
-        connected: false,
-        lastPing: null,
-      };
-
     return {
       ...attributes,
-      connected: pingResponse.connected,
+      connected: device && device.ping().connected || false,
       lastFlashedAppName: null,
-      lastHeard: pingResponse.lastPing,
+      lastHeard: device && device.ping().lastPing || attributes.lastHeard,
     };
   };
 
@@ -114,10 +107,10 @@ class DeviceManager {
 
     return ({
       ...attributes,
-      connected: !!device,
+      connected: device && device.ping().connected || false,
       functions: description ? description.state.f : null,
       lastFlashedAppName: null,
-      lastHeard: new Date(),
+      lastHeard: device && device.ping().lastPing || attributes.lastHeard,
       variables: description ? description.state.v : null,
     });
   };
@@ -129,18 +122,11 @@ class DeviceManager {
       async (attributes: DeviceAttributes): Promise<Object> => {
         const device = this._deviceServer.getDevice(attributes.deviceID);
 
-        const pingResponse = device
-          ? device.ping()
-          : {
-            connected: false,
-            lastPing: null,
-          };
-
         return {
           ...attributes,
-          connected: pingResponse.connected,
+          connected: device && device.ping().connected || false,
           lastFlashedAppName: null,
-          lastHeard: pingResponse.lastPing,
+          lastHeard: device && device.ping().lastPing || attributes.lastHeard,
         };
       },
     );
