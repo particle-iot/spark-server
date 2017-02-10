@@ -52,6 +52,8 @@
   },
   "dependencies": {
     "array-flatten": "^2.1.1",
+    "babel": "^6.5.2",
+    "babel-loader": "^6.2.10",
     "basic-auth-parser": "0.0.2",
     "binary-version-reader": "^0.5.0",
     "body-parser": "^1.15.2",
