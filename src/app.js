@@ -7,30 +7,18 @@ import type {
   Middleware,
   NextFunction,
 } from 'express';
+import type { Container } from 'constitute';
 import type { Settings } from './types';
 
 import bodyParser from 'body-parser';
 import express from 'express';
 import morgan from 'morgan';
+import routeConfig from './RouteConfig';
 
-import api from './views/api_v1';
-import eventsV1 from './views/EventViews001';
-
-// Repositories
-import DeviceRepository from './lib/repository/DeviceRepository';
-import {
-  DeviceAttributeFileRepository,
-  DeviceKeyFileRepository,
-} from 'spark-protocol';
-
-// Routing
-import routeConfig from './lib/RouteConfig';
-import DevicesController from './lib/controllers/DevicesController';
-import ProvisioningController from './lib/controllers/ProvisioningController';
-import UsersController from './lib/controllers/UsersController';
-import WebhooksController from './lib/controllers/WebhooksController';
-
-export default (settings: Settings, deviceServer: Object): $Application => {
+export default (
+  container: Container,
+  settings: Settings,
+): $Application => {
   const app = express();
 
   const setCORSHeaders: Middleware = (
@@ -52,7 +40,7 @@ export default (settings: Settings, deviceServer: Object): $Application => {
     return next();
   };
 
-  if (settings.logRequests) {
+  if (settings.LOG_REQUESTS) {
     app.use(morgan('combined'));
   }
 
@@ -60,29 +48,23 @@ export default (settings: Settings, deviceServer: Object): $Application => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(setCORSHeaders);
 
-  const deviceAttributeRepository = new DeviceAttributeFileRepository(
-    settings.coreKeysDir,
-  );
-
-  const deviceRepository = new DeviceRepository(
-    deviceAttributeRepository,
-    new DeviceKeyFileRepository(settings.coreKeysDir),
-    deviceServer,
-  );
-
   routeConfig(
     app,
+    container,
     [
-      new DevicesController(deviceRepository),
-      new ProvisioningController(deviceRepository),
-      new UsersController(settings.usersRepository),
-      new WebhooksController(settings.webhookRepository),
+      'DeviceClaimsController',
+      // to avoid routes collisions EventsController should be placed
+      // before DevicesController
+      'EventsController',
+      'DevicesController',
+      'OauthClientsController',
+      'ProductsController',
+      'ProvisioningController',
+      'UsersController',
+      'WebhooksController',
     ],
     settings,
   );
-
-  eventsV1.loadViews(app);
-  api.loadViews(app);
 
   return app;
 };

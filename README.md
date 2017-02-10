@@ -14,6 +14,8 @@ An API compatible open source server for interacting with devices speaking the [
 
 Quick Install
 ==============
+### You'll need to prepare your system for node-gyp. This is used in the URSA package.
+**https://github.com/nodejs/node-gyp**
 
 ```
 git clone https://github.com/spark/spark-server.git
@@ -22,7 +24,14 @@ npm install
 node main.js
 ```
 
-[Raspberry pi Quick Install](doc/raspberryPi.md)
+ 
+> **Windows Setup**  
+> You'll need to install Python 2.7 and OpenSSL 1.0.2 or older.  
+> *The newer version doesn't have the lib files needed to build the project*.  
+> [Python Download](https://www.python.org/downloads/)  
+> [OpenSSL Download](http://slproweb.com/products/Win32OpenSSL.html)  
+  
+[Raspberry pi Quick Install](raspberryPi.md)
 
 
 How do I get started?
@@ -65,21 +74,31 @@ This will create an account on the local cloud
 
 Perform CTRL + C once you logon with Particle-CLI asking you to send Wifi-credentials etc...
 
-6) Put your core into listening mode, and run `spark identify` to get your core id. You'll need this id later
+6) Put your core into listening mode, and run 
+```
+particle identify
+```
+to get your core id. You'll need this id later
 
-7) `mkdir ..\temp` and `cd ..\temp` - A bunch of keys will be generated in the next steps.
+7) The next steps will generate a bunch of keys for your device.  I recommend `mkdir ..\temp` and `cd ..\temp`
 
 8) Change server keys to local cloud key + IP Address
 
 ```
-particle keys server ..\spark-server\default_key.pub.pem IP_ADDRESS
+particle keys server ..\spark-server\data\default_key.pub.pem IP_ADDRESS
 ```
+**Note You can go back to using the particle cloud by [downlading the public key here](https://s3.amazonaws.com/spark-website/cloud_public.der).**
+You'll need to run `particle config particle`, `particle keys server cloud_public.der`, and `particle keys doctor your_core_id` while your device is in DFU mode.
 
 9) Create and provision access on your local cloud with the keys doctor:
 
 ```
    particle keys doctor your_core_id
 ```
+
+***
+
+At this point you should be able to run normal cloud commands and flash binaries.  You can add any webhooks you need, call functions, or get variable values.
 
 
 What kind of project is this?
@@ -100,6 +119,18 @@ What features are currently present
 The spark-server module aims to provide a HTTP rest interface that is API compatible with the main Spark Cloud.  Ideally any
 programs you write to run against the Spark Cloud should also work on the Local Cloud.  Some features aren't here yet, but may be
 coming down the road, right now the endpoints exposed are:
+
+Claim Core
+
+`POST /v1/devices`
+
+Release Core
+
+`DELETE /v1/devices/:coreid`
+
+Provision Core and save Core's keys.
+
+`/v1/provisioning/:coreID`
 
 List devices
 
@@ -128,8 +159,6 @@ Get all Events
  GET /v1/events/:event_name
 ```
 
-
-
 Get all my Events
 
 ```
@@ -151,12 +180,6 @@ Publish an event
 What features will be added soon?
 ====================================
 
-- Release a Core
-    DELETE /v1/devices/:coreid
-
-- Claim a core
-    POST /v1/devices
-
 - per-user / per-core ownership and access restrictions.  Right now ANY user on your local cloud can access ANY device.
 
 - remote compiling, however flashing a binary will still work
@@ -173,7 +196,3 @@ Known Limitations
 ==================
 
 We worked hard to make our cloud services scalable and awesome, but that also presents a burden for new users.  This release was designed to be easy to use, to understand, and to maintain, and not to discourage anyone who is new to running a server.  This means some of the fancy stuff isn't here yet, but don't despair, we'll keep improving this project, and we hope you'll use it to build awesome things.
-
-
-What features are coming
-========================

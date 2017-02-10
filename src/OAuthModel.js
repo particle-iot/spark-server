@@ -5,9 +5,9 @@ import type {
   TokenObject,
   User,
   UserRepository,
-} from '../types';
+} from './types';
 
-import ouathClients from '../oauthClients.json';
+import ouathClients from './oauthClients.json';
 
 class OauthModel {
   _userRepository: UserRepository;
@@ -45,8 +45,11 @@ class OauthModel {
   getUser = async (username: string, password: string): Promise<User> =>
     await this._userRepository.validateLogin(username, password);
 
-
-  saveToken = (tokenObject: TokenObject, client: Client, user: User): Object => {
+  saveToken = (
+    tokenObject: TokenObject,
+    client: Client,
+    user: User,
+  ): Object => {
     this._userRepository.saveAccessToken(user.id, tokenObject);
     return {
       accessToken: tokenObject.accessToken,
@@ -55,7 +58,7 @@ class OauthModel {
     };
   };
 
-  // todo figure out this function
+  // eslint-disable-next-line no-unused-vars
   validateScope = (user: User, client: Client, scope: string): string => 'true';
 }
 

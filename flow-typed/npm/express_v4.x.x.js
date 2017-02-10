@@ -31,7 +31,7 @@ declare class express$Request extends http$IncomingMessage mixins express$Reques
   baseUrl: string;
   body: Object;
   cookies: {[cookie: string]: string};
-  files: {[key: string]: Array<$File>},
+  files: { [key: string]: Array<$File> } | Array<$File>,
   fresh: boolean;
   hostname: boolean;
   ip: string;
@@ -78,7 +78,7 @@ declare type express$SendFileOptions = {
   dotfiles?: 'allow' | 'deny' | 'ignore'
 };
 
-declare class express$Response extends http$ClientRequest mixins express$RequestResponseBase {
+declare class express$Response extends http$ServerResponse mixins express$RequestResponseBase {
   headersSent: boolean;
   locals: {[name: string]: mixed};
   append(field: string, value?: string): this;

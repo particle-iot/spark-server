@@ -2,13 +2,30 @@
 
 import type { File } from 'express';
 
-export type Webhook = WebhookMutator & {
+export type Webhook = {
+  auth?: { password: string, username: string },
   created_at: Date,
+  deviceID?: string,
+  errorResponseTopic?: string,
+  event: string,
+  form?: { [key: string]: Object },
+  headers?: { [key: string]: string },
   id: string,
+  json?: { [key: string]: Object },
+  mydevices?: boolean,
+  noDefaults?: boolean,
+  ownerID: string,
+  productIdOrSlug?: string,
+  query?: { [key: string]: Object },
+  rejectUnauthorized?: boolean,
+  requestType: RequestType,
+  responseTemplate?: string,
+  responseTopic?: string,
+  url: string,
 };
 
 export type WebhookMutator = {
-  auth?: { Authorization: string },
+  auth?: { password: string, username: string },
   deviceID?: string,
   errorResponseTopic?: string,
   event: string,
@@ -17,6 +34,7 @@ export type WebhookMutator = {
   json?: { [key: string]: Object },
   mydevices?: boolean,
   noDefaults?: boolean,
+  ownerID: string,
   productIdOrSlug?: string,
   query?: { [key: string]: Object },
   rejectUnauthorized?: boolean,
@@ -35,14 +53,34 @@ export type Client = {
 };
 
 export type DeviceAttributes = {
+  appHash: ?string,
+  currentBuildTarget: string,
   deviceID: string,
+  imei?: string,
   ip: string,
+  isCellular: boolean,
+  last_iccid?: string,
+  lastHeard: Date,
   name: string,
   ownerID: ?string,
   particleProductId: number,
   productFirmwareVersion: number,
   registrar: string,
   timestamp: Date,
+};
+
+export type Event = EventData & {
+  ttl: number,
+  publishedAt: Date,
+};
+
+export type EventData = {
+  data?: string,
+  deviceID?: ?string,
+  isPublic: boolean,
+  name: string,
+  ttl?: number,
+  userID: string,
 };
 
 export type GrantType =
@@ -76,12 +114,11 @@ export type Device = DeviceAttributes & {
   connected: boolean,
   functions?: Array<string>,
   lastFlashedAppName: ?string,
-  lastHeard: ?Date,
   variables?: Object,
 };
 
 export type Repository<TModel> = {
-  create: (model: TModel) => Promise<TModel>,
+  create: (model: TModel | $Shape<TModel>) => Promise<TModel>,
   deleteById: (id: string) => Promise<void>,
   getAll: () => Promise<Array<TModel>>,
   getById: (id: string) => Promise<?TModel>,
@@ -90,50 +127,77 @@ export type Repository<TModel> = {
 
 export type UserRepository = Repository<User> & {
   createWithCredentials(credentials: UserCredentials): Promise<User>,
-  deleteAccessToken(user: User, accessToken: string): Promise<void>,
+  deleteAccessToken(userID: string, accessToken: string): Promise<void>,
   getByAccessToken(accessToken: string): Promise<?User>,
   getByUsername(username: string): Promise<?User>,
   isUserNameInUse(username: string): Promise<boolean>,
-  saveAccessToken(userId: string, tokenObject: TokenObject): Promise<void>,
+  saveAccessToken(userID: string, tokenObject: TokenObject): Promise<User>,
   validateLogin(username: string, password: string): Promise<User>,
 };
 
 export type Settings = {
-  accessTokenLifetime: number,
-  baseUrl: string,
-  coreFlashTimeout: number,
-  coreKeysDir: string,
-  coreRequestTimeout: number,
-  coreSignalTimeout: number,
-  cryptoSalt: string,
+  ACCESS_TOKEN_LIFETIME: number,
+  API_TIMEOUT: number,
+  BUILD_DIRECTORY: string,
+  CRYPTO_SALT: string,
+  DEVICE_DIRECTORY: string,
+  FIRMWARE_DIRECTORY: string,
+  FIRMWARE_REPOSITORY_DIRECTORY: string,
   HOST: string,
-  isCoreOnlineTimeout: number,
-  loginRoute: string,
-  logRequests: boolean,
-  maxHooksPerDevice: number,
-  maxHooksPerUser: number,
+  LOG_REQUESTS: boolean,
+  LOGIN_ROUTE: string,
   PORT: number,
-  serverKeyFile: string,
-  serverKeyPassEnvVar: ?string,
-  serverKeyPassFile: ?string,
-  usersRepository: UserRepository,
-  webhookRepository: Repository<*>,
+  SERVER_KEY_FILENAME: string,
+  SERVER_KEYS_DIRECTORY: string,
+  USERS_DIRECTORY: string,
+  WEBHOOKS_DIRECTORY: string,
 };
 
-export type DeviceRepository = {
+export type DeviceAttributeRepository = Repository<DeviceAttributes> & {
+  doesUserHaveAccess(deviceID: string, userID: string): Promise<boolean>,
+};
+
+export type DeviceManager = {
   callFunction(
     deviceID: string,
     userID: string,
     functionName: string,
-    functionArguments: Object,
+    functionArguments: {[key: string]: string},
   ): Promise<*>,
   claimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
   flashBinary(deviceID: string, files: File): Promise<*>,
-  flashKnownApp(deviceID: string, app: string): Promise<*>,
+  flashKnownApp(deviceID: string, userID: string, app: string): Promise<*>,
   getAll(userID: string): Promise<Array<Device>>,
   getByID(deviceID: string, userID: string): Promise<Device>,
   getDetailsByID(deviceID: string, userID: string): Promise<*>,
+  getVariableValue(deviceID: string, userID: string, varName: string): Promise<Object>,
   provision(deviceID: string, userID: string, publicKey: string): Promise<*>,
+  raiseYourHand(deviceID: string, userID: string, shouldShowSignal: boolean): Promise<void>,
   renameDevice(deviceID: string, userID: string, name: string): Promise<DeviceAttributes>,
   unclaimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
 };
+
+export type RequestOptions = {
+  auth?: { password: string, username: string },
+  body: ?Object,
+  form: ?Object,
+  headers: ?Object,
+  json: boolean,
+  method: RequestType,
+  qs: ?Object,
+  strictSSL?: boolean,
+  url: string,
+};
+
+export type Product = {
+  config_id: string,
+  description: string,
+  hardware_version: string,
+  id: string,
+  name: string,
+  organization: string,
+  product_id: number,
+  requires_activation_codes: boolean,
+  slug: string,
+  type: 'Consumer' | 'Hobbyist' | 'Industrial',
+}

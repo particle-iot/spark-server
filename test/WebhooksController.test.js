@@ -1,16 +1,14 @@
+/* eslint-disable */
 import type { Webhook, WebhookMutator } from '../src/types';
 
 import test from 'ava';
-import request from 'supertest-as-promised';
+import request from 'supertest';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
 import settings from './setup/settings';
+import TestData from './setup/TestData';
 
-const USER_CREDENTIALS = {
-  password: 'password',
-  username: 'webhookTestUser@test.com',
-};
-
+const container = app.container;
 const WEBHOOK_MODEL: WebhookMutator = {
   event: 'testEvent',
   requestType: 'GET',
@@ -22,11 +20,13 @@ let userToken;
 let testWebhook;
 
 test.before(async () => {
+  const USER_CREDENTIALS = TestData.getUser();
   const userResponse = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
 
-  testUser = userResponse.body;
+  testUser = await container.constitute('UserRepository')
+    .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)
     .post('/oauth/token')
@@ -40,6 +40,10 @@ test.before(async () => {
     });
 
   userToken = tokenResponse.body.access_token;
+
+  if(!userToken) {
+    throw new Error('test user creation fails');
+  }
 });
 
 test.serial('should create a new webhook object', async t => {
@@ -153,7 +157,7 @@ test.serial('should delete webhook', async t => {
   ));
 });
 
-test.after.always(() => {
-  settings.webhookRepository.deleteById(testWebhook.id);
-  settings.usersRepository.deleteById(testUser.id);
+test.after.always(async (): Promise<void> => {
+  await container.constitute('WebhookRepository').deleteById(testWebhook.id);
+  await container.constitute('UserRepository').deleteById(testUser.id);
 });

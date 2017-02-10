@@ -3,11 +3,11 @@
 import type {
   UserCredentials,
   UserRepository,
-} from '../../types';
+} from '../types';
 
 import basicAuthParser from 'basic-auth-parser';
 import Controller from './Controller';
-import HttpError from '../HttpError';
+import HttpError from '../lib/HttpError';
 import anonymous from '../decorators/anonymous';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
@@ -29,13 +29,14 @@ class UsersController extends Controller {
         await this._userRepository.isUserNameInUse(userCredentials.username);
 
       if (isUserNameInUse) {
-        throw new HttpError('user with the username is already exist');
+        throw new HttpError('user with the username already exists');
       }
 
-      const newUser = await this._userRepository.createWithCredentials(
+      await this._userRepository.createWithCredentials(
         userCredentials,
       );
-      return this.ok(newUser);
+
+      return this.ok({ ok: true });
     } catch (error) {
       return this.bad(error.message);
     }
@@ -53,7 +54,7 @@ class UsersController extends Controller {
       password,
     );
 
-    this._userRepository.deleteAccessToken(user, token);
+    this._userRepository.deleteAccessToken(user.id, token);
 
     return this.ok({ ok: true });
   }

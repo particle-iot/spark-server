@@ -1,25 +1,26 @@
+/* eslint-disable */
 import type {  TokenObject, UserCredentials } from '../src/types';
 
 import test from 'ava';
-import request from 'supertest-as-promised';
+import request from 'supertest';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
-import settings from './setup/settings';
+import TestData from './setup/TestData';
 
-const USER_CREDENTIALS: UserCredentials = {
-  password: 'password',
-  username: 'newUser@test.com',
-};
-
+const container = app.container;
+let USER_CREDENTIALS;
 let user;
 let userToken;
 
-test.serial('should return a new user object', async t => {
+test.serial('should create new user', async t => {
+  USER_CREDENTIALS = TestData.getUser();
+
   const response = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
 
-  user = response.body;
+  user = await container.constitute('UserRepository')
+    .getByUsername(USER_CREDENTIALS.username);
 
   t.is(response.status, 200);
   t.truthy(user.username === USER_CREDENTIALS.username);
@@ -31,7 +32,7 @@ test.serial('should throw an error if username already in use', async t => {
     .post('/v1/users')
     .send(USER_CREDENTIALS);
   t.is(response.status, 400);
-  t.is(response.body.error, 'user with the username is already exist');
+  t.is(response.body.error, 'user with the username already exists');
 });
 
 test.serial('should login the user', async t => {
@@ -64,7 +65,7 @@ test.serial('should return all access tokens for the user', async t => {
 });
 
 
-test.serial('should deleteById access token for the user', async t => {
+test.serial('should delete the access token for the user', async t => {
   const deleteResponse = await request(app)
     .delete(`/v1/access_tokens/${userToken}`)
     .auth(USER_CREDENTIALS.username, USER_CREDENTIALS.password);
@@ -81,6 +82,6 @@ test.serial('should deleteById access token for the user', async t => {
   ));
 });
 
-test.after.always(() => {
-  settings.usersRepository.deleteById(user.id);
+test.after.always(async (): Promise<void> => {
+  await container.constitute('UserRepository').deleteById(user.id);
 });

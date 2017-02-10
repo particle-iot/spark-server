@@ -1,56 +1,59 @@
 // @flow
 
-import {
-  DeviceAttributeFileRepository,
-  DeviceServer,
-  ServerConfigFileRepository,
-} from 'spark-protocol';
-import utilities from './lib/utilities';
+import { Container } from 'constitute';
+import os from 'os';
+import arrayFlatten from 'array-flatten';
 import logger from './lib/logger';
 import createApp from './app';
+import defaultBindings from './defaultBindings';
 import settings from './settings';
 
 const NODE_PORT = process.env.NODE_PORT || 8080;
 
-// TODO wny do we need this? (Anton Puko)
-global._socket_counter = 1;
-
-// TODO: something better here
 process.on('uncaughtException', (exception: Error) => {
-  let details = '';
-  try {
-    details = JSON.stringify(exception);
-  } catch (stringifyException) {
-    logger.error(`Caught exception: ${stringifyException}`);
-  }
-  logger.error(`Caught exception: ${exception.toString()} ${exception.stack}`);
+  logger.error(
+    'uncaughtException',
+    { message: exception.message, stack: exception.stack },
+  ); // logging with MetaData
+  process.exit(1); // exit with failure
 });
 
-const deviceServer = new DeviceServer({
-  coreKeysDir: settings.coreKeysDir,
-  deviceAttributeRepository: new DeviceAttributeFileRepository(
-    settings.coreKeysDir,
-  ),
-  host: settings.HOST,
-  port: settings.PORT,
-  serverConfigRepository: new ServerConfigFileRepository(
-    settings.serverKeyFile,
-  ),
-  serverKeyFile: settings.serverKeyFile,
-  serverKeyPassEnvVar: settings.serverKeyPassEnvVar,
-  serverKeyPassFile: settings.serverKeyPassFile,
-});
+/* This is the container used app-wide for dependency injection. If you want to
+ * override any of the implementations, create your module with the new
+ * implementation and use:
+ *
+ * container.bindAlias(DefaultImplementation, MyNewImplementation);
+ *
+ * You can also set a new value
+ * container.bindAlias(DefaultValue, 12345);
+ *
+ * See https://github.com/justmoon/constitute for more info
+ */
+const container = new Container();
+defaultBindings(container);
 
-global.server = deviceServer;
+const deviceServer = container.constitute('DeviceServer');
 deviceServer.start();
 
-const app = createApp(settings, deviceServer);
+const app = createApp(container, settings);
 
 app.listen(
   NODE_PORT,
   (): void => console.log(`express server started on port ${NODE_PORT}`),
 );
 
-utilities.getIPAddresses().forEach((ip: string): void =>
-  console.log(`Your device server IP address is: ${ip}`),
+const addresses = arrayFlatten(
+  Object.entries(os.networkInterfaces()).map(
+    // eslint-disable-next-line no-unused-vars
+    ([name, nic]: [string, mixed]): Array<string> =>
+      (nic: any)
+        .filter((address: Object): boolean =>
+          address.family === 'IPv4' &&
+          address.address !== '127.0.0.1',
+        )
+        .map((address: Object): boolean => address.address),
+  ),
+);
+addresses.forEach((address: string): void =>
+  console.log(`Your device server IP address is: ${address}`),
 );

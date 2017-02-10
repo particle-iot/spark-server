@@ -1,10 +1,17 @@
 // @flow
 
-export type Decorator = (
-  target: Object,
-  name: string,
-  descriptor: Object,
-) => Object;
+export type Decorator<TType> = (
+  target: TType,
+  name: $Keys<TType>,
+  descriptor: Descriptor,
+) => Descriptor;
+
+export type Descriptor = {
+    configurable: boolean,
+    enumerable: boolean,
+    value: Function,
+    writeable: boolean,
+};
 
 export type HttpVerb =
   'checkout' |

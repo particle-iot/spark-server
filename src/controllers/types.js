@@ -1,6 +1,5 @@
 // @flow
 
-
 export type HttpResult<TType> = {
   data: ?TType,
   status: number,

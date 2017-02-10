@@ -1,7 +1,7 @@
 // @flow
 
 import type { $Request, $Response } from 'express';
-import type { User } from '../../types';
+import type { User } from '../types';
 import type { HttpResult } from './types';
 
 export default class Controller {

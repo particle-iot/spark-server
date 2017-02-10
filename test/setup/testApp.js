@@ -2,9 +2,11 @@
 
 import createApp from '../../src/app';
 import settings from './settings';
-import DeviceServerMock from './DeviceServerMock';
+import getDefaultContainer from './getDefaultContainer';
 
-const deviceServer = new DeviceServerMock();
-const app = createApp(settings, deviceServer);
+const container = getDefaultContainer();
+
+const app = createApp(container, settings);
+(app: any).container = container;
 
 export default app;

@@ -20,36 +20,24 @@
 */
 
 import path from 'path';
-import WebhookFileRepository from './lib/repository/WebhookFileRepository';
-import UsersFileRepository from './lib/repository/UserFileRepository';
 
+/* eslint-disable sorting/sort-object-props */
 export default {
-  accessTokenLifetime: 7776000, // 90 days,
-  baseUrl: 'http://localhost',
-  coreFlashTimeout: 90000,
-  coreKeysDir: path.join(__dirname, 'core_keys'),
-  coreRequestTimeout: 30000,
-  coreSignalTimeout: 30000,
-  isCoreOnlineTimeout: 2000,
-  loginRoute: '/oauth/token',
-  logRequests: true,
-  maxHooksPerDevice: 10,
-  maxHooksPerUser: 20,
-  webhookRepository: new WebhookFileRepository(
-    path.join(__dirname, 'webhooks'),
-  ),
-  usersRepository: new UsersFileRepository(
-    path.join(__dirname, 'users'),
-  ),
+  BUILD_DIRECTORY: path.join(__dirname, '../data/build'),
+  DEVICE_DIRECTORY: path.join(__dirname, '../data/deviceKeys'),
+  FIRMWARE_DIRECTORY: path.join(__dirname, '../data/knownApps'),
+  FIRMWARE_REPOSITORY_DIRECTORY: path.join(__dirname, '../../spark-firmware'),
+  SERVER_KEY_FILENAME: 'default_key.pem',
+  SERVER_KEYS_DIRECTORY: path.join(__dirname, '../data'),
+  USERS_DIRECTORY: path.join(__dirname, '../data/users'),
+  WEBHOOKS_DIRECTORY: path.join(__dirname, '../data/webhooks'),
 
-  /**
-   * Your server crypto keys!
-   */
-  cryptoSalt: 'aes-128-cbc',
-  serverKeyFile: "default_key.pem",
-  serverKeyPassFile: null,
-  serverKeyPassEnvVar: null,
+  ACCESS_TOKEN_LIFETIME: 7776000, // 90 days,
+  API_TIMEOUT: 30000, // Timeout for API requests.
+  CRYPTO_SALT: 'aes-128-cbc',
+  LOG_REQUESTS: true,
+  LOGIN_ROUTE: '/oauth/token',
 
   PORT: 5683,
-  HOST: "localhost",
+  HOST: 'localhost',
 };
