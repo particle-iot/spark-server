@@ -40,7 +40,7 @@ export default (
     return next();
   };
 
-  if (settings.logRequests) {
+  if (settings.LOG_REQUESTS) {
     app.use(morgan('combined'));
   }
 

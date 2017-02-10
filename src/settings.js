@@ -19,9 +19,10 @@
 *
 */
 
-const path = require('path');
+import path from 'path';
+
 /* eslint-disable sorting/sort-object-props */
-module.exports = {
+export default {
   BUILD_DIRECTORY: path.join(__dirname, '../data/build'),
   DEVICE_DIRECTORY: path.join(__dirname, '../data/deviceKeys'),
   FIRMWARE_DIRECTORY: path.join(__dirname, '../data/knownApps'),
@@ -31,25 +32,12 @@ module.exports = {
   USERS_DIRECTORY: path.join(__dirname, '../data/users'),
   WEBHOOKS_DIRECTORY: path.join(__dirname, '../data/webhooks'),
 
-  accessTokenLifetime: 7776000, // 90 days,
-  baseUrl: 'http://localhost',
-  coreFlashTimeout: 90000,
-  coreRequestTimeout: 30000,
-  coreSignalTimeout: 30000,
-  isCoreOnlineTimeout: 2000,
-  loginRoute: '/oauth/token',
-  logRequests: true,
-  maxHooksPerDevice: 10,
-  maxHooksPerUser: 20,
-
-  /**
-   * Your server crypto keys!
-   */
-  cryptoSalt: 'aes-128-cbc',
-  serverKeyPassFile: null,
-  serverKeyPassEnvVar: null,
+  ACCESS_TOKEN_LIFETIME: 7776000, // 90 days,
+  API_TIMEOUT: 30000, // Timeout for API requests.
+  CRYPTO_SALT: 'aes-128-cbc',
+  LOG_REQUESTS: true,
+  LOGIN_ROUTE: '/oauth/token',
 
   PORT: 5683,
   HOST: 'localhost',
-  API_TIMEOUT: 30, // Timeout for API requests.
 };

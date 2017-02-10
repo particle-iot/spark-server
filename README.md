@@ -14,6 +14,8 @@ An API compatible open source server for interacting with devices speaking the [
 
 Quick Install
 ==============
+### You'll need to prepare your system for node-gyp. This is used in the URSA package.
+**https://github.com/nodejs/node-gyp**
 
 ```
 git clone https://github.com/spark/spark-server.git
@@ -21,7 +23,7 @@ cd spark-server/
 npm install
 node main.js
 ```
-  
+
  
 > **Windows Setup**  
 > You'll need to install Python 2.7 and OpenSSL 1.0.2 or older.  
