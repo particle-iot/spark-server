@@ -1,37 +1,37 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _bodyParser = require('body-parser');
+var _bodyParser = require('body-parser');
 
-const _bodyParser2 = _interopRequireDefault(_bodyParser);
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-const _express = require('express');
+var _express = require('express');
 
-const _express2 = _interopRequireDefault(_express);
+var _express2 = _interopRequireDefault(_express);
 
-const _morgan = require('morgan');
+var _morgan = require('morgan');
 
-const _morgan2 = _interopRequireDefault(_morgan);
+var _morgan2 = _interopRequireDefault(_morgan);
 
-const _RouteConfig = require('./RouteConfig');
+var _RouteConfig = require('./RouteConfig');
 
-const _RouteConfig2 = _interopRequireDefault(_RouteConfig);
+var _RouteConfig2 = _interopRequireDefault(_RouteConfig);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function (container, settings) {
-  const app = (0, _express2.default)();
+  var app = (0, _express2.default)();
 
-  const setCORSHeaders = function setCORSHeaders(request, response, next) {
+  var setCORSHeaders = function setCORSHeaders(request, response, next) {
     if (request.method === 'OPTIONS') {
       response.set({
         'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Accept, Authorization',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Max-Age': '300',
+        'Access-Control-Max-Age': '300'
       });
       return response.sendStatus(204);
     }
@@ -50,7 +50,7 @@ exports.default = function (container, settings) {
   (0, _RouteConfig2.default)(app, container, ['DeviceClaimsController',
   // to avoid routes collisions EventsController should be placed
   // before DevicesController
-    'EventsController', 'DevicesController', 'OauthClientsController', 'ProductsController', 'ProvisioningController', 'UsersController', 'WebhooksController'], settings);
+  'EventsController', 'DevicesController', 'OauthClientsController', 'ProductsController', 'ProvisioningController', 'UsersController', 'WebhooksController'], settings);
 
   return app;
 };

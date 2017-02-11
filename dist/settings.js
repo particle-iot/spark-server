@@ -1,12 +1,12 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _path = require('path');
+var _path = require('path');
 
-const _path2 = _interopRequireDefault(_path);
+var _path2 = _interopRequireDefault(_path);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28,7 +28,7 @@ exports.default = {
   LOGIN_ROUTE: '/oauth/token',
 
   PORT: 5683,
-  HOST: 'localhost',
+  HOST: 'localhost'
 }; /**
    *    Copyright (C) 2013-2014 Spark Labs, Inc. All rights reserved. -  https://www.spark.io/
    *
@@ -46,6 +46,6 @@ exports.default = {
    *
    *    You can download the source here: https://github.com/spark/spark-server
    *
-   *
+   * 
    *
    */

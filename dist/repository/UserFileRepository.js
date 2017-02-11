@@ -1,67 +1,58 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-property-descriptor');
+var _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-property-descriptor');
 
-const _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
+var _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
 
-const _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
 
-const _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
-const _extends2 = require('babel-runtime/helpers/extends');
+var _extends2 = require('babel-runtime/helpers/extends');
 
-const _extends3 = _interopRequireDefault(_extends2);
+var _extends3 = _interopRequireDefault(_extends2);
 
-const _regenerator = require('babel-runtime/regenerator');
+var _regenerator = require('babel-runtime/regenerator');
 
-const _regenerator2 = _interopRequireDefault(_regenerator);
+var _regenerator2 = _interopRequireDefault(_regenerator);
 
-const _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
-const _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-const _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
-const _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-const _createClass2 = require('babel-runtime/helpers/createClass');
+var _createClass2 = require('babel-runtime/helpers/createClass');
 
-const _createClass3 = _interopRequireDefault(_createClass2);
+var _createClass3 = _interopRequireDefault(_createClass2);
 
-let _dec,
-  _dec2,
-  _dec3,
-  _dec4,
-  _dec5,
-  _dec6,
-  _dec7,
-  _desc,
-  _value,
-  _class;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _desc, _value, _class;
 
-const _uuid = require('uuid');
+var _uuid = require('uuid');
 
-const _uuid2 = _interopRequireDefault(_uuid);
+var _uuid2 = _interopRequireDefault(_uuid);
 
-const _sparkProtocol = require('spark-protocol');
+var _sparkProtocol = require('spark-protocol');
 
-const _PasswordHasher = require('../lib/PasswordHasher');
+var _PasswordHasher = require('../lib/PasswordHasher');
 
-const _PasswordHasher2 = _interopRequireDefault(_PasswordHasher);
+var _PasswordHasher2 = _interopRequireDefault(_PasswordHasher);
 
-const _HttpError = require('../lib/HttpError');
+var _HttpError = require('../lib/HttpError');
 
-const _HttpError2 = _interopRequireDefault(_HttpError);
+var _HttpError2 = _interopRequireDefault(_HttpError);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
-  let desc = {};
-  Object['ke' + 'ys'](descriptor).forEach((key) => {
+  var desc = {};
+  Object['ke' + 'ys'](descriptor).forEach(function (key) {
     desc[key] = descriptor[key];
   });
   desc.enumerable = !!desc.enumerable;
@@ -71,7 +62,9 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
     desc.writable = true;
   }
 
-  desc = decorators.slice().reverse().reduce((desc, decorator) => decorator(target, property, desc) || desc, desc);
+  desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+    return decorator(target, property, desc) || desc;
+  }, desc);
 
   if (context && desc.initializer !== void 0) {
     desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
@@ -86,20 +79,16 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
   return desc;
 }
 
-const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _sparkProtocol.memoizeSet)(), _dec3 = (0, _sparkProtocol.memoizeGet)(), _dec4 = (0, _sparkProtocol.memoizeGet)(['id']), _dec5 = (0, _sparkProtocol.memoizeGet)(['username']), _dec6 = (0, _sparkProtocol.memoizeSet)(['id']), _dec7 = (0, _sparkProtocol.memoizeGet)(['username']), (_class = (function () {
+var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _sparkProtocol.memoizeSet)(), _dec3 = (0, _sparkProtocol.memoizeGet)(), _dec4 = (0, _sparkProtocol.memoizeGet)(['id']), _dec5 = (0, _sparkProtocol.memoizeGet)(['username']), _dec6 = (0, _sparkProtocol.memoizeSet)(['id']), _dec7 = (0, _sparkProtocol.memoizeGet)(['username']), (_class = function () {
   function UserFileRepository(path) {
-    const _this = this;
+    var _this = this;
 
     (0, _classCallCheck3.default)(this, UserFileRepository);
 
-    this.createWithCredentials = (function () {
-      const _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(userCredentials) {
-        let username,
-          password,
-          salt,
-          passwordHash,
-          modelToSave;
-        return _regenerator2.default.wrap((_context) => {
+    this.createWithCredentials = function () {
+      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(userCredentials) {
+        var username, password, salt, passwordHash, modelToSave;
+        return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -116,9 +105,9 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
                 passwordHash = _context.sent;
                 modelToSave = {
                   accessTokens: [],
-                  passwordHash,
-                  salt,
-                  username,
+                  passwordHash: passwordHash,
+                  salt: salt,
+                  username: username
                 };
                 _context.next = 10;
                 return _this.create(modelToSave);
@@ -137,13 +126,12 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       return function (_x) {
         return _ref.apply(this, arguments);
       };
-    }());
+    }();
 
-    this.validateLogin = (function () {
-      const _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(username, password) {
-        let user,
-          hash;
-        return _regenerator2.default.wrap((_context2) => {
+    this.validateLogin = function () {
+      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(username, password) {
+        var user, hash;
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -180,7 +168,7 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
 
               case 14:
                 _context2.prev = 14;
-                _context2.t0 = _context2.catch(0);
+                _context2.t0 = _context2['catch'](0);
                 throw _context2.t0;
 
               case 17:
@@ -194,11 +182,11 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       return function (_x2, _x3) {
         return _ref2.apply(this, arguments);
       };
-    }());
+    }();
 
-    this.getByAccessToken = (function () {
-      const _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(accessToken) {
-        return _regenerator2.default.wrap((_context3) => {
+    this.getByAccessToken = function () {
+      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(accessToken) {
+        return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -207,7 +195,9 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
 
               case 2:
                 _context3.t0 = function (user) {
-                  return user.accessTokens.some(tokenObject => tokenObject.accessToken === accessToken);
+                  return user.accessTokens.some(function (tokenObject) {
+                    return tokenObject.accessToken === accessToken;
+                  });
                 };
 
                 return _context3.abrupt('return', _context3.sent.find(_context3.t0));
@@ -223,13 +213,12 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       return function (_x4) {
         return _ref3.apply(this, arguments);
       };
-    }());
+    }();
 
-    this.deleteAccessToken = (function () {
-      const _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(userID, token) {
-        let user,
-          userToSave;
-        return _regenerator2.default.wrap((_context4) => {
+    this.deleteAccessToken = function () {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(userID, token) {
+        var user, userToSave;
+        return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -248,7 +237,9 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
 
               case 5:
                 userToSave = (0, _extends3.default)({}, user, {
-                  accessTokens: user.accessTokens.filter(tokenObject => tokenObject.accessToken !== token),
+                  accessTokens: user.accessTokens.filter(function (tokenObject) {
+                    return tokenObject.accessToken !== token;
+                  })
                 });
                 _context4.next = 8;
                 return _this.update(userToSave);
@@ -264,13 +255,12 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       return function (_x5, _x6) {
         return _ref4.apply(this, arguments);
       };
-    }());
+    }();
 
-    this.saveAccessToken = (function () {
-      const _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(userID, tokenObject) {
-        let user,
-          userToSave;
-        return _regenerator2.default.wrap((_context5) => {
+    this.saveAccessToken = function () {
+      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(userID, tokenObject) {
+        var user, userToSave;
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
@@ -289,7 +279,7 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
 
               case 5:
                 userToSave = (0, _extends3.default)({}, user, {
-                  accessTokens: [].concat((0, _toConsumableArray3.default)(user.accessTokens), [tokenObject]),
+                  accessTokens: [].concat((0, _toConsumableArray3.default)(user.accessTokens), [tokenObject])
                 });
                 _context5.next = 8;
                 return _this.update(userToSave);
@@ -308,17 +298,16 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       return function (_x7, _x8) {
         return _ref5.apply(this, arguments);
       };
-    }());
+    }();
 
     this._fileManager = new _sparkProtocol.JSONFileManager(path);
   }
 
   (0, _createClass3.default)(UserFileRepository, [{
     key: 'create',
-    value: (function () {
-      const _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(user) {
-        let id,
-          modelToSave;
+    value: function () {
+      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(user) {
+        var id, modelToSave;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
@@ -327,7 +316,7 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
 
               case 1:
                 _context6.next = 3;
-                return this._fileManager.hasFile(`${id}.json`);
+                return this._fileManager.hasFile(id + '.json');
 
               case 3:
                 if (!_context6.sent) {
@@ -343,11 +332,11 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
                 modelToSave = (0, _extends3.default)({}, user, {
                   created_at: new Date(),
                   created_by: null,
-                  id,
+                  id: id
                 });
 
 
-                this._fileManager.createFile(`${modelToSave.id}.json`, modelToSave);
+                this._fileManager.createFile(modelToSave.id + '.json', modelToSave);
                 return _context6.abrupt('return', modelToSave);
 
               case 10:
@@ -363,16 +352,16 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       }
 
       return create;
-    }()),
+    }()
   }, {
     key: 'update',
-    value: (function () {
-      const _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(model) {
+    value: function () {
+      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(model) {
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
-                this._fileManager.writeFile(`${model.id}.json`, model);
+                this._fileManager.writeFile(model.id + '.json', model);
                 return _context7.abrupt('return', model);
 
               case 2:
@@ -388,11 +377,11 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       }
 
       return update;
-    }()),
+    }()
   }, {
     key: 'getAll',
-    value: (function () {
-      const _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8() {
+    value: function () {
+      var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8() {
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
@@ -412,16 +401,16 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       }
 
       return getAll;
-    }()),
+    }()
   }, {
     key: 'getById',
-    value: (function () {
-      const _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(id) {
+    value: function () {
+      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(id) {
         return _regenerator2.default.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
-                return _context9.abrupt('return', this._fileManager.getFile(`${id}.json`));
+                return _context9.abrupt('return', this._fileManager.getFile(id + '.json'));
 
               case 1:
               case 'end':
@@ -436,11 +425,11 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       }
 
       return getById;
-    }()),
+    }()
   }, {
     key: 'getByUsername',
-    value: (function () {
-      const _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(username) {
+    value: function () {
+      var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(username) {
         return _regenerator2.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
@@ -468,20 +457,20 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       }
 
       return getByUsername;
-    }()),
+    }()
 
     // This isn't a good one to memoize as we can't key off user ID and there
     // isn't a good way to clear the cache.
 
   }, {
     key: 'deleteById',
-    value: (function () {
-      const _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(id) {
+    value: function () {
+      var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(id) {
         return _regenerator2.default.wrap(function _callee11$(_context11) {
           while (1) {
             switch (_context11.prev = _context11.next) {
               case 0:
-                this._fileManager.deleteFile(`${id}.json`);
+                this._fileManager.deleteFile(id + '.json');
 
               case 1:
               case 'end':
@@ -496,11 +485,11 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       }
 
       return deleteById;
-    }()),
+    }()
   }, {
     key: 'isUserNameInUse',
-    value: (function () {
-      const _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(username) {
+    value: function () {
+      var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(username) {
         return _regenerator2.default.wrap(function _callee12$(_context12) {
           while (1) {
             switch (_context12.prev = _context12.next) {
@@ -528,8 +517,8 @@ const UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0,
       }
 
       return isUserNameInUse;
-    }()),
+    }()
   }]);
   return UserFileRepository;
-}()), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'update', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'update'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getById', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByUsername', [_dec5], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByUsername'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteById', [_dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'isUserNameInUse', [_dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'isUserNameInUse'), _class.prototype)), _class));
+}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'update', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'update'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getById', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByUsername', [_dec5], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByUsername'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteById', [_dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'isUserNameInUse', [_dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'isUserNameInUse'), _class.prototype)), _class));
 exports.default = UserFileRepository;

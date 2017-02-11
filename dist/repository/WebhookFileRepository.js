@@ -1,56 +1,50 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-property-descriptor');
+var _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-property-descriptor');
 
-const _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
+var _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
 
-const _extends2 = require('babel-runtime/helpers/extends');
+var _extends2 = require('babel-runtime/helpers/extends');
 
-const _extends3 = _interopRequireDefault(_extends2);
+var _extends3 = _interopRequireDefault(_extends2);
 
-const _regenerator = require('babel-runtime/regenerator');
+var _regenerator = require('babel-runtime/regenerator');
 
-const _regenerator2 = _interopRequireDefault(_regenerator);
+var _regenerator2 = _interopRequireDefault(_regenerator);
 
-const _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
-const _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-const _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
-const _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-const _createClass2 = require('babel-runtime/helpers/createClass');
+var _createClass2 = require('babel-runtime/helpers/createClass');
 
-const _createClass3 = _interopRequireDefault(_createClass2);
+var _createClass3 = _interopRequireDefault(_createClass2);
 
-let _dec,
-  _dec2,
-  _dec3,
-  _dec4,
-  _desc,
-  _value,
-  _class;
+var _dec, _dec2, _dec3, _dec4, _desc, _value, _class;
 
-const _uuid = require('uuid');
+var _uuid = require('uuid');
 
-const _uuid2 = _interopRequireDefault(_uuid);
+var _uuid2 = _interopRequireDefault(_uuid);
 
-const _sparkProtocol = require('spark-protocol');
+var _sparkProtocol = require('spark-protocol');
 
-const _HttpError = require('../lib/HttpError');
+var _HttpError = require('../lib/HttpError');
 
-const _HttpError2 = _interopRequireDefault(_HttpError);
+var _HttpError2 = _interopRequireDefault(_HttpError);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
-  let desc = {};
-  Object['ke' + 'ys'](descriptor).forEach((key) => {
+  var desc = {};
+  Object['ke' + 'ys'](descriptor).forEach(function (key) {
     desc[key] = descriptor[key];
   });
   desc.enumerable = !!desc.enumerable;
@@ -60,7 +54,9 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
     desc.writable = true;
   }
 
-  desc = decorators.slice().reverse().reduce((desc, decorator) => decorator(target, property, desc) || desc, desc);
+  desc = decorators.slice().reverse().reduce(function (desc, decorator) {
+    return decorator(target, property, desc) || desc;
+  }, desc);
 
   if (context && desc.initializer !== void 0) {
     desc.value = desc.initializer ? desc.initializer.call(context) : void 0;
@@ -75,17 +71,17 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
   return desc;
 }
 
-const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _sparkProtocol.memoizeSet)(['id']), _dec3 = (0, _sparkProtocol.memoizeGet)(), _dec4 = (0, _sparkProtocol.memoizeGet)(['id']), (_class = (function () {
+var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _sparkProtocol.memoizeSet)(['id']), _dec3 = (0, _sparkProtocol.memoizeGet)(), _dec4 = (0, _sparkProtocol.memoizeGet)(['id']), (_class = function () {
   function WebhookFileRepository(path) {
-    const _this = this;
+    var _this = this;
 
     (0, _classCallCheck3.default)(this, WebhookFileRepository);
 
-    this.getAll = (function () {
-      const _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-        const userID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        let allData;
-        return _regenerator2.default.wrap((_context) => {
+    this.getAll = function () {
+      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+        var userID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var allData;
+        return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -100,7 +96,9 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
                   break;
                 }
 
-                return _context.abrupt('return', allData.filter(webhook => webhook.ownerID === userID));
+                return _context.abrupt('return', allData.filter(function (webhook) {
+                  return webhook.ownerID === userID;
+                }));
 
               case 5:
                 return _context.abrupt('return', allData);
@@ -116,13 +114,13 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
       return function () {
         return _ref.apply(this, arguments);
       };
-    }());
+    }();
 
-    this.getById = (function () {
-      const _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(id) {
-        const userID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-        let webhook;
-        return _regenerator2.default.wrap((_context2) => {
+    this.getById = function () {
+      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(id) {
+        var userID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+        var webhook;
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -153,11 +151,11 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
       return function (_x2) {
         return _ref2.apply(this, arguments);
       };
-    }());
+    }();
 
-    this.update = (function () {
-      const _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(model) {
-        return _regenerator2.default.wrap((_context3) => {
+    this.update = function () {
+      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(model) {
+        return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -174,17 +172,16 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
       return function (_x4) {
         return _ref3.apply(this, arguments);
       };
-    }());
+    }();
 
     this._fileManager = new _sparkProtocol.JSONFileManager(path);
   }
 
   (0, _createClass3.default)(WebhookFileRepository, [{
     key: 'create',
-    value: (function () {
-      const _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(model) {
-        let id,
-          modelToSave;
+    value: function () {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(model) {
+        var id, modelToSave;
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
@@ -193,7 +190,7 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
 
               case 1:
                 _context4.next = 3;
-                return this._fileManager.hasFile(`${id}.json`);
+                return this._fileManager.hasFile(id + '.json');
 
               case 3:
                 if (!_context4.sent) {
@@ -208,11 +205,11 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
               case 7:
                 modelToSave = (0, _extends3.default)({}, model, {
                   created_at: new Date(),
-                  id,
+                  id: id
                 });
 
 
-                this._fileManager.createFile(`${modelToSave.id}.json`, modelToSave);
+                this._fileManager.createFile(modelToSave.id + '.json', modelToSave);
                 return _context4.abrupt('return', modelToSave);
 
               case 10:
@@ -228,16 +225,16 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
       }
 
       return create;
-    }()),
+    }()
   }, {
     key: 'deleteById',
-    value: (function () {
-      const _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(id) {
+    value: function () {
+      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(id) {
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                this._fileManager.deleteFile(`${id}.json`);
+                this._fileManager.deleteFile(id + '.json');
 
               case 1:
               case 'end':
@@ -252,14 +249,14 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
       }
 
       return deleteById;
-    }()),
+    }()
 
     // eslint-disable-next-line no-unused-vars
 
   }, {
     key: '_getAll',
-    value: (function () {
-      const _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6() {
+    value: function () {
+      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6() {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
@@ -279,16 +276,16 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
       }
 
       return _getAll;
-    }()),
+    }()
   }, {
     key: '_getByID',
-    value: (function () {
-      const _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(id) {
+    value: function () {
+      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(id) {
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
-                return _context7.abrupt('return', this._fileManager.getFile(`${id}.json`));
+                return _context7.abrupt('return', this._fileManager.getFile(id + '.json'));
 
               case 1:
               case 'end':
@@ -303,8 +300,8 @@ const WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = 
       }
 
       return _getByID;
-    }()),
+    }()
   }]);
   return WebhookFileRepository;
-}()), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteById', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, '_getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, '_getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, '_getByID', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, '_getByID'), _class.prototype)), _class));
+}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteById', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, '_getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, '_getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, '_getByID', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, '_getByID'), _class.prototype)), _class));
 exports.default = WebhookFileRepository;

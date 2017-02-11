@@ -1,84 +1,84 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _stringify = require('babel-runtime/core-js/json/stringify');
+var _stringify = require('babel-runtime/core-js/json/stringify');
 
-const _stringify2 = _interopRequireDefault(_stringify);
+var _stringify2 = _interopRequireDefault(_stringify);
 
-const _regenerator = require('babel-runtime/regenerator');
+var _regenerator = require('babel-runtime/regenerator');
 
-const _regenerator2 = _interopRequireDefault(_regenerator);
+var _regenerator2 = _interopRequireDefault(_regenerator);
 
-const _promise = require('babel-runtime/core-js/promise');
+var _promise = require('babel-runtime/core-js/promise');
 
-const _promise2 = _interopRequireDefault(_promise);
+var _promise2 = _interopRequireDefault(_promise);
 
-const _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
-const _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-const _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
-const _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-const _map = require('babel-runtime/core-js/map');
+var _map = require('babel-runtime/core-js/map');
 
-const _map2 = _interopRequireDefault(_map);
+var _map2 = _interopRequireDefault(_map);
 
-const _crypto = require('crypto');
+var _crypto = require('crypto');
 
-const _crypto2 = _interopRequireDefault(_crypto);
+var _crypto2 = _interopRequireDefault(_crypto);
 
-const _fs = require('fs');
+var _fs = require('fs');
 
-const _fs2 = _interopRequireDefault(_fs);
+var _fs2 = _interopRequireDefault(_fs);
 
-const _path = require('path');
+var _path = require('path');
 
-const _path2 = _interopRequireDefault(_path);
+var _path2 = _interopRequireDefault(_path);
 
-const _mkdirp = require('mkdirp');
+var _mkdirp = require('mkdirp');
 
-const _mkdirp2 = _interopRequireDefault(_mkdirp);
+var _mkdirp2 = _interopRequireDefault(_mkdirp);
 
-const _rmfr = require('rmfr');
+var _rmfr = require('rmfr');
 
-const _rmfr2 = _interopRequireDefault(_rmfr);
+var _rmfr2 = _interopRequireDefault(_rmfr);
 
-const _child_process = require('child_process');
+var _child_process = require('child_process');
 
-const _sparkProtocol = require('spark-protocol');
+var _sparkProtocol = require('spark-protocol');
 
-const _settings = require('../settings');
+var _settings = require('../settings');
 
-const _settings2 = _interopRequireDefault(_settings);
+var _settings2 = _interopRequireDefault(_settings);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const IS_COMPILATION_ENABLED = _fs2.default.existsSync(_settings2.default.FIRMWARE_REPOSITORY_DIRECTORY);
+var IS_COMPILATION_ENABLED = _fs2.default.existsSync(_settings2.default.FIRMWARE_REPOSITORY_DIRECTORY);
 
-const USER_APP_PATH = _path2.default.join(_settings2.default.FIRMWARE_REPOSITORY_DIRECTORY, 'user/applications');
-const BIN_PATH = _path2.default.join(_settings2.default.BUILD_DIRECTORY, 'bin');
-const MAKE_PATH = _path2.default.join(_settings2.default.FIRMWARE_REPOSITORY_DIRECTORY, 'main');
+var USER_APP_PATH = _path2.default.join(_settings2.default.FIRMWARE_REPOSITORY_DIRECTORY, 'user/applications');
+var BIN_PATH = _path2.default.join(_settings2.default.BUILD_DIRECTORY, 'bin');
+var MAKE_PATH = _path2.default.join(_settings2.default.FIRMWARE_REPOSITORY_DIRECTORY, 'main');
 
-const FILE_NAME_BY_KEY = new _map2.default();
+var FILE_NAME_BY_KEY = new _map2.default();
 
-const getKey = function getKey() {
+var getKey = function getKey() {
   return _crypto2.default.randomBytes(24).toString('hex').substring(0, 24);
 };
 
-const getUniqueKey = function getUniqueKey() {
-  let key = getKey();
+var getUniqueKey = function getUniqueKey() {
+  var key = getKey();
   while (FILE_NAME_BY_KEY.has(key)) {
     key = getKey();
   }
   return key;
 };
 
-const FirmwareCompilationManager = function FirmwareCompilationManager() {
+var FirmwareCompilationManager = function FirmwareCompilationManager() {
   (0, _classCallCheck3.default)(this, FirmwareCompilationManager);
 };
 
@@ -91,12 +91,14 @@ FirmwareCompilationManager.getBinaryForID = function (id) {
     return null;
   }
 
-  const binaryPath = _path2.default.join(BIN_PATH, id);
+  var binaryPath = _path2.default.join(BIN_PATH, id);
   if (!_fs2.default.existsSync(binaryPath)) {
     return null;
   }
 
-  const binFileName = _fs2.default.readdirSync(binaryPath).find(file => file.endsWith('.bin'));
+  var binFileName = _fs2.default.readdirSync(binaryPath).find(function (file) {
+    return file.endsWith('.bin');
+  });
 
   if (!binFileName) {
     return null;
@@ -105,19 +107,10 @@ FirmwareCompilationManager.getBinaryForID = function (id) {
   return _fs2.default.readFileSync(_path2.default.join(binaryPath, binFileName));
 };
 
-FirmwareCompilationManager.compileSource = (function () {
-  const _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(platformID, files) {
-    let platformName,
-      appFolder,
-      appPath,
-      id,
-      binPath,
-      makeProcess,
-      errors,
-      sizeInfo,
-      date,
-      config;
-    return _regenerator2.default.wrap((_context) => {
+FirmwareCompilationManager.compileSource = function () {
+  var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(platformID, files) {
+    var platformName, appFolder, appPath, id, binPath, makeProcess, errors, sizeInfo, date, config;
+    return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -141,19 +134,19 @@ FirmwareCompilationManager.compileSource = (function () {
           case 5:
 
             platformName = platformName.toLowerCase();
-            appFolder = (`${platformName}_firmware_${new Date().getTime()}`).toLowerCase();
+            appFolder = (platformName + '_firmware_' + new Date().getTime()).toLowerCase();
             appPath = _path2.default.join(USER_APP_PATH, appFolder);
 
             _mkdirp2.default.sync(appPath);
 
-            files.forEach((file) => {
-              const fileName = file.originalname;
-              const fileExtension = _path2.default.extname(fileName);
-              let iterator = 0;
-              let combinedPath = _path2.default.join(appPath, fileName);
+            files.forEach(function (file) {
+              var fileName = file.originalname;
+              var fileExtension = _path2.default.extname(fileName);
+              var iterator = 0;
+              var combinedPath = _path2.default.join(appPath, fileName);
 
               while (_fs2.default.existsSync(combinedPath)) {
-                combinedPath = _path2.default.join(appPath, `${_path2.default.basename(fileName, fileExtension)}_${iterator++}${fileExtension}`);
+                combinedPath = _path2.default.join(appPath, '' + _path2.default.basename(fileName, fileExtension) + ('_' + iterator++ + fileExtension));
               }
 
               _fs2.default.writeFileSync(combinedPath, file.buffer);
@@ -161,18 +154,18 @@ FirmwareCompilationManager.compileSource = (function () {
 
             id = getUniqueKey();
             binPath = _path2.default.join(BIN_PATH, id);
-            makeProcess = (0, _child_process.spawn)('make', [`APP=${appFolder}`, `PLATFORM_ID=${platformID}`, `TARGET_DIR=${_path2.default.relative(MAKE_PATH, binPath).replace(/\\/g, '/')}`], { cwd: MAKE_PATH });
+            makeProcess = (0, _child_process.spawn)('make', ['APP=' + appFolder, 'PLATFORM_ID=' + platformID, 'TARGET_DIR=' + _path2.default.relative(MAKE_PATH, binPath).replace(/\\/g, '/')], { cwd: MAKE_PATH });
             errors = [];
 
-            makeProcess.stderr.on('data', (data) => {
-              console.log(`${data}`);
-              errors.push(`${data}`);
+            makeProcess.stderr.on('data', function (data) {
+              console.log('' + data);
+              errors.push('' + data);
             });
 
             sizeInfo = 'not implemented';
 
-            makeProcess.stdout.on('data', (data) => {
-              const output = `${data}`;
+            makeProcess.stdout.on('data', function (data) {
+              var output = '' + data;
 
               if (output.includes('text\t')) {
                 sizeInfo = output;
@@ -180,8 +173,10 @@ FirmwareCompilationManager.compileSource = (function () {
             });
 
             _context.next = 19;
-            return new _promise2.default((resolve) => {
-              makeProcess.on('exit', () => resolve());
+            return new _promise2.default(function (resolve) {
+              makeProcess.on('exit', function () {
+                return resolve();
+              });
             });
 
           case 19:
@@ -190,13 +185,13 @@ FirmwareCompilationManager.compileSource = (function () {
             date.setDate(date.getDate() + 1);
             config = {
               binary_id: id,
-              errors,
+              errors: errors,
               // expire in one day
               expires_at: date,
 
               // TODO: this variable has a bunch of extra crap including file names.
               // we should filter out the string to only show the file sizes
-              sizeInfo,
+              sizeInfo: sizeInfo
             };
 
 
@@ -215,16 +210,18 @@ FirmwareCompilationManager.compileSource = (function () {
   return function (_x, _x2) {
     return _ref.apply(this, arguments);
   };
-}());
+}();
 
 FirmwareCompilationManager.addFirmwareCleanupTask = function (appFolderPath, config) {
-  const configPath = _path2.default.join(appFolderPath, 'config.json');
+  var configPath = _path2.default.join(appFolderPath, 'config.json');
   if (!_fs2.default.existsSync(configPath)) {
     _fs2.default.writeFileSync(configPath, (0, _stringify2.default)(config));
   }
-  const currentDate = new Date();
-  const difference = new Date(config.expires_at).getTime() - currentDate.getTime();
-  setTimeout(() => (0, _rmfr2.default)(appFolderPath), difference);
+  var currentDate = new Date();
+  var difference = new Date(config.expires_at).getTime() - currentDate.getTime();
+  setTimeout(function () {
+    return (0, _rmfr2.default)(appFolderPath);
+  }, difference);
 };
 
 if (IS_COMPILATION_ENABLED) {
@@ -236,18 +233,18 @@ if (IS_COMPILATION_ENABLED) {
     _mkdirp2.default.sync(BIN_PATH);
   }
 
-  _fs2.default.readdirSync(USER_APP_PATH).forEach((file) => {
-    const appFolder = _path2.default.join(USER_APP_PATH, file);
-    const configPath = _path2.default.join(appFolder, 'config.json');
+  _fs2.default.readdirSync(USER_APP_PATH).forEach(function (file) {
+    var appFolder = _path2.default.join(USER_APP_PATH, file);
+    var configPath = _path2.default.join(appFolder, 'config.json');
     if (!_fs2.default.existsSync(configPath)) {
       return;
     }
 
-    const configString = _fs2.default.readFileSync(configPath, 'utf8');
+    var configString = _fs2.default.readFileSync(configPath, 'utf8');
     if (!configString) {
       return;
     }
-    const config = JSON.parse(configString);
+    var config = JSON.parse(configString);
     if (config.expires_at < new Date()) {
       // TODO - clean up artifacts in the firmware folder. Every binary will have
       // files in firmare/build/target/user & firmware/build/target/user-part

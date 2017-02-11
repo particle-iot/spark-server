@@ -172,7 +172,8 @@ export default (
     error: Error,
     request: $Request,
     response: $Response,
-    next: NextFunction, // eslint-disable-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
+    next: NextFunction,
   ) => {
     response
       .status(400)

@@ -1,16 +1,16 @@
+"use strict";
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require("babel-runtime/helpers/classCallCheck");
 
-const _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-const _createClass2 = require('babel-runtime/helpers/createClass');
+var _createClass2 = require("babel-runtime/helpers/createClass");
 
-const _createClass3 = _interopRequireDefault(_createClass2);
+var _createClass3 = _interopRequireDefault(_createClass2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31,33 +31,33 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 *
 *    You can download the source here: https://github.com/spark/spark-server
 *
-*
+* 
 *
 */
 
-const Logger = (function () {
+var Logger = function () {
   function Logger() {
     (0, _classCallCheck3.default)(this, Logger);
   }
 
   (0, _createClass3.default)(Logger, null, [{
-    key: 'log',
+    key: "log",
     value: function log() {
-      let _console;
+      var _console;
 
       // eslint-disable-next-line prefer-rest-params
       (_console = console).log.apply(_console, arguments);
-    },
+    }
   }, {
-    key: 'error',
+    key: "error",
     value: function error() {
-      let _console2;
+      var _console2;
 
       // eslint-disable-next-line prefer-rest-params
       (_console2 = console).error.apply(_console2, arguments);
-    },
+    }
   }]);
   return Logger;
-}());
+}();
 
 exports.default = Logger;

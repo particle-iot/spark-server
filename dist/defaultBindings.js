@@ -1,70 +1,70 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _sparkProtocol = require('spark-protocol');
+var _sparkProtocol = require('spark-protocol');
 
-const _DeviceClaimsController = require('./controllers/DeviceClaimsController');
+var _DeviceClaimsController = require('./controllers/DeviceClaimsController');
 
-const _DeviceClaimsController2 = _interopRequireDefault(_DeviceClaimsController);
+var _DeviceClaimsController2 = _interopRequireDefault(_DeviceClaimsController);
 
-const _DevicesController = require('./controllers/DevicesController');
+var _DevicesController = require('./controllers/DevicesController');
 
-const _DevicesController2 = _interopRequireDefault(_DevicesController);
+var _DevicesController2 = _interopRequireDefault(_DevicesController);
 
-const _EventsController = require('./controllers/EventsController');
+var _EventsController = require('./controllers/EventsController');
 
-const _EventsController2 = _interopRequireDefault(_EventsController);
+var _EventsController2 = _interopRequireDefault(_EventsController);
 
-const _OauthClientsController = require('./controllers/OauthClientsController');
+var _OauthClientsController = require('./controllers/OauthClientsController');
 
-const _OauthClientsController2 = _interopRequireDefault(_OauthClientsController);
+var _OauthClientsController2 = _interopRequireDefault(_OauthClientsController);
 
-const _ProductsController = require('./controllers/ProductsController');
+var _ProductsController = require('./controllers/ProductsController');
 
-const _ProductsController2 = _interopRequireDefault(_ProductsController);
+var _ProductsController2 = _interopRequireDefault(_ProductsController);
 
-const _ProvisioningController = require('./controllers/ProvisioningController');
+var _ProvisioningController = require('./controllers/ProvisioningController');
 
-const _ProvisioningController2 = _interopRequireDefault(_ProvisioningController);
+var _ProvisioningController2 = _interopRequireDefault(_ProvisioningController);
 
-const _UsersController = require('./controllers/UsersController');
+var _UsersController = require('./controllers/UsersController');
 
-const _UsersController2 = _interopRequireDefault(_UsersController);
+var _UsersController2 = _interopRequireDefault(_UsersController);
 
-const _WebhooksController = require('./controllers/WebhooksController');
+var _WebhooksController = require('./controllers/WebhooksController');
 
-const _WebhooksController2 = _interopRequireDefault(_WebhooksController);
+var _WebhooksController2 = _interopRequireDefault(_WebhooksController);
 
-const _WebhookManager = require('./managers/WebhookManager');
+var _WebhookManager = require('./managers/WebhookManager');
 
-const _WebhookManager2 = _interopRequireDefault(_WebhookManager);
+var _WebhookManager2 = _interopRequireDefault(_WebhookManager);
 
-const _EventManager = require('./managers/EventManager');
+var _EventManager = require('./managers/EventManager');
 
-const _EventManager2 = _interopRequireDefault(_EventManager);
+var _EventManager2 = _interopRequireDefault(_EventManager);
 
-const _DeviceFirmwareFileRepository = require('./repository/DeviceFirmwareFileRepository');
+var _DeviceFirmwareFileRepository = require('./repository/DeviceFirmwareFileRepository');
 
-const _DeviceFirmwareFileRepository2 = _interopRequireDefault(_DeviceFirmwareFileRepository);
+var _DeviceFirmwareFileRepository2 = _interopRequireDefault(_DeviceFirmwareFileRepository);
 
-const _DeviceManager = require('./managers/DeviceManager');
+var _DeviceManager = require('./managers/DeviceManager');
 
-const _DeviceManager2 = _interopRequireDefault(_DeviceManager);
+var _DeviceManager2 = _interopRequireDefault(_DeviceManager);
 
-const _UserFileRepository = require('./repository/UserFileRepository');
+var _UserFileRepository = require('./repository/UserFileRepository');
 
-const _UserFileRepository2 = _interopRequireDefault(_UserFileRepository);
+var _UserFileRepository2 = _interopRequireDefault(_UserFileRepository);
 
-const _WebhookFileRepository = require('./repository/WebhookFileRepository');
+var _WebhookFileRepository = require('./repository/WebhookFileRepository');
 
-const _WebhookFileRepository2 = _interopRequireDefault(_WebhookFileRepository);
+var _WebhookFileRepository2 = _interopRequireDefault(_WebhookFileRepository);
 
-const _settings = require('./settings');
+var _settings = require('./settings');
 
-const _settings2 = _interopRequireDefault(_settings);
+var _settings2 = _interopRequireDefault(_settings);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

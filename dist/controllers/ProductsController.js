@@ -1,68 +1,42 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-property-descriptor');
+var _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-property-descriptor');
 
-const _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
+var _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
 
-const _regenerator = require('babel-runtime/regenerator');
+var _regenerator = require('babel-runtime/regenerator');
 
-const _regenerator2 = _interopRequireDefault(_regenerator);
+var _regenerator2 = _interopRequireDefault(_regenerator);
 
-const _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
-const _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-const _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
-const _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-const _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
-const _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-const _createClass2 = require('babel-runtime/helpers/createClass');
+var _createClass2 = require('babel-runtime/helpers/createClass');
 
-const _createClass3 = _interopRequireDefault(_createClass2);
+var _createClass3 = _interopRequireDefault(_createClass2);
 
-const _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
 
-const _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-const _inherits2 = require('babel-runtime/helpers/inherits');
+var _inherits2 = require('babel-runtime/helpers/inherits');
 
-const _inherits3 = _interopRequireDefault(_inherits2);
+var _inherits3 = _interopRequireDefault(_inherits2);
 
-let _dec,
-  _dec2,
-  _dec3,
-  _dec4,
-  _dec5,
-  _dec6,
-  _dec7,
-  _dec8,
-  _dec9,
-  _dec10,
-  _dec11,
-  _dec12,
-  _dec13,
-  _dec14,
-  _dec15,
-  _dec16,
-  _dec17,
-  _dec18,
-  _dec19,
-  _dec20,
-  _dec21,
-  _dec22,
-  _dec23,
-  _dec24,
-  _desc,
-  _value,
-  _class;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _desc, _value, _class;
 /* eslint-disable */
 
 var _Controller2 = require('./Controller');
