@@ -1,9 +1,9 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-const deviceToAPI = function deviceToAPI(device, result) {
+var deviceToAPI = function deviceToAPI(device, result) {
   return {
     cellular: device.isCellular,
     connected: device.connected,
@@ -20,7 +20,7 @@ const deviceToAPI = function deviceToAPI(device, result) {
     product_id: device.particleProductId,
     return_value: result,
     status: 'normal',
-    variables: device.variables,
+    variables: device.variables
   };
 };
 

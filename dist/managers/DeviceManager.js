@@ -1,53 +1,52 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _promise = require('babel-runtime/core-js/promise');
+var _promise = require('babel-runtime/core-js/promise');
 
-const _promise2 = _interopRequireDefault(_promise);
+var _promise2 = _interopRequireDefault(_promise);
 
-const _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
-const _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
-const _regenerator = require('babel-runtime/regenerator');
+var _regenerator = require('babel-runtime/regenerator');
 
-const _regenerator2 = _interopRequireDefault(_regenerator);
+var _regenerator2 = _interopRequireDefault(_regenerator);
 
-const _extends2 = require('babel-runtime/helpers/extends');
+var _extends2 = require('babel-runtime/helpers/extends');
 
-const _extends3 = _interopRequireDefault(_extends2);
+var _extends3 = _interopRequireDefault(_extends2);
 
-const _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
-const _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-const _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
-const _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-const _ursa = require('ursa');
+var _ursa = require('ursa');
 
-const _ursa2 = _interopRequireDefault(_ursa);
+var _ursa2 = _interopRequireDefault(_ursa);
 
-const _HttpError = require('../lib/HttpError');
+var _HttpError = require('../lib/HttpError');
 
-const _HttpError2 = _interopRequireDefault(_HttpError);
+var _HttpError2 = _interopRequireDefault(_HttpError);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirmwareRepository, deviceKeyRepository, deviceServer) {
-  const _this = this;
+var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirmwareRepository, deviceKeyRepository, deviceServer) {
+  var _this = this;
 
   (0, _classCallCheck3.default)(this, DeviceManager);
 
-  this.claimDevice = (function () {
-    const _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(deviceID, userID) {
-      let deviceAttributes,
-        attributesToSave;
-      return _regenerator2.default.wrap((_context) => {
+  this.claimDevice = function () {
+    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(deviceID, userID) {
+      var deviceAttributes, attributesToSave;
+      return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -74,7 +73,7 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
 
             case 7:
               attributesToSave = (0, _extends3.default)({}, deviceAttributes, {
-                ownerID: userID,
+                ownerID: userID
               });
               _context.next = 10;
               return _this._deviceAttributeRepository.update(attributesToSave);
@@ -93,13 +92,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x, _x2) {
       return _ref.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.unclaimDevice = (function () {
-    const _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(deviceID, userID) {
-      let deviceAttributes,
-        attributesToSave;
-      return _regenerator2.default.wrap((_context2) => {
+  this.unclaimDevice = function () {
+    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(deviceID, userID) {
+      var deviceAttributes, attributesToSave;
+      return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -118,7 +116,7 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
 
             case 5:
               attributesToSave = (0, _extends3.default)({}, deviceAttributes, {
-                ownerID: null,
+                ownerID: null
               });
               _context2.next = 8;
               return _this._deviceAttributeRepository.update(attributesToSave);
@@ -137,13 +135,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x3, _x4) {
       return _ref2.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.getByID = (function () {
-    const _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(deviceID, userID) {
-      let attributes,
-        device;
-      return _regenerator2.default.wrap((_context3) => {
+  this.getByID = function () {
+    var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(deviceID, userID) {
+      var attributes, device;
+      return _regenerator2.default.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
@@ -165,7 +162,7 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
               return _context3.abrupt('return', (0, _extends3.default)({}, attributes, {
                 connected: device && device.ping().connected || false,
                 lastFlashedAppName: null,
-                lastHeard: device && device.ping().lastPing || attributes.lastHeard,
+                lastHeard: device && device.ping().lastPing || attributes.lastHeard
               }));
 
             case 7:
@@ -179,17 +176,13 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x5, _x6) {
       return _ref3.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.getDetailsByID = (function () {
-    const _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(deviceID, userID) {
-      let device,
-        _ref5,
-        _ref6,
-        attributes,
-        description;
+  this.getDetailsByID = function () {
+    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(deviceID, userID) {
+      var device, _ref5, _ref6, attributes, description;
 
-      return _regenerator2.default.wrap((_context4) => {
+      return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
@@ -216,7 +209,7 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
                 functions: description ? description.state.f : null,
                 lastFlashedAppName: null,
                 lastHeard: device && device.ping().lastPing || attributes.lastHeard,
-                variables: description ? description.state.v : null,
+                variables: description ? description.state.v : null
               }));
 
             case 10:
@@ -230,13 +223,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x7, _x8) {
       return _ref4.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.getAll = (function () {
-    const _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(userID) {
-      let devicesAttributes,
-        devicePromises;
-      return _regenerator2.default.wrap((_context6) => {
+  this.getAll = function () {
+    var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(userID) {
+      var devicesAttributes, devicePromises;
+      return _regenerator2.default.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
@@ -246,9 +238,9 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
             case 2:
               devicesAttributes = _context6.sent;
               devicePromises = devicesAttributes.map(function () {
-                const _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(attributes) {
-                  let device;
-                  return _regenerator2.default.wrap((_context5) => {
+                var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(attributes) {
+                  var device;
+                  return _regenerator2.default.wrap(function _callee5$(_context5) {
                     while (1) {
                       switch (_context5.prev = _context5.next) {
                         case 0:
@@ -256,7 +248,7 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
                           return _context5.abrupt('return', (0, _extends3.default)({}, attributes, {
                             connected: device && device.ping().connected || false,
                             lastFlashedAppName: null,
-                            lastHeard: device && device.ping().lastPing || attributes.lastHeard,
+                            lastHeard: device && device.ping().lastPing || attributes.lastHeard
                           }));
 
                         case 2:
@@ -284,13 +276,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x9) {
       return _ref7.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.callFunction = (function () {
-    const _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(deviceID, userID, functionName, functionArguments) {
-      let doesUserHaveAccess,
-        device;
-      return _regenerator2.default.wrap((_context7) => {
+  this.callFunction = function () {
+    var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(deviceID, userID, functionName, functionArguments) {
+      var doesUserHaveAccess, device;
+      return _regenerator2.default.wrap(function _callee7$(_context7) {
         while (1) {
           switch (_context7.prev = _context7.next) {
             case 0:
@@ -335,13 +326,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x11, _x12, _x13, _x14) {
       return _ref9.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.getVariableValue = (function () {
-    const _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(deviceID, userID, varName) {
-      let doesUserHaveAccess,
-        device;
-      return _regenerator2.default.wrap((_context8) => {
+  this.getVariableValue = function () {
+    var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(deviceID, userID, varName) {
+      var doesUserHaveAccess, device;
+      return _regenerator2.default.wrap(function _callee8$(_context8) {
         while (1) {
           switch (_context8.prev = _context8.next) {
             case 0:
@@ -386,12 +376,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x15, _x16, _x17) {
       return _ref10.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.flashBinary = (function () {
-    const _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(deviceID, file) {
-      let device;
-      return _regenerator2.default.wrap((_context9) => {
+  this.flashBinary = function () {
+    var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(deviceID, file) {
+      var device;
+      return _regenerator2.default.wrap(function _callee9$(_context9) {
         while (1) {
           switch (_context9.prev = _context9.next) {
             case 0:
@@ -422,13 +412,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x18, _x19) {
       return _ref11.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.flashKnownApp = (function () {
-    const _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(deviceID, userID, appName) {
-      let knownFirmware,
-        device;
-      return _regenerator2.default.wrap((_context10) => {
+  this.flashKnownApp = function () {
+    var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(deviceID, userID, appName) {
+      var knownFirmware, device;
+      return _regenerator2.default.wrap(function _callee10$(_context10) {
         while (1) {
           switch (_context10.prev = _context10.next) {
             case 0:
@@ -451,7 +440,7 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
                 break;
               }
 
-              throw new _HttpError2.default(`No firmware ${appName} found`, 404);
+              throw new _HttpError2.default('No firmware ' + appName + ' found', 404);
 
             case 7:
               device = _this._deviceServer.getDevice(deviceID);
@@ -481,14 +470,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x20, _x21, _x22) {
       return _ref12.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.provision = (function () {
-    const _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(deviceID, userID, publicKey) {
-      let createdKey,
-        existingAttributes,
-        attributes;
-      return _regenerator2.default.wrap((_context11) => {
+  this.provision = function () {
+    var _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(deviceID, userID, publicKey) {
+      var createdKey, existingAttributes, attributes;
+      return _regenerator2.default.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
             case 0:
@@ -508,8 +495,8 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
 
             case 6:
               _context11.prev = 6;
-              _context11.t0 = _context11.catch(0);
-              throw new _HttpError2.default(`Key error ${_context11.t0}`);
+              _context11.t0 = _context11['catch'](0);
+              throw new _HttpError2.default('Key error ' + _context11.t0);
 
             case 9:
               _context11.next = 11;
@@ -522,11 +509,11 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
             case 13:
               existingAttributes = _context11.sent;
               attributes = (0, _extends3.default)({
-                deviceID,
+                deviceID: deviceID
               }, existingAttributes, {
                 ownerID: userID,
                 registrar: userID,
-                timestamp: new Date(),
+                timestamp: new Date()
               });
               _context11.next = 17;
               return _this._deviceAttributeRepository.update(attributes);
@@ -549,12 +536,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x23, _x24, _x25) {
       return _ref13.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.raiseYourHand = (function () {
-    const _ref14 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(deviceID, userID, shouldShowSignal) {
-      let device;
-      return _regenerator2.default.wrap((_context12) => {
+  this.raiseYourHand = function () {
+    var _ref14 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(deviceID, userID, shouldShowSignal) {
+      var device;
+      return _regenerator2.default.wrap(function _callee12$(_context12) {
         while (1) {
           switch (_context12.prev = _context12.next) {
             case 0:
@@ -597,13 +584,12 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x26, _x27, _x28) {
       return _ref14.apply(this, arguments);
     };
-  }());
+  }();
 
-  this.renameDevice = (function () {
-    const _ref15 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee13(deviceID, userID, name) {
-      let attributes,
-        attributesToSave;
-      return _regenerator2.default.wrap((_context13) => {
+  this.renameDevice = function () {
+    var _ref15 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee13(deviceID, userID, name) {
+      var attributes, attributesToSave;
+      return _regenerator2.default.wrap(function _callee13$(_context13) {
         while (1) {
           switch (_context13.prev = _context13.next) {
             case 0:
@@ -622,7 +608,7 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
 
             case 5:
               attributesToSave = (0, _extends3.default)({}, attributes, {
-                name,
+                name: name
               });
               _context13.next = 8;
               return _this._deviceAttributeRepository.update(attributesToSave);
@@ -641,7 +627,7 @@ const DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFi
     return function (_x29, _x30, _x31) {
       return _ref15.apply(this, arguments);
     };
-  }());
+  }();
 
   this._deviceAttributeRepository = deviceAttributeRepository;
   this._deviceFirmwareRepository = deviceFirmwareRepository;

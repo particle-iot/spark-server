@@ -1,39 +1,38 @@
+'use strict';
 
-
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-const _regenerator = require('babel-runtime/regenerator');
+var _regenerator = require('babel-runtime/regenerator');
 
-const _regenerator2 = _interopRequireDefault(_regenerator);
+var _regenerator2 = _interopRequireDefault(_regenerator);
 
-const _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
-const _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-const _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
-const _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const OAUTH_CLIENTS = [{
+var OAUTH_CLIENTS = [{
   clientId: 'CLI2',
   clientSecret: 'client_secret_here',
-  grants: ['password'],
+  grants: ['password']
 }];
 
-const OauthModel = function OauthModel(userRepository) {
-  const _this = this;
+var OauthModel = function OauthModel(userRepository) {
+  var _this = this;
 
   (0, _classCallCheck3.default)(this, OauthModel);
 
-  this.getAccessToken = (function () {
-    const _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(bearerToken) {
-      let user,
-        userTokenObject;
-      return _regenerator2.default.wrap((_context) => {
+  this.getAccessToken = function () {
+    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(bearerToken) {
+      var user, userTokenObject;
+      return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -51,7 +50,9 @@ const OauthModel = function OauthModel(userRepository) {
               return _context.abrupt('return', null);
 
             case 5:
-              userTokenObject = user.accessTokens.find(tokenObject => tokenObject.accessToken === bearerToken);
+              userTokenObject = user.accessTokens.find(function (tokenObject) {
+                return tokenObject.accessToken === bearerToken;
+              });
 
               if (userTokenObject) {
                 _context.next = 8;
@@ -63,7 +64,7 @@ const OauthModel = function OauthModel(userRepository) {
             case 8:
               return _context.abrupt('return', {
                 accessToken: userTokenObject.accessToken,
-                user,
+                user: user
               });
 
             case 9:
@@ -77,15 +78,17 @@ const OauthModel = function OauthModel(userRepository) {
     return function (_x) {
       return _ref.apply(this, arguments);
     };
-  }());
+  }();
 
   this.getClient = function (clientId, clientSecret) {
-    return OAUTH_CLIENTS.find(client => client.clientId === clientId && client.clientSecret === clientSecret);
+    return OAUTH_CLIENTS.find(function (client) {
+      return client.clientId === clientId && client.clientSecret === clientSecret;
+    });
   };
 
-  this.getUser = (function () {
-    const _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(username, password) {
-      return _regenerator2.default.wrap((_context2) => {
+  this.getUser = function () {
+    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(username, password) {
+      return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -106,14 +109,14 @@ const OauthModel = function OauthModel(userRepository) {
     return function (_x2, _x3) {
       return _ref2.apply(this, arguments);
     };
-  }());
+  }();
 
   this.saveToken = function (tokenObject, client, user) {
     _this._userRepository.saveAccessToken(user.id, tokenObject);
     return {
       accessToken: tokenObject.accessToken,
-      client,
-      user,
+      client: client,
+      user: user
     };
   };
 
