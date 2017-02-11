@@ -7,7 +7,11 @@ import type {
   UserRepository,
 } from './types';
 
-import ouathClients from './oauthClients.json';
+const OAUTH_CLIENTS = [{
+  clientId: 'CLI2',
+  clientSecret: 'client_secret_here',
+  grants: ['password'],
+}];
 
 class OauthModel {
   _userRepository: UserRepository;
@@ -37,8 +41,8 @@ class OauthModel {
     };
   };
 
-  getClient = (clientId: string, clientSecret: string): Client =>
-    ouathClients.find((client: Client): boolean =>
+  getClient = (clientId: string, clientSecret: string): ?Client =>
+    OAUTH_CLIENTS.find((client: Client): boolean =>
       client.clientId === clientId && client.clientSecret === clientSecret,
     );
 

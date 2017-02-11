@@ -3,7 +3,6 @@
 import type { Container } from 'constitute';
 
 import { defaultBindings } from 'spark-protocol';
-import { Transient } from 'constitute';
 import DeviceClaimsController from './controllers/DeviceClaimsController';
 import DevicesController from './controllers/DevicesController';
 import EventsController from './controllers/EventsController';
@@ -36,45 +35,45 @@ export default (container: Container) => {
   container.bindClass(
     'DeviceClaimsController',
     DeviceClaimsController,
-    Transient.with([
+    [
       'DeviceManager',
       'ClaimCodeManager',
-    ]),
+    ],
   );
   container.bindClass(
     'DevicesController',
     DevicesController,
-    Transient.with(['DeviceManager']),
+    ['DeviceManager'],
   );
   container.bindClass(
     'EventsController',
     EventsController,
-    Transient.with(['EventManager']),
+    ['EventManager'],
   );
   container.bindClass(
     'OauthClientsController',
     OauthClientsController,
-    Transient.with([]),
+    [],
   );
   container.bindClass(
     'ProductsController',
     ProductsController,
-    Transient.with([]),
+    [],
   );
   container.bindClass(
     'ProvisioningController',
     ProvisioningController,
-    Transient.with(['DeviceManager']),
+    ['DeviceManager'],
   );
   container.bindClass(
     'UsersController',
     UsersController,
-    Transient.with(['UserRepository']),
+    ['UserRepository'],
   );
   container.bindClass(
     'WebhooksController',
     WebhooksController,
-    Transient.with(['WebhookManager']),
+    ['WebhookManager'],
   );
 
   // managers

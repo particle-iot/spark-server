@@ -106,14 +106,15 @@ export default (
           const values = argumentNames
             .map((argument: string): string => request.params[argument]);
 
-          const controllerInstance = container.constitute(controllerName);
+          let controllerInstance = container.constitute(controllerName);
 
           // In order parallel requests on the controller, the state
           // (request/response/user) must be added to the controller.
           if (controllerInstance === controller) {
-            throw new Error(
-              '`Transient.with` must be used when binding controllers',
-            );
+            // throw new Error(
+            //   '`Transient.with` must be used when binding controllers',
+            // );
+            controllerInstance = Object.create(controllerInstance);
           }
 
           controllerInstance.request = request;

@@ -25,8 +25,10 @@
       "url": "https://github.com/emilyrose"
     }
   ],
+  "main": "./dist/exports.js",
   "scripts": {
     "build": "babel ./src --out-dir ./build",
+    "build:watch": "babel ./src --out-dir ./dist --watch",
     "build:clean": "rimraf ./build",
     "lint": "eslint --fix --max-warnings 0 -- .",
     "prebuild": "npm run build:clean",
@@ -52,7 +54,7 @@
   },
   "dependencies": {
     "array-flatten": "^2.1.1",
-    "babel-cli": "^6.18.0",
+    "babel-cli": "^6.22.2",
     "babel-loader": "^6.2.10",
     "babel-runtime": "^6.22.0",
     "basic-auth-parser": "0.0.2",
