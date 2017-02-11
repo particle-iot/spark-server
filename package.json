@@ -25,7 +25,7 @@
       "url": "https://github.com/emilyrose"
     }
   ],
-  "main": "./dist/exports.js",
+  "main": "./src/exports.js",
   "scripts": {
     "build": "babel ./src --out-dir ./build",
     "build:watch": "babel ./src --out-dir ./dist --watch",
