@@ -25,9 +25,9 @@
       "url": "https://github.com/emilyrose"
     }
   ],
-  "main": "./src/exports.js",
+  "main": "./dist/exports.js",
   "scripts": {
-    "build": "babel ./src --out-dir ./build",
+    "build": "babel ./src --out-dir ./dist",
     "build:watch": "babel ./src --out-dir ./dist --watch",
     "build:clean": "rimraf ./build",
     "lint": "eslint --fix --max-warnings 0 -- .",
