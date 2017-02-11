@@ -105,14 +105,14 @@ class DeviceManager {
       throw new HttpError('No device found', 404);
     }
 
-    return ({
+    return {
       ...attributes,
       connected: device && device.ping().connected || false,
       functions: description ? description.state.f : null,
       lastFlashedAppName: null,
       lastHeard: device && device.ping().lastPing || attributes.lastHeard,
       variables: description ? description.state.v : null,
-    });
+    };
   };
 
   getAll = async (userID: string): Promise<Array<Device>> => {
