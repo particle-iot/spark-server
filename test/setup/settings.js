@@ -4,9 +4,11 @@ import path from 'path';
 
 /* eslint-disable sorting/sort-object-props */
 export default {
+  BUILD_DIRECTORY: path.join(__dirname, '../__test_data__/build'),
   CUSTOM_FIRMWARE_DIRECTORY: path.join(__dirname, '../__test_data__'),
   DEVICE_DIRECTORY: path.join(__dirname, '../__test_data__/deviceKeys'),
   FIRMWARE_DIRECTORY: path.join(__dirname, '../__test_data__/knownApps'),
+  FIRMWARE_REPOSITORY_DIRECTORY: path.join(__dirname, '../__test_data__/firmware'),
   SERVER_KEY_FILENAME: 'default_key.pem',
   SERVER_KEYS_DIRECTORY: path.join(__dirname, '../__test_data__'),
   USERS_DIRECTORY: path.join(__dirname, '../__test_data__/users'),
