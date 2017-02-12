@@ -83,6 +83,14 @@ var splitBufferIntoChunks = function splitBufferIntoChunks(buffer, chunkSize) {
   return chunks;
 };
 
+var validateRequestType = function validateRequestType(requestType) {
+  if (!REQUEST_TYPES.includes(requestType)) {
+    throw new _HttpError2.default('wrong requestType');
+  }
+  return requestType;
+};
+
+var REQUEST_TYPES = ['DELETE', 'GET', 'POST', 'PUT'];
 var MAX_WEBHOOK_ERRORS_COUNT = 10;
 var WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 var MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
@@ -302,37 +310,40 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
             case 0:
               _context7.prev = 0;
               return _context7.delegateYield(_regenerator2.default.mark(function _callee6() {
-                var webhookVariablesObject, requestJson, requestFormData, requestUrl, requestQuery, responseTopic, isJsonRequest, requestOptions, responseBody, isResponseBodyAnObject, responseTemplate, responseEventData, chunks;
+                var webhookVariablesObject, requestAuth, requestJson, requestFormData, requestHeaders, requestUrl, requestQuery, responseTopic, requestType, isJsonRequest, requestOptions, responseBody, isResponseBodyAnObject, responseTemplate, responseEventData, chunks;
                 return _regenerator2.default.wrap(function _callee6$(_context6) {
                   while (1) {
                     switch (_context6.prev = _context6.next) {
                       case 0:
                         webhookVariablesObject = _this._getEventVariables(event);
+                        requestAuth = _this._compileJsonTemplate(webhook.auth, webhookVariablesObject);
                         requestJson = _this._compileJsonTemplate(webhook.json, webhookVariablesObject);
                         requestFormData = _this._compileJsonTemplate(webhook.form, webhookVariablesObject);
+                        requestHeaders = _this._compileJsonTemplate(webhook.headers, webhookVariablesObject);
                         requestUrl = _this._compileTemplate(webhook.url, webhookVariablesObject);
                         requestQuery = _this._compileJsonTemplate(webhook.query, webhookVariablesObject);
                         responseTopic = _this._compileTemplate(webhook.responseTopic, webhookVariablesObject);
+                        requestType = _this._compileTemplate(webhook.requestType, webhookVariablesObject);
                         isJsonRequest = !!requestJson;
                         requestOptions = {
-                          auth: webhook.auth,
+                          auth: requestAuth,
                           body: isJsonRequest ? _this._getRequestData(requestJson, event, webhook.noDefaults) : undefined,
                           form: !isJsonRequest ? _this._getRequestData(requestFormData, event, webhook.noDefaults) : undefined,
-                          headers: webhook.headers,
+                          headers: requestHeaders,
                           json: true,
-                          method: webhook.requestType,
+                          method: validateRequestType(requestType),
                           qs: requestQuery,
                           strictSSL: webhook.rejectUnauthorized,
                           url: (0, _nullthrows2.default)(requestUrl)
                         };
-                        _context6.next = 10;
+                        _context6.next = 13;
                         return _this._callWebhook(webhook, event, requestOptions);
 
-                      case 10:
+                      case 13:
                         responseBody = _context6.sent;
 
                         if (responseBody) {
-                          _context6.next = 13;
+                          _context6.next = 16;
                           break;
                         }
 
@@ -340,7 +351,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
                           v: void 0
                         });
 
-                      case 13:
+                      case 16:
                         isResponseBodyAnObject = responseBody === Object(responseBody);
                         responseTemplate = webhook.responseTemplate && isResponseBodyAnObject && _hogan2.default.compile(webhook.responseTemplate).render(responseBody);
                         responseEventData = responseTemplate || (isResponseBodyAnObject ? (0, _stringify2.default)(responseBody) : responseBody);
@@ -358,7 +369,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
                           });
                         });
 
-                      case 18:
+                      case 21:
                       case 'end':
                         return _context6.stop();
                     }

@@ -8,6 +8,7 @@ import { EventPublisher } from 'spark-protocol';
 import WebhookFileRepository from '../src/repository/WebhookFileRepository';
 import WebhookManager from '../src/managers/WebhookManager';
 import TestData from './setup/TestData';
+import Logger from '../src/lib/logger';
 
 const WEBHOOK_BASE = {
   event: 'test-event',
@@ -178,6 +179,90 @@ test(
 );
 
 test(
+  'should compile request auth header',
+  async t => {
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const data = `{"username":"123","password": "foobar"}`;
+    const event = getEvent(data);
+    const webhook = {
+      ...WEBHOOK_BASE,
+      auth: {
+        "username": "{{username}}",
+        "password": "{{password}}"
+      },
+    };
+    const defaultRequestData = getDefaultRequestData(event);
+
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
+      t.is(
+        JSON.stringify(requestOptions.auth),
+        JSON.stringify({
+          username: '123',
+          password: 'foobar',
+        }),
+      );
+      t.is(requestOptions.body, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
+      t.is(requestOptions.headers, undefined);
+      t.is(requestOptions.method, WEBHOOK_BASE.requestType);
+      t.is(requestOptions.url, WEBHOOK_BASE.url);
+    });
+
+    manager.runWebhook(webhook, event);
+  },
+);
+
+test(
+  'should compile request headers',
+  async t => {
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const data = `{"t":"123","g": "foobar"}`;
+    const event = getEvent(data);
+    const webhook = {
+      ...WEBHOOK_BASE,
+      headers: {
+        "testHeader1": "{{t}}",
+        "testHeader2": "{{g}}"
+      },
+    };
+    const defaultRequestData = getDefaultRequestData(event);
+
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
+      t.is(requestOptions.auth, undefined);
+      t.is(requestOptions.body, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
+      t.is(
+        JSON.stringify(requestOptions.headers),
+        JSON.stringify({
+          testHeader1: '123',
+          testHeader2: 'foobar',
+        }),
+      );
+      t.is(requestOptions.method, WEBHOOK_BASE.requestType);
+      t.is(requestOptions.url, WEBHOOK_BASE.url);
+    });
+
+    manager.runWebhook(webhook, event);
+  },
+);
+
+test(
   'should compile request url',
   async t => {
     const manager =
@@ -252,6 +337,64 @@ test(
 );
 
 test(
+  'should compile requestType',
+  async t => {
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const testRequestType = 'POST';
+    const data = `{"t":"123","requestType": "${testRequestType}"}`;
+    const event = getEvent(data);
+    const webhook = {
+      ...WEBHOOK_BASE,
+      requestType: "{{requestType}}",
+    };
+    const defaultRequestData = getDefaultRequestData(event);
+
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
+      t.is(requestOptions.auth, undefined);
+      t.is(requestOptions.body, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
+      t.is(requestOptions.headers, undefined);
+      t.is(requestOptions.method, testRequestType);
+      t.is(requestOptions.url, WEBHOOK_BASE.url);
+    });
+
+    manager.runWebhook(webhook, event);
+  },
+);
+
+test(
+  'should throw an error if wrong requestType is provided',
+  async t => {
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const testRequestType = 'wrongRequestType';
+    const data = `{"t":"123","requestType": "${testRequestType}"}`;
+    const event = getEvent(data);
+    const webhook = {
+      ...WEBHOOK_BASE,
+      requestType: "{{requestType}}",
+    };
+    const defaultRequestData = getDefaultRequestData(event);
+
+
+
+    Logger.error = sinon.spy((message: string) => {
+      t.is(message, 'webhookError: Error: wrong requestType');
+    });
+
+    manager.runWebhook(webhook, event);
+  },
+);
+
+test(
   'should publish sent event',
   async t => {
     const manager =
@@ -269,45 +412,6 @@ test(
     });
 
     manager.runWebhook(WEBHOOK_BASE, event);
-  },
-);
-
-test(
-  'should set request headers',
-  async t => {
-    const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
-    const event = getEvent();
-    const webhook = {
-      ...WEBHOOK_BASE,
-      headers: {
-        'Custom-Header-1': '123',
-        'Custom-Header-2': '123',
-      },
-    };
-    const defaultRequestData = getDefaultRequestData(event);
-
-    manager._callWebhook = sinon.spy((
-      webhook: Webhook,
-      event: Event,
-      requestOptions: RequestOptions,
-    ) => {
-      t.is(requestOptions.auth, undefined);
-      t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
-      t.is(
-        requestOptions.headers,
-        webhook.headers,
-      );
-      t.is(requestOptions.method, WEBHOOK_BASE.requestType);
-      t.is(requestOptions.qs, undefined);
-      t.is(requestOptions.url, WEBHOOK_BASE.url);
-    });
-
-    manager.runWebhook(webhook, event);
   },
 );
 
