@@ -1,6 +1,7 @@
 // @flow
 
 import type { Container } from 'constitute';
+import type { Settings } from './types';
 
 import { defaultBindings } from 'spark-protocol';
 import DeviceClaimsController from './controllers/DeviceClaimsController';
@@ -19,7 +20,12 @@ import UserFileRepository from './repository/UserFileRepository';
 import WebhookFileRepository from './repository/WebhookFileRepository';
 import settings from './settings';
 
-export default (container: Container) => {
+export default (container: Container, newSettings: Settings) => {
+  // Make sure that the spark-server settings match whatever is passed in
+  Object.keys(newSettings).forEach((key: string) => {
+    settings[key] = newSettings[key];
+  });
+
   // spark protocol container bindings
   defaultBindings(container);
 
