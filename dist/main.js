@@ -55,7 +55,7 @@ process.on('uncaughtException', function (exception) {
  * See https://github.com/justmoon/constitute for more info
  */
 var container = new _constitute.Container();
-(0, _defaultBindings2.default)(container);
+(0, _defaultBindings2.default)(container, _settings2.default);
 
 var deviceServer = container.constitute('DeviceServer');
 deviceServer.start();

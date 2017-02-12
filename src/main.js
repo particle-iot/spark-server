@@ -30,7 +30,7 @@ process.on('uncaughtException', (exception: Error) => {
  * See https://github.com/justmoon/constitute for more info
  */
 const container = new Container();
-defaultBindings(container);
+defaultBindings(container, settings);
 
 const deviceServer = container.constitute('DeviceServer');
 deviceServer.start();
