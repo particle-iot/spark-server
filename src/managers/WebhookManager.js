@@ -164,6 +164,11 @@ class WebhookManager {
       const webhookVariablesObject =
         this._getEventVariables(event);
 
+      const requestAuth = this._compileJsonTemplate(
+        webhook.auth,
+        webhookVariablesObject,
+      );
+
       const requestJson = this._compileJsonTemplate(
         webhook.json,
         webhookVariablesObject,
@@ -171,6 +176,11 @@ class WebhookManager {
 
       const requestFormData = this._compileJsonTemplate(
         webhook.form,
+        webhookVariablesObject,
+      );
+
+      const requestHeaders = this._compileJsonTemplate(
+        webhook.headers,
         webhookVariablesObject,
       );
 
@@ -196,14 +206,14 @@ class WebhookManager {
 
       const isJsonRequest = !!requestJson;
       const requestOptions = {
-        auth: webhook.auth,
+        auth: requestAuth,
         body: isJsonRequest
           ? this._getRequestData(requestJson, event, webhook.noDefaults)
           : undefined,
         form: !isJsonRequest
           ? this._getRequestData(requestFormData, event, webhook.noDefaults)
           : undefined,
-        headers: webhook.headers,
+        headers: requestHeaders,
         json: true,
         method: validateRequestType(requestType),
         qs: requestQuery,
