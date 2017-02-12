@@ -27,7 +27,7 @@ export default (container: Container, newSettings: Settings) => {
   });
 
   // spark protocol container bindings
-  defaultBindings(container);
+  defaultBindings(container, newSettings);
 
   // settings
   container.bindValue('DEVICE_DIRECTORY', settings.DEVICE_DIRECTORY);
