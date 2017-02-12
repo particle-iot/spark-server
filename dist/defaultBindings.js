@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _sparkProtocol = require('spark-protocol');
 
 var _DeviceClaimsController = require('./controllers/DeviceClaimsController');
@@ -68,7 +72,12 @@ var _settings2 = _interopRequireDefault(_settings);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (container) {
+exports.default = function (container, newSettings) {
+  // Make sure that the spark-server settings match whatever is passed in
+  (0, _keys2.default)(newSettings).forEach(function (key) {
+    _settings2.default[key] = newSettings[key];
+  });
+
   // spark protocol container bindings
   (0, _sparkProtocol.defaultBindings)(container);
 
