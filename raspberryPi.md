@@ -41,11 +41,6 @@ If you're already familiar with the command line, or you are comfortable setting
 	#
 	sudo npm install -g particle-cli --unsafe-perm
 
-After this you can follow the normal instructions for setting up the server.  I had trouble getting `particle identify` working so I used `ssh` to get my server key and set up the device from my main computer.
-https://www.raspberrypi.org/documentation/remote-access/ssh/
-
-If you want the node server to run whenever the Pi starts up, look into `pm2`:
-https://github.com/Unitech/pm2
 	#
 	#	Setup a project folder
 	#
@@ -60,3 +55,9 @@ https://github.com/Unitech/pm2
 	npm install
 	node main.js
 ```
+
+After this you can follow the normal instructions for setting up the server.  I had trouble getting `particle identify` working so I used `ssh` to get my server key and set up the device from my main computer.
+https://www.raspberrypi.org/documentation/remote-access/ssh/
+
+If you want the node server to run whenever the Pi starts up, look into `pm2`:
+https://github.com/Unitech/pm2
