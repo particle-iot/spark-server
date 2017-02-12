@@ -8,6 +8,7 @@ import { EventPublisher } from 'spark-protocol';
 import WebhookFileRepository from '../src/repository/WebhookFileRepository';
 import WebhookManager from '../src/managers/WebhookManager';
 import TestData from './setup/TestData';
+import Logger from '../src/lib/logger';
 
 const WEBHOOK_BASE = {
   event: 'test-event',
@@ -245,6 +246,64 @@ test(
         JSON.stringify({ testValue: '123', testValue2: 'foobar' }),
       );
       t.is(requestOptions.url, WEBHOOK_BASE.url);
+    });
+
+    manager.runWebhook(webhook, event);
+  },
+);
+
+test(
+  'should compile requestType',
+  async t => {
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const testRequestType = 'POST';
+    const data = `{"t":"123","requestType": "${testRequestType}"}`;
+    const event = getEvent(data);
+    const webhook = {
+      ...WEBHOOK_BASE,
+      requestType: "{{requestType}}",
+    };
+    const defaultRequestData = getDefaultRequestData(event);
+
+    manager._callWebhook = sinon.spy((
+      webhook: Webhook,
+      event: Event,
+      requestOptions: RequestOptions,
+    ) => {
+      t.is(requestOptions.auth, undefined);
+      t.is(requestOptions.body, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
+      t.is(requestOptions.headers, undefined);
+      t.is(requestOptions.method, testRequestType);
+      t.is(requestOptions.url, WEBHOOK_BASE.url);
+    });
+
+    manager.runWebhook(webhook, event);
+  },
+);
+
+test(
+  'should throw an error if wrong requestType is provided',
+  async t => {
+    const manager =
+      new WebhookManager(t.context.repository, t.context.eventPublisher);
+    const testRequestType = 'wrongRequestType';
+    const data = `{"t":"123","requestType": "${testRequestType}"}`;
+    const event = getEvent(data);
+    const webhook = {
+      ...WEBHOOK_BASE,
+      requestType: "{{requestType}}",
+    };
+    const defaultRequestData = getDefaultRequestData(event);
+
+
+
+    Logger.error = sinon.spy((message: string) => {
+      t.is(message, 'webhookError: Error: wrong requestType');
     });
 
     manager.runWebhook(webhook, event);

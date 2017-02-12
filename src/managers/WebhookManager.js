@@ -4,6 +4,7 @@ import type {
   Event,
   Repository,
   RequestOptions,
+  RequestType,
   Webhook,
   WebhookMutator,
 } from '../types';
@@ -40,6 +41,16 @@ const splitBufferIntoChunks = (
   return chunks;
 };
 
+const validateRequestType = (requestType: string): RequestType => {
+  if (!REQUEST_TYPES.includes(requestType)) {
+    throw new HttpError('wrong requestType');
+  }
+  return requestType;
+};
+
+const REQUEST_TYPES: Array<RequestType> = [
+  'DELETE', 'GET', 'POST', 'PUT',
+];
 const MAX_WEBHOOK_ERRORS_COUNT = 10;
 const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
@@ -178,6 +189,11 @@ class WebhookManager {
         webhookVariablesObject,
       );
 
+      const requestType = this._compileTemplate(
+        webhook.requestType,
+        webhookVariablesObject,
+      );
+
       const isJsonRequest = !!requestJson;
       const requestOptions = {
         auth: webhook.auth,
@@ -189,7 +205,7 @@ class WebhookManager {
           : undefined,
         headers: webhook.headers,
         json: true,
-        method: webhook.requestType,
+        method: validateRequestType(requestType),
         qs: requestQuery,
         strictSSL: webhook.rejectUnauthorized,
         url: nullthrows(requestUrl),

@@ -89,8 +89,6 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
   return desc;
 }
 
-var REQUEST_TYPES = ['DELETE', 'GET', 'POST', 'PUT'];
-
 var validateWebhookMutator = function validateWebhookMutator(webhookMutator) {
   if (!webhookMutator.event) {
     return new _HttpError2.default('no event name provided');
@@ -100,9 +98,6 @@ var validateWebhookMutator = function validateWebhookMutator(webhookMutator) {
   }
   if (!webhookMutator.requestType) {
     return new _HttpError2.default('no requestType provided');
-  }
-  if (!REQUEST_TYPES.includes(webhookMutator.requestType)) {
-    return new _HttpError2.default('wrong requestType');
   }
 
   return null;
