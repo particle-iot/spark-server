@@ -6,7 +6,7 @@ export type DeviceAPIType = {|
   cellular: boolean,
   connected: boolean,
   current_build_target: string,
-  functions?: Array<string>,
+  functions?: ?Array<string>,
   id: string,
   imei?: string,
   last_app: ?string,
@@ -18,7 +18,7 @@ export type DeviceAPIType = {|
   product_id: number,
   return_value?: mixed,
   status: string,
-  variables?: Object,
+  variables?: ?Object,
 |};
 
 const deviceToAPI = (device: Device, result?: mixed): DeviceAPIType => ({
