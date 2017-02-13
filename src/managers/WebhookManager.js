@@ -42,19 +42,12 @@ const splitBufferIntoChunks = (
 };
 
 const validateRequestType = (requestType: string): RequestType => {
-  const upperRequestType = requestType.toUpperCase();
-  // Array.includes() breaks flow, so I have to use find() here.
-  // https://github.com/facebook/flow/issues/2982
-  // https://github.com/facebook/flow/issues/2728
-  const validRequestType = REQUEST_TYPES.find(
-    (type: RequestType): boolean =>
-      type === upperRequestType,
-  );
-  if (!validRequestType) {
+  const upperRequestType = ((requestType.toUpperCase(): any): RequestType);
+  if (!REQUEST_TYPES.includes(upperRequestType)) {
     throw new HttpError('wrong requestType');
   }
 
-  return validRequestType;
+  return upperRequestType;
 };
 
 const REQUEST_TYPES: Array<RequestType> = [
