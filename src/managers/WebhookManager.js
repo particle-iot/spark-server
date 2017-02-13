@@ -42,10 +42,19 @@ const splitBufferIntoChunks = (
 };
 
 const validateRequestType = (requestType: string): RequestType => {
-  if (!REQUEST_TYPES.includes(requestType)) {
+  const upperRequestType = requestType.toUpperCase();
+  // Array.includes() breaks flow, so I have to use find() here.
+  // https://github.com/facebook/flow/issues/2982
+  // https://github.com/facebook/flow/issues/2728
+  const validRequestType = REQUEST_TYPES.find(
+    (type: RequestType): boolean =>
+      type === upperRequestType,
+  );
+  if (!validRequestType) {
     throw new HttpError('wrong requestType');
   }
-  return requestType;
+
+  return validRequestType;
 };
 
 const REQUEST_TYPES: Array<RequestType> = [
@@ -206,7 +215,7 @@ class WebhookManager {
 
       const isJsonRequest = !!requestJson;
       const requestOptions = {
-        auth: requestAuth,
+        auth: (requestAuth: any),
         body: isJsonRequest
           ? this._getRequestData(requestJson, event, webhook.noDefaults)
           : undefined,
@@ -215,7 +224,7 @@ class WebhookManager {
           : undefined,
         headers: requestHeaders,
         json: true,
-        method: validateRequestType(requestType),
+        method: validateRequestType(nullthrows(requestType)),
         qs: requestQuery,
         strictSSL: webhook.rejectUnauthorized,
         url: nullthrows(requestUrl),
