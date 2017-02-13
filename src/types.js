@@ -112,9 +112,9 @@ export type UserCredentials = {
 
 export type Device = DeviceAttributes & {
   connected: boolean,
-  functions?: Array<string>,
+  functions?: ?Array<string>,
   lastFlashedAppName: ?string,
-  variables?: Object,
+  variables?: ?Object,
 };
 
 export type Repository<TModel> = {
