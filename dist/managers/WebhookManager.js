@@ -84,10 +84,18 @@ var splitBufferIntoChunks = function splitBufferIntoChunks(buffer, chunkSize) {
 };
 
 var validateRequestType = function validateRequestType(requestType) {
-  if (!REQUEST_TYPES.includes(requestType)) {
+  var upperRequestType = requestType.toUpperCase();
+  // Array.includes() breaks flow, so I have to use find() here.
+  // https://github.com/facebook/flow/issues/2982
+  // https://github.com/facebook/flow/issues/2728
+  var validRequestType = REQUEST_TYPES.find(function (type) {
+    return type === upperRequestType;
+  });
+  if (!validRequestType) {
     throw new _HttpError2.default('wrong requestType');
   }
-  return requestType;
+
+  return validRequestType;
 };
 
 var REQUEST_TYPES = ['DELETE', 'GET', 'POST', 'PUT'];
@@ -331,7 +339,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
                           form: !isJsonRequest ? _this._getRequestData(requestFormData, event, webhook.noDefaults) : undefined,
                           headers: requestHeaders,
                           json: true,
-                          method: validateRequestType(requestType),
+                          method: validateRequestType((0, _nullthrows2.default)(requestType)),
                           qs: requestQuery,
                           strictSSL: webhook.rejectUnauthorized,
                           url: (0, _nullthrows2.default)(requestUrl)

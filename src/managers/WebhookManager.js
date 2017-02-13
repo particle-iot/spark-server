@@ -42,10 +42,12 @@ const splitBufferIntoChunks = (
 };
 
 const validateRequestType = (requestType: string): RequestType => {
-  if (!REQUEST_TYPES.includes(requestType)) {
+  const upperRequestType = ((requestType.toUpperCase(): any): RequestType);
+  if (!REQUEST_TYPES.includes(upperRequestType)) {
     throw new HttpError('wrong requestType');
   }
-  return requestType;
+
+  return upperRequestType;
 };
 
 const REQUEST_TYPES: Array<RequestType> = [
@@ -206,7 +208,7 @@ class WebhookManager {
 
       const isJsonRequest = !!requestJson;
       const requestOptions = {
-        auth: requestAuth,
+        auth: (requestAuth: any),
         body: isJsonRequest
           ? this._getRequestData(requestJson, event, webhook.noDefaults)
           : undefined,
@@ -215,7 +217,7 @@ class WebhookManager {
           : undefined,
         headers: requestHeaders,
         json: true,
-        method: validateRequestType(requestType),
+        method: validateRequestType(nullthrows(requestType)),
         qs: requestQuery,
         strictSSL: webhook.rejectUnauthorized,
         url: nullthrows(requestUrl),

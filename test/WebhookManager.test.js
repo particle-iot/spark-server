@@ -341,8 +341,7 @@ test(
   async t => {
     const manager =
       new WebhookManager(t.context.repository, t.context.eventPublisher);
-    const testRequestType = 'POST';
-    const data = `{"t":"123","requestType": "${testRequestType}"}`;
+    const data = `{"t":"123","requestType": "post"}`;
     const event = getEvent(data);
     const webhook = {
       ...WEBHOOK_BASE,
@@ -362,7 +361,7 @@ test(
         JSON.stringify(defaultRequestData),
       );
       t.is(requestOptions.headers, undefined);
-      t.is(requestOptions.method, testRequestType);
+      t.is(requestOptions.method, 'POST');
       t.is(requestOptions.url, WEBHOOK_BASE.url);
     });
 
