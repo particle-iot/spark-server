@@ -21,7 +21,7 @@
 
 import crypto from 'crypto';
 
-const HASH_DIGEST = 'sha1';
+const HASH_DIGEST = 'sha256';
 const HASH_ITERATIONS = 30000;
 const KEY_LENGTH = 64;
 
