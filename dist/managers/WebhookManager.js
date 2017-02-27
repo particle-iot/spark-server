@@ -85,17 +85,11 @@ var splitBufferIntoChunks = function splitBufferIntoChunks(buffer, chunkSize) {
 
 var validateRequestType = function validateRequestType(requestType) {
   var upperRequestType = requestType.toUpperCase();
-  // Array.includes() breaks flow, so I have to use find() here.
-  // https://github.com/facebook/flow/issues/2982
-  // https://github.com/facebook/flow/issues/2728
-  var validRequestType = REQUEST_TYPES.find(function (type) {
-    return type === upperRequestType;
-  });
-  if (!validRequestType) {
+  if (!REQUEST_TYPES.includes(upperRequestType)) {
     throw new _HttpError2.default('wrong requestType');
   }
 
-  return validRequestType;
+  return upperRequestType;
 };
 
 var REQUEST_TYPES = ['DELETE', 'GET', 'POST', 'PUT'];
