@@ -1,7 +1,9 @@
 spark-server
 ============
 
-An API compatible open source server for interacting with devices speaking the [spark-protocol](https://github.com/spark/spark-protocol)
+These instructions have been modified for the Brewskey clone of the local cloud :)
+
+An API compatible open source server for interacting with devices speaking the [spark-protocol](https://github.com/Brewskey/spark-protocol)
 
 <pre>
    __  __            __                 __        __                ____
@@ -14,16 +16,23 @@ An API compatible open source server for interacting with devices speaking the [
 
 Quick Install
 ==============
+
 ### You'll need to prepare your system for node-gyp. This is used in the URSA package.
 **https://github.com/nodejs/node-gyp**
 
 ```
-git clone https://github.com/spark/spark-server.git
+git clone https://github.com/Brewsky/spark-server.git
 cd spark-server/
 npm install
-node main.js
+./node_modules/.bin/babel src/ -d lib
+node lib/main.js
 ```
 
+The babel command pre-processes all the src/ to allow modern node
+syntax to be used in older versions of node. The modified code that is
+actually running lives in lib/
+If you change anything in src/ you'll need to rerun babel for changes
+to take effect.
  
 > **Windows Setup**  
 > You'll need to install Python 2.7 and OpenSSL 1.0.2 or older.  
@@ -40,7 +49,7 @@ How do I get started?
 1) Run the server with:
 
 ```
-node main.js
+node lib/main.js
 ```
 
 2) Watch for your IP address, you'll see something like:
