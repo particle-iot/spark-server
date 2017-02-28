@@ -1,19 +1,12 @@
 // @flow
 
-import type {
-  RequestType,
-  WebhookMutator,
-} from '../types';
+import type { WebhookMutator } from '../types';
 import type WebhookManager from '../managers/WebhookManager';
 
 import Controller from './Controller';
 import HttpError from '../lib/HttpError';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
-
-const REQUEST_TYPES: Array<RequestType> = [
-  'DELETE', 'GET', 'POST', 'PUT',
-];
 
 const validateWebhookMutator = (webhookMutator: WebhookMutator): ?HttpError => {
   if (!webhookMutator.event) {
@@ -24,9 +17,6 @@ const validateWebhookMutator = (webhookMutator: WebhookMutator): ?HttpError => {
   }
   if (!webhookMutator.requestType) {
     return new HttpError('no requestType provided');
-  }
-  if (!REQUEST_TYPES.includes(webhookMutator.requestType)) {
-    return new HttpError('wrong requestType');
   }
 
   return null;

@@ -18,7 +18,7 @@ export type Webhook = {
   productIdOrSlug?: string,
   query?: { [key: string]: Object },
   rejectUnauthorized?: boolean,
-  requestType: RequestType,
+  requestType: string,
   responseTemplate?: string,
   responseTopic?: string,
   url: string,
@@ -38,7 +38,7 @@ export type WebhookMutator = {
   productIdOrSlug?: string,
   query?: { [key: string]: Object },
   rejectUnauthorized?: boolean,
-  requestType: RequestType,
+  requestType: string,
   responseTemplate?: string,
   responseTopic?: string,
   url: string,
@@ -112,9 +112,9 @@ export type UserCredentials = {
 
 export type Device = DeviceAttributes & {
   connected: boolean,
-  functions?: Array<string>,
+  functions?: ?Array<string>,
   lastFlashedAppName: ?string,
-  variables?: Object,
+  variables?: ?Object,
 };
 
 export type Repository<TModel> = {
