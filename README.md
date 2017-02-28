@@ -1,7 +1,9 @@
 spark-server
 ============
 
-An API compatible open source server for interacting with devices speaking the [spark-protocol](https://github.com/spark/spark-protocol)
+These instructions have been modified for the Brewskey clone of the local cloud :)
+
+An API compatible open source server for interacting with devices speaking the [spark-protocol](https://github.com/Brewskey/spark-protocol)
 
 <pre>
    __  __            __                 __        __                ____
@@ -14,16 +16,23 @@ An API compatible open source server for interacting with devices speaking the [
 
 Quick Install
 ==============
+
 ### You'll need to prepare your system for node-gyp. This is used in the URSA package.
 **https://github.com/nodejs/node-gyp**
 
 ```
-git clone https://github.com/spark/spark-server.git
+git clone https://github.com/Brewsky/spark-server.git
 cd spark-server/
 npm install
-node main.js
+./node_modules/.bin/babel src/ -d lib
+node lib/main.js
 ```
 
+The babel command pre-processes all the src/ to allow modern node
+syntax to be used in older versions of node. The modified code that is
+actually running lives in lib/
+If you change anything in src/ you'll need to rerun babel for changes
+to take effect.
  
 > **Windows Setup**  
 > You'll need to install Python 2.7 and OpenSSL 1.0.2 or older.  
@@ -40,7 +49,7 @@ How do I get started?
 1) Run the server with:
 
 ```
-node main.js
+node lib/main.js
 ```
 
 2) Watch for your IP address, you'll see something like:
@@ -101,8 +110,28 @@ You'll need to run `particle config particle`, `particle keys server cloud_publi
 At this point you should be able to run normal cloud commands and flash binaries.  You can add any webhooks you need, call functions, or get variable values.
 
 
+What's different to the original spark-server?
+==============================================
+
+The way the system stores data has changed.
+
+On first run the server creates the following directories for storing data about your local cloud:
+
+ - `data/`
+  - The cloud keys `default_key.pem` and `default_key.pub.pem` go directly in here. Previously these keys lived in the main directory.
+ - `data/deviceKeys/`
+  - Device keys (.pub.pem) and information (.json) for each device live in here. Previously these were found in `core_keys/`
+ - `data/users/`
+  - User account data (.json) for each user live in here. Previously stored in `users/`
+ - `data/knownApps/`
+  - ???
+ - `data/webhooks/`
+  - ???
+
 What kind of project is this?
 ======================================
+
+This is a refactored clone of the original spark-server because this is what the awesome guys at Particle.io said:
 
 We're open sourcing our core Spark-protocol code to help you build awesome stuff with your Spark Core, and with your
 other projects.  We're also open sourcing an example server with the same easy to use Rest API as the Spark Cloud, so
@@ -115,6 +144,8 @@ We'll keep improving and adding features, and we hope you'll want to join in too
 
 What features are currently present
 ====================================
+
+This feature list is not correct wrt the Brewskey clone - there's much more!
 
 The spark-server module aims to provide a HTTP rest interface that is API compatible with the main Spark Cloud.  Ideally any
 programs you write to run against the Spark Cloud should also work on the Local Cloud.  Some features aren't here yet, but may be
