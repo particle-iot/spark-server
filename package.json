@@ -31,11 +31,13 @@
     "build:watch": "babel ./src --out-dir ./dist --watch",
     "build:clean": "rimraf ./build",
     "lint": "eslint --fix --max-warnings 0 -- .",
+    "postinstall": "npm run update-firmware",
     "prebuild": "npm run build:clean",
     "start": "nodemon --exec babel-node ./src/main.js --watch src --watch ../spark-protocol/dist --ignore data",
     "start:prod": "npm run build && node ./build/main.js",
     "test": "ava --serial",
-    "test:watch": "ava --watch --serial"
+    "test:watch": "ava --watch --serial",
+    "update-firmware": "node ./node_modules/spark-protocol/dist/scripts/update-firmware-binaries"
   },
   "pre-commit": [
     "lint",

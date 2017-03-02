@@ -473,40 +473,48 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
   }();
 
   this.provision = function () {
-    var _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(deviceID, userID, publicKey) {
+    var _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(deviceID, userID, publicKey, algorithm) {
       var createdKey, existingAttributes, attributes;
       return _regenerator2.default.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
             case 0:
-              _context11.prev = 0;
+              if (!(algorithm === 'ecc')) {
+                _context11.next = 2;
+                break;
+              }
+
+              return _context11.abrupt('return', null);
+
+            case 2:
+              _context11.prev = 2;
               createdKey = _ursa2.default.createPublicKey(publicKey);
 
               if (_ursa2.default.isPublicKey(createdKey)) {
-                _context11.next = 4;
+                _context11.next = 6;
                 break;
               }
 
               throw new _HttpError2.default('Not a public key');
 
-            case 4:
-              _context11.next = 9;
+            case 6:
+              _context11.next = 11;
               break;
 
-            case 6:
-              _context11.prev = 6;
-              _context11.t0 = _context11['catch'](0);
+            case 8:
+              _context11.prev = 8;
+              _context11.t0 = _context11['catch'](2);
               throw new _HttpError2.default('Key error ' + _context11.t0);
-
-            case 9:
-              _context11.next = 11;
-              return _this._deviceKeyRepository.update(deviceID, publicKey);
 
             case 11:
               _context11.next = 13;
-              return _this._deviceAttributeRepository.getById(deviceID);
+              return _this._deviceKeyRepository.update(deviceID, publicKey);
 
             case 13:
+              _context11.next = 15;
+              return _this._deviceAttributeRepository.getById(deviceID);
+
+            case 15:
               existingAttributes = _context11.sent;
               attributes = (0, _extends3.default)({
                 deviceID: deviceID
@@ -515,25 +523,25 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
                 registrar: userID,
                 timestamp: new Date()
               });
-              _context11.next = 17;
+              _context11.next = 19;
               return _this._deviceAttributeRepository.update(attributes);
 
-            case 17:
-              _context11.next = 19;
+            case 19:
+              _context11.next = 21;
               return _this.getByID(deviceID, userID);
 
-            case 19:
+            case 21:
               return _context11.abrupt('return', _context11.sent);
 
-            case 20:
+            case 22:
             case 'end':
               return _context11.stop();
           }
         }
-      }, _callee11, _this, [[0, 6]]);
+      }, _callee11, _this, [[2, 8]]);
     }));
 
-    return function (_x23, _x24, _x25) {
+    return function (_x23, _x24, _x25, _x26) {
       return _ref13.apply(this, arguments);
     };
   }();
@@ -581,7 +589,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
       }, _callee12, _this);
     }));
 
-    return function (_x26, _x27, _x28) {
+    return function (_x27, _x28, _x29) {
       return _ref14.apply(this, arguments);
     };
   }();
@@ -624,7 +632,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
       }, _callee13, _this);
     }));
 
-    return function (_x29, _x30, _x31) {
+    return function (_x30, _x31, _x32) {
       return _ref15.apply(this, arguments);
     };
   }();

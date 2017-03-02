@@ -224,7 +224,12 @@ class DeviceManager {
     deviceID: string,
     userID: string,
     publicKey: string,
+    algorithm: 'ecc' | 'rsa',
   ): Promise<*> => {
+    if (algorithm === 'ecc') {
+      return null;
+    }
+
     try {
       const createdKey = ursa.createPublicKey(publicKey);
       if (!ursa.isPublicKey(createdKey)) {
