@@ -4,6 +4,7 @@ import type {
   Event,
   Repository,
   RequestOptions,
+  RequestType,
   Webhook,
   WebhookMutator,
 } from '../types';
@@ -40,6 +41,18 @@ const splitBufferIntoChunks = (
   return chunks;
 };
 
+const validateRequestType = (requestType: string): RequestType => {
+  const upperRequestType = ((requestType.toUpperCase(): any): RequestType);
+  if (!REQUEST_TYPES.includes(upperRequestType)) {
+    throw new HttpError('wrong requestType');
+  }
+
+  return upperRequestType;
+};
+
+const REQUEST_TYPES: Array<RequestType> = [
+  'DELETE', 'GET', 'POST', 'PUT',
+];
 const MAX_WEBHOOK_ERRORS_COUNT = 10;
 const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
@@ -153,6 +166,11 @@ class WebhookManager {
       const webhookVariablesObject =
         this._getEventVariables(event);
 
+      const requestAuth = this._compileJsonTemplate(
+        webhook.auth,
+        webhookVariablesObject,
+      );
+
       const requestJson = this._compileJsonTemplate(
         webhook.json,
         webhookVariablesObject,
@@ -160,6 +178,11 @@ class WebhookManager {
 
       const requestFormData = this._compileJsonTemplate(
         webhook.form,
+        webhookVariablesObject,
+      );
+
+      const requestHeaders = this._compileJsonTemplate(
+        webhook.headers,
         webhookVariablesObject,
       );
 
@@ -178,18 +201,23 @@ class WebhookManager {
         webhookVariablesObject,
       );
 
+      const requestType = this._compileTemplate(
+        webhook.requestType,
+        webhookVariablesObject,
+      );
+
       const isJsonRequest = !!requestJson;
       const requestOptions = {
-        auth: webhook.auth,
+        auth: (requestAuth: any),
         body: isJsonRequest
           ? this._getRequestData(requestJson, event, webhook.noDefaults)
           : undefined,
         form: !isJsonRequest
           ? this._getRequestData(requestFormData, event, webhook.noDefaults)
           : undefined,
-        headers: webhook.headers,
+        headers: requestHeaders,
         json: true,
-        method: webhook.requestType,
+        method: validateRequestType(nullthrows(requestType)),
         qs: requestQuery,
         strictSSL: webhook.rejectUnauthorized,
         url: nullthrows(requestUrl),

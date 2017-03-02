@@ -101,20 +101,6 @@ test('should throw an error if requestType isn\'t provided', async t => {
   t.is(response.body.error, 'no requestType provided');
 });
 
-test('should throw an error if requestType is wrong', async t => {
-  const response = await request(app)
-    .post('/v1/webhooks')
-    .query({ access_token: userToken })
-    .send({
-      event: WEBHOOK_MODEL.event,
-      requestType: 'some random value',
-      url: WEBHOOK_MODEL.url,
-    });
-
-  t.is(response.status, 400);
-  t.is(response.body.error, 'wrong requestType');
-});
-
 test.serial('should return all webhooks', async t => {
   const response = await request(app)
     .get('/v1/webhooks')
