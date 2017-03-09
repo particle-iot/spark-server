@@ -141,14 +141,20 @@ export type Settings = {
   BUILD_DIRECTORY: string,
   CRYPTO_SALT: string,
   DEVICE_DIRECTORY: string,
+  ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: boolean,
+  EXPRESS_SERVER_CONFIG: {
+    PORT: number,
+  },
   FIRMWARE_DIRECTORY: string,
   FIRMWARE_REPOSITORY_DIRECTORY: string,
-  HOST: string,
   LOG_REQUESTS: boolean,
   LOGIN_ROUTE: string,
-  PORT: number,
   SERVER_KEY_FILENAME: string,
   SERVER_KEYS_DIRECTORY: string,
+  TCP_DEVICE_SERVER_CONFIG: {
+    HOST: string,
+    PORT: number,
+  },
   USERS_DIRECTORY: string,
   WEBHOOKS_DIRECTORY: string,
 };

@@ -8,7 +8,7 @@ import createApp from './app';
 import defaultBindings from './defaultBindings';
 import settings from './settings';
 
-const NODE_PORT = process.env.NODE_PORT || 8080;
+const NODE_PORT = process.env.NODE_PORT || settings.EXPRESS_SERVER_CONFIG.PORT;
 
 process.on('uncaughtException', (exception: Error) => {
   logger.error(
