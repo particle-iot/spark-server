@@ -141,6 +141,7 @@ export type Settings = {
   BUILD_DIRECTORY: string,
   CRYPTO_SALT: string,
   DEVICE_DIRECTORY: string,
+  ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: boolean,
   EXPRESS_SERVER_CONFIG: {
     PORT: number,
   },
@@ -151,7 +152,6 @@ export type Settings = {
   SERVER_KEY_FILENAME: string,
   SERVER_KEYS_DIRECTORY: string,
   TCP_DEVICE_SERVER_CONFIG: {
-    ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: boolean,
     HOST: string,
     PORT: number,
   },

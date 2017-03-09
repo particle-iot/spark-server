@@ -25,6 +25,7 @@ import path from 'path';
 export default {
   BUILD_DIRECTORY: path.join(__dirname, '../data/build'),
   DEVICE_DIRECTORY: path.join(__dirname, '../data/deviceKeys'),
+  ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
   FIRMWARE_DIRECTORY: path.join(__dirname, '../data/knownApps'),
   FIRMWARE_REPOSITORY_DIRECTORY: path.join(__dirname, '../../spark-firmware'),
   SERVER_KEY_FILENAME: 'default_key.pem',
@@ -42,7 +43,6 @@ export default {
     PORT: 8080,
   },
   TCP_DEVICE_SERVER_CONFIG: {
-    ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
     HOST: 'localhost',
     PORT: 5683,
   },

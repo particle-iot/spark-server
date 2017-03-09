@@ -7,6 +7,7 @@ export default {
   BUILD_DIRECTORY: path.join(__dirname, '../__test_data__/build'),
   CUSTOM_FIRMWARE_DIRECTORY: path.join(__dirname, '../__test_data__'),
   DEVICE_DIRECTORY: path.join(__dirname, '../__test_data__/deviceKeys'),
+  ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
   FIRMWARE_DIRECTORY: path.join(__dirname, '../__test_data__/knownApps'),
   FIRMWARE_REPOSITORY_DIRECTORY: path.join(__dirname, '../__test_data__/firmware'),
   SERVER_KEY_FILENAME: 'default_key.pem',
@@ -24,7 +25,6 @@ export default {
     PORT: 8080,
   },
   TCP_DEVICE_SERVER_CONFIG: {
-    ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
     HOST: 'localhost',
     PORT: 5683,
   },
