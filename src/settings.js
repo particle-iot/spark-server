@@ -38,6 +38,12 @@ export default {
   LOG_REQUESTS: true,
   LOGIN_ROUTE: '/oauth/token',
 
-  PORT: 5683,
-  HOST: 'localhost',
+  EXPRESS_SERVER_CONFIG: {
+    PORT: 8080,
+  },
+  TCP_DEVICE_SERVER_CONFIG: {
+    ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
+    HOST: 'localhost',
+    PORT: 5683,
+  },
 };
