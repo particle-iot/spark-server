@@ -364,7 +364,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
                           var responseEventName = responseTopic && responseTopic + '/' + index || 'hook-response/' + event.name + '/' + index;
 
                           _this._eventPublisher.publish({
-                            data: chunk,
+                            data: chunk.toString(),
                             isPublic: false,
                             name: responseEventName,
                             userID: event.userID
