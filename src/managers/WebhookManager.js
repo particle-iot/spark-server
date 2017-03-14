@@ -257,7 +257,7 @@ class WebhookManager {
           `hook-response/${event.name}/${index}`;
 
         this._eventPublisher.publish({
-          data: chunk,
+          data: chunk.toString(),
           isPublic: false,
           name: responseEventName,
           userID: event.userID,
