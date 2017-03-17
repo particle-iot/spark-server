@@ -21,7 +21,7 @@ Quick Install
 **https://github.com/nodejs/node-gyp**
 
 ```
-git clone https://github.com/Brewsky/spark-server.git
+git clone https://github.com/Brewskey/spark-server.git
 cd spark-server/
 npm install
 ./node_modules/.bin/babel src/ -d lib
