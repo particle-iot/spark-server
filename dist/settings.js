@@ -14,6 +14,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = {
   BUILD_DIRECTORY: _path2.default.join(__dirname, '../data/build'),
   DEVICE_DIRECTORY: _path2.default.join(__dirname, '../data/deviceKeys'),
+  ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
   FIRMWARE_DIRECTORY: _path2.default.join(__dirname, '../data/knownApps'),
   FIRMWARE_REPOSITORY_DIRECTORY: _path2.default.join(__dirname, '../../spark-firmware'),
   SERVER_KEY_FILENAME: 'default_key.pem',
@@ -27,8 +28,13 @@ exports.default = {
   LOG_REQUESTS: true,
   LOGIN_ROUTE: '/oauth/token',
 
-  PORT: 5683,
-  HOST: 'localhost'
+  EXPRESS_SERVER_CONFIG: {
+    PORT: 8080
+  },
+  TCP_DEVICE_SERVER_CONFIG: {
+    HOST: 'localhost',
+    PORT: 5683
+  }
 }; /**
    *    Copyright (C) 2013-2014 Spark Labs, Inc. All rights reserved. -  https://www.spark.io/
    *
