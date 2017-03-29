@@ -36,7 +36,7 @@ var _settings2 = _interopRequireDefault(_settings);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var NODE_PORT = process.env.NODE_PORT || 8080;
+var NODE_PORT = process.env.NODE_PORT || _settings2.default.EXPRESS_SERVER_CONFIG.PORT;
 
 process.on('uncaughtException', function (exception) {
   _logger2.default.error('uncaughtException', { message: exception.message, stack: exception.stack }); // logging with MetaData

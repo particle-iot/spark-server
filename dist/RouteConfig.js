@@ -161,47 +161,65 @@ exports.default = function (app, container, controllers, settings) {
                   functionResult = mappedFunction.call.apply(mappedFunction, [controllerInstance].concat((0, _toConsumableArray3.default)(values), [body]));
 
                   if (!functionResult.then) {
+                    _context.next = 24;
+                    break;
+                  }
+
+                  if (serverSentEvents) {
                     _context.next = 17;
                     break;
                   }
 
-                  _context.next = 13;
-                  return _promise2.default.race([functionResult, !serverSentEvents ? new _promise2.default(function (resolve, reject) {
+                  _context.next = 14;
+                  return _promise2.default.race([functionResult, new _promise2.default(function (resolve, reject) {
                     return setTimeout(function () {
                       return reject(new Error('timeout'));
                     }, settings.API_TIMEOUT);
-                  }) : null]);
+                  })]);
 
-                case 13:
-                  result = _context.sent;
-
-                  response.status((0, _nullthrows2.default)(result).status).json((0, _nullthrows2.default)(result).data);
-                  _context.next = 18;
+                case 14:
+                  _context.t0 = _context.sent;
+                  _context.next = 20;
                   break;
 
                 case 17:
-                  response.status(functionResult.status).json(functionResult.data);
+                  _context.next = 19;
+                  return functionResult;
 
-                case 18:
-                  _context.next = 24;
-                  break;
+                case 19:
+                  _context.t0 = _context.sent;
 
                 case 20:
-                  _context.prev = 20;
-                  _context.t0 = _context['catch'](8);
-                  httpError = new _HttpError2.default(_context.t0);
+                  result = _context.t0;
+
+
+                  response.status((0, _nullthrows2.default)(result).status).json((0, _nullthrows2.default)(result).data);
+                  _context.next = 25;
+                  break;
+
+                case 24:
+                  response.status(functionResult.status).json(functionResult.data);
+
+                case 25:
+                  _context.next = 31;
+                  break;
+
+                case 27:
+                  _context.prev = 27;
+                  _context.t1 = _context['catch'](8);
+                  httpError = new _HttpError2.default(_context.t1);
 
                   response.status(httpError.status).json({
                     error: httpError.message,
                     ok: false
                   });
 
-                case 24:
+                case 31:
                 case 'end':
                   return _context.stop();
               }
             }
-          }, _callee, undefined, [[8, 20]]);
+          }, _callee, undefined, [[8, 27]]);
         }));
 
         return function (_x2, _x3) {
