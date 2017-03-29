@@ -136,17 +136,17 @@ export default (
 
             if (functionResult.then) {
               const result = !serverSentEvents
-              ? await Promise.race([
-                functionResult,
-                new Promise(
-                  (resolve: () => void, reject: () => void): number =>
-                    setTimeout(
-                      (): void => reject(new Error('timeout')),
-                      settings.API_TIMEOUT,
-                    ),
-                ),
-              ])
-              : await functionResult;
+                ? await Promise.race([
+                  functionResult,
+                  new Promise(
+                    (resolve: () => void, reject: () => void): number =>
+                      setTimeout(
+                        (): void => reject(new Error('timeout')),
+                        settings.API_TIMEOUT,
+                      ),
+                  ),
+                ])
+                : await functionResult;
 
               response
                 .status(nullthrows(result).status)
