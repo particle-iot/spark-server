@@ -57,10 +57,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
@@ -207,10 +204,7 @@ test(
         }),
       );
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.url, WEBHOOK_BASE.url);
@@ -243,10 +237,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(
         JSON.stringify(requestOptions.headers),
         JSON.stringify({
@@ -282,10 +273,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
@@ -319,10 +307,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(
@@ -356,10 +341,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, 'POST');
       t.is(requestOptions.url, WEBHOOK_BASE.url);

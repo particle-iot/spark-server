@@ -58,6 +58,10 @@ const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
 const MAX_RESPONSE_MESSAGE_SIZE = 100000;
 
+const WEBHOOK_DEFAULTS = {
+  rejectUnauthorized: true,
+};
+
 class WebhookManager {
   _eventPublisher: EventPublisher;
   _subscriptionIDsByWebhookID: Map<string, string> = new Map();
@@ -75,7 +79,10 @@ class WebhookManager {
   }
 
   create = async (model: WebhookMutator): Promise<Webhook> => {
-    const webhook = await this._webhookRepository.create(model);
+    const webhook = await this._webhookRepository.create({
+      ...WEBHOOK_DEFAULTS,
+      ...model,
+    });
     this._subscribeWebhook(webhook);
     return webhook;
   };
@@ -206,13 +213,13 @@ class WebhookManager {
         webhookVariablesObject,
       );
 
-      const isJsonRequest = !!requestJson;
+      const isJsonRequest = !!requestJson || !requestFormData;
       const requestOptions = {
         auth: (requestAuth: any),
-        body: isJsonRequest
+        body: isJsonRequest && requestJson
           ? this._getRequestData(requestJson, event, webhook.noDefaults)
           : undefined,
-        form: !isJsonRequest
+        form: !isJsonRequest && requestFormData
           ? this._getRequestData(requestFormData, event, webhook.noDefaults)
           : undefined,
         headers: requestHeaders,
