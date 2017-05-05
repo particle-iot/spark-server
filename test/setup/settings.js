@@ -23,6 +23,9 @@ export default {
 
   EXPRESS_SERVER_CONFIG: {
     PORT: 8080,
+    SSL_CERTIFICATE_FILEPATH: null,
+    SSL_PRIVATE_KEY_FILEPATH: null,
+    USE_SSL: false,
   },
   TCP_DEVICE_SERVER_CONFIG: {
     HOST: 'localhost',

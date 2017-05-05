@@ -1,12 +1,16 @@
 // @flow
 
-import { Container } from 'constitute';
-import os from 'os';
 import arrayFlatten from 'array-flatten';
-import logger from './lib/logger';
 import createApp from './app';
+import nulltrhows from 'nullthrows';
+import fs from 'fs';
+import http from 'http';
+import https from 'https';
+import os from 'os';
 import defaultBindings from './defaultBindings';
+import logger from './lib/logger';
 import settings from './settings';
+import { Container } from 'constitute';
 
 const NODE_PORT = process.env.NODE_PORT || settings.EXPRESS_SERVER_CONFIG.PORT;
 
@@ -37,10 +41,27 @@ deviceServer.start();
 
 const app = createApp(container, settings);
 
-app.listen(
-  NODE_PORT,
-  (): void => console.log(`express server started on port ${NODE_PORT}`),
-);
+const onServerStartListen = (): void =>
+  console.log(`express server started on port ${NODE_PORT}`);
+
+if (settings.EXPRESS_SERVER_CONFIG.USE_SSL) {
+  const options = {
+    cert: fs.readFileSync(
+      nulltrhows(settings.EXPRESS_SERVER_CONFIG.SSL_CERTIFICATE_FILEPATH),
+    ),
+    key: fs.readFileSync(
+      nulltrhows(settings.EXPRESS_SERVER_CONFIG.SSL_PRIVATE_KEY_FILEPATH),
+    ),
+  };
+
+  https
+    .createServer(options, (app: any))
+    .listen(NODE_PORT, onServerStartListen);
+} else {
+  http
+    .createServer((app: any))
+    .listen(NODE_PORT, onServerStartListen);
+}
 
 const addresses = arrayFlatten(
   Object.entries(os.networkInterfaces()).map(

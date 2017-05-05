@@ -144,6 +144,9 @@ export type Settings = {
   ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: boolean,
   EXPRESS_SERVER_CONFIG: {
     PORT: number,
+    SSL_CERTIFICATE_FILEPATH: ?string,
+    SSL_PRIVATE_KEY_FILEPATH: ?string,
+    USE_SSL: boolean,
   },
   FIRMWARE_DIRECTORY: string,
   FIRMWARE_REPOSITORY_DIRECTORY: string,
