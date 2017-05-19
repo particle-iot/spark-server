@@ -62,6 +62,10 @@ var _TingoDb = require('./repository/TingoDb');
 
 var _TingoDb2 = _interopRequireDefault(_TingoDb);
 
+var _DeviceAttributeDatabaseRepository = require('./repository/DeviceAttributeDatabaseRepository');
+
+var _DeviceAttributeDatabaseRepository2 = _interopRequireDefault(_DeviceAttributeDatabaseRepository);
+
 var _UserDatabaseRepository = require('./repository/UserDatabaseRepository');
 
 var _UserDatabaseRepository2 = _interopRequireDefault(_UserDatabaseRepository);
@@ -113,6 +117,7 @@ exports.default = function (container, newSettings) {
   container.bindClass('WebhookManager', _WebhookManager2.default, ['WebhookRepository', 'EventPublisher']);
 
   // Repositories
+  container.bindClass('DeviceAttributeRepository', _DeviceAttributeDatabaseRepository2.default, ['Database']);
   container.bindClass('DeviceFirmwareRepository', _DeviceFirmwareFileRepository2.default, ['FIRMWARE_DIRECTORY']);
   container.bindClass('UserRepository', _UserDatabaseRepository2.default, ['Database']);
   container.bindClass('WebhookRepository', _WebhookDatabaseRepository2.default, ['Database']);
