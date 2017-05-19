@@ -17,6 +17,8 @@ import WebhookManager from './managers/WebhookManager';
 import EventManager from './managers/EventManager';
 import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
 import TingoDb from './repository/TingoDb';
+import DeviceAttributeDatabaseRepository from
+  './repository/DeviceAttributeDatabaseRepository';
 import UserDatabaseRepository from './repository/UserDatabaseRepository';
 import WebhookDatabaseRepository from './repository/WebhookDatabaseRepository';
 import settings from './settings';
@@ -114,6 +116,11 @@ export default (container: Container, newSettings: Settings) => {
   );
 
   // Repositories
+  container.bindClass(
+    'DeviceAttributeRepository',
+    DeviceAttributeDatabaseRepository,
+    ['Database'],
+  );
   container.bindClass(
     'DeviceFirmwareRepository',
     DeviceFirmwareFileRepository,
