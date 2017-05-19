@@ -42,6 +42,10 @@ var _WebhooksController = require('./controllers/WebhooksController');
 
 var _WebhooksController2 = _interopRequireDefault(_WebhooksController);
 
+var _DeviceManager = require('./managers/DeviceManager');
+
+var _DeviceManager2 = _interopRequireDefault(_DeviceManager);
+
 var _WebhookManager = require('./managers/WebhookManager');
 
 var _WebhookManager2 = _interopRequireDefault(_WebhookManager);
@@ -54,17 +58,17 @@ var _DeviceFirmwareFileRepository = require('./repository/DeviceFirmwareFileRepo
 
 var _DeviceFirmwareFileRepository2 = _interopRequireDefault(_DeviceFirmwareFileRepository);
 
-var _DeviceManager = require('./managers/DeviceManager');
+var _TingoDb = require('./repository/TingoDb');
 
-var _DeviceManager2 = _interopRequireDefault(_DeviceManager);
+var _TingoDb2 = _interopRequireDefault(_TingoDb);
 
-var _UserFileRepository = require('./repository/UserFileRepository');
+var _UserDatabaseRepository = require('./repository/UserDatabaseRepository');
 
-var _UserFileRepository2 = _interopRequireDefault(_UserFileRepository);
+var _UserDatabaseRepository2 = _interopRequireDefault(_UserDatabaseRepository);
 
-var _WebhookFileRepository = require('./repository/WebhookFileRepository');
+var _WebhookDatabaseRepository = require('./repository/WebhookDatabaseRepository');
 
-var _WebhookFileRepository2 = _interopRequireDefault(_WebhookFileRepository);
+var _WebhookDatabaseRepository2 = _interopRequireDefault(_WebhookDatabaseRepository);
 
 var _settings = require('./settings');
 
@@ -82,12 +86,16 @@ exports.default = function (container, newSettings) {
   (0, _sparkProtocol.defaultBindings)(container, newSettings);
 
   // settings
+  container.bindValue('DATABASE_PATH', _settings2.default.DB_CONFIG.PATH);
+  container.bindValue('DATABASE_OPTIONS', _settings2.default.DB_CONFIG.OPTIONS);
   container.bindValue('DEVICE_DIRECTORY', _settings2.default.DEVICE_DIRECTORY);
   container.bindValue('FIRMWARE_DIRECTORY', _settings2.default.FIRMWARE_DIRECTORY);
   container.bindValue('SERVER_KEY_FILENAME', _settings2.default.SERVER_KEY_FILENAME);
   container.bindValue('SERVER_KEYS_DIRECTORY', _settings2.default.SERVER_KEYS_DIRECTORY);
   container.bindValue('USERS_DIRECTORY', _settings2.default.USERS_DIRECTORY);
   container.bindValue('WEBHOOKS_DIRECTORY', _settings2.default.WEBHOOKS_DIRECTORY);
+
+  container.bindClass('Database', _TingoDb2.default, ['DATABASE_PATH', 'DATABASE_OPTIONS']);
 
   // controllers
   container.bindClass('DeviceClaimsController', _DeviceClaimsController2.default, ['DeviceManager', 'ClaimCodeManager']);
@@ -106,6 +114,6 @@ exports.default = function (container, newSettings) {
 
   // Repositories
   container.bindClass('DeviceFirmwareRepository', _DeviceFirmwareFileRepository2.default, ['FIRMWARE_DIRECTORY']);
-  container.bindClass('UserRepository', _UserFileRepository2.default, ['USERS_DIRECTORY']);
-  container.bindClass('WebhookRepository', _WebhookFileRepository2.default, ['WEBHOOKS_DIRECTORY']);
+  container.bindClass('UserRepository', _UserDatabaseRepository2.default, ['Database']);
+  container.bindClass('WebhookRepository', _WebhookDatabaseRepository2.default, ['Database']);
 };
