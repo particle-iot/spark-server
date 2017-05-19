@@ -8,31 +8,47 @@ var _entries = require('babel-runtime/core-js/object/entries');
 
 var _entries2 = _interopRequireDefault(_entries);
 
-var _constitute = require('constitute');
-
-var _os = require('os');
-
-var _os2 = _interopRequireDefault(_os);
-
 var _arrayFlatten = require('array-flatten');
 
 var _arrayFlatten2 = _interopRequireDefault(_arrayFlatten);
-
-var _logger = require('./lib/logger');
-
-var _logger2 = _interopRequireDefault(_logger);
 
 var _app = require('./app');
 
 var _app2 = _interopRequireDefault(_app);
 
+var _nullthrows = require('nullthrows');
+
+var _nullthrows2 = _interopRequireDefault(_nullthrows);
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _http = require('http');
+
+var _http2 = _interopRequireDefault(_http);
+
+var _https = require('https');
+
+var _https2 = _interopRequireDefault(_https);
+
+var _os = require('os');
+
+var _os2 = _interopRequireDefault(_os);
+
 var _defaultBindings = require('./defaultBindings');
 
 var _defaultBindings2 = _interopRequireDefault(_defaultBindings);
 
+var _logger = require('./lib/logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
 var _settings = require('./settings');
 
 var _settings2 = _interopRequireDefault(_settings);
+
+var _constitute = require('constitute');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -62,9 +78,20 @@ deviceServer.start();
 
 var app = (0, _app2.default)(container, _settings2.default);
 
-app.listen(NODE_PORT, function () {
+var onServerStartListen = function onServerStartListen() {
   return console.log('express server started on port ' + NODE_PORT);
-});
+};
+
+if (_settings2.default.EXPRESS_SERVER_CONFIG.USE_SSL) {
+  var options = {
+    cert: _fs2.default.readFileSync((0, _nullthrows2.default)(_settings2.default.EXPRESS_SERVER_CONFIG.SSL_CERTIFICATE_FILEPATH)),
+    key: _fs2.default.readFileSync((0, _nullthrows2.default)(_settings2.default.EXPRESS_SERVER_CONFIG.SSL_PRIVATE_KEY_FILEPATH))
+  };
+
+  _https2.default.createServer(options, app).listen(NODE_PORT, onServerStartListen);
+} else {
+  _http2.default.createServer(app).listen(NODE_PORT, onServerStartListen);
+}
 
 var addresses = (0, _arrayFlatten2.default)((0, _entries2.default)(_os2.default.networkInterfaces()).map(
 // eslint-disable-next-line no-unused-vars

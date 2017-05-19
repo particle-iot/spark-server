@@ -2,6 +2,10 @@
 
 import type { File } from 'express';
 
+export type Database = {
+  getCollection(collectionName: string): Object,
+};
+
 export type Webhook = {
   auth?: { password: string, username: string },
   created_at: Date,
@@ -140,6 +144,10 @@ export type Settings = {
   API_TIMEOUT: number,
   BUILD_DIRECTORY: string,
   CRYPTO_SALT: string,
+  DB_CONFIG: {
+    OPTIONS: Object,
+    PATH: string,
+  },
   DEVICE_DIRECTORY: string,
   ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: boolean,
   EXPRESS_SERVER_CONFIG: {

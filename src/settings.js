@@ -43,6 +43,16 @@ export default {
     SSL_PRIVATE_KEY_FILEPATH: null,
     USE_SSL: false,
   },
+  DB_CONFIG: {
+    OPTIONS: {
+      cacheMaxObjSize: 1024,
+      cacheSize: 1000,
+      memStore: false,
+      nativeObjectID: true,
+      searchInArray: true,
+    },
+    PATH: path.join(__dirname, '../data/db'),
+  },
   TCP_DEVICE_SERVER_CONFIG: {
     HOST: 'localhost',
     PORT: 5683,

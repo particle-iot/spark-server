@@ -320,7 +320,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
               requestQuery = _this._compileJsonTemplate(webhook.query, webhookVariablesObject);
               responseTopic = _this._compileTemplate(webhook.responseTopic, webhookVariablesObject);
               requestType = _this._compileTemplate(webhook.requestType, webhookVariablesObject);
-              isJsonRequest = !!requestJson;
+              isJsonRequest = !!requestJson || !requestFormData;
               requestOptions = {
                 auth: requestAuth,
                 body: isJsonRequest && requestJson ? _this._getRequestData(requestJson, event, webhook.noDefaults) : undefined,
