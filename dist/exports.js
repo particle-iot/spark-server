@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.settings = exports.logger = exports.defaultBindings = exports.createApp = undefined;
+exports.settings = exports.promisifyByPrototype = exports.logger = exports.defaultBindings = exports.createApp = undefined;
 
 var _logger = require('./lib/logger');
 
@@ -21,9 +21,12 @@ var _settings = require('./settings');
 
 var _settings2 = _interopRequireDefault(_settings);
 
+var _promisify = require('./lib/promisify');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.createApp = _app2.default;
 exports.defaultBindings = _defaultBindings2.default;
 exports.logger = _logger2.default;
+exports.promisifyByPrototype = _promisify.promisifyByPrototype;
 exports.settings = _settings2.default;
