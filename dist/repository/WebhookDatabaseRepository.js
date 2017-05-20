@@ -20,14 +20,13 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _promisify = require('../lib/promisify');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, WebhookDatabaseRepository);
+  this._collectionName = 'webhooks';
 
   this.create = function () {
     var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(model) {
@@ -37,12 +36,12 @@ var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
           switch (_context.prev = _context.next) {
             case 0:
               _context.next = 2;
-              return _this._collection.insert((0, _extends3.default)({}, model, {
+              return _this._database.insert(_this._collectionName, (0, _extends3.default)({}, model, {
                 created_at: new Date()
-              }), { fullResult: true });
+              }));
 
             case 2:
-              webhook = _context.sent[0];
+              webhook = _context.sent;
               return _context.abrupt('return', (0, _extends3.default)({}, webhook, { id: webhook._id.toString() }));
 
             case 4:
@@ -64,7 +63,7 @@ var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              return _context2.abrupt('return', _this._collection.remove({ _id: id }));
+              return _context2.abrupt('return', _this._database.remove(_this._collectionName, id));
 
             case 1:
             case 'end':
@@ -88,19 +87,9 @@ var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
           switch (_context3.prev = _context3.next) {
             case 0:
               query = userID ? { ownerID: userID } : {};
-              _context3.t0 = _promisify.promisifyByPrototype;
-              _context3.next = 4;
-              return _this._collection.find(query);
+              return _context3.abrupt('return', _this._database.find(_this._collectionName, query));
 
-            case 4:
-              _context3.t1 = _context3.sent;
-              _context3.next = 7;
-              return (0, _context3.t0)(_context3.t1).toArray();
-
-            case 7:
-              return _context3.abrupt('return', _context3.sent);
-
-            case 8:
+            case 2:
             case 'end':
               return _context3.stop();
           }
@@ -123,7 +112,7 @@ var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
             case 0:
               query = userID ? { _id: id, ownerID: userID } : { _id: id };
               _context4.next = 3;
-              return _this._collection.findOne(query);
+              return _this._database.findOne(_this._collectionName, query);
 
             case 3:
               webhook = _context4.sent;
@@ -157,7 +146,7 @@ var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
     }, _callee5, _this);
   }));
 
-  this._collection = database.getCollection('webhooks');
+  this._database = database;
 };
 
 exports.default = WebhookDatabaseRepository;

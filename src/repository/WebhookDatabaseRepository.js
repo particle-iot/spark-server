@@ -2,40 +2,40 @@
 
 import type { Database, Webhook } from '../types';
 
-import { promisifyByPrototype } from '../lib/promisify';
-
 class WebhookDatabaseRepository {
-  _collection: Object;
+  _database: Object;
+  _collectionName: string = 'webhooks';
 
   constructor(database: Database) {
-    this._collection = database.getCollection('webhooks');
+    this._database = database;
   }
 
   create = async (model: $Shape<Webhook>): Promise<Webhook> => {
-    const webhook = (await this._collection.insert(
+    const webhook = await this._database.insert(
+      this._collectionName,
       {
         ...model,
         created_at: new Date(),
       },
-      { fullResult: true },
-    ))[0];
+    );
 
     return { ...webhook, id: webhook._id.toString() };
   };
 
   deleteById = async (id: string): Promise<void> =>
-    this._collection.remove({ _id: id });
+    this._database.remove(this._collectionName, id);
 
   getAll = async (userID: ?string = null): Promise<Array<Webhook>> => {
     const query = userID ? { ownerID: userID } : {};
-    return await (promisifyByPrototype(
-      await this._collection.find(query),
-    ).toArray());
+    return this._database.find(this._collectionName, query);
   };
 
   getById = async (id: string, userID: ?string = null): Promise<?Webhook> => {
     const query = userID ? { _id: id, ownerID: userID } : { _id: id };
-    const webhook = await this._collection.findOne(query);
+    const webhook = await this._database.findOne(
+      this._collectionName,
+      query,
+    );
 
     return webhook ? { ...webhook, id: webhook._id.toString() } : null;
   };
@@ -46,4 +46,3 @@ class WebhookDatabaseRepository {
 }
 
 export default WebhookDatabaseRepository;
-

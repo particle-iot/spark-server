@@ -3,7 +3,10 @@
 import type { File } from 'express';
 
 export type Database = {
-  getCollection(collectionName: string): Object,
+  find: (collectionName: string, ...args: Array<any>) => Promise<*>,
+  findOne: (collectionName: string, ...args: Array<any>) => Promise<*>,
+  findAndModify: (collectionName: string, ...args: Array<any>) => Promise<*>,
+  remove: (collectionName: string, id: string) => Promise<*>,
 };
 
 export type Webhook = {

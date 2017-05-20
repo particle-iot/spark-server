@@ -2,13 +2,12 @@
 
 import type { Database, DeviceAttributes } from '../types';
 
-import { promisifyByPrototype } from '../lib/promisify';
-
 class DeviceAttributeDatabaseRepository {
-  _collection: Object;
+  _database: Object;
+  _collectionName: string = 'deviceAttributes';
 
   constructor(database: Database) {
-    this._collection = database.getCollection('deviceAttributes');
+    this._database = database;
   }
 
   create = async (): Promise<DeviceAttributes> => {
@@ -16,7 +15,8 @@ class DeviceAttributeDatabaseRepository {
   };
 
   update = async (model: DeviceAttributes): Promise<DeviceAttributes> =>
-    await this._collection.findAndModify(
+    await this._database.findAndModify(
+      this._collectionName,
       { _id: model.deviceID },
       null,
       { $set: { ...model, _id: model.deviceID, timeStamp: new Date() } },
@@ -24,17 +24,18 @@ class DeviceAttributeDatabaseRepository {
     );
 
   deleteById = async (id: string): Promise<void> =>
-    await this._collection.remove({ _id: id });
+    await this._database.remove(this._collectionName, id);
 
   doesUserHaveAccess = async (id: string, userID: string): Promise<boolean> =>
-    !!(await this._collection.findOne({ _id: id, ownerID: userID }));
+    !!(await this._database.findOne(
+      this._collectionName,
+      { _id: id, ownerID: userID },
+    ));
 
   getAll = async (userID: ?string = null): Promise<Array<DeviceAttributes>> => {
     const query = userID ? { ownerID: userID } : {};
 
-    return await (promisifyByPrototype(
-      await this._collection.find(query),
-    ).toArray());
+    return await this._database.find(this._collectionName, query);
   };
 
   getById = async (
@@ -43,7 +44,7 @@ class DeviceAttributeDatabaseRepository {
   ): Promise<?DeviceAttributes> => {
     const query = userID ? { _id: id, ownerID: userID } : { _id: id };
 
-    return await this._collection.findOne(query);
+    return this._database.findOne(this._collectionName, query);
   }
 }
 

@@ -20,14 +20,13 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _promisify = require('../lib/promisify');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseRepository(database) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, DeviceAttributeDatabaseRepository);
+  this._collectionName = 'deviceAttributes';
   this.create = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
@@ -50,7 +49,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return _this._collection.findAndModify({ _id: model.deviceID }, null, { $set: (0, _extends3.default)({}, model, { _id: model.deviceID, timeStamp: new Date() }) }, { new: true, upsert: true });
+              return _this._database.findAndModify(_this._collectionName, { _id: model.deviceID }, null, { $set: (0, _extends3.default)({}, model, { _id: model.deviceID, timeStamp: new Date() }) }, { new: true, upsert: true });
 
             case 2:
               return _context2.abrupt('return', _context2.sent);
@@ -75,7 +74,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return _this._collection.remove({ _id: id });
+              return _this._database.remove(_this._collectionName, id);
 
             case 2:
               return _context3.abrupt('return', _context3.sent);
@@ -100,7 +99,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return _this._collection.findOne({ _id: id, ownerID: userID });
+              return _this._database.findOne(_this._collectionName, { _id: id, ownerID: userID });
 
             case 2:
               return _context4.abrupt('return', !!_context4.sent);
@@ -127,19 +126,13 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
           switch (_context5.prev = _context5.next) {
             case 0:
               query = userID ? { ownerID: userID } : {};
-              _context5.t0 = _promisify.promisifyByPrototype;
-              _context5.next = 4;
-              return _this._collection.find(query);
+              _context5.next = 3;
+              return _this._database.find(_this._collectionName, query);
 
-            case 4:
-              _context5.t1 = _context5.sent;
-              _context5.next = 7;
-              return (0, _context5.t0)(_context5.t1).toArray();
-
-            case 7:
+            case 3:
               return _context5.abrupt('return', _context5.sent);
 
-            case 8:
+            case 4:
             case 'end':
               return _context5.stop();
           }
@@ -161,13 +154,9 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
           switch (_context6.prev = _context6.next) {
             case 0:
               query = userID ? { _id: id, ownerID: userID } : { _id: id };
-              _context6.next = 3;
-              return _this._collection.findOne(query);
+              return _context6.abrupt('return', _this._database.findOne(_this._collectionName, query));
 
-            case 3:
-              return _context6.abrupt('return', _context6.sent);
-
-            case 4:
+            case 2:
             case 'end':
               return _context6.stop();
           }
@@ -180,7 +169,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
     };
   }();
 
-  this._collection = database.getCollection('deviceAttributes');
+  this._database = database;
 };
 
 exports.default = DeviceAttributeDatabaseRepository;

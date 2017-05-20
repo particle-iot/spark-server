@@ -6,10 +6,11 @@ import PasswordHasher from '../lib/PasswordHasher';
 import HttpError from '../lib/HttpError';
 
 class UserDatabaseRepository {
-  _collection: Object;
+  _database: Object;
+  _collectionName: string = 'users';
 
   constructor(database: Database) {
-    this._collection = database.getCollection('users');
+    this._database = database;
   }
 
   createWithCredentials = async (userCredentials: UserCredentials): Promise<User> => {
@@ -26,15 +27,16 @@ class UserDatabaseRepository {
       username,
     };
 
-    const user = (await this._collection.insert(
+    const user = await this._database.insert(
+      this._collectionName,
       modelToSave,
-      { fullResult: true },
-    ))[0];
+    );
     return { ...user, id: user._id.toString() };
   };
 
   deleteAccessToken = async (userID: string, accessToken: string): Promise<void> =>
-    await this._collection.findAndModify(
+    await this._database.findAndModify(
+      this._collectionName,
       { _id: userID },
       null,
       { $pull: { accessTokens: { accessToken } } },
@@ -42,10 +44,11 @@ class UserDatabaseRepository {
     );
 
   deleteById = async (id: string): Promise<void> =>
-    await this._collection.remove({ _id: id });
+    await this._database.remove(this._collectionName, id);
 
   getByAccessToken = async (accessToken: string): Promise<?User> => {
-    const user = await this._collection.findOne(
+    const user = await this._database.findOne(
+      this._collectionName,
       { 'accessTokens.accessToken': accessToken },
     );
 
@@ -53,7 +56,10 @@ class UserDatabaseRepository {
   };
 
   getByUsername = async (username: string): Promise<?User> => {
-    const user = await this._collection.findOne({ username });
+    const user = await this._database.findOne(
+      this._collectionName,
+      { username },
+    );
 
     return user ? { ...user, id: user._id.toString() } : null;
   };
@@ -64,7 +70,8 @@ class UserDatabaseRepository {
   saveAccessToken = async (
     userID: string,
     tokenObject: TokenObject,
-  ): Promise<*> => await this._collection.findAndModify(
+  ): Promise<*> => await this._database.findAndModify(
+    this._collectionName,
     { _id: userID },
     null,
     { $push: { accessTokens: tokenObject } },
@@ -73,7 +80,10 @@ class UserDatabaseRepository {
 
   validateLogin = async (username: string, password: string): Promise<User> => {
     try {
-      const user = await this._collection.findOne({ username });
+      const user = await this._database.findOne(
+        this._collectionName,
+        { username },
+      );
 
       if (!user) {
         throw new HttpError('User doesn\'t exist', 404);

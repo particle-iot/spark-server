@@ -34,6 +34,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, UserDatabaseRepository);
+  this._collectionName = 'users';
 
   this.createWithCredentials = function () {
     var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(userCredentials) {
@@ -62,10 +63,10 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
                 username: username
               };
               _context.next = 10;
-              return _this._collection.insert(modelToSave, { fullResult: true });
+              return _this._database.insert(_this._collectionName, modelToSave);
 
             case 10:
-              user = _context.sent[0];
+              user = _context.sent;
               return _context.abrupt('return', (0, _extends3.default)({}, user, { id: user._id.toString() }));
 
             case 12:
@@ -88,7 +89,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return _this._collection.findAndModify({ _id: userID }, null, { $pull: { accessTokens: { accessToken: accessToken } } }, { new: true });
+              return _this._database.findAndModify(_this._collectionName, { _id: userID }, null, { $pull: { accessTokens: { accessToken: accessToken } } }, { new: true });
 
             case 2:
               return _context2.abrupt('return', _context2.sent);
@@ -113,7 +114,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return _this._collection.remove({ _id: id });
+              return _this._database.remove(_this._collectionName, id);
 
             case 2:
               return _context3.abrupt('return', _context3.sent);
@@ -139,7 +140,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return _this._collection.findOne({ 'accessTokens.accessToken': accessToken });
+              return _this._database.findOne(_this._collectionName, { 'accessTokens.accessToken': accessToken });
 
             case 2:
               user = _context4.sent;
@@ -166,7 +167,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context5.prev = _context5.next) {
             case 0:
               _context5.next = 2;
-              return _this._collection.findOne({ username: username });
+              return _this._database.findOne(_this._collectionName, { username: username });
 
             case 2:
               user = _context5.sent;
@@ -217,7 +218,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context7.prev = _context7.next) {
             case 0:
               _context7.next = 2;
-              return _this._collection.findAndModify({ _id: userID }, null, { $push: { accessTokens: tokenObject } }, { new: true });
+              return _this._database.findAndModify(_this._collectionName, { _id: userID }, null, { $push: { accessTokens: tokenObject } }, { new: true });
 
             case 2:
               return _context7.abrupt('return', _context7.sent);
@@ -244,7 +245,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
             case 0:
               _context8.prev = 0;
               _context8.next = 3;
-              return _this._collection.findOne({ username: username });
+              return _this._database.findOne(_this._collectionName, { username: username });
 
             case 3:
               user = _context8.sent;
@@ -291,7 +292,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
     };
   }();
 
-  this._collection = database.getCollection('users');
+  this._database = database;
 };
 
 exports.default = UserDatabaseRepository;

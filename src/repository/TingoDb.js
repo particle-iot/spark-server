@@ -3,12 +3,14 @@
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 import tingoDb from 'tingodb';
-import { promisifyByPrototype } from '../lib/promisify';
+import BaseMongoRepository from './BaseMongoRepository';
 
-class TingoDb {
+class TingoDb extends BaseMongoRepository {
   _database: Object;
 
   constructor(path: string, options: Object) {
+    super();
+
     const Db = tingoDb(options).Db;
 
     if (!fs.existsSync(path)) {
@@ -18,8 +20,10 @@ class TingoDb {
     this._database = new Db(path, {});
   }
 
-  getCollection = (collectionName: string): Object =>
-    promisifyByPrototype(this._database.collection(collectionName));
+  __runForCollection = async (
+    collectionName: string,
+    callback: (collection: Object) => Promise<*>,
+  ): Promise<*> => callback(this._database.collection(collectionName));
 }
 
 export default TingoDb;
