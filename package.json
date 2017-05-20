@@ -36,6 +36,7 @@
     "start:prod": "npm run build && node ./dist/main.js",
     "test": "ava --serial",
     "test:watch": "ava --watch --serial",
+    "update-firmware": "node ./node_modules/spark-protocol/dist/scripts/update-firmware-binaries"
   },
   "pre-commit": [
     "lint",
