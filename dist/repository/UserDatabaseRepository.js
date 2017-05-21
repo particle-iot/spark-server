@@ -8,10 +8,6 @@ var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _extends2 = require('babel-runtime/helpers/extends');
-
-var _extends3 = _interopRequireDefault(_extends2);
-
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -38,7 +34,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
 
   this.createWithCredentials = function () {
     var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(userCredentials) {
-      var username, password, salt, passwordHash, modelToSave, user;
+      var username, password, salt, passwordHash, modelToSave;
       return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -63,13 +59,12 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
                 username: username
               };
               _context.next = 10;
-              return _this._database.insert(_this._collectionName, modelToSave);
+              return _this._database.insertOne(_this._collectionName, modelToSave);
 
             case 10:
-              user = _context.sent;
-              return _context.abrupt('return', (0, _extends3.default)({}, user, { id: user._id.toString() }));
+              return _context.abrupt('return', _context.sent);
 
-            case 12:
+            case 11:
             case 'end':
               return _context.stop();
           }
@@ -178,9 +173,13 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              return _context5.abrupt('return', _this._database.findOne(_this._collectionName, { username: username }));
+              _context5.next = 2;
+              return _this._database.findOne(_this._collectionName, { username: username });
 
-            case 1:
+            case 2:
+              return _context5.abrupt('return', _context5.sent);
+
+            case 3:
             case 'end':
               return _context5.stop();
           }

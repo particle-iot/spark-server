@@ -50,10 +50,9 @@ var MongoDb = function (_BaseMongoRepository) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                console.log(_this._database.collection(collectionName) !== null);
                 return _context.abrupt('return', callback(_this._database.collection(collectionName)));
 
-              case 2:
+              case 1:
               case 'end':
                 return _context.stop();
             }

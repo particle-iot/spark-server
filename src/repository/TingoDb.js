@@ -3,6 +3,7 @@
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 import tingoDb from 'tingodb';
+import { promisify } from '../lib/promisify';
 import BaseMongoRepository from './BaseMongoRepository';
 
 class TingoDb extends BaseMongoRepository {
@@ -19,6 +20,65 @@ class TingoDb extends BaseMongoRepository {
 
     this._database = new Db(path, {});
   }
+
+  insertOne = async (
+    collectionName: string,
+    entity: Object,
+  ): Promise<*> => await this.__runForCollection(
+    collectionName,
+    async (collection: Object): Promise<*> => {
+      const insertResults = await promisify(
+        collection,
+        'insert',
+        entity,
+        { fullResult: true },
+      );
+
+      return this.__translateResultItem(insertResults[0]);
+    },
+  );
+
+  find = async (
+    collectionName: string,
+    ...args: Array<any>
+  ): Promise<*> => await this.__runForCollection(
+    collectionName,
+    async (collection: Object): Promise<*> => {
+      const resultItems = await promisify(collection.find(...args), 'toArray');
+      return resultItems.map(this.__translateResultItem);
+    },
+  );
+
+  findAndModify = async (
+    collectionName: string,
+    ...args: Array<any>
+  ): Promise<*> => await this.__runForCollection(
+    collectionName,
+    async (collection: Object): Promise<*> => {
+      const modifiedItem = await promisify(collection, 'findAndModify', ...args);
+      return this.__translateResultItem(modifiedItem);
+    },
+  );
+
+  findOne = async (
+    collectionName: string,
+    ...args: Array<any>
+  ): Promise<*> => await this.__runForCollection(
+    collectionName,
+    async (collection: Object): Promise<*> => {
+      const resultItem = await promisify(collection, 'findOne', ...args);
+      return this.__translateResultItem(resultItem);
+    },
+  );
+
+  remove = async (
+    collectionName: string,
+    id: string,
+  ): Promise<*> => await this.__runForCollection(
+    collectionName,
+    async (collection: Object): Promise<*> =>
+      await promisify(collection, 'remove', { _id: id }),
+  );
 
   __runForCollection = async (
     collectionName: string,

@@ -27,11 +27,10 @@ class UserDatabaseRepository {
       username,
     };
 
-    const user = await this._database.insert(
+    return await this._database.insertOne(
       this._collectionName,
       modelToSave,
     );
-    return { ...user, id: user._id.toString() };
   };
 
   deleteAccessToken = async (userID: string, accessToken: string): Promise<void> =>
@@ -64,7 +63,7 @@ class UserDatabaseRepository {
   };
 
   getByUsername = async (username: string): Promise<?User> =>
-    this._database.findOne(
+    await this._database.findOne(
       this._collectionName,
       { username },
     );
