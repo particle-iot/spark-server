@@ -68,7 +68,7 @@ var BaseMongoRepository = function BaseMongoRepository() {
                 return (0, _promisify.promisify)(collection.find.apply(collection, args), 'toArray');
               }).then(function (items) {
                 return items.map(function (item) {
-                  return (0, _extends3.default)({}, item, { id: item._id });
+                  return item ? (0, _extends3.default)({}, item, { id: item._id }) : null;
                 });
               }));
 
@@ -97,6 +97,8 @@ var BaseMongoRepository = function BaseMongoRepository() {
             case 0:
               return _context3.abrupt('return', _this.__runForCollection(collectionName, function (collection) {
                 return _promisify.promisify.apply(undefined, [collection, 'findOne'].concat(args));
+              }).then(function (item) {
+                return item ? (0, _extends3.default)({}, item, { id: item._id }) : null;
               }));
 
             case 1:
@@ -124,6 +126,8 @@ var BaseMongoRepository = function BaseMongoRepository() {
             case 0:
               return _context4.abrupt('return', _this.__runForCollection(collectionName, function (collection) {
                 return _promisify.promisify.apply(undefined, [collection, 'findAndModify'].concat(args));
+              }).then(function (item) {
+                return (0, _extends3.default)({}, item, { id: item._id });
               }));
 
             case 1:

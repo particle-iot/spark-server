@@ -47,22 +47,27 @@ class UserDatabaseRepository {
     await this._database.remove(this._collectionName, id);
 
   getByAccessToken = async (accessToken: string): Promise<?User> => {
-    const user = await this._database.findOne(
+    let user = await this._database.findOne(
       this._collectionName,
-      { 'accessTokens.accessToken': accessToken },
+      { accessTokens: { $elemMatch: { accessToken } } },
     );
 
-    return user ? { ...user, id: user._id.toString() } : null;
+    if (!user) {
+      // The newer query only works on mongo so we run this for tingo.
+      user = await this._database.findOne(
+        this._collectionName,
+        { 'accessTokens.accessToken': accessToken },
+      );
+    }
+
+    return user;
   };
 
-  getByUsername = async (username: string): Promise<?User> => {
-    const user = await this._database.findOne(
+  getByUsername = async (username: string): Promise<?User> =>
+    this._database.findOne(
       this._collectionName,
       { username },
     );
-
-    return user ? { ...user, id: user._id.toString() } : null;
-  };
 
   isUserNameInUse = async (username: string): Promise<boolean> =>
     !!(await this.getByUsername(username));
@@ -94,7 +99,7 @@ class UserDatabaseRepository {
         throw new HttpError('Wrong password');
       }
 
-      return { ...user, id: user._id.toString() };
+      return user;
     } catch (error) {
       throw error;
     }

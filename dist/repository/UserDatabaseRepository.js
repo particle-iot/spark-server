@@ -140,13 +140,26 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return _this._database.findOne(_this._collectionName, { 'accessTokens.accessToken': accessToken });
+              return _this._database.findOne(_this._collectionName, { accessTokens: { $elemMatch: { accessToken: accessToken } } });
 
             case 2:
               user = _context4.sent;
-              return _context4.abrupt('return', user ? (0, _extends3.default)({}, user, { id: user._id.toString() }) : null);
 
-            case 4:
+              if (user) {
+                _context4.next = 7;
+                break;
+              }
+
+              _context4.next = 6;
+              return _this._database.findOne(_this._collectionName, { 'accessTokens.accessToken': accessToken });
+
+            case 6:
+              user = _context4.sent;
+
+            case 7:
+              return _context4.abrupt('return', user);
+
+            case 8:
             case 'end':
               return _context4.stop();
           }
@@ -161,19 +174,13 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
 
   this.getByUsername = function () {
     var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(username) {
-      var user;
       return _regenerator2.default.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              _context5.next = 2;
-              return _this._database.findOne(_this._collectionName, { username: username });
+              return _context5.abrupt('return', _this._database.findOne(_this._collectionName, { username: username }));
 
-            case 2:
-              user = _context5.sent;
-              return _context5.abrupt('return', user ? (0, _extends3.default)({}, user, { id: user._id.toString() }) : null);
-
-            case 4:
+            case 1:
             case 'end':
               return _context5.stop();
           }
@@ -272,7 +279,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
               throw new _HttpError2.default('Wrong password');
 
             case 11:
-              return _context8.abrupt('return', (0, _extends3.default)({}, user, { id: user._id.toString() }));
+              return _context8.abrupt('return', user);
 
             case 14:
               _context8.prev = 14;

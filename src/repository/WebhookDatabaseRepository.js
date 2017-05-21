@@ -32,12 +32,10 @@ class WebhookDatabaseRepository {
 
   getById = async (id: string, userID: ?string = null): Promise<?Webhook> => {
     const query = userID ? { _id: id, ownerID: userID } : { _id: id };
-    const webhook = await this._database.findOne(
+    return this._database.findOne(
       this._collectionName,
       query,
     );
-
-    return webhook ? { ...webhook, id: webhook._id.toString() } : null;
   };
 
   update = async (): Promise<Webhook> => {

@@ -105,20 +105,15 @@ var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
   this.getById = function () {
     var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(id) {
       var userID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      var query, webhook;
+      var query;
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
               query = userID ? { _id: id, ownerID: userID } : { _id: id };
-              _context4.next = 3;
-              return _this._database.findOne(_this._collectionName, query);
+              return _context4.abrupt('return', _this._database.findOne(_this._collectionName, query));
 
-            case 3:
-              webhook = _context4.sent;
-              return _context4.abrupt('return', webhook ? (0, _extends3.default)({}, webhook, { id: webhook._id.toString() }) : null);
-
-            case 5:
+            case 2:
             case 'end':
               return _context4.stop();
           }

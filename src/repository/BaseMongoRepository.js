@@ -24,7 +24,8 @@ class BaseMongoRepository {
     (collection: Object): Promise<*> =>
       promisify(collection.find(...args), 'toArray'),
   ).then((items: Array<*>): Array<*> =>
-    items.map((item: Object): Object => ({ ...item, id: item._id })),
+    items.map((item: Object): Object =>
+      (item ? { ...item, id: item._id } : null)),
   );
 
   findOne = async (
@@ -34,7 +35,7 @@ class BaseMongoRepository {
       collectionName,
       (collection: Object): Promise<*> =>
         promisify(collection, 'findOne', ...args),
-    );
+    ).then((item: Object): Object => (item ? { ...item, id: item._id } : null));
 
   findAndModify = async (
     collectionName: string,
@@ -43,7 +44,7 @@ class BaseMongoRepository {
       collectionName,
       (collection: Object): Promise<*> =>
         promisify(collection, 'findAndModify', ...args),
-    )
+    ).then((item: Object): Object => ({ ...item, id: item._id }));
 
   remove = async (
     collectionName: string,
