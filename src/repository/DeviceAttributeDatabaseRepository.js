@@ -34,7 +34,6 @@ class DeviceAttributeDatabaseRepository {
 
   getAll = async (userID: ?string = null): Promise<Array<DeviceAttributes>> => {
     const query = userID ? { ownerID: userID } : {};
-
     return await this._database.find(this._collectionName, query);
   };
 
@@ -43,8 +42,7 @@ class DeviceAttributeDatabaseRepository {
     userID: ?string = null,
   ): Promise<?DeviceAttributes> => {
     const query = userID ? { _id: id, ownerID: userID } : { _id: id };
-
-    return this._database.findOne(this._collectionName, query);
+    return await this._database.findOne(this._collectionName, query);
   }
 }
 

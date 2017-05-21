@@ -69,6 +69,7 @@
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "moment": "*",
+    "mongodb": "^2.2.26",
     "morgan": "^1.7.0",
     "multer": "^1.2.1",
     "nullthrows": "^1.0.0",

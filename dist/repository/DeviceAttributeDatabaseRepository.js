@@ -154,9 +154,13 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
           switch (_context6.prev = _context6.next) {
             case 0:
               query = userID ? { _id: id, ownerID: userID } : { _id: id };
-              return _context6.abrupt('return', _this._database.findOne(_this._collectionName, query));
+              _context6.next = 3;
+              return _this._database.findOne(_this._collectionName, query);
 
-            case 2:
+            case 3:
+              return _context6.abrupt('return', _context6.sent);
+
+            case 4:
             case 'end':
               return _context6.stop();
           }
