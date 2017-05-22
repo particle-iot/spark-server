@@ -44,22 +44,29 @@ const app = createApp(container, settings);
 const onServerStartListen = (): void =>
   console.log(`express server started on port ${NODE_PORT}`);
 
-if (settings.EXPRESS_SERVER_CONFIG.USE_SSL) {
-  const options = {
-    cert: fs.readFileSync(
-      nulltrhows(settings.EXPRESS_SERVER_CONFIG.SSL_CERTIFICATE_FILEPATH),
-    ),
-    key: fs.readFileSync(
-      nulltrhows(settings.EXPRESS_SERVER_CONFIG.SSL_PRIVATE_KEY_FILEPATH),
-    ),
-  };
+const {
+  CONFIG: expressConfig,
+  SSL_PRIVATE_KEY_FILEPATH: privateKeyFilePath,
+  SSL_CERTIFICATE_FILEPATH: certificateFilePath,
+  USE_SSL: useSSL
+} = settings.EXPRESS_SERVER_CONFIG;
 
+if (useSSL) {
+  const options = {
+    cert: certificateFilePath && fs.readFileSync(
+      nulltrhows(certificateFilePath),
+    ),
+    key: privateKeyFilePath && fs.readFileSync(
+      nulltrhows(privateKeyFilePath),
+    ),
+    ...expressConfig,
+  };
   https
     .createServer(options, (app: any))
     .listen(NODE_PORT, onServerStartListen);
 } else {
   http
-    .createServer((app: any))
+    .createServer({...expressConfig}, (app: any))
     .listen(NODE_PORT, onServerStartListen);
 }
 
