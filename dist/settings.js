@@ -40,7 +40,8 @@ exports.default = {
       nativeObjectID: true,
       searchInArray: true
     },
-    PATH: _path2.default.join(__dirname, '../data/db')
+    PATH: _path2.default.join(__dirname, '../data/db'),
+    URL: null
   },
   TCP_DEVICE_SERVER_CONFIG: {
     HOST: 'localhost',

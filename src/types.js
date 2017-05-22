@@ -149,7 +149,8 @@ export type Settings = {
   CRYPTO_SALT: string,
   DB_CONFIG: {
     OPTIONS: Object,
-    PATH: string,
+    PATH: ?string,
+    URL: ?string,
   },
   DEVICE_DIRECTORY: string,
   ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: boolean,
