@@ -52,6 +52,7 @@ export default {
       searchInArray: true,
     },
     PATH: path.join(__dirname, '../data/db'),
+    URL: null,
   },
   TCP_DEVICE_SERVER_CONFIG: {
     HOST: 'localhost',

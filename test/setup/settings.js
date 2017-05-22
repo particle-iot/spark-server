@@ -40,5 +40,6 @@ export default {
       searchInArray: true,
     },
     PATH: path.join(__dirname, '../__test_data__/db'),
+    URL: null,
   },
 };
