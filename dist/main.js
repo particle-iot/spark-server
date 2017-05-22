@@ -12,6 +12,10 @@ var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 var _arrayFlatten = require('array-flatten');
 
 var _arrayFlatten2 = _interopRequireDefault(_arrayFlatten);
@@ -87,10 +91,10 @@ var onServerStartListen = function onServerStartListen() {
 };
 
 var _settings$EXPRESS_SER = _settings2.default.EXPRESS_SERVER_CONFIG,
-    expressConfig = _settings$EXPRESS_SER.CONFIG,
     privateKeyFilePath = _settings$EXPRESS_SER.SSL_PRIVATE_KEY_FILEPATH,
     certificateFilePath = _settings$EXPRESS_SER.SSL_CERTIFICATE_FILEPATH,
-    useSSL = _settings$EXPRESS_SER.USE_SSL;
+    useSSL = _settings$EXPRESS_SER.USE_SSL,
+    expressConfig = (0, _objectWithoutProperties3.default)(_settings$EXPRESS_SER, ['SSL_PRIVATE_KEY_FILEPATH', 'SSL_CERTIFICATE_FILEPATH', 'USE_SSL']);
 
 
 if (useSSL) {
@@ -100,7 +104,7 @@ if (useSSL) {
   }, expressConfig);
   _https2.default.createServer(options, app).listen(NODE_PORT, onServerStartListen);
 } else {
-  _http2.default.createServer((0, _extends3.default)({}, expressConfig), app).listen(NODE_PORT, onServerStartListen);
+  _http2.default.createServer(app).listen(NODE_PORT, onServerStartListen);
 }
 
 var addresses = (0, _arrayFlatten2.default)((0, _entries2.default)(_os2.default.networkInterfaces()).map(

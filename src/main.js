@@ -45,10 +45,10 @@ const onServerStartListen = (): void =>
   console.log(`express server started on port ${NODE_PORT}`);
 
 const {
-  CONFIG: expressConfig,
   SSL_PRIVATE_KEY_FILEPATH: privateKeyFilePath,
   SSL_CERTIFICATE_FILEPATH: certificateFilePath,
   USE_SSL: useSSL,
+  ...expressConfig
 } = settings.EXPRESS_SERVER_CONFIG;
 
 if (useSSL) {
@@ -66,7 +66,7 @@ if (useSSL) {
     .listen(NODE_PORT, onServerStartListen);
 } else {
   http
-    .createServer({ ...expressConfig }, (app: any))
+    .createServer((app: any))
     .listen(NODE_PORT, onServerStartListen);
 }
 
