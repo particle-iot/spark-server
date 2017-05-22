@@ -48,7 +48,7 @@ const {
   CONFIG: expressConfig,
   SSL_PRIVATE_KEY_FILEPATH: privateKeyFilePath,
   SSL_CERTIFICATE_FILEPATH: certificateFilePath,
-  USE_SSL: useSSL
+  USE_SSL: useSSL,
 } = settings.EXPRESS_SERVER_CONFIG;
 
 if (useSSL) {
@@ -66,7 +66,7 @@ if (useSSL) {
     .listen(NODE_PORT, onServerStartListen);
 } else {
   http
-    .createServer({...expressConfig}, (app: any))
+    .createServer({ ...expressConfig }, (app: any))
     .listen(NODE_PORT, onServerStartListen);
 }
 
