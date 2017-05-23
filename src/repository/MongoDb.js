@@ -14,7 +14,9 @@ class MongoDb extends BaseMongoRepository {
   __runForCollection = async (
     collectionName: string,
     callback: (collection: Object) => Promise<*>,
-  ): Promise<*> => callback(this._database.collection(collectionName));
+  ): Promise<*> => callback(
+    this._database.collection(collectionName),
+  ).catch((error: Error): void => console.error(error));
 }
 
 export default MongoDb;

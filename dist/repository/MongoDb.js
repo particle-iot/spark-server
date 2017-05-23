@@ -50,7 +50,9 @@ var MongoDb = function (_BaseMongoRepository) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                return _context.abrupt('return', callback(_this._database.collection(collectionName)));
+                return _context.abrupt('return', callback(_this._database.collection(collectionName)).catch(function (error) {
+                  return console.error(error);
+                }));
 
               case 1:
               case 'end':
