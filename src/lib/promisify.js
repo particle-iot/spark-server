@@ -16,20 +16,3 @@ export const promisify = (
     resolve(result);
   }),
 );
-
-export const promisifyByPrototype = (object: Object): Object => {
-  const prototype = Object.getPrototypeOf(object);
-
-  const fnNames = Object.getOwnPropertyNames(prototype).filter(
-    (propName: string): boolean => typeof prototype[propName] === 'function',
-  );
-
-  const resultObject = {};
-
-  fnNames.forEach((fnName: string) => {
-    resultObject[fnName] = (...args: Array<any>): Promise<*> =>
-      promisify(object[fnName].bind(object, ...args));
-  });
-
-  return resultObject;
-};

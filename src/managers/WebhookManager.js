@@ -2,6 +2,7 @@
 
 import type {
   Event,
+  IWebhookLogger,
   Repository,
   RequestOptions,
   RequestType,
@@ -67,13 +68,16 @@ class WebhookManager {
   _subscriptionIDsByWebhookID: Map<string, string> = new Map();
   _errorsCountByWebhookID: Map<string, number> = new Map();
   _webhookRepository: Repository<Webhook>;
+  _webhookLogger: IWebhookLogger;
 
   constructor(
     webhookRepository: Repository<Webhook>,
     eventPublisher: EventPublisher,
+    webhookLogger: IWebhookLogger,
   ) {
     this._webhookRepository = webhookRepository;
     this._eventPublisher = eventPublisher;
+    this._webhookLogger = webhookLogger;
 
     (async (): Promise<void> => await this._init())();
   }
@@ -270,6 +274,14 @@ class WebhookManager {
           userID: event.userID,
         });
       });
+
+      this._webhookLogger.log(
+        event,
+        webhook,
+        requestOptions,
+        responseBody,
+        responseEventData,
+      );
     } catch (error) {
       logger.error(`webhookError: ${error}`);
     }

@@ -12,6 +12,7 @@ import ProductsController from './controllers/ProductsController';
 import ProvisioningController from './controllers/ProvisioningController';
 import UsersController from './controllers/UsersController';
 import WebhooksController from './controllers/WebhooksController';
+import WebhookLogger from './lib/WebhookLogger';
 import DeviceManager from './managers/DeviceManager';
 import WebhookManager from './managers/WebhookManager';
 import EventManager from './managers/EventManager';
@@ -46,6 +47,13 @@ export default (container: Container, newSettings: Settings) => {
     'Database',
     TingoDb,
     ['DATABASE_PATH', 'DATABASE_OPTIONS'],
+  );
+
+  // lib
+  container.bindClass(
+    'IWebhookLogger',
+    WebhookLogger,
+    [],
   );
 
   // controllers
@@ -112,7 +120,7 @@ export default (container: Container, newSettings: Settings) => {
   container.bindClass(
     'WebhookManager',
     WebhookManager,
-    ['WebhookRepository', 'EventPublisher'],
+    ['WebhookRepository', 'EventPublisher', 'IWebhookLogger'],
   );
 
   // Repositories

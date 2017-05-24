@@ -98,7 +98,7 @@ var WEBHOOK_DEFAULTS = {
   rejectUnauthorized: true
 };
 
-var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) {
+var WebhookManager = function WebhookManager(webhookRepository, eventPublisher, webhookLogger) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, WebhookManager);
@@ -362,21 +362,23 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
                   userID: event.userID
                 });
               });
-              _context6.next = 27;
+
+              _this._webhookLogger.log(event, webhook, requestOptions, _responseBody, responseEventData);
+              _context6.next = 28;
               break;
 
-            case 24:
-              _context6.prev = 24;
+            case 25:
+              _context6.prev = 25;
               _context6.t0 = _context6['catch'](0);
 
               _logger2.default.error('webhookError: ' + _context6.t0);
 
-            case 27:
+            case 28:
             case 'end':
               return _context6.stop();
           }
         }
-      }, _callee6, _this, [[0, 24]]);
+      }, _callee6, _this, [[0, 25]]);
     }));
 
     return function (_x7, _x8) {
@@ -486,6 +488,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
 
   this._webhookRepository = webhookRepository;
   this._eventPublisher = eventPublisher;
+  this._webhookLogger = webhookLogger;
 
   (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7() {
     return _regenerator2.default.wrap(function _callee7$(_context7) {
