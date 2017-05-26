@@ -1,8 +1,8 @@
 // @flow
 
-import BaseMongoRepository from './BaseMongoRepository';
+import BaseMongoDb from './BaseMongoDb';
 
-class MongoDb extends BaseMongoRepository {
+class MongoDb extends BaseMongoDb {
   _database: Object;
 
   constructor(database: Object) {

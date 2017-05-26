@@ -42,14 +42,14 @@ var _tingodb2 = _interopRequireDefault(_tingodb);
 
 var _promisify = require('../lib/promisify');
 
-var _BaseMongoRepository2 = require('./BaseMongoRepository');
+var _BaseMongoDb2 = require('./BaseMongoDb');
 
-var _BaseMongoRepository3 = _interopRequireDefault(_BaseMongoRepository2);
+var _BaseMongoDb3 = _interopRequireDefault(_BaseMongoDb2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var TingoDb = function (_BaseMongoRepository) {
-  (0, _inherits3.default)(TingoDb, _BaseMongoRepository);
+var TingoDb = function (_BaseMongoDb) {
+  (0, _inherits3.default)(TingoDb, _BaseMongoDb);
 
   function TingoDb(path, options) {
     var _this2 = this;
@@ -350,6 +350,6 @@ var TingoDb = function (_BaseMongoRepository) {
   }
 
   return TingoDb;
-}(_BaseMongoRepository3.default);
+}(_BaseMongoDb3.default);
 
 exports.default = TingoDb;

@@ -4,9 +4,9 @@ import fs from 'fs';
 import mkdirp from 'mkdirp';
 import tingoDb from 'tingodb';
 import { promisify } from '../lib/promisify';
-import BaseMongoRepository from './BaseMongoRepository';
+import BaseMongoDb from './BaseMongoDb';
 
-class TingoDb extends BaseMongoRepository {
+class TingoDb extends BaseMongoDb {
   _database: Object;
 
   constructor(path: string, options: Object) {

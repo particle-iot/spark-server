@@ -1,5 +1,7 @@
 // @flow
 
+import type { IBaseDatabase } from '../types';
+
 import { ObjectId } from 'mongodb';
 
 const deepToObjectIdCast = (node: any): any => {
@@ -15,7 +17,7 @@ const deepToObjectIdCast = (node: any): any => {
   return node;
 };
 
-class BaseMongoRepository {
+class BaseMongoDb implements IBaseDatabase {
   insertOne = async (
     collectionName: string,
     entity: Object,
@@ -104,4 +106,4 @@ class BaseMongoRepository {
   };
 }
 
-export default BaseMongoRepository;
+export default BaseMongoDb;

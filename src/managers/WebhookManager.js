@@ -3,7 +3,7 @@
 import type {
   Event,
   IWebhookLogger,
-  Repository,
+  IWebhookRepository,
   RequestOptions,
   RequestType,
   Webhook,
@@ -67,11 +67,11 @@ class WebhookManager {
   _eventPublisher: EventPublisher;
   _subscriptionIDsByWebhookID: Map<string, string> = new Map();
   _errorsCountByWebhookID: Map<string, number> = new Map();
-  _webhookRepository: Repository<Webhook>;
+  _webhookRepository: IWebhookRepository;
   _webhookLogger: IWebhookLogger;
 
   constructor(
-    webhookRepository: Repository<Webhook>,
+    webhookRepository: IWebhookRepository,
     eventPublisher: EventPublisher,
     webhookLogger: IWebhookLogger,
   ) {

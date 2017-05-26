@@ -1,12 +1,12 @@
 // @flow
 
-import type { Webhook, WebhookMutator } from '../types';
+import type { IWebhookRepository, Webhook, WebhookMutator } from '../types';
 
 import uuid from 'uuid';
 import { JSONFileManager, memoizeGet, memoizeSet } from 'spark-protocol';
 import HttpError from '../lib/HttpError';
 
-class WebhookFileRepository {
+class WebhookFileRepository implements IWebhookRepository {
   _fileManager: JSONFileManager;
 
   constructor(path: string) {

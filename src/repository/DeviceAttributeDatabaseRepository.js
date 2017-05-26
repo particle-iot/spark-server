@@ -1,27 +1,22 @@
 // @flow
 
-import type { Database, DeviceAttributes } from '../types';
+import type {
+  DeviceAttributes,
+  IBaseDatabase,
+  IDeviceAttributeRepository,
+} from '../types';
 
-class DeviceAttributeDatabaseRepository {
-  _database: Object;
+class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
+  _database: IBaseDatabase;
   _collectionName: string = 'deviceAttributes';
 
-  constructor(database: Database) {
+  constructor(database: IBaseDatabase) {
     this._database = database;
   }
 
   create = async (): Promise<DeviceAttributes> => {
     throw new Error('The method is not implemented');
   };
-
-  update = async (model: DeviceAttributes): Promise<DeviceAttributes> =>
-    await this._database.findAndModify(
-      this._collectionName,
-      { _id: model.deviceID },
-      null,
-      { $set: { ...model, _id: model.deviceID, timeStamp: new Date() } },
-      { new: true, upsert: true },
-    );
 
   deleteById = async (id: string): Promise<void> =>
     await this._database.remove(this._collectionName, id);
@@ -43,7 +38,16 @@ class DeviceAttributeDatabaseRepository {
   ): Promise<?DeviceAttributes> => {
     const query = userID ? { _id: id, ownerID: userID } : { _id: id };
     return await this._database.findOne(this._collectionName, query);
-  }
+  };
+
+  update = async (model: DeviceAttributes): Promise<DeviceAttributes> =>
+    await this._database.findAndModify(
+      this._collectionName,
+      { _id: model.deviceID },
+      null,
+      { $set: { ...model, _id: model.deviceID, timeStamp: new Date() } },
+      { new: true, upsert: true },
+    );
 }
 
 export default DeviceAttributeDatabaseRepository;
