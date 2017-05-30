@@ -28,14 +28,14 @@ var _inherits2 = require('babel-runtime/helpers/inherits');
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _BaseMongoRepository2 = require('./BaseMongoRepository');
+var _BaseMongoDb2 = require('./BaseMongoDb');
 
-var _BaseMongoRepository3 = _interopRequireDefault(_BaseMongoRepository2);
+var _BaseMongoDb3 = _interopRequireDefault(_BaseMongoDb2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var MongoDb = function (_BaseMongoRepository) {
-  (0, _inherits3.default)(MongoDb, _BaseMongoRepository);
+var MongoDb = function (_BaseMongoDb) {
+  (0, _inherits3.default)(MongoDb, _BaseMongoDb);
 
   function MongoDb(database) {
     var _this2 = this;
@@ -72,6 +72,6 @@ var MongoDb = function (_BaseMongoRepository) {
   }
 
   return MongoDb;
-}(_BaseMongoRepository3.default);
+}(_BaseMongoDb3.default);
 
 exports.default = MongoDb;

@@ -1,13 +1,7 @@
 // @flow
+/* eslint-disable */
 
 import type { File } from 'express';
-
-export type Database = {
-  find: (collectionName: string, ...args: Array<any>) => Promise<*>,
-  findOne: (collectionName: string, ...args: Array<any>) => Promise<*>,
-  findAndModify: (collectionName: string, ...args: Array<any>) => Promise<*>,
-  remove: (collectionName: string, id: string) => Promise<*>,
-};
 
 export type Webhook = {
   auth?: { password: string, username: string },
@@ -225,4 +219,40 @@ export type Product = {
   requires_activation_codes: boolean,
   slug: string,
   type: 'Consumer' | 'Hobbyist' | 'Industrial',
+};
+
+export interface IBaseRepository<TModel> {
+  create(model: TModel | $Shape<TModel>): Promise<TModel>;
+  deleteById(id: string): Promise<void>;
+  getAll(): Promise<Array<TModel>>;
+  getById(id: string, userID: ?string): Promise<?TModel>;
+  update(model: TModel): Promise<TModel>;
+}
+
+export interface IWebhookRepository extends IBaseRepository<Webhook> {}
+
+export interface IDeviceAttributeRepository extends IBaseRepository<DeviceAttributes> {
+  doesUserHaveAccess(id: string, userID: string): Promise<boolean>;
+}
+
+export interface IUserRepository extends IBaseRepository<User> {
+  createWithCredentials(credentials: UserCredentials): Promise<User>;
+  deleteAccessToken(userID: string, accessToken: string): Promise<void>;
+  getByAccessToken(accessToken: string): Promise<?User>;
+  getByUsername(username: string): Promise<?User>;
+  isUserNameInUse(username: string): Promise<boolean>;
+  saveAccessToken(userID: string, tokenObject: TokenObject): Promise<User>;
+  validateLogin(username: string, password: string): Promise<User>;
+}
+
+export interface IDeviceFirmwareRepository {
+  getByName(appName: string): ?Buffer,
+}
+
+export interface IBaseDatabase {
+  find(collectionName: string, ...args: Array<any>): Promise<*>;
+  findAndModify(collectionName: string, ...args: Array<any>): Promise<*>;
+  findOne(collectionName: string, ...args: Array<any>): Promise<*>;
+  insertOne(collectionName: string, ...args: Array<any>): Promise<*>;
+  remove(collectionName: string, id: string): Promise<*>;
 }

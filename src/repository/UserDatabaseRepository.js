@@ -1,17 +1,28 @@
 // @flow
 
-import type { Database, TokenObject, User, UserCredentials } from '../types';
+import type {
+  IBaseDatabase,
+  IUserRepository,
+  TokenObject,
+  User,
+  UserCredentials,
+} from '../types';
 
 import PasswordHasher from '../lib/PasswordHasher';
 import HttpError from '../lib/HttpError';
 
-class UserDatabaseRepository {
-  _database: Object;
+class UserDatabaseRepository implements IUserRepository {
+  _database: IBaseDatabase;
   _collectionName: string = 'users';
 
-  constructor(database: Database) {
+  constructor(database: IBaseDatabase) {
     this._database = database;
   }
+
+  // eslint-disable-next-line no-unused-vars
+  create = async (user: $Shape<User>): Promise<User> => {
+    throw new Error('The method is not implemented');
+  };
 
   createWithCredentials = async (userCredentials: UserCredentials): Promise<User> => {
     const { username, password } = userCredentials;
@@ -45,6 +56,10 @@ class UserDatabaseRepository {
   deleteById = async (id: string): Promise<void> =>
     await this._database.remove(this._collectionName, id);
 
+  getAll = async (): Promise<Array<User>> => {
+    throw new Error('The method is not implemented');
+  };
+
   getByAccessToken = async (accessToken: string): Promise<?User> => {
     let user = await this._database.findOne(
       this._collectionName,
@@ -60,6 +75,11 @@ class UserDatabaseRepository {
     }
 
     return user;
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  getById = async (id: string): Promise<?User> => {
+    throw new Error('The method is not implemented');
   };
 
   getByUsername = async (username: string): Promise<?User> =>
@@ -81,6 +101,11 @@ class UserDatabaseRepository {
     { $push: { accessTokens: tokenObject } },
     { new: true },
   );
+
+  // eslint-disable-next-line no-unused-vars
+  update = async (model: User): Promise<User> => {
+    throw new Error('The method is not implemented');
+  };
 
   validateLogin = async (username: string, password: string): Promise<User> => {
     try {
