@@ -6,6 +6,8 @@ import path from 'path';
 export default {
   BUILD_DIRECTORY: path.join(__dirname, '../__test_data__/build'),
   CUSTOM_FIRMWARE_DIRECTORY: path.join(__dirname, '../__test_data__'),
+  DEFAULT_ADMIN_PASSWORD: 'adminPassword',
+  DEFAULT_ADMIN_USERNAME: '__admin__',
   DEVICE_DIRECTORY: path.join(__dirname, '../__test_data__/deviceKeys'),
   ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
   FIRMWARE_DIRECTORY: path.join(__dirname, '../__test_data__/knownApps'),

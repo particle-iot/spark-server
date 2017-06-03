@@ -101,9 +101,9 @@ export type GrantType =
 export type TokenObject = {
   accessToken: string,
   accessTokenExpiresAt: Date,
-  refreshToken: string,
-  refreshTokenExpiresAt: Date,
-  scope: string,
+  refreshToken?: string,
+  refreshTokenExpiresAt?: Date,
+  scope?: string,
 };
 
 export type User = {
@@ -111,6 +111,7 @@ export type User = {
   created_at: Date,
   id: string,
   passwordHash: string,
+  role: ?UserRole,
   salt: string,
   username: string,
 };
@@ -119,6 +120,10 @@ export type UserCredentials = {
   username: string,
   password: string,
 };
+
+export type UserRole = 'administrator';
+
+export type ProtectedEntityName = 'deviceAttributes' | 'webhook';
 
 export type Device = DeviceAttributes & {
   connected: boolean,
@@ -155,6 +160,8 @@ export type Settings = {
     PATH: ?string,
     URL: ?string,
   },
+  DEFAULT_ADMIN_PASSWORD: string,
+  DEFAULT_ADMIN_USERNAME: string,
   DEVICE_DIRECTORY: string,
   ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: boolean,
   EXPRESS_SERVER_CONFIG: {
@@ -184,21 +191,20 @@ export type DeviceAttributeRepository = Repository<DeviceAttributes> & {
 export type DeviceManager = {
   callFunction(
     deviceID: string,
-    userID: string,
     functionName: string,
     functionArguments: {[key: string]: string},
   ): Promise<*>,
   claimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
   flashBinary(deviceID: string, files: File): Promise<*>,
-  flashKnownApp(deviceID: string, userID: string, app: string): Promise<*>,
-  getAll(userID: string): Promise<Array<Device>>,
-  getByID(deviceID: string, userID: string): Promise<Device>,
-  getDetailsByID(deviceID: string, userID: string): Promise<*>,
-  getVariableValue(deviceID: string, userID: string, varName: string): Promise<Object>,
-  provision(deviceID: string, userID: string, publicKey: string): Promise<*>,
-  raiseYourHand(deviceID: string, userID: string, shouldShowSignal: boolean): Promise<void>,
-  renameDevice(deviceID: string, userID: string, name: string): Promise<DeviceAttributes>,
-  unclaimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
+  flashKnownApp(deviceID: string, app: string): Promise<*>,
+  getAll(): Promise<Array<Device>>,
+  getByID(deviceID: string): Promise<Device>,
+  getDetailsByID(deviceID: string): Promise<*>,
+  getVariableValue(deviceID: string, varName: string): Promise<Object>,
+  provision(deviceID: string, publicKey: string): Promise<*>,
+  raiseYourHand(deviceID: string, shouldShowSignal: boolean): Promise<void>,
+  renameDevice(deviceID: string, name: string): Promise<DeviceAttributes>,
+  unclaimDevice(deviceID: string): Promise<DeviceAttributes>,
 };
 
 export type RequestOptions = {
@@ -236,9 +242,7 @@ export interface IBaseRepository<TModel> {
 
 export interface IWebhookRepository extends IBaseRepository<Webhook> {}
 
-export interface IDeviceAttributeRepository extends IBaseRepository<DeviceAttributes> {
-  doesUserHaveAccess(id: string, userID: string): Promise<boolean>;
-}
+export interface IDeviceAttributeRepository extends IBaseRepository<DeviceAttributes> {}
 
 export interface IDeviceKeyRepository extends IBaseRepository<DeviceKeyObject> {}
 
@@ -247,8 +251,10 @@ export interface IUserRepository extends IBaseRepository<User> {
   deleteAccessToken(userID: string, accessToken: string): Promise<void>;
   getByAccessToken(accessToken: string): Promise<?User>;
   getByUsername(username: string): Promise<?User>;
+  getCurrentUser(): User;
   isUserNameInUse(username: string): Promise<boolean>;
   saveAccessToken(userID: string, tokenObject: TokenObject): Promise<User>;
+  setCurrentUser(user: User): void;
   validateLogin(username: string, password: string): Promise<User>;
 }
 

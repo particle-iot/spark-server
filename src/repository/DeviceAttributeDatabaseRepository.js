@@ -9,9 +9,11 @@ import type {
 class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
   _database: IBaseDatabase;
   _collectionName: string = 'deviceAttributes';
+  _permissionManager: Object;
 
-  constructor(database: IBaseDatabase) {
+  constructor(database: IBaseDatabase, permissionManager: Object) {
     this._database = database;
+    this._permissionManager = permissionManager;
   }
 
   create = async (): Promise<DeviceAttributes> => {
@@ -20,12 +22,6 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
 
   deleteById = async (id: string): Promise<void> =>
     await this._database.remove(this._collectionName, id);
-
-  doesUserHaveAccess = async (id: string, userID: string): Promise<boolean> =>
-    !!(await this._database.findOne(
-      this._collectionName,
-      { _id: id, ownerID: userID },
-    ));
 
   getAll = async (userID: ?string = null): Promise<Array<DeviceAttributes>> => {
     const query = userID ? { ownerID: userID } : {};
@@ -36,13 +32,8 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     );
   };
 
-  getById = async (
-    id: string,
-    userID: ?string = null,
-  ): Promise<?DeviceAttributes> => {
-    const query = userID ? { _id: id, ownerID: userID } : { _id: id };
-    return await this._database.findOne(this._collectionName, query);
-  };
+  getById = async (id: string): Promise<?DeviceAttributes> =>
+    await this._database.findOne(this._collectionName, { _id: id });
 
   update = async (model: DeviceAttributes): Promise<DeviceAttributes> =>
     await this._database.findAndModify(
@@ -53,5 +44,4 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
       { new: true, upsert: true },
     );
 }
-
 export default DeviceAttributeDatabaseRepository;

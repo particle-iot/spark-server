@@ -6,6 +6,7 @@ import type {
   TokenObject,
   User,
   UserCredentials,
+  UserRole,
 } from '../types';
 
 import PasswordHasher from '../lib/PasswordHasher';
@@ -14,17 +15,23 @@ import HttpError from '../lib/HttpError';
 class UserDatabaseRepository implements IUserRepository {
   _database: IBaseDatabase;
   _collectionName: string = 'users';
+  _currentUser: User;
 
   constructor(database: IBaseDatabase) {
     this._database = database;
   }
 
   // eslint-disable-next-line no-unused-vars
-  create = async (user: $Shape<User>): Promise<User> => {
-    throw new Error('The method is not implemented');
-  };
+  create = async (user: $Shape<User>): Promise<User> =>
+    await this._database.insertOne(
+      this._collectionName,
+      user,
+    );
 
-  createWithCredentials = async (userCredentials: UserCredentials): Promise<User> => {
+  createWithCredentials = async (
+    userCredentials: UserCredentials,
+    userRole: ?UserRole = null,
+  ): Promise<User> => {
     const { username, password } = userCredentials;
 
     const salt = await PasswordHasher.generateSalt();
@@ -32,8 +39,8 @@ class UserDatabaseRepository implements IUserRepository {
     const modelToSave = {
       accessTokens: [],
       created_at: new Date(),
-      created_by: null,
       passwordHash,
+      role: userRole,
       salt,
       username,
     };
@@ -88,6 +95,8 @@ class UserDatabaseRepository implements IUserRepository {
       { username },
     );
 
+  getCurrentUser = (): User => this._currentUser;
+
   isUserNameInUse = async (username: string): Promise<boolean> =>
     !!(await this.getByUsername(username));
 
@@ -102,10 +111,18 @@ class UserDatabaseRepository implements IUserRepository {
     { new: true },
   );
 
-  // eslint-disable-next-line no-unused-vars
-  update = async (model: User): Promise<User> => {
-    throw new Error('The method is not implemented');
-  };
+  setCurrentUser = (user: User) => {
+    this._currentUser = user;
+  }
+
+  update = async (model: User): Promise<User> =>
+    await this._database.findAndModify(
+      this._collectionName,
+      { _id: model.id },
+      null,
+      { $set: { ...model, timeStamp: new Date() } },
+      { new: true, upsert: true },
+    );
 
   validateLogin = async (username: string, password: string): Promise<User> => {
     try {

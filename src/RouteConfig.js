@@ -25,13 +25,15 @@ const maybe = (middleware: Middleware, condition: boolean): Middleware =>
     }
   };
 
-const injectUserMiddleware = (): Middleware =>
+const injectUserMiddleware = (container: Container): Middleware =>
   (request: $Request, response: $Response, next: NextFunction) => {
     const oauthInfo = response.locals.oauth;
     if (oauthInfo) {
       const token = (oauthInfo: any).token;
+      const user = token && token.user;
       // eslint-disable-next-line no-param-reassign
-      (request: any).user = token && token.user;
+      (request: any).user = user;
+      container.constitute('UserRepository').setCurrentUser(user);
     }
     next();
   };
@@ -97,7 +99,7 @@ export default (
         route,
         maybe(oauth.authenticate(), !anonymous),
         maybe(serverSentEventsMiddleware(), serverSentEvents),
-        injectUserMiddleware(),
+        injectUserMiddleware(container),
         maybe(filesMiddleware(allowedUploads), allowedUploads),
         async (request: $Request, response: $Response): Promise<void> => {
           const argumentNames = (route.match(/:[\w]*/g) || []).map(

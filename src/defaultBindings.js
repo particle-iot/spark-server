@@ -16,6 +16,7 @@ import WebhookLogger from './lib/WebhookLogger';
 import DeviceManager from './managers/DeviceManager';
 import WebhookManager from './managers/WebhookManager';
 import EventManager from './managers/EventManager';
+import PermissionManager from './managers/PermissionManager';
 import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
 import TingoDb from './repository/TingoDb';
 import DeviceAttributeDatabaseRepository from
@@ -52,7 +53,7 @@ export default (container: Container, newSettings: Settings) => {
 
   // lib
   container.bindClass(
-    'IWebhookLogger',
+    'WebhookLogger',
     WebhookLogger,
     [],
   );
@@ -75,6 +76,15 @@ export default (container: Container, newSettings: Settings) => {
     'EventsController',
     EventsController,
     ['EventManager'],
+  );
+  container.bindClass(
+    'PermissionManager',
+    PermissionManager,
+    [
+      'DeviceAttributeRepository',
+      'UserRepository',
+      'WebhookRepository',
+    ],
   );
   container.bindClass(
     'OauthClientsController',
@@ -111,6 +121,7 @@ export default (container: Container, newSettings: Settings) => {
       'DeviceFirmwareRepository',
       'DeviceKeyRepository',
       'DeviceServer',
+      'PermissionManager',
     ],
   );
   container.bindClass(
@@ -121,7 +132,12 @@ export default (container: Container, newSettings: Settings) => {
   container.bindClass(
     'WebhookManager',
     WebhookManager,
-    ['WebhookRepository', 'EventPublisher', 'IWebhookLogger'],
+    [
+      'EventPublisher',
+      'PermissionManager',
+      'WebhookLogger',
+      'WebhookRepository',
+    ],
   );
 
   // Repositories

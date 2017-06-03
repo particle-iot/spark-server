@@ -10,6 +10,7 @@ import type {
 } from './types';
 
 const OAUTH_CLIENTS = oauthClients;
+import { generateRandomToken } from './lib/utils';
 
 class OauthModel {
   _userRepository: UserRepository;
@@ -17,6 +18,9 @@ class OauthModel {
   constructor(userRepository: UserRepository) {
     this._userRepository = userRepository;
   }
+
+  generateAccessToken = async (): Promise<string> =>
+    await generateRandomToken();
 
   getAccessToken = async (bearerToken: string): ?Object => {
     const user = await this._userRepository.getByAccessToken(bearerToken);
