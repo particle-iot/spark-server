@@ -1,5 +1,7 @@
 // @flow
 
+import oauthClients from './oauthClients.json';
+
 import type {
   Client,
   TokenObject,
@@ -7,11 +9,7 @@ import type {
   UserRepository,
 } from './types';
 
-const OAUTH_CLIENTS = [{
-  clientId: 'CLI2',
-  clientSecret: 'client_secret_here',
-  grants: ['password'],
-}];
+const OAUTH_CLIENTS = oauthClients;
 
 class OauthModel {
   _userRepository: UserRepository;

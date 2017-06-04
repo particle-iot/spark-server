@@ -36,6 +36,10 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _logger = require('../lib/logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -158,7 +162,7 @@ FirmwareCompilationManager.compileSource = function () {
             errors = [];
 
             makeProcess.stderr.on('data', function (data) {
-              console.log('' + data);
+              _logger2.default.error('' + data);
               errors.push('' + data);
             });
 

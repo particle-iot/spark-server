@@ -150,7 +150,7 @@ export type Settings = {
   ACCESS_TOKEN_LIFETIME: number,
   API_TIMEOUT: number,
   BUILD_DIRECTORY: string,
-  CRYPTO_SALT: string,
+  CRYPTO_ALGORITHM: string,
   DB_CONFIG: {
     OPTIONS: Object,
     PATH: ?string,

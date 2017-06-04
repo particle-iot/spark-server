@@ -17,7 +17,7 @@ export default {
 
   ACCESS_TOKEN_LIFETIME: 7776000, // 90 days,
   API_TIMEOUT: 30000,
-  CRYPTO_SALT: 'aes-128-cbc',
+  CRYPTO_ALGORITHM: 'aes-128-cbc',
   LOG_REQUESTS: false,
   LOGIN_ROUTE: '/oauth/token',
 

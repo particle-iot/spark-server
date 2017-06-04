@@ -23,8 +23,8 @@ exports.default = {
   WEBHOOKS_DIRECTORY: _path2.default.join(__dirname, '../data/webhooks'),
   ACCESS_TOKEN_LIFETIME: 7776000, // 90 days,
   API_TIMEOUT: 30000, // Timeout for API requests.
-  CRYPTO_SALT: 'aes-128-cbc',
-  LOG_REQUESTS: true,
+  CRYPTO_ALGORITHM: 'aes-128-cbc',
+  LOG_REQUESTS: false,
   LOGIN_ROUTE: '/oauth/token',
   EXPRESS_SERVER_CONFIG: {
     PORT: 8080,

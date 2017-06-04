@@ -19,15 +19,26 @@
 *
 */
 
+import chalk from 'chalk';
+import settings from '../settings';
+
 class Logger {
-  static log() {
-    // eslint-disable-next-line prefer-rest-params
-    console.log(...arguments);
+  static log(...params: Array<any>) {
+    if (settings.SHOW_VERBOSE_DEVICE_LOGS) {
+      console.log(...params);
+    }
   }
 
-  static error() {
-    // eslint-disable-next-line prefer-rest-params
-    console.error(...arguments);
+  static info(...params: Array<any>) {
+    console.log(chalk.cyan(...params));
+  }
+
+  static warn(...params: Array<any>) {
+    console.warn(chalk.yellow(...params));
+  }
+
+  static error(...params: Array<any>) {
+    console.error(chalk.red(...params));
   }
 }
 

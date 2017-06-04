@@ -72,5 +72,5 @@ test(
 test.after.always(async (): Promise<void> => {
   await container.constitute('UserRepository').deleteById(testUser.id);
   await container.constitute('DeviceAttributeRepository').deleteById(DEVICE_ID);
-  await container.constitute('DeviceKeyRepository').delete(DEVICE_ID);
+  await container.constitute('DeviceKeyRepository').deleteById(DEVICE_ID);
 });

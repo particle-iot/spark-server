@@ -240,6 +240,7 @@ class DeviceManager {
     }
 
     await this._deviceKeyRepository.update(deviceID, publicKey);
+
     const existingAttributes = await this._deviceAttributeRepository.getById(
       deviceID,
     );

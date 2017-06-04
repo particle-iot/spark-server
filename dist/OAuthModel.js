@@ -16,13 +16,13 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _oauthClients = require('./oauthClients.json');
+
+var _oauthClients2 = _interopRequireDefault(_oauthClients);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var OAUTH_CLIENTS = [{
-  clientId: 'CLI2',
-  clientSecret: 'client_secret_here',
-  grants: ['password']
-}];
+var OAUTH_CLIENTS = _oauthClients2.default;
 
 var OauthModel = function OauthModel(userRepository) {
   var _this = this;
