@@ -516,7 +516,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
             case 11:
               _context11.next = 13;
-              return _this._deviceKeyRepository.update(deviceID, publicKey);
+              return _this._deviceKeyRepository.update({ deviceID: deviceID, key: publicKey });
 
             case 13:
               _context11.next = 15;

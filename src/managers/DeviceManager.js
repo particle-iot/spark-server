@@ -5,7 +5,7 @@ import type { DeviceServer } from 'spark-protocol';
 import type {
   Device,
   DeviceAttributes,
-  IBaseRepository,
+  IDeviceKeyRepository,
   IDeviceAttributeRepository,
   IDeviceFirmwareRepository,
 } from '../types';
@@ -16,13 +16,13 @@ import HttpError from '../lib/HttpError';
 class DeviceManager {
   _deviceAttributeRepository: IDeviceAttributeRepository;
   _deviceFirmwareRepository: IDeviceFirmwareRepository;
-  _deviceKeyRepository: IBaseRepository<string>;
+  _deviceKeyRepository: IDeviceKeyRepository;
   _deviceServer: DeviceServer;
 
   constructor(
     deviceAttributeRepository: IDeviceAttributeRepository,
     deviceFirmwareRepository: IDeviceFirmwareRepository,
-    deviceKeyRepository: IBaseRepository<string>,
+    deviceKeyRepository: IDeviceKeyRepository,
     deviceServer: DeviceServer,
   ) {
     this._deviceAttributeRepository = deviceAttributeRepository;
@@ -243,8 +243,7 @@ class DeviceManager {
       throw new HttpError(`Key error ${error}`);
     }
 
-    await this._deviceKeyRepository.update(deviceID, publicKey);
-
+    await this._deviceKeyRepository.update({ deviceID, key: publicKey });
     const existingAttributes = await this._deviceAttributeRepository.getById(
       deviceID,
     );

@@ -74,6 +74,11 @@ export type DeviceAttributes = {
   timestamp: Date,
 };
 
+export type DeviceKeyObject = {
+  deviceID: string,
+  key: string,
+};
+
 export type Event = EventData & {
   ttl: number,
   publishedAt: Date,
@@ -235,10 +240,7 @@ export interface IDeviceAttributeRepository extends IBaseRepository<DeviceAttrib
   doesUserHaveAccess(id: string, userID: string): Promise<boolean>;
 }
 
-export interface IDeviceKeyRepository {
-  getById(deviceID: string): Promise<?string>;
-  update(deviceID: string, key: string): Promise<string>;
-}
+export interface IDeviceKeyRepository extends IBaseRepository<DeviceKeyObject> {}
 
 export interface IUserRepository extends IBaseRepository<User> {
   createWithCredentials(credentials: UserCredentials): Promise<User>;
