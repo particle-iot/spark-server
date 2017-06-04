@@ -1,12 +1,12 @@
 // @flow
 
-import type { Database, Webhook } from '../types';
+import type { IBaseDatabase, IWebhookRepository, Webhook } from '../types';
 
-class WebhookDatabaseRepository {
-  _database: Object;
+class WebhookDatabaseRepository implements IWebhookRepository {
+  _database: IBaseDatabase;
   _collectionName: string = 'webhooks';
 
-  constructor(database: Database) {
+  constructor(database: IBaseDatabase) {
     this._database = database;
   }
 

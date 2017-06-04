@@ -72,16 +72,24 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               throw new _HttpError2.default('The device belongs to someone else.');
 
             case 7:
+              if (!(deviceAttributes.ownerID && deviceAttributes.ownerID === userID)) {
+                _context.next = 9;
+                break;
+              }
+
+              throw new _HttpError2.default('The device is already claimed.');
+
+            case 9:
               attributesToSave = (0, _extends3.default)({}, deviceAttributes, {
                 ownerID: userID
               });
-              _context.next = 10;
+              _context.next = 12;
               return _this._deviceAttributeRepository.update(attributesToSave);
 
-            case 10:
+            case 12:
               return _context.abrupt('return', _context.sent);
 
-            case 11:
+            case 13:
             case 'end':
               return _context.stop();
           }

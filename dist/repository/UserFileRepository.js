@@ -79,7 +79,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
   return desc;
 }
 
-var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _sparkProtocol.memoizeSet)(), _dec3 = (0, _sparkProtocol.memoizeGet)(), _dec4 = (0, _sparkProtocol.memoizeGet)(['id']), _dec5 = (0, _sparkProtocol.memoizeGet)(['username']), _dec6 = (0, _sparkProtocol.memoizeSet)(['id']), _dec7 = (0, _sparkProtocol.memoizeGet)(['username']), (_class = function () {
+var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _sparkProtocol.memoizeSet)(['id']), _dec3 = (0, _sparkProtocol.memoizeGet)(), _dec4 = (0, _sparkProtocol.memoizeGet)(['id']), _dec5 = (0, _sparkProtocol.memoizeGet)(['username']), _dec6 = (0, _sparkProtocol.memoizeSet)(), _dec7 = (0, _sparkProtocol.memoizeGet)(['username']), (_class = function () {
   function UserFileRepository(path) {
     var _this = this;
 
@@ -128,55 +128,41 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
       };
     }();
 
-    this.validateLogin = function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(username, password) {
-        var user, hash;
+    this.deleteAccessToken = function () {
+      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(userID, token) {
+        var user, userToSave;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.prev = 0;
-                _context2.next = 3;
-                return _this.getByUsername(username);
+                _context2.next = 2;
+                return _this.getById(userID);
 
-              case 3:
+              case 2:
                 user = _context2.sent;
 
                 if (user) {
-                  _context2.next = 6;
+                  _context2.next = 5;
                   break;
                 }
 
                 throw new Error('User doesn\'t exist');
 
-              case 6:
+              case 5:
+                userToSave = (0, _extends3.default)({}, user, {
+                  accessTokens: user.accessTokens.filter(function (tokenObject) {
+                    return tokenObject.accessToken !== token;
+                  })
+                });
                 _context2.next = 8;
-                return _PasswordHasher2.default.hash(password, user.salt);
+                return _this.update(userToSave);
 
               case 8:
-                hash = _context2.sent;
-
-                if (!(hash !== user.passwordHash)) {
-                  _context2.next = 11;
-                  break;
-                }
-
-                throw new Error('Wrong password');
-
-              case 11:
-                return _context2.abrupt('return', user);
-
-              case 14:
-                _context2.prev = 14;
-                _context2.t0 = _context2['catch'](0);
-                throw _context2.t0;
-
-              case 17:
               case 'end':
                 return _context2.stop();
             }
           }
-        }, _callee2, _this, [[0, 14]]);
+        }, _callee2, _this);
       }));
 
       return function (_x2, _x3) {
@@ -215,41 +201,55 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
       };
     }();
 
-    this.deleteAccessToken = function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(userID, token) {
-        var user, userToSave;
+    this.validateLogin = function () {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(username, password) {
+        var user, hash;
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                _context4.next = 2;
-                return _this.getById(userID);
+                _context4.prev = 0;
+                _context4.next = 3;
+                return _this.getByUsername(username);
 
-              case 2:
+              case 3:
                 user = _context4.sent;
 
                 if (user) {
-                  _context4.next = 5;
+                  _context4.next = 6;
                   break;
                 }
 
                 throw new Error('User doesn\'t exist');
 
-              case 5:
-                userToSave = (0, _extends3.default)({}, user, {
-                  accessTokens: user.accessTokens.filter(function (tokenObject) {
-                    return tokenObject.accessToken !== token;
-                  })
-                });
+              case 6:
                 _context4.next = 8;
-                return _this.update(userToSave);
+                return _PasswordHasher2.default.hash(password, user.salt);
 
               case 8:
+                hash = _context4.sent;
+
+                if (!(hash !== user.passwordHash)) {
+                  _context4.next = 11;
+                  break;
+                }
+
+                throw new Error('Wrong password');
+
+              case 11:
+                return _context4.abrupt('return', user);
+
+              case 14:
+                _context4.prev = 14;
+                _context4.t0 = _context4['catch'](0);
+                throw _context4.t0;
+
+              case 17:
               case 'end':
                 return _context4.stop();
             }
           }
-        }, _callee4, _this);
+        }, _callee4, _this, [[0, 14]]);
       }));
 
       return function (_x5, _x6) {
@@ -354,17 +354,16 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
       return create;
     }()
   }, {
-    key: 'update',
+    key: 'deleteById',
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(model) {
+      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(id) {
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
-                this._fileManager.writeFile(model.id + '.json', model);
-                return _context7.abrupt('return', model);
+                this._fileManager.deleteFile(id + '.json');
 
-              case 2:
+              case 1:
               case 'end':
                 return _context7.stop();
             }
@@ -372,11 +371,11 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee7, this);
       }));
 
-      function update(_x10) {
+      function deleteById(_x10) {
         return _ref7.apply(this, arguments);
       }
 
-      return update;
+      return deleteById;
     }()
   }, {
     key: 'getAll',
@@ -402,6 +401,10 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
 
       return getAll;
     }()
+
+    // This isn't a good one to memoize as we can't key off user ID and there
+    // isn't a good way to clear the cache.
+
   }, {
     key: 'getById',
     value: function () {
@@ -458,21 +461,18 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
 
       return getByUsername;
     }()
-
-    // This isn't a good one to memoize as we can't key off user ID and there
-    // isn't a good way to clear the cache.
-
   }, {
-    key: 'deleteById',
+    key: 'update',
     value: function () {
-      var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(id) {
+      var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(model) {
         return _regenerator2.default.wrap(function _callee11$(_context11) {
           while (1) {
             switch (_context11.prev = _context11.next) {
               case 0:
-                this._fileManager.deleteFile(id + '.json');
+                this._fileManager.writeFile(model.id + '.json', model);
+                return _context11.abrupt('return', model);
 
-              case 1:
+              case 2:
               case 'end':
                 return _context11.stop();
             }
@@ -480,11 +480,11 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee11, this);
       }));
 
-      function deleteById(_x13) {
+      function update(_x13) {
         return _ref11.apply(this, arguments);
       }
 
-      return deleteById;
+      return update;
     }()
   }, {
     key: 'isUserNameInUse',
@@ -520,5 +520,5 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
     }()
   }]);
   return UserFileRepository;
-}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'update', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'update'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getById', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByUsername', [_dec5], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByUsername'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteById', [_dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'isUserNameInUse', [_dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'isUserNameInUse'), _class.prototype)), _class));
+}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteById', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getById', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByUsername', [_dec5], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByUsername'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'update', [_dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'update'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'isUserNameInUse', [_dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'isUserNameInUse'), _class.prototype)), _class));
 exports.default = UserFileRepository;

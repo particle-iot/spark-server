@@ -4,25 +4,25 @@ import type { File } from 'express';
 import type { DeviceServer } from 'spark-protocol';
 import type {
   Device,
-  DeviceAttributeRepository,
   DeviceAttributes,
-  Repository,
+  IBaseRepository,
+  IDeviceAttributeRepository,
+  IDeviceFirmwareRepository,
 } from '../types';
-import type DeviceFirmwareRepository from '../repository/DeviceFirmwareFileRepository';
 
 import ursa from 'ursa';
 import HttpError from '../lib/HttpError';
 
 class DeviceManager {
-  _deviceAttributeRepository: DeviceAttributeRepository;
-  _deviceFirmwareRepository: DeviceFirmwareRepository;
-  _deviceKeyRepository: Repository<string>;
+  _deviceAttributeRepository: IDeviceAttributeRepository;
+  _deviceFirmwareRepository: IDeviceFirmwareRepository;
+  _deviceKeyRepository: IBaseRepository<string>;
   _deviceServer: DeviceServer;
 
   constructor(
-    deviceAttributeRepository: DeviceAttributeRepository,
-    deviceFirmwareRepository: DeviceFirmwareRepository,
-    deviceKeyRepository: Repository<string>,
+    deviceAttributeRepository: IDeviceAttributeRepository,
+    deviceFirmwareRepository: IDeviceFirmwareRepository,
+    deviceKeyRepository: IBaseRepository<string>,
     deviceServer: DeviceServer,
   ) {
     this._deviceAttributeRepository = deviceAttributeRepository;
@@ -43,6 +43,10 @@ class DeviceManager {
     }
     if (deviceAttributes.ownerID && deviceAttributes.ownerID !== userID) {
       throw new HttpError('The device belongs to someone else.');
+    }
+
+    if (deviceAttributes.ownerID && deviceAttributes.ownerID === userID) {
+      throw new HttpError('The device is already claimed.');
     }
 
     const attributesToSave = {

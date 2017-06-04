@@ -20,6 +20,7 @@ import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileReposit
 import TingoDb from './repository/TingoDb';
 import DeviceAttributeDatabaseRepository from
   './repository/DeviceAttributeDatabaseRepository';
+import DeviceKeyDatabaseRepository from './repository/DeviceKeyDatabaseRepository';
 import UserDatabaseRepository from './repository/UserDatabaseRepository';
 import WebhookDatabaseRepository from './repository/WebhookDatabaseRepository';
 import settings from './settings';
@@ -133,6 +134,11 @@ export default (container: Container, newSettings: Settings) => {
     'DeviceFirmwareRepository',
     DeviceFirmwareFileRepository,
     ['FIRMWARE_DIRECTORY'],
+  );
+  container.bindClass(
+    'DeviceKeyRepository',
+    DeviceKeyDatabaseRepository,
+    ['Database'],
   );
   container.bindClass(
     'UserRepository',

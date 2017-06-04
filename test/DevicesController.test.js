@@ -195,6 +195,22 @@ test.serial('should claim device', async t => {
 });
 
 test.serial(
+  'should throw a error if device is already claimed by the user',
+  async t => {
+    const claimDeviceResponse = await request(app)
+      .post('/v1/devices')
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({
+        access_token: userToken,
+        id: DEVICE_ID,
+      });
+
+    t.is(claimDeviceResponse.status, 400);
+    t.is(claimDeviceResponse.body.error, 'The device is already claimed.');
+  },
+);
+
+test.serial(
   'should throw an error if device belongs to somebody else',
   async t => {
     const deviceAttributesStub = sinon.stub(

@@ -70,6 +70,10 @@ var _DeviceAttributeDatabaseRepository = require('./repository/DeviceAttributeDa
 
 var _DeviceAttributeDatabaseRepository2 = _interopRequireDefault(_DeviceAttributeDatabaseRepository);
 
+var _DeviceKeyDatabaseRepository = require('./repository/DeviceKeyDatabaseRepository');
+
+var _DeviceKeyDatabaseRepository2 = _interopRequireDefault(_DeviceKeyDatabaseRepository);
+
 var _UserDatabaseRepository = require('./repository/UserDatabaseRepository');
 
 var _UserDatabaseRepository2 = _interopRequireDefault(_UserDatabaseRepository);
@@ -126,6 +130,7 @@ exports.default = function (container, newSettings) {
   // Repositories
   container.bindClass('DeviceAttributeRepository', _DeviceAttributeDatabaseRepository2.default, ['Database']);
   container.bindClass('DeviceFirmwareRepository', _DeviceFirmwareFileRepository2.default, ['FIRMWARE_DIRECTORY']);
+  container.bindClass('DeviceKeyRepository', _DeviceKeyDatabaseRepository2.default, ['Database']);
   container.bindClass('UserRepository', _UserDatabaseRepository2.default, ['Database']);
   container.bindClass('WebhookRepository', _WebhookDatabaseRepository2.default, ['Database']);
 };
