@@ -235,6 +235,11 @@ export interface IDeviceAttributeRepository extends IBaseRepository<DeviceAttrib
   doesUserHaveAccess(id: string, userID: string): Promise<boolean>;
 }
 
+export interface IDeviceKeyRepository {
+  getById(deviceID: string): Promise<?string>;
+  update(deviceID: string, key: string): Promise<string>;
+}
+
 export interface IUserRepository extends IBaseRepository<User> {
   createWithCredentials(credentials: UserCredentials): Promise<User>;
   deleteAccessToken(userID: string, accessToken: string): Promise<void>;
