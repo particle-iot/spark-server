@@ -12,7 +12,9 @@ var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _types = require('../types');
+var _logger = require('./logger');
+
+var _logger2 = _interopRequireDefault(_logger);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,14 +26,12 @@ var WebhookLogger = function () {
   (0, _createClass3.default)(WebhookLogger, [{
     key: 'log',
     value: function log() {
-      var _console;
-
       for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 
       this._lastLog = args;
-      (_console = console).log.apply(_console, args);
+      _logger2.default.log.apply(_logger2.default, args);
     }
   }]);
   return WebhookLogger;

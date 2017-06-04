@@ -150,7 +150,8 @@ FirmwareCompilationManager.compileSource = function () {
               var combinedPath = _path2.default.join(appPath, fileName);
 
               while (_fs2.default.existsSync(combinedPath)) {
-                combinedPath = _path2.default.join(appPath, '' + _path2.default.basename(fileName, fileExtension) + ('_' + iterator++ + fileExtension));
+                combinedPath = _path2.default.join(appPath, '' + _path2.default.basename(fileName, fileExtension) + ('_' + iterator++ + fileExtension) // eslint-disable-line no-plusplus
+                );
               }
 
               _fs2.default.writeFileSync(combinedPath, file.buffer);
