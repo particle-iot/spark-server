@@ -22,23 +22,27 @@
 import chalk from 'chalk';
 import settings from '../settings';
 
+function _transform(...params: Array<any>): Array<any> {
+  return params.map(JSON.stringify);
+}
+
 class Logger {
   static log(...params: Array<any>) {
     if (settings.SHOW_VERBOSE_DEVICE_LOGS) {
-      console.log(...params);
+      console.log(_transform(...params));
     }
   }
 
   static info(...params: Array<any>) {
-    console.log(chalk.cyan(...params));
+    console.log(chalk.cyan(_transform(...params)));
   }
 
   static warn(...params: Array<any>) {
-    console.warn(chalk.yellow(...params));
+    console.warn(chalk.yellow(_transform(...params)));
   }
 
   static error(...params: Array<any>) {
-    console.error(chalk.red(...params));
+    console.error(chalk.red(_transform(...params)));
   }
 }
 
