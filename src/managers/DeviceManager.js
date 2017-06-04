@@ -45,6 +45,10 @@ class DeviceManager {
       throw new HttpError('The device belongs to someone else.');
     }
 
+    if (deviceAttributes.ownerID && deviceAttributes.ownerID === userID) {
+      throw new HttpError('The device is already claimed.');
+    }
+
     const attributesToSave = {
       ...deviceAttributes,
       ownerID: userID,
