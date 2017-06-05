@@ -1,6 +1,6 @@
 // @flow
 
-import type { IBaseDatabase, IDeviceKeyRepository } from '../types';
+import type { DeviceKeyObject, IBaseDatabase, IDeviceKeyRepository } from '../types';
 
 class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
   _database: IBaseDatabase;
@@ -10,29 +10,33 @@ class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
     this._database = database;
   }
 
+  create = async (model: DeviceKeyObject): Promise<DeviceKeyObject> =>
+    await this._database.insertOne(
+      this._collectionName,
+      { _id: model.deviceID, ...model },
+    );
+
   deleteById = async (deviceID: string): Promise<void> =>
     await this._database.remove(this._collectionName, deviceID);
 
-  getById = async (deviceID: string): Promise<?string> => {
-    const keyObject = await this._database.findOne(
+  getAll = async (): Promise<Array<DeviceKeyObject>> => {
+    throw new Error('The method is not implemented.');
+  }
+
+  getById = async (deviceID: string): Promise<?DeviceKeyObject> =>
+    await this._database.findOne(
       this._collectionName,
       { _id: deviceID },
     );
 
-    return keyObject ? keyObject.key : null;
-  }
-
-  update = async (deviceID: string, key: string): Promise<string> => {
-    const keyObject = await this._database.findAndModify(
+  update = async (model: DeviceKeyObject): Promise<DeviceKeyObject> =>
+    await this._database.findAndModify(
       this._collectionName,
-      { _id: deviceID },
+      { _id: model.deviceID },
       null,
-      { $set: { _id: deviceID, key } },
+      { $set: { ...model } },
       { new: true, upsert: true },
     );
-
-    return keyObject.key;
-  }
 }
 
 export default DeviceKeyDatabaseRepository;
