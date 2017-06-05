@@ -62,7 +62,7 @@ export default (
   settings: Settings,
 ) => {
   const oauth = new OAuthServer({
-    ACCESS_TOKEN_LIFETIME: settings.ACCESS_TOKEN_LIFETIME,
+    accessTokenLifetime: settings.ACCESS_TOKEN_LIFETIME,
     allowBearerTokensInQueryString: true,
     model: new OAuthModel(container.constitute('UserRepository')),
   });

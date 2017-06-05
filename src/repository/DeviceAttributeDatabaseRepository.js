@@ -32,7 +32,7 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     return await this._database.find(
       this._collectionName,
       query,
-      {timeout:false},
+      { timeout: false },
     );
   };
 

@@ -27,7 +27,7 @@ class WebhookDatabaseRepository implements IWebhookRepository {
     return await this._database.find(
       this._collectionName,
       query,
-      {timeout:false},
+      { timeout: false },
     );
   };
 

@@ -99,7 +99,7 @@ var serverSentEventsMiddleware = function serverSentEventsMiddleware() {
 
 exports.default = function (app, container, controllers, settings) {
   var oauth = new _expressOauthServer2.default({
-    ACCESS_TOKEN_LIFETIME: settings.ACCESS_TOKEN_LIFETIME,
+    accessTokenLifetime: settings.ACCESS_TOKEN_LIFETIME,
     allowBearerTokensInQueryString: true,
     model: new _OAuthModel2.default(container.constitute('UserRepository'))
   });
