@@ -29,7 +29,11 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
 
   getAll = async (userID: ?string = null): Promise<Array<DeviceAttributes>> => {
     const query = userID ? { ownerID: userID } : {};
-    return await this._database.find(this._collectionName, query);
+    return await this._database.find(
+      this._collectionName,
+      query,
+      {timeout:false},
+    );
   };
 
   getById = async (

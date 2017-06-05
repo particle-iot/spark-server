@@ -90,7 +90,7 @@ var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
             case 0:
               query = userID ? { ownerID: userID } : {};
               _context3.next = 3;
-              return _this._database.find(_this._collectionName, query);
+              return _this._database.find(_this._collectionName, query, { timeout: false });
 
             case 3:
               return _context3.abrupt('return', _context3.sent);

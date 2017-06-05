@@ -102,7 +102,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
             case 0:
               query = userID ? { ownerID: userID } : {};
               _context4.next = 3;
-              return _this._database.find(_this._collectionName, query);
+              return _this._database.find(_this._collectionName, query, { timeout: false });
 
             case 3:
               return _context4.abrupt('return', _context4.sent);

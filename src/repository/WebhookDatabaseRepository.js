@@ -24,7 +24,11 @@ class WebhookDatabaseRepository implements IWebhookRepository {
 
   getAll = async (userID: ?string = null): Promise<Array<Webhook>> => {
     const query = userID ? { ownerID: userID } : {};
-    return await this._database.find(this._collectionName, query);
+    return await this._database.find(
+      this._collectionName,
+      query,
+      {timeout:false},
+    );
   };
 
   getById = async (id: string, userID: ?string = null): Promise<?Webhook> => {
