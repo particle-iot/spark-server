@@ -6,6 +6,7 @@ import type {
   IDeviceAttributeRepository,
 } from '../types';
 
+// getByID, deleteByID and update uses model.deviceID as ID for querying
 class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
   _database: IBaseDatabase;
   _collectionName: string = 'deviceAttributes';
@@ -20,8 +21,8 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     throw new Error('The method is not implemented');
   };
 
-  deleteById = async (id: string): Promise<void> =>
-    await this._database.remove(this._collectionName, id);
+  deleteByID = async (deviceID: string): Promise<void> =>
+    await this._database.remove(this._collectionName, { deviceID });
 
   getAll = async (userID: ?string = null): Promise<Array<DeviceAttributes>> => {
     const query = userID ? { ownerID: userID } : {};
@@ -32,15 +33,15 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     );
   };
 
-  getById = async (id: string): Promise<?DeviceAttributes> =>
-    await this._database.findOne(this._collectionName, { _id: id });
+  getByID = async (deviceID: string): Promise<?DeviceAttributes> =>
+    await this._database.findOne(this._collectionName, { deviceID });
 
   update = async (model: DeviceAttributes): Promise<DeviceAttributes> =>
     await this._database.findAndModify(
       this._collectionName,
-      { _id: model.deviceID },
+      { deviceID: model.deviceID },
       null,
-      { $set: { ...model, _id: model.deviceID, timeStamp: new Date() } },
+      { $set: { ...model, timeStamp: new Date() } },
       { new: true, upsert: true },
     );
 }

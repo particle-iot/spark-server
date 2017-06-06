@@ -13,8 +13,8 @@ test(
     const user = await repository.createWithCredentials(TestData.getUser());
     const fileManager = repository._fileManager;
     const getAllSpy = sinon.spy(fileManager, 'getAllData');
-    const getByIdSpy = sinon.spy(fileManager, 'getFile');
-    const deleteByIdSpy = sinon.spy(fileManager, 'deleteFile');
+    const getByIDSpy = sinon.spy(fileManager, 'getFile');
+    const deleteByIDSpy = sinon.spy(fileManager, 'deleteFile');
 
     async function testAllAccessors() {
       testIterator++;
@@ -24,10 +24,10 @@ test(
       await repository.getAll();
       t.truthy(getAllSpy.callCount === testIterator);
 
-      await repository.getById(user.id);
-      t.truthy(getByIdSpy.callCount === testIterator);
-      await repository.getById(user.id);
-      t.truthy(getByIdSpy.callCount === testIterator);
+      await repository.getByID(user.id);
+      t.truthy(getByIDSpy.callCount === testIterator);
+      await repository.getByID(user.id);
+      t.truthy(getByIDSpy.callCount === testIterator);
 
       await repository.getByUsername(user.username);
       t.truthy(getAllSpy.callCount === testIterator);
@@ -40,8 +40,8 @@ test(
     await repository.update(user);
     await testAllAccessors();
 
-    await repository.deleteById(user.id);
+    await repository.deleteByID(user.id);
     await testAllAccessors();
-    t.truthy(deleteByIdSpy.callCount === 1);
+    t.truthy(deleteByIDSpy.callCount === 1);
   },
 );

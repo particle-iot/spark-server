@@ -1,7 +1,8 @@
 // @flow
 
-import type { Device, DeviceManager } from '../types';
 import type { ClaimCodeManager } from 'spark-protocol';
+import type DeviceManager from '../managers/DeviceManager';
+import type { Device } from '../types';
 
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';

@@ -132,14 +132,14 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
     };
   }();
 
-  this.deleteById = function () {
+  this.deleteByID = function () {
     var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(id) {
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return _this._database.remove(_this._collectionName, id);
+              return _this._database.remove(_this._collectionName, { _id: id });
 
             case 2:
               return _context4.abrupt('return', _context4.sent);
@@ -212,7 +212,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
     };
   }();
 
-  this.getById = function () {
+  this.getByID = function () {
     var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(id) {
       return _regenerator2.default.wrap(function _callee7$(_context7) {
         while (1) {

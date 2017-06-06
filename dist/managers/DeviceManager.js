@@ -51,7 +51,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
           switch (_context.prev = _context.next) {
             case 0:
               _context.next = 2;
-              return _this._deviceAttributeRepository.getById(deviceID);
+              return _this._deviceAttributeRepository.getByID(deviceID);
 
             case 2:
               deviceAttributes = _context.sent;
@@ -490,7 +490,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
             case 13:
               _context11.next = 15;
-              return _this._deviceAttributeRepository.getById(deviceID);
+              return _this._deviceAttributeRepository.getByID(deviceID);
 
             case 15:
               existingAttributes = _context11.sent;

@@ -132,24 +132,6 @@ export type Device = DeviceAttributes & {
   variables?: ?Object,
 };
 
-export type Repository<TModel> = {
-  create: (model: TModel | $Shape<TModel>) => Promise<TModel>,
-  deleteById: (id: string) => Promise<void>,
-  getAll: () => Promise<Array<TModel>>,
-  getById: (id: string) => Promise<?TModel>,
-  update: (model: TModel) => Promise<TModel>,
-};
-
-export type UserRepository = Repository<User> & {
-  createWithCredentials(credentials: UserCredentials): Promise<User>,
-  deleteAccessToken(userID: string, accessToken: string): Promise<void>,
-  getByAccessToken(accessToken: string): Promise<?User>,
-  getByUsername(username: string): Promise<?User>,
-  isUserNameInUse(username: string): Promise<boolean>,
-  saveAccessToken(userID: string, tokenObject: TokenObject): Promise<User>,
-  validateLogin(username: string, password: string): Promise<User>,
-};
-
 export type Settings = {
   ACCESS_TOKEN_LIFETIME: number,
   API_TIMEOUT: number,
@@ -184,29 +166,6 @@ export type Settings = {
   WEBHOOKS_DIRECTORY: string,
 };
 
-export type DeviceAttributeRepository = Repository<DeviceAttributes> & {
-  doesUserHaveAccess(deviceID: string, userID: string): Promise<boolean>,
-};
-
-export type DeviceManager = {
-  callFunction(
-    deviceID: string,
-    functionName: string,
-    functionArguments: {[key: string]: string},
-  ): Promise<*>,
-  claimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
-  flashBinary(deviceID: string, files: File): Promise<*>,
-  flashKnownApp(deviceID: string, app: string): Promise<*>,
-  getAll(): Promise<Array<Device>>,
-  getByID(deviceID: string): Promise<Device>,
-  getDetailsByID(deviceID: string): Promise<*>,
-  getVariableValue(deviceID: string, varName: string): Promise<Object>,
-  provision(deviceID: string, publicKey: string): Promise<*>,
-  raiseYourHand(deviceID: string, shouldShowSignal: boolean): Promise<void>,
-  renameDevice(deviceID: string, name: string): Promise<DeviceAttributes>,
-  unclaimDevice(deviceID: string): Promise<DeviceAttributes>,
-};
-
 export type RequestOptions = {
   auth?: { password: string, username: string },
   body: ?Object,
@@ -234,9 +193,9 @@ export type Product = {
 
 export interface IBaseRepository<TModel> {
   create(model: TModel | $Shape<TModel>): Promise<TModel>;
-  deleteById(id: string): Promise<void>;
+  deleteByID(id: string): Promise<void>;
   getAll(): Promise<Array<TModel>>;
-  getById(id: string, userID: ?string): Promise<?TModel>;
+  getByID(id: string): Promise<?TModel>;
   update(model: TModel): Promise<TModel>;
 }
 
@@ -267,5 +226,5 @@ export interface IBaseDatabase {
   findAndModify(collectionName: string, ...args: Array<any>): Promise<*>;
   findOne(collectionName: string, ...args: Array<any>): Promise<*>;
   insertOne(collectionName: string, ...args: Array<any>): Promise<*>;
-  remove(collectionName: string, id: string): Promise<*>;
+  remove(collectionName: string, query: Object): Promise<*>;
 }

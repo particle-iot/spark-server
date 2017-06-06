@@ -81,11 +81,11 @@ class BaseMongoDb implements IBaseDatabase {
 
   remove = async (
     collectionName: string,
-    id: string,
+    query: Object,
   ): Promise<*> => await this.__runForCollection(
     collectionName,
     async (collection: Object): Promise<*> =>
-      await collection.remove(this.__translateQuery({ _id: id })),
+      await collection.remove(this.__translateQuery(query)),
   );
 
   // eslint-disable-next-line no-unused-vars

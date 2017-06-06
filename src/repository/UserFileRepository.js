@@ -59,7 +59,7 @@ class UserFileRepository implements IUserRepository {
   }
 
   deleteAccessToken = async (userID: string, token: string): Promise<*> => {
-    const user = await this.getById(userID);
+    const user = await this.getByID(userID);
     if (!user) {
       throw new Error('User doesn\'t exist');
     }
@@ -76,7 +76,7 @@ class UserFileRepository implements IUserRepository {
   };
 
   @memoizeSet(['id'])
-  async deleteById(id: string): Promise<void> {
+  async deleteByID(id: string): Promise<void> {
     this._fileManager.deleteFile(`${id}.json`);
   }
 
@@ -95,7 +95,7 @@ class UserFileRepository implements IUserRepository {
     );
 
   @memoizeGet(['id'])
-  async getById(id: string): Promise<?User> {
+  async getByID(id: string): Promise<?User> {
     return this._fileManager.getFile(`${id}.json`);
   }
 
@@ -119,7 +119,7 @@ class UserFileRepository implements IUserRepository {
     userID: string,
     tokenObject: TokenObject,
   ): Promise<*> => {
-    const user = await this.getById(userID);
+    const user = await this.getByID(userID);
 
     if (!user) {
       throw new HttpError('Could not find user for user ID');

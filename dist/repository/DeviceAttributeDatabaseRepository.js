@@ -22,6 +22,7 @@ var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// getByID, deleteByID and update uses model.deviceID as ID for querying
 var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseRepository(database, permissionManager) {
   var _this = this;
 
@@ -42,14 +43,14 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
     }, _callee, _this);
   }));
 
-  this.deleteById = function () {
-    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(id) {
+  this.deleteByID = function () {
+    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(deviceID) {
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return _this._database.remove(_this._collectionName, id);
+              return _this._database.remove(_this._collectionName, { deviceID: deviceID });
 
             case 2:
               return _context2.abrupt('return', _context2.sent);
@@ -95,14 +96,14 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
     };
   }();
 
-  this.getById = function () {
-    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(id) {
+  this.getByID = function () {
+    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(deviceID) {
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return _this._database.findOne(_this._collectionName, { _id: id });
+              return _this._database.findOne(_this._collectionName, { deviceID: deviceID });
 
             case 2:
               return _context4.abrupt('return', _context4.sent);
@@ -127,7 +128,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
           switch (_context5.prev = _context5.next) {
             case 0:
               _context5.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { _id: model.deviceID }, null, { $set: (0, _extends3.default)({}, model, { _id: model.deviceID, timeStamp: new Date() }) }, { new: true, upsert: true });
+              return _this._database.findAndModify(_this._collectionName, { deviceID: model.deviceID }, null, { $set: (0, _extends3.default)({}, model, { timeStamp: new Date() }) }, { new: true, upsert: true });
 
             case 2:
               return _context5.abrupt('return', _context5.sent);

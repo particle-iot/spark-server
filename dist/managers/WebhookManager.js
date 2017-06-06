@@ -156,7 +156,7 @@ var WebhookManager = function WebhookManager(eventPublisher, permissionManager, 
 
             case 5:
               _context2.next = 7;
-              return _this._webhookRepository.deleteById(webhookID);
+              return _this._webhookRepository.deleteByID(webhookID);
 
             case 7:
               _this._unsubscribeWebhookByID(webhookID);

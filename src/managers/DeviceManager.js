@@ -40,7 +40,7 @@ class DeviceManager {
     userID: string,
   ): Promise<DeviceAttributes> => {
     const deviceAttributes =
-      await this._deviceAttributeRepository.getById(deviceID);
+      await this._deviceAttributeRepository.getByID(deviceID);
 
     if (!deviceAttributes) {
       throw new HttpError('No device found', 404);
@@ -235,7 +235,7 @@ class DeviceManager {
     }
 
     await this._deviceKeyRepository.update({ deviceID, key: publicKey });
-    const existingAttributes = await this._deviceAttributeRepository.getById(
+    const existingAttributes = await this._deviceAttributeRepository.getByID(
       deviceID,
     );
     const attributes = {

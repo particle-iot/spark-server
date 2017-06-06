@@ -1,6 +1,7 @@
 // @flow
 
-import type { Device, DeviceManager } from '../types';
+import type DeviceManager from '../managers/DeviceManager';
+import type { Device } from '../types';
 import type { DeviceAPIType } from '../lib/deviceToAPI';
 
 import nullthrows from 'nullthrows';

@@ -47,7 +47,7 @@ class PermissionManager {
     entityName: ProtectedEntityName,
     id: string,
   ): Promise<*> => {
-    const entity = await nullthrows(this._repositoriesByEntityName.get(entityName)).getById(id);
+    const entity = await nullthrows(this._repositoriesByEntityName.get(entityName)).getByID(id);
     if (!entity) {
       return null;
     }

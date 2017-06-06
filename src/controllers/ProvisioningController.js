@@ -1,6 +1,6 @@
 // @flow
 
-import type { DeviceManager } from '../types';
+import type DeviceManager from '../managers/DeviceManager';
 
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
@@ -38,6 +38,10 @@ class ProvisioningController extends Controller {
       postBody.publicKey,
       postBody.alogrithm,
     );
+
+    if (!device) {
+      throw new HttpError('Provisioning error');
+    }
 
     return this.ok(deviceToAPI(device));
   }

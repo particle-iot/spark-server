@@ -60,8 +60,8 @@ class UserDatabaseRepository implements IUserRepository {
       { new: true },
     );
 
-  deleteById = async (id: string): Promise<void> =>
-    await this._database.remove(this._collectionName, id);
+  deleteByID = async (id: string): Promise<void> =>
+    await this._database.remove(this._collectionName, { _id: id });
 
   getAll = async (): Promise<Array<User>> => {
     throw new Error('The method is not implemented');
@@ -85,7 +85,7 @@ class UserDatabaseRepository implements IUserRepository {
   };
 
   // eslint-disable-next-line no-unused-vars
-  getById = async (id: string): Promise<?User> => {
+  getByID = async (id: string): Promise<?User> => {
     throw new Error('The method is not implemented');
   };
 
