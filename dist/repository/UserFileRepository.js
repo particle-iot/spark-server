@@ -138,7 +138,7 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return _this.getById(userID);
+                return _this.getByID(userID);
 
               case 2:
                 user = _context2.sent;
@@ -215,7 +215,7 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return _this.getById(userID);
+                return _this.getByID(userID);
 
               case 2:
                 user = _context4.sent;
@@ -416,7 +416,7 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
     // isn't a good way to clear the cache.
 
   }, {
-    key: 'getById',
+    key: 'getByID',
     value: function () {
       var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(id) {
         return _regenerator2.default.wrap(function _callee9$(_context9) {
@@ -433,11 +433,11 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee9, this);
       }));
 
-      function getById(_x12) {
+      function getByID(_x12) {
         return _ref9.apply(this, arguments);
       }
 
-      return getById;
+      return getByID;
     }()
   }, {
     key: 'getByUsername',
@@ -530,5 +530,5 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
     }()
   }]);
   return UserFileRepository;
-}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteByID', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteByID'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getById', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByUsername', [_dec5], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByUsername'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'isUserNameInUse', [_dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'isUserNameInUse'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'update', [_dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'update'), _class.prototype)), _class));
+}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteByID', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteByID'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByID', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByID'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByUsername', [_dec5], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByUsername'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'isUserNameInUse', [_dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'isUserNameInUse'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'update', [_dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'update'), _class.prototype)), _class));
 exports.default = UserFileRepository;

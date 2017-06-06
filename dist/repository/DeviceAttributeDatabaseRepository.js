@@ -95,7 +95,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
     };
   }();
 
-  this.getById = function () {
+  this.getByID = function () {
     var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(id) {
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {

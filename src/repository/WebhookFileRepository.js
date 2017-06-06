@@ -47,18 +47,12 @@ class WebhookFileRepository implements IWebhookRepository {
     return allData;
   };
 
-  getById = async (id: string, userID: ?string = null): Promise<?Webhook> => {
-    const webhook = await this._getByID(id);
-
-    if (
-      !webhook ||
-      webhook.ownerID !== userID
-    ) {
-      return null;
-    }
-
-    return webhook;
-  };
+  @memoizeGet(['id'])
+  async getByID(
+    id: string,
+  ): Promise<?Webhook> {
+    return this._fileManager.getFile(`${id}.json`);
+  }
 
   // eslint-disable-next-line no-unused-vars
   update = async (model: WebhookMutator): Promise<Webhook> => {
@@ -68,13 +62,6 @@ class WebhookFileRepository implements IWebhookRepository {
   @memoizeGet()
   async _getAll(): Promise<Array<Webhook>> {
     return this._fileManager.getAllData();
-  }
-
-  @memoizeGet(['id'])
-  async _getByID(
-    id: string,
-  ): Promise<?Webhook> {
-    return this._fileManager.getFile(`${id}.json`);
   }
 }
 

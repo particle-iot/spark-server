@@ -23,7 +23,7 @@ class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
     throw new Error('The method is not implemented.');
   };
 
-  getById = async (deviceID: string): Promise<?DeviceKeyObject> =>
+  getByID = async (deviceID: string): Promise<?DeviceKeyObject> =>
     await this._database.findOne(
       this._collectionName,
       { _id: deviceID },

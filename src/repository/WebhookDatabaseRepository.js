@@ -31,7 +31,7 @@ class WebhookDatabaseRepository implements IWebhookRepository {
     );
   };
 
-  getById = async (id: string): Promise<?Webhook> =>
+  getByID = async (id: string): Promise<?Webhook> =>
     await this._database.findOne(this._collectionName, { _id: id });
 
   update = async (): Promise<Webhook> => {

@@ -32,7 +32,7 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     );
   };
 
-  getById = async (id: string): Promise<?DeviceAttributes> =>
+  getByID = async (id: string): Promise<?DeviceAttributes> =>
     await this._database.findOne(this._collectionName, { _id: id });
 
   update = async (model: DeviceAttributes): Promise<DeviceAttributes> =>

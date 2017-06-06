@@ -212,7 +212,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
     };
   }();
 
-  this.getById = function () {
+  this.getByID = function () {
     var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(id) {
       return _regenerator2.default.wrap(function _callee7$(_context7) {
         while (1) {

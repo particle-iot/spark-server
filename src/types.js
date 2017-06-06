@@ -236,7 +236,7 @@ export interface IBaseRepository<TModel> {
   create(model: TModel | $Shape<TModel>): Promise<TModel>;
   deleteByID(id: string): Promise<void>;
   getAll(): Promise<Array<TModel>>;
-  getById(id: string, userID: ?string): Promise<?TModel>;
+  getByID(id: string): Promise<?TModel>;
   update(model: TModel): Promise<TModel>;
 }
 

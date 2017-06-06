@@ -215,7 +215,7 @@ test.serial(
   async t => {
     const deviceAttributesStub = sinon.stub(
       container.constitute('DeviceAttributeRepository'),
-      'getById',
+      'getByID',
     ).returns({ ownerID: TestData.getID()});
 
     const claimDeviceResponse = await request(app)

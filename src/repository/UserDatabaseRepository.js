@@ -85,7 +85,7 @@ class UserDatabaseRepository implements IUserRepository {
   };
 
   // eslint-disable-next-line no-unused-vars
-  getById = async (id: string): Promise<?User> => {
+  getByID = async (id: string): Promise<?User> => {
     throw new Error('The method is not implemented');
   };
 
