@@ -28,7 +28,7 @@ class DeviceClaimsController extends Controller {
       this.user.id,
     );
 
-    const devices = await this._deviceManager.getAll(this.user.id);
+    const devices = await this._deviceManager.getAll();
     const deviceIDs = devices.map(
       (device: Device): string => device.deviceID,
     );

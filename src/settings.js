@@ -24,6 +24,8 @@ import path from 'path';
 /* eslint-disable sorting/sort-object-props */
 export default {
   BUILD_DIRECTORY: path.join(__dirname, '../data/build'),
+  DEFAULT_ADMIN_PASSWORD: 'adminPassword',
+  DEFAULT_ADMIN_USERNAME: '__admin__',
   DEVICE_DIRECTORY: path.join(__dirname, '../data/deviceKeys'),
   ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
   FIRMWARE_DIRECTORY: path.join(__dirname, '../data/knownApps'),

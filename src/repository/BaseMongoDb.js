@@ -88,6 +88,9 @@ class BaseMongoDb implements IBaseDatabase {
       await collection.remove(this.__translateQuery({ _id: id })),
   );
 
+  // eslint-disable-next-line no-unused-vars
+  __filterID = ({ id, ...otherProps }: Object): Object => ({ ...otherProps });
+
   __runForCollection = async (
     collectionName: string,
     callback: (collection: Object) => Promise<*>,
@@ -95,7 +98,8 @@ class BaseMongoDb implements IBaseDatabase {
     throw new Error(`Not implemented ${callback.toString()}`);
   };
 
-  __translateQuery = (query: Object): Object => deepToObjectIdCast(query);
+  __translateQuery = (query: Object): Object =>
+    this.__filterID(deepToObjectIdCast(query));
 
   __translateResultItem = (item: ?Object): ?Object => {
     if (!item) {

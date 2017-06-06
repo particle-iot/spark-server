@@ -1,6 +1,12 @@
 // @flow
 
-import type { IUserRepository, TokenObject, User, UserCredentials } from '../types';
+import type {
+  IUserRepository,
+  TokenObject,
+  User,
+  UserCredentials,
+  UserRole,
+} from '../types';
 
 import uuid from 'uuid';
 import { JSONFileManager, memoizeGet, memoizeSet } from 'spark-protocol';
@@ -9,6 +15,7 @@ import HttpError from '../lib/HttpError';
 
 class UserFileRepository implements IUserRepository {
   _fileManager: JSONFileManager;
+  _currentUser: User;
 
   constructor(path: string) {
     this._fileManager = new JSONFileManager(path);
@@ -16,6 +23,7 @@ class UserFileRepository implements IUserRepository {
 
   createWithCredentials = async (
     userCredentials: UserCredentials,
+    userRole: ?UserRole = null,
   ): Promise<User> => {
     const { username, password } = userCredentials;
 
@@ -24,6 +32,7 @@ class UserFileRepository implements IUserRepository {
     const modelToSave = {
       accessTokens: [],
       passwordHash,
+      role: userRole,
       salt,
       username,
     };
@@ -97,30 +106,7 @@ class UserFileRepository implements IUserRepository {
     );
   }
 
-  @memoizeSet()
-  async update(model: User): Promise<User> {
-    this._fileManager.writeFile(`${model.id}.json`, model);
-    return model;
-  }
-
-  validateLogin = async (username: string, password: string): Promise<User> => {
-    try {
-      const user = await this.getByUsername(username);
-
-      if (!user) {
-        throw new Error('User doesn\'t exist');
-      }
-
-      const hash = await PasswordHasher.hash(password, user.salt);
-      if (hash !== user.passwordHash) {
-        throw new Error('Wrong password');
-      }
-
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  };
+  getCurrentUser = (): User => this._currentUser;
 
   @memoizeGet(['username'])
   async isUserNameInUse(username: string): Promise<boolean> {
@@ -146,6 +132,35 @@ class UserFileRepository implements IUserRepository {
 
     return await this.update(userToSave);
   }
+
+  setCurrentUser = (user: User) => {
+    this._currentUser = user;
+  }
+
+  @memoizeSet()
+  async update(model: User): Promise<User> {
+    this._fileManager.writeFile(`${model.id}.json`, model);
+    return model;
+  }
+
+  validateLogin = async (username: string, password: string): Promise<User> => {
+    try {
+      const user = await this.getByUsername(username);
+
+      if (!user) {
+        throw new Error('User doesn\'t exist');
+      }
+
+      const hash = await PasswordHasher.hash(password, user.salt);
+      if (hash !== user.passwordHash) {
+        throw new Error('Wrong password');
+      }
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
 }
 
 export default UserFileRepository;

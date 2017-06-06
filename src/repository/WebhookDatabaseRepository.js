@@ -31,10 +31,8 @@ class WebhookDatabaseRepository implements IWebhookRepository {
     );
   };
 
-  getById = async (id: string, userID: ?string = null): Promise<?Webhook> => {
-    const query = userID ? { _id: id, ownerID: userID } : { _id: id };
-    return await this._database.findOne(this._collectionName, query);
-  };
+  getById = async (id: string): Promise<?Webhook> =>
+    await this._database.findOne(this._collectionName, { _id: id });
 
   update = async (): Promise<Webhook> => {
     throw new Error('The method is not implemented');

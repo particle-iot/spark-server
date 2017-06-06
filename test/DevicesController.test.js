@@ -172,7 +172,7 @@ test.serial('should unclaim device', async t => {
     .get(`/v1/devices/${DEVICE_ID}`)
     .query({ access_token: userToken });
 
-  t.is(getDeviceResponse.status, 404);
+  t.is(getDeviceResponse.status, 403);
 });
 
 test.serial('should claim device', async t => {

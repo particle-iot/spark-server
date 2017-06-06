@@ -7,4 +7,9 @@
   "clientId": "particle-collider",
   "clientSecret": "particle-collider",
   "grants": ["password"]
+},
+{
+  "clientId": "spark-server",
+  "clientSecret": "spark-server",
+  "grants": ["password"]
 }]

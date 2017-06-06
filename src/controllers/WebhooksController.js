@@ -34,20 +34,13 @@ class WebhooksController extends Controller {
   @httpVerb('get')
   @route('/v1/webhooks')
   async getAll(): Promise<*> {
-    return this.ok(
-      await this._webhookManager.getAll(this.user.id),
-    );
+    return this.ok(await this._webhookManager.getAll());
   }
 
   @httpVerb('get')
-  @route('/v1/webhooks/:webhookId')
-  async getById(webhookId: string): Promise<*> {
-    return this.ok(
-      await this._webhookManager.getByID(
-        webhookId,
-        this.user.id,
-      ),
-    );
+  @route('/v1/webhooks/:webhookID')
+  async getByID(webhookID: string): Promise<*> {
+    return this.ok(await this._webhookManager.getByID(webhookID));
   }
 
   @httpVerb('post')
@@ -73,9 +66,9 @@ class WebhooksController extends Controller {
   }
 
   @httpVerb('delete')
-  @route('/v1/webhooks/:webhookId')
-  async deleteById(webhookId: string): Promise<*> {
-    await this._webhookManager.deleteByID(webhookId, this.user.id);
+  @route('/v1/webhooks/:webhookID')
+  async deleteByID(webhookID: string): Promise<*> {
+    await this._webhookManager.deleteByID(webhookID);
     return this.ok({ ok: true });
   }
 }

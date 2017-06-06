@@ -3,6 +3,8 @@
 import type { Container } from 'constitute';
 import type { Settings } from './types';
 
+import OAuthServer from 'express-oauth-server';
+import OAuthModel from './OAuthModel';
 import { defaultBindings } from 'spark-protocol';
 import DeviceClaimsController from './controllers/DeviceClaimsController';
 import DevicesController from './controllers/DevicesController';
@@ -16,6 +18,7 @@ import WebhookLogger from './lib/WebhookLogger';
 import DeviceManager from './managers/DeviceManager';
 import WebhookManager from './managers/WebhookManager';
 import EventManager from './managers/EventManager';
+import PermissionManager from './managers/PermissionManager';
 import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
 import TingoDb from './repository/TingoDb';
 import DeviceAttributeDatabaseRepository from
@@ -43,6 +46,27 @@ export default (container: Container, newSettings: Settings) => {
   container.bindValue('SERVER_KEYS_DIRECTORY', settings.SERVER_KEYS_DIRECTORY);
   container.bindValue('USERS_DIRECTORY', settings.USERS_DIRECTORY);
   container.bindValue('WEBHOOKS_DIRECTORY', settings.WEBHOOKS_DIRECTORY);
+  container.bindMethod(
+    'OAUTH_SETTINGS',
+    (oauthModel: OAuthModel): Object => ({
+      accessTokenLifetime: settings.ACCESS_TOKEN_LIFETIME,
+      allowBearerTokensInQueryString: true,
+      model: oauthModel,
+    }),
+    ['OAuthModel'],
+  );
+
+  container.bindClass(
+    'OAuthModel',
+    OAuthModel,
+    ['UserRepository'],
+  );
+
+  container.bindClass(
+    'OAuthServer',
+    OAuthServer,
+    ['OAUTH_SETTINGS'],
+  );
 
   container.bindClass(
     'Database',
@@ -52,7 +76,7 @@ export default (container: Container, newSettings: Settings) => {
 
   // lib
   container.bindClass(
-    'IWebhookLogger',
+    'WebhookLogger',
     WebhookLogger,
     [],
   );
@@ -75,6 +99,16 @@ export default (container: Container, newSettings: Settings) => {
     'EventsController',
     EventsController,
     ['EventManager'],
+  );
+  container.bindClass(
+    'PermissionManager',
+    PermissionManager,
+    [
+      'DeviceAttributeRepository',
+      'UserRepository',
+      'WebhookRepository',
+      'OAuthServer',
+    ],
   );
   container.bindClass(
     'OauthClientsController',
@@ -111,6 +145,7 @@ export default (container: Container, newSettings: Settings) => {
       'DeviceFirmwareRepository',
       'DeviceKeyRepository',
       'DeviceServer',
+      'PermissionManager',
     ],
   );
   container.bindClass(
@@ -121,7 +156,12 @@ export default (container: Container, newSettings: Settings) => {
   container.bindClass(
     'WebhookManager',
     WebhookManager,
-    ['WebhookRepository', 'EventPublisher', 'IWebhookLogger'],
+    [
+      'EventPublisher',
+      'PermissionManager',
+      'WebhookLogger',
+      'WebhookRepository',
+    ],
   );
 
   // Repositories

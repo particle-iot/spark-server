@@ -64,7 +64,7 @@ class DevicesController extends Controller {
   @httpVerb('delete')
   @route('/v1/devices/:deviceID')
   async unclaimDevice(deviceID: string): Promise<*> {
-    await this._deviceManager.unclaimDevice(deviceID, this.user.id);
+    await this._deviceManager.unclaimDevice(deviceID);
     return this.ok({ ok: true });
   }
 
@@ -72,7 +72,7 @@ class DevicesController extends Controller {
   @route('/v1/devices')
   async getDevices(): Promise<*> {
     try {
-      const devices = await this._deviceManager.getAll(this.user.id);
+      const devices = await this._deviceManager.getAll();
       return this.ok(devices.map((device: Device): DeviceAPIType =>
         deviceToAPI(device)),
       );
@@ -85,10 +85,7 @@ class DevicesController extends Controller {
   @httpVerb('get')
   @route('/v1/devices/:deviceID')
   async getDevice(deviceID: string): Promise<*> {
-    const device = await this._deviceManager.getDetailsByID(
-      deviceID,
-      this.user.id,
-    );
+    const device = await this._deviceManager.getDetailsByID(deviceID);
     return this.ok(deviceToAPI(device));
   }
 
@@ -101,7 +98,6 @@ class DevicesController extends Controller {
     try {
       const varValue = await this._deviceManager.getVariableValue(
         deviceID,
-        this.user.id,
         varName,
       );
 
@@ -131,7 +127,6 @@ class DevicesController extends Controller {
     if (postBody.name) {
       const updatedAttributes = await this._deviceManager.renameDevice(
         deviceID,
-        this.user.id,
         postBody.name,
       );
       return this.ok({ name: updatedAttributes.name, ok: true });
@@ -141,7 +136,6 @@ class DevicesController extends Controller {
     if (postBody.app_id) {
       const flashStatus = await this._deviceManager.flashKnownApp(
         deviceID,
-        this.user.id,
         postBody.app_id,
       );
 
@@ -174,7 +168,6 @@ class DevicesController extends Controller {
 
       await this._deviceManager.raiseYourHand(
         deviceID,
-        this.user.id,
         !!parseInt(postBody.signal, 10),
       );
 
@@ -194,15 +187,11 @@ class DevicesController extends Controller {
     try {
       const result = await this._deviceManager.callFunction(
         deviceID,
-        this.user.id,
         functionName,
         postBody,
       );
+      const device = await this._deviceManager.getByID(deviceID);
 
-      const device = await this._deviceManager.getByID(
-        deviceID,
-        this.user.id,
-      );
       return this.ok(deviceToAPI(device, result));
     } catch (error) {
       const errorMessage = error.message;
