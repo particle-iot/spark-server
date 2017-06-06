@@ -8,6 +8,10 @@ var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -62,10 +66,9 @@ var OauthModel = function OauthModel(userRepository) {
               return _context.abrupt('return', null);
 
             case 8:
-              return _context.abrupt('return', {
-                accessToken: userTokenObject.accessToken,
+              return _context.abrupt('return', (0, _extends3.default)({}, userTokenObject, {
                 user: user
-              });
+              }));
 
             case 9:
             case 'end':

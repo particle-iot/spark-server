@@ -34,7 +34,7 @@ class OauthModel {
     }
 
     return {
-      accessToken: userTokenObject.accessToken,
+      ...userTokenObject,
       user,
     };
   };
