@@ -84,6 +84,7 @@ export default (container: Container, newSettings: Settings) => {
       'DeviceAttributeRepository',
       'UserRepository',
       'WebhookRepository',
+      'OauthServer',
     ],
   );
   container.bindClass(

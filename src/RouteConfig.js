@@ -69,6 +69,8 @@ export default (
     model: new OAuthModel(container.constitute('UserRepository')),
   });
 
+  container.bindValue('OauthServer', oauth);
+
   const filesMiddleware = (allowedUploads: ?Array<{
     maxCount: number,
     name: string,
