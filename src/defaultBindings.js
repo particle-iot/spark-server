@@ -3,6 +3,8 @@
 import type { Container } from 'constitute';
 import type { Settings } from './types';
 
+import OAuthServer from 'express-oauth-server';
+import OAuthModel from './OAuthModel';
 import { defaultBindings } from 'spark-protocol';
 import DeviceClaimsController from './controllers/DeviceClaimsController';
 import DevicesController from './controllers/DevicesController';
@@ -44,6 +46,27 @@ export default (container: Container, newSettings: Settings) => {
   container.bindValue('SERVER_KEYS_DIRECTORY', settings.SERVER_KEYS_DIRECTORY);
   container.bindValue('USERS_DIRECTORY', settings.USERS_DIRECTORY);
   container.bindValue('WEBHOOKS_DIRECTORY', settings.WEBHOOKS_DIRECTORY);
+  container.bindMethod(
+    'OAUTH_SETTINGS',
+    (oauthModel: OAuthModel): Object => ({
+      accessTokenLifetime: settings.ACCESS_TOKEN_LIFETIME,
+      allowBearerTokensInQueryString: true,
+      model: oauthModel,
+    }),
+    ['OAuthModel'],
+  );
+
+  container.bindClass(
+    'OAuthModel',
+    OAuthModel,
+    ['UserRepository'],
+  );
+
+  container.bindClass(
+    'OAuthServer',
+    OAuthServer,
+    ['OAUTH_SETTINGS'],
+  );
 
   container.bindClass(
     'Database',
@@ -84,7 +107,7 @@ export default (container: Container, newSettings: Settings) => {
       'DeviceAttributeRepository',
       'UserRepository',
       'WebhookRepository',
-      'OauthServer',
+      'OAuthServer',
     ],
   );
   container.bindClass(

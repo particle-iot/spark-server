@@ -10,10 +10,8 @@ import type {
 import type { Container } from 'constitute';
 import type { Settings } from './types';
 
-import OAuthServer from 'express-oauth-server';
 import nullthrows from 'nullthrows';
 import multer from 'multer';
-import OAuthModel from './OAuthModel';
 import HttpError from './lib/HttpError';
 
 const maybe = (middleware: Middleware, condition: boolean): Middleware =>
@@ -63,20 +61,14 @@ export default (
   controllers: Array<string>,
   settings: Settings,
 ) => {
-  const oauth = new OAuthServer({
-    accessTokenLifetime: settings.ACCESS_TOKEN_LIFETIME,
-    allowBearerTokensInQueryString: true,
-    model: new OAuthModel(container.constitute('UserRepository')),
-  });
-
-  container.bindValue('OauthServer', oauth);
-
   const filesMiddleware = (allowedUploads: ?Array<{
     maxCount: number,
     name: string,
   }> = []): Middleware => nullthrows(allowedUploads).length
     ? multer().fields(allowedUploads)
     : multer().any();
+
+  const oauth = container.constitute('OAuthServer');
 
   app.post(settings.LOGIN_ROUTE, oauth.token());
 
