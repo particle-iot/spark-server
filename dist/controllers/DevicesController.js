@@ -222,7 +222,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return this._deviceManager.unclaimDevice(deviceID, this.user.id);
+                return this._deviceManager.unclaimDevice(deviceID);
 
               case 2:
                 return _context4.abrupt('return', this.ok({ ok: true }));
@@ -252,7 +252,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
               case 0:
                 _context5.prev = 0;
                 _context5.next = 3;
-                return this._deviceManager.getAll(this.user.id);
+                return this._deviceManager.getAll();
 
               case 3:
                 devices = _context5.sent;
@@ -289,7 +289,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
             switch (_context6.prev = _context6.next) {
               case 0:
                 _context6.next = 2;
-                return this._deviceManager.getDetailsByID(deviceID, this.user.id);
+                return this._deviceManager.getDetailsByID(deviceID);
 
               case 2:
                 device = _context6.sent;
@@ -320,7 +320,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
               case 0:
                 _context7.prev = 0;
                 _context7.next = 3;
-                return this._deviceManager.getVariableValue(deviceID, this.user.id, varName);
+                return this._deviceManager.getVariableValue(deviceID, varName);
 
               case 3:
                 varValue = _context7.sent;
@@ -371,7 +371,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
                 }
 
                 _context8.next = 3;
-                return this._deviceManager.renameDevice(deviceID, this.user.id, postBody.name);
+                return this._deviceManager.renameDevice(deviceID, postBody.name);
 
               case 3:
                 updatedAttributes = _context8.sent;
@@ -384,7 +384,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
                 }
 
                 _context8.next = 8;
-                return this._deviceManager.flashKnownApp(deviceID, this.user.id, postBody.app_id);
+                return this._deviceManager.flashKnownApp(deviceID, postBody.app_id);
 
               case 8:
                 flashStatus = _context8.sent;
@@ -428,7 +428,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
 
               case 21:
                 _context8.next = 23;
-                return this._deviceManager.raiseYourHand(deviceID, this.user.id, !!parseInt(postBody.signal, 10));
+                return this._deviceManager.raiseYourHand(deviceID, !!parseInt(postBody.signal, 10));
 
               case 23:
                 return _context8.abrupt('return', this.ok({ id: deviceID, ok: true }));
@@ -461,12 +461,12 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
               case 0:
                 _context9.prev = 0;
                 _context9.next = 3;
-                return this._deviceManager.callFunction(deviceID, this.user.id, functionName, postBody);
+                return this._deviceManager.callFunction(deviceID, functionName, postBody);
 
               case 3:
                 result = _context9.sent;
                 _context9.next = 6;
-                return this._deviceManager.getByID(deviceID, this.user.id);
+                return this._deviceManager.getByID(deviceID);
 
               case 6:
                 device = _context9.sent;

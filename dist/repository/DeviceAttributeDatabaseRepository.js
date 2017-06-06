@@ -22,7 +22,7 @@ var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseRepository(database) {
+var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseRepository(database, permissionManager) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, DeviceAttributeDatabaseRepository);
@@ -67,19 +67,22 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
     };
   }();
 
-  this.doesUserHaveAccess = function () {
-    var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(id, userID) {
+  this.getAll = function () {
+    var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+      var userID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var query;
       return _regenerator2.default.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              _context3.next = 2;
-              return _this._database.findOne(_this._collectionName, { _id: id, ownerID: userID });
-
-            case 2:
-              return _context3.abrupt('return', !!_context3.sent);
+              query = userID ? { ownerID: userID } : {};
+              _context3.next = 3;
+              return _this._database.find(_this._collectionName, query, { timeout: false });
 
             case 3:
+              return _context3.abrupt('return', _context3.sent);
+
+            case 4:
             case 'end':
               return _context3.stop();
           }
@@ -87,27 +90,24 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
       }, _callee3, _this);
     }));
 
-    return function (_x2, _x3) {
+    return function () {
       return _ref3.apply(this, arguments);
     };
   }();
 
-  this.getAll = function () {
-    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
-      var userID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      var query;
+  this.getById = function () {
+    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(id) {
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
-              query = userID ? { ownerID: userID } : {};
-              _context4.next = 3;
-              return _this._database.find(_this._collectionName, query, { timeout: false });
+              _context4.next = 2;
+              return _this._database.findOne(_this._collectionName, { _id: id });
 
-            case 3:
+            case 2:
               return _context4.abrupt('return', _context4.sent);
 
-            case 4:
+            case 3:
             case 'end':
               return _context4.stop();
           }
@@ -115,27 +115,24 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
       }, _callee4, _this);
     }));
 
-    return function () {
+    return function (_x3) {
       return _ref4.apply(this, arguments);
     };
   }();
 
-  this.getById = function () {
-    var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(id) {
-      var userID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      var query;
+  this.update = function () {
+    var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(model) {
       return _regenerator2.default.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              query = userID ? { _id: id, ownerID: userID } : { _id: id };
-              _context5.next = 3;
-              return _this._database.findOne(_this._collectionName, query);
+              _context5.next = 2;
+              return _this._database.findAndModify(_this._collectionName, { _id: model.deviceID }, null, { $set: (0, _extends3.default)({}, model, { _id: model.deviceID, timeStamp: new Date() }) }, { new: true, upsert: true });
 
-            case 3:
+            case 2:
               return _context5.abrupt('return', _context5.sent);
 
-            case 4:
+            case 3:
             case 'end':
               return _context5.stop();
           }
@@ -143,37 +140,13 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
       }, _callee5, _this);
     }));
 
-    return function (_x5) {
+    return function (_x4) {
       return _ref5.apply(this, arguments);
     };
   }();
 
-  this.update = function () {
-    var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(model) {
-      return _regenerator2.default.wrap(function _callee6$(_context6) {
-        while (1) {
-          switch (_context6.prev = _context6.next) {
-            case 0:
-              _context6.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { _id: model.deviceID }, null, { $set: (0, _extends3.default)({}, model, { _id: model.deviceID, timeStamp: new Date() }) }, { new: true, upsert: true });
-
-            case 2:
-              return _context6.abrupt('return', _context6.sent);
-
-            case 3:
-            case 'end':
-              return _context6.stop();
-          }
-        }
-      }, _callee6, _this);
-    }));
-
-    return function (_x7) {
-      return _ref6.apply(this, arguments);
-    };
-  }();
-
   this._database = database;
+  this._permissionManager = permissionManager;
 };
 
 exports.default = DeviceAttributeDatabaseRepository;

@@ -310,8 +310,14 @@ var BaseMongoDb = function BaseMongoDb() {
     };
   }();
 
+  this.__filterID = function (_ref11) {
+    var id = _ref11.id,
+        otherProps = (0, _objectWithoutProperties3.default)(_ref11, ['id']);
+    return (0, _extends3.default)({}, otherProps);
+  };
+
   this.__runForCollection = function () {
-    var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(collectionName, callback) {
+    var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(collectionName, callback) {
       return _regenerator2.default.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
@@ -327,12 +333,12 @@ var BaseMongoDb = function BaseMongoDb() {
     }));
 
     return function (_x18, _x19) {
-      return _ref11.apply(this, arguments);
+      return _ref12.apply(this, arguments);
     };
   }();
 
   this.__translateQuery = function (query) {
-    return deepToObjectIdCast(query);
+    return _this.__filterID(deepToObjectIdCast(query));
   };
 
   this.__translateResultItem = function (item) {
@@ -344,6 +350,9 @@ var BaseMongoDb = function BaseMongoDb() {
 
     return (0, _extends3.default)({}, otherProps, { id: _id.toString() });
   };
-};
+}
+
+// eslint-disable-next-line no-unused-vars
+;
 
 exports.default = BaseMongoDb;

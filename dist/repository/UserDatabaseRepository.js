@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -38,9 +42,13 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              throw new Error('The method is not implemented');
+              _context.next = 2;
+              return _this._database.insertOne(_this._collectionName, user);
 
-            case 1:
+            case 2:
+              return _context.abrupt('return', _context.sent);
+
+            case 3:
             case 'end':
               return _context.stop();
           }
@@ -55,6 +63,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
 
   this.createWithCredentials = function () {
     var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(userCredentials) {
+      var userRole = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var username, password, salt, passwordHash, modelToSave;
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
@@ -74,8 +83,8 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
               modelToSave = {
                 accessTokens: [],
                 created_at: new Date(),
-                created_by: null,
                 passwordHash: passwordHash,
+                role: userRole,
                 salt: salt,
                 username: username
               };
@@ -118,7 +127,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee3, _this);
     }));
 
-    return function (_x3, _x4) {
+    return function (_x4, _x5) {
       return _ref3.apply(this, arguments);
     };
   }();
@@ -143,7 +152,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee4, _this);
     }));
 
-    return function (_x5) {
+    return function (_x6) {
       return _ref4.apply(this, arguments);
     };
   }();
@@ -198,7 +207,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee6, _this);
     }));
 
-    return function (_x6) {
+    return function (_x7) {
       return _ref6.apply(this, arguments);
     };
   }();
@@ -219,7 +228,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee7, _this);
     }));
 
-    return function (_x7) {
+    return function (_x8) {
       return _ref7.apply(this, arguments);
     };
   }();
@@ -244,10 +253,14 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee8, _this);
     }));
 
-    return function (_x8) {
+    return function (_x9) {
       return _ref8.apply(this, arguments);
     };
   }();
+
+  this.getCurrentUser = function () {
+    return _this._currentUser;
+  };
 
   this.isUserNameInUse = function () {
     var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(username) {
@@ -269,7 +282,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee9, _this);
     }));
 
-    return function (_x9) {
+    return function (_x10) {
       return _ref9.apply(this, arguments);
     };
   }();
@@ -294,10 +307,14 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee10, _this);
     }));
 
-    return function (_x10, _x11) {
+    return function (_x11, _x12) {
       return _ref10.apply(this, arguments);
     };
   }();
+
+  this.setCurrentUser = function (user) {
+    _this._currentUser = user;
+  };
 
   this.update = function () {
     var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(model) {
@@ -305,9 +322,13 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
         while (1) {
           switch (_context11.prev = _context11.next) {
             case 0:
-              throw new Error('The method is not implemented');
+              _context11.next = 2;
+              return _this._database.findAndModify(_this._collectionName, { _id: model.id }, null, { $set: (0, _extends3.default)({}, model, { timeStamp: new Date() }) }, { new: true, upsert: true });
 
-            case 1:
+            case 2:
+              return _context11.abrupt('return', _context11.sent);
+
+            case 3:
             case 'end':
               return _context11.stop();
           }
@@ -315,7 +336,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee11, _this);
     }));
 
-    return function (_x12) {
+    return function (_x13) {
       return _ref11.apply(this, arguments);
     };
   }();
@@ -371,16 +392,13 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee12, _this, [[0, 14]]);
     }));
 
-    return function (_x13, _x14) {
+    return function (_x14, _x15) {
       return _ref12.apply(this, arguments);
     };
   }();
 
   this._database = database;
 }
-
-// eslint-disable-next-line no-unused-vars
-
 
 // eslint-disable-next-line no-unused-vars
 

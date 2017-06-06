@@ -105,7 +105,7 @@ var DeviceClaimsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0
               case 0:
                 claimCode = this._claimCodeManager.createClaimCode(this.user.id);
                 _context.next = 3;
-                return this._deviceManager.getAll(this.user.id);
+                return this._deviceManager.getAll();
 
               case 3:
                 devices = _context.sent;
