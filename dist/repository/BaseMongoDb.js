@@ -263,7 +263,7 @@ var BaseMongoDb = function BaseMongoDb() {
   }();
 
   this.remove = function () {
-    var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(collectionName, id) {
+    var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(collectionName, query) {
       return _regenerator2.default.wrap(function _callee10$(_context10) {
         while (1) {
           switch (_context10.prev = _context10.next) {
@@ -276,7 +276,7 @@ var BaseMongoDb = function BaseMongoDb() {
                       switch (_context9.prev = _context9.next) {
                         case 0:
                           _context9.next = 2;
-                          return collection.remove(_this.__translateQuery({ _id: id }));
+                          return collection.remove(_this.__translateQuery(query));
 
                         case 2:
                           return _context9.abrupt('return', _context9.sent);

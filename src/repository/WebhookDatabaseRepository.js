@@ -19,8 +19,8 @@ class WebhookDatabaseRepository implements IWebhookRepository {
       },
     );
 
-  deleteById = async (id: string): Promise<void> =>
-    await this._database.remove(this._collectionName, id);
+  deleteByID = async (id: string): Promise<void> =>
+    await this._database.remove(this._collectionName, { _id: id });
 
   getAll = async (userID: ?string = null): Promise<Array<Webhook>> => {
     const query = userID ? { ownerID: userID } : {};

@@ -76,7 +76,7 @@ class UserFileRepository implements IUserRepository {
   };
 
   @memoizeSet(['id'])
-  async deleteById(id: string): Promise<void> {
+  async deleteByID(id: string): Promise<void> {
     this._fileManager.deleteFile(`${id}.json`);
   }
 

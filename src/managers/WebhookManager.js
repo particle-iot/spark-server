@@ -101,7 +101,7 @@ class WebhookManager {
       throw new HttpError('no webhook found', 404);
     }
 
-    await this._webhookRepository.deleteById(webhookID);
+    await this._webhookRepository.deleteByID(webhookID);
     this._unsubscribeWebhookByID(webhookID);
   };
 

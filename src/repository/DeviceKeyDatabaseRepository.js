@@ -16,12 +16,12 @@ class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
       { _id: model.deviceID, ...model },
     );
 
-  deleteById = async (deviceID: string): Promise<void> =>
-    await this._database.remove(this._collectionName, deviceID);
+  deleteByID = async (id: string): Promise<void> =>
+    await this._database.remove(this._collectionName, { _id: id });
 
   getAll = async (): Promise<Array<DeviceKeyObject>> => {
     throw new Error('The method is not implemented.');
-  }
+  };
 
   getById = async (deviceID: string): Promise<?DeviceKeyObject> =>
     await this._database.findOne(

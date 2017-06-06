@@ -234,7 +234,7 @@ export type Product = {
 
 export interface IBaseRepository<TModel> {
   create(model: TModel | $Shape<TModel>): Promise<TModel>;
-  deleteById(id: string): Promise<void>;
+  deleteByID(id: string): Promise<void>;
   getAll(): Promise<Array<TModel>>;
   getById(id: string, userID: ?string): Promise<?TModel>;
   update(model: TModel): Promise<TModel>;
@@ -267,5 +267,5 @@ export interface IBaseDatabase {
   findAndModify(collectionName: string, ...args: Array<any>): Promise<*>;
   findOne(collectionName: string, ...args: Array<any>): Promise<*>;
   insertOne(collectionName: string, ...args: Array<any>): Promise<*>;
-  remove(collectionName: string, id: string): Promise<*>;
+  remove(collectionName: string, query: Object): Promise<*>;
 }

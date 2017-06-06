@@ -14,7 +14,7 @@ test(
     const fileManager = repository._fileManager;
     const getAllSpy = sinon.spy(fileManager, 'getAllData');
     const getByIdSpy = sinon.spy(fileManager, 'getFile');
-    const deleteByIdSpy = sinon.spy(fileManager, 'deleteFile');
+    const deleteByIDSpy = sinon.spy(fileManager, 'deleteFile');
 
     async function testAllAccessors() {
       testIterator++;
@@ -40,8 +40,8 @@ test(
     await repository.update(user);
     await testAllAccessors();
 
-    await repository.deleteById(user.id);
+    await repository.deleteByID(user.id);
     await testAllAccessors();
-    t.truthy(deleteByIdSpy.callCount === 1);
+    t.truthy(deleteByIDSpy.callCount === 1);
   },
 );

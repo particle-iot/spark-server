@@ -60,8 +60,8 @@ class UserDatabaseRepository implements IUserRepository {
       { new: true },
     );
 
-  deleteById = async (id: string): Promise<void> =>
-    await this._database.remove(this._collectionName, id);
+  deleteByID = async (id: string): Promise<void> =>
+    await this._database.remove(this._collectionName, { _id: id });
 
   getAll = async (): Promise<Array<User>> => {
     throw new Error('The method is not implemented');

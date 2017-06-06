@@ -20,8 +20,8 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     throw new Error('The method is not implemented');
   };
 
-  deleteById = async (id: string): Promise<void> =>
-    await this._database.remove(this._collectionName, id);
+  deleteByID = async (id: string): Promise<void> =>
+    await this._database.remove(this._collectionName, { _id: id });
 
   getAll = async (userID: ?string = null): Promise<Array<DeviceAttributes>> => {
     const query = userID ? { ownerID: userID } : {};

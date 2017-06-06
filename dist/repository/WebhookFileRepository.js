@@ -227,7 +227,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
       return create;
     }()
   }, {
-    key: 'deleteById',
+    key: 'deleteByID',
     value: function () {
       var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(id) {
         return _regenerator2.default.wrap(function _callee5$(_context5) {
@@ -244,11 +244,11 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
         }, _callee5, this);
       }));
 
-      function deleteById(_x6) {
+      function deleteByID(_x6) {
         return _ref5.apply(this, arguments);
       }
 
-      return deleteById;
+      return deleteByID;
     }()
 
     // eslint-disable-next-line no-unused-vars
@@ -303,5 +303,5 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
     }()
   }]);
   return WebhookFileRepository;
-}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteById', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, '_getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, '_getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, '_getByID', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, '_getByID'), _class.prototype)), _class));
+}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteByID', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteByID'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, '_getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, '_getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, '_getByID', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, '_getByID'), _class.prototype)), _class));
 exports.default = WebhookFileRepository;
