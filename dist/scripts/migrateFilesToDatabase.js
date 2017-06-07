@@ -90,12 +90,17 @@ var setupDatabase = function () {
 }();
 
 var getFiles = function getFiles(directoryPath) {
+  var fileExtension = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '.json';
+
   var fileNames = _fs2.default.readdirSync(directoryPath).filter(function (fileName) {
-    return fileName.endsWith('.json');
+    return fileName.endsWith(fileExtension);
   });
 
   return fileNames.map(function (fileName) {
-    return _fs2.default.readFileSync(directoryPath + '/' + fileName);
+    return {
+      fileBuffer: _fs2.default.readFileSync(directoryPath + '/' + fileName),
+      fileName: fileName
+    };
   });
 };
 
@@ -142,7 +147,7 @@ var insertItem = function insertItem(database, collectionName) {
       }, _callee2, undefined);
     }));
 
-    return function (_x) {
+    return function (_x2) {
       return _ref3.apply(this, arguments);
     };
   }();
@@ -180,7 +185,7 @@ var insertUsers = function () {
                 }, _callee3, undefined);
               }));
 
-              return function (_x4) {
+              return function (_x5) {
                 return _ref5.apply(this, arguments);
               };
             }()));
@@ -196,7 +201,7 @@ var insertUsers = function () {
     }, _callee4, undefined);
   }));
 
-  return function insertUsers(_x2, _x3) {
+  return function insertUsers(_x3, _x4) {
     return _ref4.apply(this, arguments);
   };
 }();
@@ -218,37 +223,57 @@ var insertUsers = function () {
 
           console.log('Start migration to ' + DATABASE_TYPE);
 
-          users = getFiles(_settings2.default.USERS_DIRECTORY).map(parseFile);
+          users = getFiles(_settings2.default.USERS_DIRECTORY).map(function (_ref7) {
+            var fileBuffer = _ref7.fileBuffer;
+            return parseFile(fileBuffer);
+          });
           _context5.next = 9;
           return insertUsers(database, users);
 
         case 9:
           userIDsMap = _context5.sent;
           _context5.next = 12;
-          return _promise2.default.all(getFiles(_settings2.default.WEBHOOKS_DIRECTORY).map(parseFile).map(mapOwnerID(userIDsMap)).map(filterID).map(insertItem(database, 'webhooks')));
+          return _promise2.default.all(getFiles(_settings2.default.WEBHOOKS_DIRECTORY).map(function (_ref8) {
+            var fileBuffer = _ref8.fileBuffer;
+            return parseFile(fileBuffer);
+          }).map(mapOwnerID(userIDsMap)).map(filterID).map(insertItem(database, 'webhooks')));
 
         case 12:
           _context5.next = 14;
-          return _promise2.default.all(getFiles(_settings2.default.DEVICE_DIRECTORY).map(parseFile).map(mapOwnerID(userIDsMap)).map(translateDeviceID).map(filterID).map(insertItem(database, 'deviceAttributes')));
+          return _promise2.default.all(getFiles(_settings2.default.DEVICE_DIRECTORY).map(function (_ref9) {
+            var fileBuffer = _ref9.fileBuffer;
+            return parseFile(fileBuffer);
+          }).map(mapOwnerID(userIDsMap)).map(translateDeviceID).map(filterID).map(insertItem(database, 'deviceAttributes')));
 
         case 14:
+          _context5.next = 16;
+          return _promise2.default.all(getFiles(_settings2.default.DEVICE_DIRECTORY, '.pub.pem').map(function (_ref10) {
+            var fileName = _ref10.fileName,
+                fileBuffer = _ref10.fileBuffer;
+            return {
+              deviceID: fileName.substring(0, fileName.indexOf('.pub.pem')),
+              key: fileBuffer.toString()
+            };
+          }).map(insertItem(database, 'deviceKeys')));
+
+        case 16:
 
           console.log('All files migrated to the database successfully!');
           process.exit(0);
-          _context5.next = 22;
+          _context5.next = 24;
           break;
 
-        case 18:
-          _context5.prev = 18;
+        case 20:
+          _context5.prev = 20;
           _context5.t0 = _context5['catch'](0);
 
           console.log(_context5.t0);
           process.exit(1);
 
-        case 22:
+        case 24:
         case 'end':
           return _context5.stop();
       }
     }
-  }, _callee5, undefined, [[0, 18]]);
+  }, _callee5, undefined, [[0, 20]]);
 }))();
