@@ -172,7 +172,7 @@ test.serial('should unclaim device', async t => {
     .get(`/v1/devices/${DEVICE_ID}`)
     .query({ access_token: userToken });
 
-  t.is(getDeviceResponse.status, 404);
+  t.is(getDeviceResponse.status, 403);
 });
 
 test.serial('should claim device', async t => {
@@ -215,7 +215,7 @@ test.serial(
   async t => {
     const deviceAttributesStub = sinon.stub(
       container.constitute('DeviceAttributeRepository'),
-      'getById',
+      'getByID',
     ).returns({ ownerID: TestData.getID()});
 
     const claimDeviceResponse = await request(app)
@@ -582,7 +582,7 @@ test.serial(
 
 test.after.always(async (): Promise<void> => {
   await TestData.deleteCustomFirmwareBinary(customFirmwareFilePath);
-  await container.constitute('UserRepository').deleteById(testUser.id);
-  await container.constitute('DeviceAttributeRepository').deleteById(DEVICE_ID);
-  await container.constitute('DeviceKeyRepository').deleteById(DEVICE_ID);
+  await container.constitute('UserRepository').deleteByID(testUser.id);
+  await container.constitute('DeviceAttributeRepository').deleteByID(DEVICE_ID);
+  await container.constitute('DeviceKeyRepository').deleteByID(DEVICE_ID);
 });

@@ -74,6 +74,11 @@ export type DeviceAttributes = {
   timestamp: Date,
 };
 
+export type DeviceKeyObject = {
+  deviceID: string,
+  key: string,
+};
+
 export type Event = EventData & {
   ttl: number,
   publishedAt: Date,
@@ -96,9 +101,9 @@ export type GrantType =
 export type TokenObject = {
   accessToken: string,
   accessTokenExpiresAt: Date,
-  refreshToken: string,
-  refreshTokenExpiresAt: Date,
-  scope: string,
+  refreshToken?: string,
+  refreshTokenExpiresAt?: Date,
+  scope?: string,
 };
 
 export type User = {
@@ -106,6 +111,7 @@ export type User = {
   created_at: Date,
   id: string,
   passwordHash: string,
+  role: ?UserRole,
   salt: string,
   username: string,
 };
@@ -115,29 +121,15 @@ export type UserCredentials = {
   password: string,
 };
 
+export type UserRole = 'administrator';
+
+export type ProtectedEntityName = 'deviceAttributes' | 'webhook';
+
 export type Device = DeviceAttributes & {
   connected: boolean,
   functions?: ?Array<string>,
   lastFlashedAppName: ?string,
   variables?: ?Object,
-};
-
-export type Repository<TModel> = {
-  create: (model: TModel | $Shape<TModel>) => Promise<TModel>,
-  deleteById: (id: string) => Promise<void>,
-  getAll: () => Promise<Array<TModel>>,
-  getById: (id: string) => Promise<?TModel>,
-  update: (model: TModel) => Promise<TModel>,
-};
-
-export type UserRepository = Repository<User> & {
-  createWithCredentials(credentials: UserCredentials): Promise<User>,
-  deleteAccessToken(userID: string, accessToken: string): Promise<void>,
-  getByAccessToken(accessToken: string): Promise<?User>,
-  getByUsername(username: string): Promise<?User>,
-  isUserNameInUse(username: string): Promise<boolean>,
-  saveAccessToken(userID: string, tokenObject: TokenObject): Promise<User>,
-  validateLogin(username: string, password: string): Promise<User>,
 };
 
 export type Settings = {
@@ -150,6 +142,8 @@ export type Settings = {
     PATH: ?string,
     URL: ?string,
   },
+  DEFAULT_ADMIN_PASSWORD: string,
+  DEFAULT_ADMIN_USERNAME: string,
   DEVICE_DIRECTORY: string,
   ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: boolean,
   EXPRESS_SERVER_CONFIG: {
@@ -170,30 +164,6 @@ export type Settings = {
   },
   USERS_DIRECTORY: string,
   WEBHOOKS_DIRECTORY: string,
-};
-
-export type DeviceAttributeRepository = Repository<DeviceAttributes> & {
-  doesUserHaveAccess(deviceID: string, userID: string): Promise<boolean>,
-};
-
-export type DeviceManager = {
-  callFunction(
-    deviceID: string,
-    userID: string,
-    functionName: string,
-    functionArguments: {[key: string]: string},
-  ): Promise<*>,
-  claimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
-  flashBinary(deviceID: string, files: File): Promise<*>,
-  flashKnownApp(deviceID: string, userID: string, app: string): Promise<*>,
-  getAll(userID: string): Promise<Array<Device>>,
-  getByID(deviceID: string, userID: string): Promise<Device>,
-  getDetailsByID(deviceID: string, userID: string): Promise<*>,
-  getVariableValue(deviceID: string, userID: string, varName: string): Promise<Object>,
-  provision(deviceID: string, userID: string, publicKey: string): Promise<*>,
-  raiseYourHand(deviceID: string, userID: string, shouldShowSignal: boolean): Promise<void>,
-  renameDevice(deviceID: string, userID: string, name: string): Promise<DeviceAttributes>,
-  unclaimDevice(deviceID: string, userID: string): Promise<DeviceAttributes>,
 };
 
 export type RequestOptions = {
@@ -223,30 +193,27 @@ export type Product = {
 
 export interface IBaseRepository<TModel> {
   create(model: TModel | $Shape<TModel>): Promise<TModel>;
-  deleteById(id: string): Promise<void>;
+  deleteByID(id: string): Promise<void>;
   getAll(): Promise<Array<TModel>>;
-  getById(id: string, userID: ?string): Promise<?TModel>;
+  getByID(id: string): Promise<?TModel>;
   update(model: TModel): Promise<TModel>;
 }
 
 export interface IWebhookRepository extends IBaseRepository<Webhook> {}
 
-export interface IDeviceAttributeRepository extends IBaseRepository<DeviceAttributes> {
-  doesUserHaveAccess(id: string, userID: string): Promise<boolean>;
-}
+export interface IDeviceAttributeRepository extends IBaseRepository<DeviceAttributes> {}
 
-export interface IDeviceKeyRepository {
-  getById(deviceID: string): Promise<?string>;
-  update(deviceID: string, key: string): Promise<string>;
-}
+export interface IDeviceKeyRepository extends IBaseRepository<DeviceKeyObject> {}
 
 export interface IUserRepository extends IBaseRepository<User> {
   createWithCredentials(credentials: UserCredentials): Promise<User>;
   deleteAccessToken(userID: string, accessToken: string): Promise<void>;
   getByAccessToken(accessToken: string): Promise<?User>;
   getByUsername(username: string): Promise<?User>;
+  getCurrentUser(): User;
   isUserNameInUse(username: string): Promise<boolean>;
   saveAccessToken(userID: string, tokenObject: TokenObject): Promise<User>;
+  setCurrentUser(user: User): void;
   validateLogin(username: string, password: string): Promise<User>;
 }
 
@@ -259,5 +226,5 @@ export interface IBaseDatabase {
   findAndModify(collectionName: string, ...args: Array<any>): Promise<*>;
   findOne(collectionName: string, ...args: Array<any>): Promise<*>;
   insertOne(collectionName: string, ...args: Array<any>): Promise<*>;
-  remove(collectionName: string, id: string): Promise<*>;
+  remove(collectionName: string, query: Object): Promise<*>;
 }

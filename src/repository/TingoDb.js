@@ -73,11 +73,11 @@ class TingoDb extends BaseMongoDb {
 
   remove = async (
     collectionName: string,
-    id: string,
+    query: Object,
   ): Promise<*> => await this.__runForCollection(
     collectionName,
     async (collection: Object): Promise<*> =>
-      await promisify(collection, 'remove', { _id: id }),
+      await promisify(collection, 'remove', query),
   );
 
   __runForCollection = async (

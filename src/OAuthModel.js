@@ -4,17 +4,17 @@ import oauthClients from './oauthClients.json';
 
 import type {
   Client,
+  IUserRepository,
   TokenObject,
   User,
-  UserRepository,
 } from './types';
 
 const OAUTH_CLIENTS = oauthClients;
 
 class OauthModel {
-  _userRepository: UserRepository;
+  _userRepository: IUserRepository;
 
-  constructor(userRepository: UserRepository) {
+  constructor(userRepository: IUserRepository) {
     this._userRepository = userRepository;
   }
 
@@ -34,7 +34,7 @@ class OauthModel {
     }
 
     return {
-      accessToken: userTokenObject.accessToken,
+      ...userTokenObject,
       user,
     };
   };

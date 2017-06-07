@@ -1,5 +1,7 @@
 // @flow
 
+import type { EventPublisher } from 'spark-protocol';
+import type PermissionManager from './PermissionManager';
 import type {
   Event,
   IWebhookLogger,
@@ -9,7 +11,6 @@ import type {
   Webhook,
   WebhookMutator,
 } from '../types';
-import type { EventPublisher } from 'spark-protocol';
 
 import hogan from 'hogan.js';
 import HttpError from '../lib/HttpError';
@@ -69,15 +70,18 @@ class WebhookManager {
   _errorsCountByWebhookID: Map<string, number> = new Map();
   _webhookRepository: IWebhookRepository;
   _webhookLogger: IWebhookLogger;
+  _permissonManager: PermissionManager;
 
   constructor(
-    webhookRepository: IWebhookRepository,
     eventPublisher: EventPublisher,
+    permissionManager: PermissionManager,
     webhookLogger: IWebhookLogger,
+    webhookRepository: IWebhookRepository,
   ) {
-    this._webhookRepository = webhookRepository;
     this._eventPublisher = eventPublisher;
+    this._permissonManager = permissionManager;
     this._webhookLogger = webhookLogger;
+    this._webhookRepository = webhookRepository;
 
     (async (): Promise<void> => await this._init())();
   }
@@ -91,23 +95,21 @@ class WebhookManager {
     return webhook;
   };
 
-  deleteByID = async (
-    webhookID: string,
-    userID: string,
-  ): Promise<void> => {
-    const webhook = await this._webhookRepository.getById(webhookID, userID);
+  deleteByID = async (webhookID: string): Promise<void> => {
+    const webhook = await this._permissonManager.getEntityByID('webhook', webhookID);
     if (!webhook) {
       throw new HttpError('no webhook found', 404);
     }
-    await this._webhookRepository.deleteById(webhookID);
+
+    await this._webhookRepository.deleteByID(webhookID);
     this._unsubscribeWebhookByID(webhookID);
   };
 
-  getAll = async (userID: string): Promise<Array<Webhook>> =>
-    await this._webhookRepository.getAll(userID);
+  getAll = async (): Promise<Array<Webhook>> =>
+    await this._permissonManager.getAllEntitiesForCurrentUser('webhook');
 
-  getByID = async (webhookID: string, userID: string): Promise<Webhook> => {
-    const webhook = await this._webhookRepository.getById(webhookID, userID);
+  getByID = async (webhookID: string): Promise<Webhook> => {
+    const webhook = await this._permissonManager.getEntityByID('webhook', webhookID);
     if (!webhook) {
       throw new HttpError('no webhook found', 404);
     }

@@ -1,6 +1,12 @@
 // @flow
 
-import type { IUserRepository, TokenObject, User, UserCredentials } from '../types';
+import type {
+  IUserRepository,
+  TokenObject,
+  User,
+  UserCredentials,
+  UserRole,
+} from '../types';
 
 import uuid from 'uuid';
 import { JSONFileManager, memoizeGet, memoizeSet } from 'spark-protocol';
@@ -9,6 +15,7 @@ import HttpError from '../lib/HttpError';
 
 class UserFileRepository implements IUserRepository {
   _fileManager: JSONFileManager;
+  _currentUser: User;
 
   constructor(path: string) {
     this._fileManager = new JSONFileManager(path);
@@ -16,6 +23,7 @@ class UserFileRepository implements IUserRepository {
 
   createWithCredentials = async (
     userCredentials: UserCredentials,
+    userRole: ?UserRole = null,
   ): Promise<User> => {
     const { username, password } = userCredentials;
 
@@ -24,6 +32,7 @@ class UserFileRepository implements IUserRepository {
     const modelToSave = {
       accessTokens: [],
       passwordHash,
+      role: userRole,
       salt,
       username,
     };
@@ -50,7 +59,7 @@ class UserFileRepository implements IUserRepository {
   }
 
   deleteAccessToken = async (userID: string, token: string): Promise<*> => {
-    const user = await this.getById(userID);
+    const user = await this.getByID(userID);
     if (!user) {
       throw new Error('User doesn\'t exist');
     }
@@ -67,7 +76,7 @@ class UserFileRepository implements IUserRepository {
   };
 
   @memoizeSet(['id'])
-  async deleteById(id: string): Promise<void> {
+  async deleteByID(id: string): Promise<void> {
     this._fileManager.deleteFile(`${id}.json`);
   }
 
@@ -86,7 +95,7 @@ class UserFileRepository implements IUserRepository {
     );
 
   @memoizeGet(['id'])
-  async getById(id: string): Promise<?User> {
+  async getByID(id: string): Promise<?User> {
     return this._fileManager.getFile(`${id}.json`);
   }
 
@@ -95,6 +104,37 @@ class UserFileRepository implements IUserRepository {
     return (await this.getAll()).find(
       (user: User): boolean => user.username === username,
     );
+  }
+
+  getCurrentUser = (): User => this._currentUser;
+
+  @memoizeGet(['username'])
+  async isUserNameInUse(username: string): Promise<boolean> {
+    return (await this.getAll()).some((user: User): boolean =>
+      user.username === username,
+    );
+  }
+
+  saveAccessToken = async (
+    userID: string,
+    tokenObject: TokenObject,
+  ): Promise<*> => {
+    const user = await this.getByID(userID);
+
+    if (!user) {
+      throw new HttpError('Could not find user for user ID');
+    }
+
+    const userToSave = {
+      ...user,
+      accessTokens: [...user.accessTokens, tokenObject],
+    };
+
+    return await this.update(userToSave);
+  }
+
+  setCurrentUser = (user: User) => {
+    this._currentUser = user;
   }
 
   @memoizeSet()
@@ -121,31 +161,6 @@ class UserFileRepository implements IUserRepository {
       throw error;
     }
   };
-
-  @memoizeGet(['username'])
-  async isUserNameInUse(username: string): Promise<boolean> {
-    return (await this.getAll()).some((user: User): boolean =>
-      user.username === username,
-    );
-  }
-
-  saveAccessToken = async (
-    userID: string,
-    tokenObject: TokenObject,
-  ): Promise<*> => {
-    const user = await this.getById(userID);
-
-    if (!user) {
-      throw new HttpError('Could not find user for user ID');
-    }
-
-    const userToSave = {
-      ...user,
-      accessTokens: [...user.accessTokens, tokenObject],
-    };
-
-    return await this.update(userToSave);
-  }
 }
 
 export default UserFileRepository;

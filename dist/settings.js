@@ -13,6 +13,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* eslint-disable sorting/sort-object-props */
 exports.default = {
   BUILD_DIRECTORY: _path2.default.join(__dirname, '../data/build'),
+  DEFAULT_ADMIN_PASSWORD: 'adminPassword',
+  DEFAULT_ADMIN_USERNAME: '__admin__',
   DEVICE_DIRECTORY: _path2.default.join(__dirname, '../data/deviceKeys'),
   ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
   FIRMWARE_DIRECTORY: _path2.default.join(__dirname, '../data/knownApps'),

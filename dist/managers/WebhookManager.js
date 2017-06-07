@@ -98,7 +98,7 @@ var WEBHOOK_DEFAULTS = {
   rejectUnauthorized: true
 };
 
-var WebhookManager = function WebhookManager(webhookRepository, eventPublisher, webhookLogger) {
+var WebhookManager = function WebhookManager(eventPublisher, permissionManager, webhookLogger, webhookRepository) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, WebhookManager);
@@ -135,14 +135,14 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher, 
   }();
 
   this.deleteByID = function () {
-    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(webhookID, userID) {
+    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(webhookID) {
       var webhook;
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return _this._webhookRepository.getById(webhookID, userID);
+              return _this._permissonManager.getEntityByID('webhook', webhookID);
 
             case 2:
               webhook = _context2.sent;
@@ -156,7 +156,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher, 
 
             case 5:
               _context2.next = 7;
-              return _this._webhookRepository.deleteById(webhookID);
+              return _this._webhookRepository.deleteByID(webhookID);
 
             case 7:
               _this._unsubscribeWebhookByID(webhookID);
@@ -169,45 +169,39 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher, 
       }, _callee2, _this);
     }));
 
-    return function (_x2, _x3) {
+    return function (_x2) {
       return _ref2.apply(this, arguments);
     };
   }();
 
-  this.getAll = function () {
-    var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(userID) {
-      return _regenerator2.default.wrap(function _callee3$(_context3) {
-        while (1) {
-          switch (_context3.prev = _context3.next) {
-            case 0:
-              _context3.next = 2;
-              return _this._webhookRepository.getAll(userID);
+  this.getAll = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+    return _regenerator2.default.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.next = 2;
+            return _this._permissonManager.getAllEntitiesForCurrentUser('webhook');
 
-            case 2:
-              return _context3.abrupt('return', _context3.sent);
+          case 2:
+            return _context3.abrupt('return', _context3.sent);
 
-            case 3:
-            case 'end':
-              return _context3.stop();
-          }
+          case 3:
+          case 'end':
+            return _context3.stop();
         }
-      }, _callee3, _this);
-    }));
-
-    return function (_x4) {
-      return _ref3.apply(this, arguments);
-    };
-  }();
+      }
+    }, _callee3, _this);
+  }));
 
   this.getByID = function () {
-    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(webhookID, userID) {
+    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(webhookID) {
       var webhook;
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return _this._webhookRepository.getById(webhookID, userID);
+              return _this._permissonManager.getEntityByID('webhook', webhookID);
 
             case 2:
               webhook = _context4.sent;
@@ -230,7 +224,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher, 
       }, _callee4, _this);
     }));
 
-    return function (_x5, _x6) {
+    return function (_x3) {
       return _ref4.apply(this, arguments);
     };
   }();
@@ -381,7 +375,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher, 
       }, _callee6, _this, [[0, 25]]);
     }));
 
-    return function (_x7, _x8) {
+    return function (_x4, _x5) {
       return _ref6.apply(this, arguments);
     };
   }();
@@ -486,9 +480,10 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher, 
     _this._errorsCountByWebhookID.set(webhookID, 0);
   };
 
-  this._webhookRepository = webhookRepository;
   this._eventPublisher = eventPublisher;
+  this._permissonManager = permissionManager;
   this._webhookLogger = webhookLogger;
+  this._webhookRepository = webhookRepository;
 
   (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7() {
     return _regenerator2.default.wrap(function _callee7$(_context7) {

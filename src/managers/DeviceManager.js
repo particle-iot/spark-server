@@ -2,10 +2,11 @@
 
 import type { File } from 'express';
 import type { DeviceServer } from 'spark-protocol';
+import type PermissionManager from './PermissionManager';
 import type {
   Device,
   DeviceAttributes,
-  IBaseRepository,
+  IDeviceKeyRepository,
   IDeviceAttributeRepository,
   IDeviceFirmwareRepository,
 } from '../types';
@@ -16,19 +17,22 @@ import HttpError from '../lib/HttpError';
 class DeviceManager {
   _deviceAttributeRepository: IDeviceAttributeRepository;
   _deviceFirmwareRepository: IDeviceFirmwareRepository;
-  _deviceKeyRepository: IBaseRepository<string>;
+  _deviceKeyRepository: IDeviceKeyRepository;
   _deviceServer: DeviceServer;
+  _permissionManager: PermissionManager;
 
   constructor(
     deviceAttributeRepository: IDeviceAttributeRepository,
     deviceFirmwareRepository: IDeviceFirmwareRepository,
-    deviceKeyRepository: IBaseRepository<string>,
+    deviceKeyRepository: IDeviceKeyRepository,
     deviceServer: DeviceServer,
+    permissionManager: PermissionManager,
   ) {
     this._deviceAttributeRepository = deviceAttributeRepository;
     this._deviceFirmwareRepository = deviceFirmwareRepository;
     this._deviceKeyRepository = deviceKeyRepository;
     this._deviceServer = deviceServer;
+    this._permissionManager = permissionManager;
   }
 
   claimDevice = async (
@@ -36,7 +40,7 @@ class DeviceManager {
     userID: string,
   ): Promise<DeviceAttributes> => {
     const deviceAttributes =
-      await this._deviceAttributeRepository.getById(deviceID);
+      await this._deviceAttributeRepository.getByID(deviceID);
 
     if (!deviceAttributes) {
       throw new HttpError('No device found', 404);
@@ -56,12 +60,9 @@ class DeviceManager {
     return await this._deviceAttributeRepository.update(attributesToSave);
   };
 
-  unclaimDevice = async (
-    deviceID: string,
-    userID: string,
-  ): Promise<DeviceAttributes> => {
+  unclaimDevice = async (deviceID: string): Promise<DeviceAttributes> => {
     const deviceAttributes =
-      await this._deviceAttributeRepository.getById(deviceID, userID);
+      await this._permissionManager.getEntityByID('deviceAttributes', deviceID);
 
     if (!deviceAttributes) {
       throw new HttpError('No device found', 404);
@@ -74,10 +75,10 @@ class DeviceManager {
     return await this._deviceAttributeRepository.update(attributesToSave);
   };
 
-  getByID = async (deviceID: string, userID: string): Promise<Device> => {
-    const attributes = await this._deviceAttributeRepository.getById(
+  getByID = async (deviceID: string): Promise<Device> => {
+    const attributes = await this._permissionManager.getEntityByID(
+      'deviceAttributes',
       deviceID,
-      userID,
     );
 
     if (!attributes) {
@@ -94,14 +95,11 @@ class DeviceManager {
     };
   };
 
-  getDetailsByID = async (
-    deviceID: string,
-    userID: string,
-  ): Promise<Device> => {
+  getDetailsByID = async (deviceID: string): Promise<Device> => {
     const device = this._deviceServer.getDevice(deviceID);
 
     const [attributes, description] = await Promise.all([
-      this._deviceAttributeRepository.getById(deviceID, userID),
+      this._permissionManager.getEntityByID('deviceAttributes', deviceID),
       device && device.getDescription(),
     ]);
 
@@ -119,9 +117,10 @@ class DeviceManager {
     };
   };
 
-  getAll = async (userID: string): Promise<Array<Device>> => {
+  getAll = async (): Promise<Array<Device>> => {
     const devicesAttributes =
-      await this._deviceAttributeRepository.getAll(userID);
+      await this._permissionManager.getAllEntitiesForCurrentUser('deviceAttributes');
+
     const devicePromises = devicesAttributes.map(
       async (attributes: DeviceAttributes): Promise<Object> => {
         const device = this._deviceServer.getDevice(attributes.deviceID);
@@ -140,18 +139,13 @@ class DeviceManager {
 
   callFunction = async (
     deviceID: string,
-    userID: string,
     functionName: string,
     functionArguments: {[key: string]: string},
   ): Promise<*> => {
-    const doesUserHaveAccess =
-      await this._deviceAttributeRepository.doesUserHaveAccess(
-        deviceID,
-        userID,
-      );
-    if (!doesUserHaveAccess) {
-      throw new HttpError('No device found', 404);
-    }
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
+      deviceID,
+    );
 
     const device = this._deviceServer.getDevice(deviceID);
     if (!device) {
@@ -166,17 +160,12 @@ class DeviceManager {
 
   getVariableValue = async (
     deviceID: string,
-    userID: string,
     varName: string,
   ): Promise<*> => {
-    const doesUserHaveAccess =
-      await this._deviceAttributeRepository.doesUserHaveAccess(
-        deviceID,
-        userID,
-      );
-    if (!doesUserHaveAccess) {
-      throw new HttpError('No device found', 404);
-    }
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
+      deviceID,
+    );
 
     const device = this._deviceServer.getDevice(deviceID);
     if (!device) {
@@ -190,6 +179,11 @@ class DeviceManager {
     deviceID: string,
     file: File,
   ): Promise<string> => {
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
+      deviceID,
+    );
+
     const device = this._deviceServer.getDevice(deviceID);
     if (!device) {
       throw new HttpError('Could not get device for ID', 404);
@@ -200,15 +194,12 @@ class DeviceManager {
 
   flashKnownApp = async (
     deviceID: string,
-    userID: string,
     appName: string,
   ): Promise<string> => {
-    if (await !this._deviceAttributeRepository.doesUserHaveAccess(
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
       deviceID,
-      userID,
-    )) {
-      throw new HttpError('No device found', 404);
-    }
+    );
 
     const knownFirmware = this._deviceFirmwareRepository.getByName(appName);
 
@@ -243,9 +234,8 @@ class DeviceManager {
       throw new HttpError(`Key error ${error}`);
     }
 
-    await this._deviceKeyRepository.update(deviceID, publicKey);
-
-    const existingAttributes = await this._deviceAttributeRepository.getById(
+    await this._deviceKeyRepository.update({ deviceID, key: publicKey });
+    const existingAttributes = await this._deviceAttributeRepository.getByID(
       deviceID,
     );
     const attributes = {
@@ -257,20 +247,17 @@ class DeviceManager {
     };
     await this._deviceAttributeRepository.update(attributes);
 
-    return await this.getByID(deviceID, userID);
+    return await this.getByID(deviceID);
   };
 
   raiseYourHand = async (
     deviceID: string,
-    userID: string,
     shouldShowSignal: boolean,
   ): Promise<void> => {
-    if (await !this._deviceAttributeRepository.doesUserHaveAccess(
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
       deviceID,
-      userID,
-    )) {
-      throw new HttpError('No device found', 404);
-    }
+    );
 
     const device = this._deviceServer.getDevice(deviceID);
     if (!device) {
@@ -282,12 +269,11 @@ class DeviceManager {
 
   renameDevice = async (
     deviceID: string,
-    userID: string,
     name: string,
   ): Promise<DeviceAttributes> => {
-    const attributes = await this._deviceAttributeRepository.getById(
+    const attributes = await this._permissionManager.getEntityByID(
+      'deviceAttributes',
       deviceID,
-      userID,
     );
 
     if (!attributes) {

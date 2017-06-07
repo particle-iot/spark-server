@@ -271,7 +271,7 @@ var TingoDb = function (_BaseMongoDb) {
     }();
 
     _this.remove = function () {
-      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(collectionName, id) {
+      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(collectionName, query) {
         return _regenerator2.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
@@ -284,7 +284,7 @@ var TingoDb = function (_BaseMongoDb) {
                         switch (_context9.prev = _context9.next) {
                           case 0:
                             _context9.next = 2;
-                            return (0, _promisify.promisify)(collection, 'remove', { _id: id });
+                            return (0, _promisify.promisify)(collection, 'remove', query);
 
                           case 2:
                             return _context9.abrupt('return', _context9.sent);

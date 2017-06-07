@@ -19,8 +19,8 @@ class WebhookDatabaseRepository implements IWebhookRepository {
       },
     );
 
-  deleteById = async (id: string): Promise<void> =>
-    await this._database.remove(this._collectionName, id);
+  deleteByID = async (id: string): Promise<void> =>
+    await this._database.remove(this._collectionName, { _id: id });
 
   getAll = async (userID: ?string = null): Promise<Array<Webhook>> => {
     const query = userID ? { ownerID: userID } : {};
@@ -31,10 +31,8 @@ class WebhookDatabaseRepository implements IWebhookRepository {
     );
   };
 
-  getById = async (id: string, userID: ?string = null): Promise<?Webhook> => {
-    const query = userID ? { _id: id, ownerID: userID } : { _id: id };
-    return await this._database.findOne(this._collectionName, query);
-  };
+  getByID = async (id: string): Promise<?Webhook> =>
+    await this._database.findOne(this._collectionName, { _id: id });
 
   update = async (): Promise<Webhook> => {
     throw new Error('The method is not implemented');

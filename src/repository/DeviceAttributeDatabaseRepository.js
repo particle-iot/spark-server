@@ -6,26 +6,23 @@ import type {
   IDeviceAttributeRepository,
 } from '../types';
 
+// getByID, deleteByID and update uses model.deviceID as ID for querying
 class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
   _database: IBaseDatabase;
   _collectionName: string = 'deviceAttributes';
+  _permissionManager: Object;
 
-  constructor(database: IBaseDatabase) {
+  constructor(database: IBaseDatabase, permissionManager: Object) {
     this._database = database;
+    this._permissionManager = permissionManager;
   }
 
   create = async (): Promise<DeviceAttributes> => {
     throw new Error('The method is not implemented');
   };
 
-  deleteById = async (id: string): Promise<void> =>
-    await this._database.remove(this._collectionName, id);
-
-  doesUserHaveAccess = async (id: string, userID: string): Promise<boolean> =>
-    !!(await this._database.findOne(
-      this._collectionName,
-      { _id: id, ownerID: userID },
-    ));
+  deleteByID = async (deviceID: string): Promise<void> =>
+    await this._database.remove(this._collectionName, { deviceID });
 
   getAll = async (userID: ?string = null): Promise<Array<DeviceAttributes>> => {
     const query = userID ? { ownerID: userID } : {};
@@ -36,22 +33,16 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     );
   };
 
-  getById = async (
-    id: string,
-    userID: ?string = null,
-  ): Promise<?DeviceAttributes> => {
-    const query = userID ? { _id: id, ownerID: userID } : { _id: id };
-    return await this._database.findOne(this._collectionName, query);
-  };
+  getByID = async (deviceID: string): Promise<?DeviceAttributes> =>
+    await this._database.findOne(this._collectionName, { deviceID });
 
   update = async (model: DeviceAttributes): Promise<DeviceAttributes> =>
     await this._database.findAndModify(
       this._collectionName,
-      { _id: model.deviceID },
+      { deviceID: model.deviceID },
       null,
-      { $set: { ...model, _id: model.deviceID, timeStamp: new Date() } },
+      { $set: { ...model, timeStamp: new Date() } },
       { new: true, upsert: true },
     );
 }
-
 export default DeviceAttributeDatabaseRepository;
