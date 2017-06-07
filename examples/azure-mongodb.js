@@ -7,7 +7,7 @@
 * string.
 */
 
-// @flow
+/* eslint-disable */
 
 import arrayFlatten from 'array-flatten';
 import azure from 'azure-storage';
@@ -15,7 +15,7 @@ import { Container } from 'constitute';
 import express from 'express';
 import http from 'http';
 import https from 'https';
-import {MongoClient} from 'mongodb';
+import { MongoClient } from 'mongodb';
 import os from 'os';
 import path from 'path';
 import settings from './settings';
@@ -62,7 +62,7 @@ MongoClient.connect(
     // retry to connect for 60 times
     reconnectTries: 60,
     // wait 1 second before retrying
-    reconnectInterval: 1000
+    reconnectInterval: 1000,
   },
 ).then(
   async (database: Object): Promise<void> => {
@@ -74,14 +74,14 @@ MongoClient.connect(
         cb => blobService.getBlobToText('keys', settings.SSL_PRIVATE_KEY, cb),
       );
 
-      database.on('error', function(err) {
-          console.log("DB connection Error: "+err);
+      database.on('error', (err) => {
+        console.log(`DB connection Error: ${err}`);
       });
-      database.on('open', function() {
-          console.log("DB connected");
+      database.on('open', () => {
+        console.log('DB connected');
       });
-      database.on('close', function(str) {
-          console.log("DB disconnected: "+str);
+      database.on('close', (str) => {
+        console.log(`DB disconnected: ${str}`);
       });
 
       const options = {
