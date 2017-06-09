@@ -359,7 +359,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
     key: 'updateDevice',
     value: function () {
       var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(deviceID, postBody) {
-        var updatedAttributes, flashStatus, file, _flashStatus;
+        var updatedAttributes, flashResult, file, _flashResult;
 
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
@@ -378,60 +378,60 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
                 return _context8.abrupt('return', this.ok({ name: updatedAttributes.name, ok: true }));
 
               case 5:
-                if (!postBody.app_id) {
-                  _context8.next = 10;
-                  break;
-                }
-
-                _context8.next = 8;
-                return this._deviceManager.flashKnownApp(deviceID, postBody.app_id);
-
-              case 8:
-                flashStatus = _context8.sent;
-                return _context8.abrupt('return', this.ok({ id: deviceID, status: flashStatus }));
-
-              case 10:
-                if (!(this.request.files && !this.request.files.file)) {
-                  _context8.next = 12;
-                  break;
-                }
-
-                throw new Error('Firmware file not provided');
-
-              case 12:
-                file = this.request.files && this.request.files.file[0];
-
-                if (!(file && file.originalname.endsWith('.bin'))) {
-                  _context8.next = 18;
-                  break;
-                }
-
-                _context8.next = 16;
-                return this._deviceManager.flashBinary(deviceID, file);
-
-              case 16:
-                _flashStatus = _context8.sent;
-                return _context8.abrupt('return', this.ok({ id: deviceID, status: _flashStatus }));
-
-              case 18:
                 if (!postBody.signal) {
-                  _context8.next = 24;
+                  _context8.next = 11;
                   break;
                 }
 
                 if (['1', '0'].includes(postBody.signal)) {
-                  _context8.next = 21;
+                  _context8.next = 8;
                   break;
                 }
 
                 throw new _HttpError2.default('Wrong signal value');
 
-              case 21:
-                _context8.next = 23;
+              case 8:
+                _context8.next = 10;
                 return this._deviceManager.raiseYourHand(deviceID, !!parseInt(postBody.signal, 10));
 
-              case 23:
+              case 10:
                 return _context8.abrupt('return', this.ok({ id: deviceID, ok: true }));
+
+              case 11:
+                if (!postBody.app_id) {
+                  _context8.next = 16;
+                  break;
+                }
+
+                _context8.next = 14;
+                return this._deviceManager.flashKnownApp(deviceID, postBody.app_id);
+
+              case 14:
+                flashResult = _context8.sent;
+                return _context8.abrupt('return', this.ok({ id: deviceID, status: flashResult.status }));
+
+              case 16:
+                if (!(this.request.files && !this.request.files.file)) {
+                  _context8.next = 18;
+                  break;
+                }
+
+                throw new Error('Firmware file not provided');
+
+              case 18:
+                file = this.request.files && this.request.files.file[0];
+
+                if (!(file && file.originalname.endsWith('.bin'))) {
+                  _context8.next = 24;
+                  break;
+                }
+
+                _context8.next = 22;
+                return this._deviceManager.flashBinary(deviceID, file);
+
+              case 22:
+                _flashResult = _context8.sent;
+                return _context8.abrupt('return', this.ok({ id: deviceID, status: _flashResult.status }));
 
               case 24:
                 throw new _HttpError2.default('Did not update device');

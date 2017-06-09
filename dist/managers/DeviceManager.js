@@ -28,6 +28,8 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _sparkProtocol = require('spark-protocol');
+
 var _ursa = require('ursa');
 
 var _ursa2 = _interopRequireDefault(_ursa);
@@ -38,7 +40,7 @@ var _HttpError2 = _interopRequireDefault(_HttpError);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirmwareRepository, deviceKeyRepository, deviceServer, permissionManager) {
+var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirmwareRepository, deviceKeyRepository, permissionManager, eventPublisher) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, DeviceManager);
@@ -147,7 +149,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.getByID = function () {
     var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(deviceID) {
-      var attributes, device;
+      var attributes, pingResponse;
       return _regenerator2.default.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
@@ -166,14 +168,21 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               throw new _HttpError2.default('No device found', 404);
 
             case 5:
-              device = _this._deviceServer.getDevice(attributes.deviceID);
-              return _context3.abrupt('return', (0, _extends3.default)({}, attributes, {
-                connected: device && device.ping().connected || false,
-                lastFlashedAppName: null,
-                lastHeard: device && device.ping().lastPing || attributes.lastHeard
-              }));
+              _context3.next = 7;
+              return _this._eventPublisher.publishAndListenForResponse({
+                context: { deviceID: deviceID },
+                name: _sparkProtocol.SPARK_SERVER_EVENTS.PING_DEVICE
+              });
 
             case 7:
+              pingResponse = _context3.sent;
+              return _context3.abrupt('return', (0, _extends3.default)({}, attributes, {
+                connected: pingResponse.connected || false,
+                lastFlashedAppName: null,
+                lastHeard: pingResponse.lastPing || attributes.lastHeard
+              }));
+
+            case 9:
             case 'end':
               return _context3.stop();
           }
@@ -188,21 +197,26 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.getDetailsByID = function () {
     var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(deviceID) {
-      var device, _ref5, _ref6, attributes, description;
+      var _ref5, _ref6, attributes, description, pingResponse;
 
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
-              device = _this._deviceServer.getDevice(deviceID);
-              _context4.next = 3;
-              return _promise2.default.all([_this._permissionManager.getEntityByID('deviceAttributes', deviceID), device && device.getDescription()]);
+              _context4.next = 2;
+              return _promise2.default.all([_this._permissionManager.getEntityByID('deviceAttributes', deviceID), _this._eventPublisher.publishAndListenForResponse({
+                context: { deviceID: deviceID },
+                name: _sparkProtocol.SPARK_SERVER_EVENTS.GET_DEVICE_DESCRIPTION
+              }), _this._eventPublisher.publishAndListenForResponse({
+                context: { deviceID: deviceID },
+                name: _sparkProtocol.SPARK_SERVER_EVENTS.PING_DEVICE })]);
 
-            case 3:
+            case 2:
               _ref5 = _context4.sent;
-              _ref6 = (0, _slicedToArray3.default)(_ref5, 2);
+              _ref6 = (0, _slicedToArray3.default)(_ref5, 3);
               attributes = _ref6[0];
               description = _ref6[1];
+              pingResponse = _ref6[2];
 
               if (attributes) {
                 _context4.next = 9;
@@ -213,11 +227,11 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
             case 9:
               return _context4.abrupt('return', (0, _extends3.default)({}, attributes, {
-                connected: device && device.ping().connected || false,
-                functions: description ? description.state.f : null,
+                connected: pingResponse.connected,
+                functions: description.state ? description.state.f : null,
                 lastFlashedAppName: null,
-                lastHeard: device && device.ping().lastPing || attributes.lastHeard,
-                variables: description ? description.state.v : null
+                lastHeard: pingResponse.lastPing || attributes.lastHeard,
+                variables: description.state ? description.state.v : null
               }));
 
             case 10:
@@ -246,16 +260,19 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
             devicesAttributes = _context6.sent;
             devicePromises = devicesAttributes.map(function () {
               var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(attributes) {
-                var device;
+                var pingResponse;
                 return _regenerator2.default.wrap(function _callee5$(_context5) {
                   while (1) {
                     switch (_context5.prev = _context5.next) {
                       case 0:
-                        device = _this._deviceServer.getDevice(attributes.deviceID);
+                        pingResponse = _this._eventPublisher.publishAndListenForResponse({
+                          context: { deviceID: attributes.deviceID },
+                          name: _sparkProtocol.SPARK_SERVER_EVENTS.PING_DEVICE
+                        });
                         return _context5.abrupt('return', (0, _extends3.default)({}, attributes, {
-                          connected: device && device.ping().connected || false,
+                          connected: pingResponse.connected || false,
                           lastFlashedAppName: null,
-                          lastHeard: device && device.ping().lastPing || attributes.lastHeard
+                          lastHeard: pingResponse.lastPing || attributes.lastHeard
                         }));
 
                       case 2:
@@ -282,7 +299,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.callFunction = function () {
     var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(deviceID, functionName, functionArguments) {
-      var device;
+      var callFunctionResponse, error;
       return _regenerator2.default.wrap(function _callee7$(_context7) {
         while (1) {
           switch (_context7.prev = _context7.next) {
@@ -291,23 +308,27 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               return _this._permissionManager.checkPermissionsForEntityByID('deviceAttributes', deviceID);
 
             case 2:
-              device = _this._deviceServer.getDevice(deviceID);
+              _context7.next = 4;
+              return _this._eventPublisher.publishAndListenForResponse({
+                context: { deviceID: deviceID, functionArguments: functionArguments, functionName: functionName },
+                name: _sparkProtocol.SPARK_SERVER_EVENTS.CALL_DEVICE_FUNCTION
+              });
 
-              if (device) {
-                _context7.next = 5;
+            case 4:
+              callFunctionResponse = _context7.sent;
+              error = callFunctionResponse.error;
+
+              if (!error) {
+                _context7.next = 8;
                 break;
               }
 
-              throw new _HttpError2.default('Could not get device for ID', 404);
-
-            case 5:
-              _context7.next = 7;
-              return device.callFunction(functionName, functionArguments);
-
-            case 7:
-              return _context7.abrupt('return', _context7.sent);
+              throw new _HttpError2.default(error);
 
             case 8:
+              return _context7.abrupt('return', callFunctionResponse);
+
+            case 9:
             case 'end':
               return _context7.stop();
           }
@@ -321,8 +342,8 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
   }();
 
   this.getVariableValue = function () {
-    var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(deviceID, varName) {
-      var device;
+    var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(deviceID, variableName) {
+      var getVariableResponse, error, result;
       return _regenerator2.default.wrap(function _callee8$(_context8) {
         while (1) {
           switch (_context8.prev = _context8.next) {
@@ -331,23 +352,27 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               return _this._permissionManager.checkPermissionsForEntityByID('deviceAttributes', deviceID);
 
             case 2:
-              device = _this._deviceServer.getDevice(deviceID);
+              _context8.next = 4;
+              return _this._eventPublisher.publishAndListenForResponse({
+                context: { deviceID: deviceID, variableName: variableName },
+                name: _sparkProtocol.SPARK_SERVER_EVENTS.GET_DEVICE_VARIABLE_VALUE
+              });
 
-              if (device) {
-                _context8.next = 5;
+            case 4:
+              getVariableResponse = _context8.sent;
+              error = getVariableResponse.error, result = getVariableResponse.result;
+
+              if (!error) {
+                _context8.next = 8;
                 break;
               }
 
-              throw new _HttpError2.default('Could not get device for ID', 404);
-
-            case 5:
-              _context8.next = 7;
-              return device.getVariableValue(varName);
-
-            case 7:
-              return _context8.abrupt('return', _context8.sent);
+              throw new _HttpError2.default(error);
 
             case 8:
+              return _context8.abrupt('return', result);
+
+            case 9:
             case 'end':
               return _context8.stop();
           }
@@ -362,7 +387,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.flashBinary = function () {
     var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(deviceID, file) {
-      var device;
+      var flashResponse, error;
       return _regenerator2.default.wrap(function _callee9$(_context9) {
         while (1) {
           switch (_context9.prev = _context9.next) {
@@ -371,23 +396,27 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               return _this._permissionManager.checkPermissionsForEntityByID('deviceAttributes', deviceID);
 
             case 2:
-              device = _this._deviceServer.getDevice(deviceID);
+              _context9.next = 4;
+              return _this._eventPublisher.publishAndListenForResponse({
+                context: { deviceID: deviceID, fileBuffer: file.buffer },
+                name: _sparkProtocol.SPARK_SERVER_EVENTS.FLASH_DEVICE
+              });
 
-              if (device) {
-                _context9.next = 5;
+            case 4:
+              flashResponse = _context9.sent;
+              error = flashResponse.error;
+
+              if (!error) {
+                _context9.next = 8;
                 break;
               }
 
-              throw new _HttpError2.default('Could not get device for ID', 404);
-
-            case 5:
-              _context9.next = 7;
-              return device.flash(file.buffer);
-
-            case 7:
-              return _context9.abrupt('return', _context9.sent);
+              throw new _HttpError2.default(error);
 
             case 8:
+              return _context9.abrupt('return', flashResponse);
+
+            case 9:
             case 'end':
               return _context9.stop();
           }
@@ -402,7 +431,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.flashKnownApp = function () {
     var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(deviceID, appName) {
-      var knownFirmware, device;
+      var knownFirmware, flashResponse, error;
       return _regenerator2.default.wrap(function _callee10$(_context10) {
         while (1) {
           switch (_context10.prev = _context10.next) {
@@ -421,23 +450,27 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               throw new _HttpError2.default('No firmware ' + appName + ' found', 404);
 
             case 5:
-              device = _this._deviceServer.getDevice(deviceID);
+              _context10.next = 7;
+              return _this._eventPublisher.publishAndListenForResponse({
+                context: { deviceID: deviceID, fileBuffer: knownFirmware },
+                name: _sparkProtocol.SPARK_SERVER_EVENTS.FLASH_DEVICE
+              });
 
-              if (device) {
-                _context10.next = 8;
+            case 7:
+              flashResponse = _context10.sent;
+              error = flashResponse.error;
+
+              if (!error) {
+                _context10.next = 11;
                 break;
               }
 
-              throw new _HttpError2.default('Could not get device for ID', 404);
-
-            case 8:
-              _context10.next = 10;
-              return device.flash(knownFirmware);
-
-            case 10:
-              return _context10.abrupt('return', _context10.sent);
+              throw new _HttpError2.default(error);
 
             case 11:
+              return _context10.abrupt('return', flashResponse);
+
+            case 12:
             case 'end':
               return _context10.stop();
           }
@@ -526,7 +559,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.raiseYourHand = function () {
     var _ref14 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(deviceID, shouldShowSignal) {
-      var device;
+      var RaiseYourHandResponse, error;
       return _regenerator2.default.wrap(function _callee12$(_context12) {
         while (1) {
           switch (_context12.prev = _context12.next) {
@@ -535,23 +568,27 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               return _this._permissionManager.checkPermissionsForEntityByID('deviceAttributes', deviceID);
 
             case 2:
-              device = _this._deviceServer.getDevice(deviceID);
+              _context12.next = 4;
+              return _this._eventPublisher.publishAndListenForResponse({
+                context: { deviceID: deviceID, shouldShowSignal: shouldShowSignal },
+                name: _sparkProtocol.SPARK_SERVER_EVENTS.RAISE_YOUR_HAND
+              });
 
-              if (device) {
-                _context12.next = 5;
+            case 4:
+              RaiseYourHandResponse = _context12.sent;
+              error = RaiseYourHandResponse.error;
+
+              if (!error) {
+                _context12.next = 8;
                 break;
               }
 
-              throw new _HttpError2.default('Could not get device for ID', 404);
-
-            case 5:
-              _context12.next = 7;
-              return device.raiseYourHand(shouldShowSignal);
-
-            case 7:
-              return _context12.abrupt('return', _context12.sent);
+              throw new _HttpError2.default(error);
 
             case 8:
+              return _context12.abrupt('return', RaiseYourHandResponse);
+
+            case 9:
             case 'end':
               return _context12.stop();
           }
@@ -610,8 +647,8 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
   this._deviceAttributeRepository = deviceAttributeRepository;
   this._deviceFirmwareRepository = deviceFirmwareRepository;
   this._deviceKeyRepository = deviceKeyRepository;
-  this._deviceServer = deviceServer;
   this._permissionManager = permissionManager;
+  this._eventPublisher = eventPublisher;
 };
 
 exports.default = DeviceManager;

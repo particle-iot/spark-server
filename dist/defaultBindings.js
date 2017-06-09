@@ -147,7 +147,7 @@ exports.default = function (container, newSettings) {
   container.bindClass('WebhooksController', _WebhooksController2.default, ['WebhookManager']);
 
   // managers
-  container.bindClass('DeviceManager', _DeviceManager2.default, ['DeviceAttributeRepository', 'DeviceFirmwareRepository', 'DeviceKeyRepository', 'DeviceServer', 'PermissionManager']);
+  container.bindClass('DeviceManager', _DeviceManager2.default, ['DeviceAttributeRepository', 'DeviceFirmwareRepository', 'DeviceKeyRepository', 'PermissionManager', 'EventPublisher']);
   container.bindClass('EventManager', _EventManager2.default, ['EventPublisher']);
   container.bindClass('WebhookManager', _WebhookManager2.default, ['EventPublisher', 'PermissionManager', 'WebhookLogger', 'WebhookRepository']);
 

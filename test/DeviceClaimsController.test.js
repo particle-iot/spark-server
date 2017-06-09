@@ -1,9 +1,11 @@
 /* eslint-disable */
 import test from 'ava';
 import request from 'supertest';
+import sinon from 'sinon';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
 import TestData from './setup/TestData';
+import { SPARK_SERVER_EVENTS } from 'spark-protocol';
 
 const container = app.container;
 let DEVICE_ID = null;
@@ -14,6 +16,27 @@ let deviceToApiAttributes;
 test.before(async () => {
   const USER_CREDENTIALS = TestData.getUser();
   DEVICE_ID = TestData.getID();
+
+  sinon.stub(
+    container.constitute('EventPublisher'),
+    'publishAndListenForResponse',
+    ({ name }) => {
+      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_DESCRIPTION) {
+        return {
+          state : {
+            f: null,
+            v: null,
+          },
+        };
+      }
+      if(name === SPARK_SERVER_EVENTS.PING_DEVICE) {
+        return {
+          connected: true,
+          lastPing: new Date(),
+        };
+      }
+    }
+  );
 
   const userResponse = await request(app)
     .post('/v1/users')

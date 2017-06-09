@@ -129,9 +129,11 @@ class WebhookManager {
       webhook.event,
       this._onNewWebhookEvent(webhook),
       {
-        deviceID: webhook.deviceID,
-        mydevices: webhook.mydevices,
-        userID: webhook.ownerID,
+        filterOptions: {
+          deviceID: webhook.deviceID,
+          mydevices: webhook.mydevices,
+          userID: webhook.ownerID,
+        },
       },
     );
     this._subscriptionIDsByWebhookID.set(webhook.id, subscriptionID);
