@@ -289,18 +289,18 @@ class DeviceManager {
       deviceID,
     );
 
-    const RaiseYourHandResponse =
+    const raiseYourHandResponse =
       await this._eventPublisher.publishAndListenForResponse({
         context: { deviceID, shouldShowSignal },
         name: SPARK_SERVER_EVENTS.RAISE_YOUR_HAND,
       });
 
-    const { error } = RaiseYourHandResponse;
+    const { error } = raiseYourHandResponse;
     if (error) {
       throw new HttpError(error);
     }
 
-    return RaiseYourHandResponse;
+    return raiseYourHandResponse;
   };
 
   renameDevice = async (

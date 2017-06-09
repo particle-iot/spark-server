@@ -559,7 +559,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.raiseYourHand = function () {
     var _ref14 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(deviceID, shouldShowSignal) {
-      var RaiseYourHandResponse, error;
+      var raiseYourHandResponse, error;
       return _regenerator2.default.wrap(function _callee12$(_context12) {
         while (1) {
           switch (_context12.prev = _context12.next) {
@@ -575,8 +575,8 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               });
 
             case 4:
-              RaiseYourHandResponse = _context12.sent;
-              error = RaiseYourHandResponse.error;
+              raiseYourHandResponse = _context12.sent;
+              error = raiseYourHandResponse.error;
 
               if (!error) {
                 _context12.next = 8;
@@ -586,7 +586,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               throw new _HttpError2.default(error);
 
             case 8:
-              return _context12.abrupt('return', RaiseYourHandResponse);
+              return _context12.abrupt('return', raiseYourHandResponse);
 
             case 9:
             case 'end':
