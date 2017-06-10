@@ -144,8 +144,8 @@ export default (container: Container, newSettings: Settings) => {
       'DeviceAttributeRepository',
       'DeviceFirmwareRepository',
       'DeviceKeyRepository',
-      'DeviceServer',
       'PermissionManager',
+      'EventPublisher',
     ],
   );
   container.bindClass(
