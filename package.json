@@ -80,7 +80,7 @@
     "rimraf": "^2.5.4",
     "rmfr": "^1.0.1",
     "spark-protocol": "git+https://github.com/Brewskey/spark-protocol.git#dev",
-    "tingodb": "git+https://github.com/Brewskey/tingodb",
+    "tingodb": "git+https://github.com/Brewskey/tingodb.git",
     "ursa": "^0.9.4",
     "uuid": "^3.0.1"
   },

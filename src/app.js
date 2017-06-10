@@ -18,7 +18,7 @@ import routeConfig from './RouteConfig';
 export default (
   container: Container,
   settings: Settings,
-  existingApp?: express,
+  existingApp?: express$Application,
 ): $Application => {
   const app = existingApp || express();
 

@@ -23,7 +23,7 @@ import chalk from 'chalk';
 import settings from '../settings';
 
 function _transform(...params: Array<any>): Array<any> {
-  return params.map(JSON.stringify);
+  return params.map((param: any): string => JSON.stringify(param));
 }
 
 class Logger {
