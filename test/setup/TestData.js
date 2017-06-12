@@ -4,13 +4,11 @@ import type { UserCredentials } from '../../src/types';
 
 import crypto from 'crypto';
 import uuid from 'uuid';
-import ursa from 'ursa';
+import NodeRSA from 'node-rsa';
 import fs from 'fs';
 import settings from './settings';
 
-
 const uuidSet = new Set();
-const privateKeys = new Set();
 
 type CreateCustomFirmwareResult = {
   filePath: string,
@@ -74,14 +72,9 @@ class TestData {
   };
 
   static getPublicKey = (): string => {
-    let key = ursa.generatePrivateKey();
+    const key = new NodeRSA({ b: 1024 });
 
-    while (privateKeys.has(key.toPrivatePem())) {
-      key = ursa.generatePrivateKey();
-    }
-
-    privateKeys.add(key.toPrivatePem());
-    return key.toPublicPem();
+    return key.exportKey('pkcs1-public-pem');
   };
 }
 

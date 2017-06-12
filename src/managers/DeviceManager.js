@@ -12,7 +12,7 @@ import type {
 } from '../types';
 
 import { SPARK_SERVER_EVENTS } from 'spark-protocol';
-import ursa from 'ursa';
+import NodeRSA from 'node-rsa';
 import HttpError from '../lib/HttpError';
 
 class DeviceManager {
@@ -256,8 +256,15 @@ class DeviceManager {
     }
 
     try {
-      const createdKey = ursa.createPublicKey(publicKey);
-      if (!ursa.isPublicKey(createdKey)) {
+      const createdKey = new NodeRSA(
+        publicKey,
+        'pkcs1-public-pem',
+        {
+          encryptionScheme: 'pkcs1',
+          signingScheme: 'pkcs1',
+        },
+      );
+      if (!createdKey.isPublic()) {
         throw new HttpError('Not a public key');
       }
     } catch (error) {
