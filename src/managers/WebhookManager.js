@@ -17,6 +17,7 @@ import HttpError from '../lib/HttpError';
 import logger from '../lib/logger';
 import nullthrows from 'nullthrows';
 import request from 'request';
+import settings from '../settings';
 import throttle from 'lodash/throttle';
 
 const parseEventData = (event: Event): Object => {
@@ -361,6 +362,7 @@ class WebhookManager {
       SPARK_EVENT_NAME: event.name,
       SPARK_EVENT_VALUE: event.data,
       SPARK_PUBLISHED_AT: event.publishedAt,
+      ...settings.WEBHOOK_TEMPLATE_PARAMETERS,
     };
 
     const eventDataVariables = parseEventData(event);

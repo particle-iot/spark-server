@@ -164,6 +164,7 @@ export type Settings = {
     PORT: number,
   },
   USERS_DIRECTORY: string,
+  WEBHOOK_TEMPLATE_PARAMETERS: {[key: string]: string},
   WEBHOOKS_DIRECTORY: string,
 };
 
