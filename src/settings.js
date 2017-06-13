@@ -60,4 +60,8 @@ export default {
     HOST: 'localhost',
     PORT: 5683,
   },
+  // Override template parameters in webhooks with this object
+  WEBHOOK_TEMPLATE_PARAMETERS: {
+    // SOME_AUTH_TOKEN: '12312312',
+  },
 };

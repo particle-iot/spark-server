@@ -85,6 +85,7 @@ export type Event = EventData & {
 };
 
 export type EventData = {
+  context?: Object,
   data?: string,
   deviceID?: ?string,
   isPublic: boolean,
@@ -163,6 +164,7 @@ export type Settings = {
     PORT: number,
   },
   USERS_DIRECTORY: string,
+  WEBHOOK_TEMPLATE_PARAMETERS: {[key: string]: string},
   WEBHOOKS_DIRECTORY: string,
 };
 

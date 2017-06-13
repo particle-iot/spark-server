@@ -17,29 +17,18 @@ An API compatible open source server for interacting with devices speaking the [
 Quick Install
 ==============
 
-### You'll need to prepare your system for node-gyp. This is used in the URSA package.
-**https://github.com/nodejs/node-gyp**
-
 ```
 git clone https://github.com/Brewskey/spark-server.git
 cd spark-server/
 npm install
-./node_modules/.bin/babel src/ -d lib
-node lib/main.js
 ```
 
 The babel command pre-processes all the src/ to allow modern node
 syntax to be used in older versions of node. The modified code that is
-actually running lives in lib/
-If you change anything in src/ you'll need to rerun babel for changes
+actually running lives in dist/
+If you change anything in src/ you'll need to rerun `npm build` for changes
 to take effect.
- 
-> **Windows Setup**  
-> You'll need to install Python 2.7 and OpenSSL 1.0.2 or older.  
-> *The newer version doesn't have the lib files needed to build the project*.  
-> [Python Download](https://www.python.org/downloads/)  
-> [OpenSSL Download](http://slproweb.com/products/Win32OpenSSL.html)  
-  
+
 [Raspberry pi Quick Install](raspberryPi.md)
 
 
@@ -47,9 +36,14 @@ How do I get started?
 =====================
 
 1) Run the server with:
-
+Run with babel (useful for local development)
 ```
-node lib/main.js
+npm start
+```
+
+For production - uses transpiled files from babel.
+```
+npm run start:prod
 ```
 
 2) Watch for your IP address, you'll see something like:
@@ -68,7 +62,7 @@ For the local cloud, the port number 8080 needs to be added behind: `http://doma
 
 This will create a new profile to point to your server and switching back to the spark cloud is simply `particle config particle` and other profiles would be `particle config profile_name`
 
-4) We will now point over to the local cloud using 
+4) We will now point over to the local cloud using
 ```
 particle config profile_name
 ```
@@ -83,7 +77,7 @@ This will create an account on the local cloud
 
 Perform CTRL + C once you logon with Particle-CLI asking you to send Wifi-credentials etc...
 
-6) Put your core into listening mode, and run 
+6) Put your core into listening mode, and run
 ```
 particle identify
 ```
