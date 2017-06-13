@@ -22,7 +22,7 @@ module.exports = {
     baseUrl: "http://localhost",
     userDataDir: path.join(__dirname, "users"),
     coreKeysDir: path.join(__dirname, "core_keys"),
-
+    http_port:8080,
     coreRequestTimeout: 3000,
     isCoreOnlineTimeout: 2000,
 

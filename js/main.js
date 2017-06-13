@@ -104,7 +104,7 @@ app.use(function (req, res, next) {
 });
 
 
-var node_port = process.env.NODE_PORT || '9000';
+var node_port = process.env.NODE_PORT ||(settings.http_port || '9000');
 node_port = parseInt(node_port);
 
 console.log("Starting server, listening on " + node_port);

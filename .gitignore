@@ -31,3 +31,4 @@ spark-server.esproj
 .DS_Store
 /js/oauth_clients.json
 js/orgs/*
+.idea
