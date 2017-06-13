@@ -1,0 +1,56 @@
+{
+  "extends": "airbnb-base",
+  "parser": "babel-eslint",
+  "plugins": [
+    "flowtype",
+    "sorting"
+  ],
+  "rules": {
+    "eol-last": 2,
+    "flowtype/define-flow-type": 1,
+    "flowtype/require-parameter-type": 1,
+    "flowtype/require-valid-file-annotation": [
+      2,
+      "always"
+    ],
+    "flowtype/require-return-type": [
+      1,
+      "always",
+      {
+        "annotateUndefined": "never"
+      }
+    ],
+    "flowtype/space-after-type-colon": [
+      1,
+      "always"
+    ],
+    "flowtype/space-before-type-colon": [
+      1,
+      "never"
+    ],
+    "flowtype/use-flow-type": 1,
+    "import/first": 0,
+    "import/newline-after-import": 0,
+    "import/no-duplicates": 0,
+    "import/no-extraneous-dependencies": 0,
+    "import/no-named-as-default": 0,
+    "import/no-unresolved": 2,
+    "import/prefer-default-export": 0,
+    "newline-per-chained-call": 0,
+    "no-confusing-arrow": 0,
+    "no-console": 0,
+    "no-duplicate-imports": 0,
+    "no-mixed-operators": 0,
+    "no-underscore-dangle": 0,
+    "no-use-before-define": 0,
+    "object-curly-spacing": 2,
+    "semi": 2,
+    "sorting/sort-object-props": [
+      2,
+      {
+        "ignoreCase": true,
+        "ignoreMethods": false
+      }
+    ]
+  }
+}

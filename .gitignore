@@ -1,3 +1,6 @@
+# ide files
+.idea
+
 # Logs
 logs
 *.log
@@ -24,11 +27,10 @@ build/Release
 # see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
 node_modules
 
-js/build/config.gypi
-
-js/package.json.ori
-spark-server.esproj
-.DS_Store
-/js/oauth_clients.json
-js/orgs/*
-.idea
+# Spark generated files/directories which contain secrets
+data
+__test_data__
+*.der
+*.pem
+*.pub.pem
+build

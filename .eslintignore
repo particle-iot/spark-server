@@ -1,0 +1,13 @@
+flow-typed
+
+# Don't check auto-generated stuff
+coverage
+build
+dist
+binaries
+node_modules
+
+# Cruft
+.DS_Store
+npm-debug.log
+.idea
