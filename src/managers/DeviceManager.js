@@ -132,11 +132,10 @@ class DeviceManager {
 
     const devicePromises = devicesAttributes.map(
       async (attributes: DeviceAttributes): Promise<Object> => {
-        const pingResponse = this._eventPublisher.publishAndListenForResponse({
+        const pingResponse = await this._eventPublisher.publishAndListenForResponse({
           context: { deviceID: attributes.deviceID },
           name: SPARK_SERVER_EVENTS.PING_DEVICE,
         });
-
         return {
           ...attributes,
           connected: pingResponse.connected || false,
