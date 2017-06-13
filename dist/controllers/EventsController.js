@@ -12,6 +12,10 @@ var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -44,11 +48,15 @@ var _inherits2 = require('babel-runtime/helpers/inherits');
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _desc, _value, _class;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _desc, _value, _class;
 
 var _Controller2 = require('./Controller');
 
 var _Controller3 = _interopRequireDefault(_Controller2);
+
+var _anonymous = require('../decorators/anonymous');
+
+var _anonymous2 = _interopRequireDefault(_anonymous);
 
 var _route = require('../decorators/route');
 
@@ -101,7 +109,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
   return desc;
 }
 
-var EventsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _route2.default)('/v1/events/:eventNamePrefix?*'), _dec3 = (0, _serverSentEvents2.default)(), _dec4 = (0, _httpVerb2.default)('get'), _dec5 = (0, _route2.default)('/v1/devices/events/:eventNamePrefix?*'), _dec6 = (0, _serverSentEvents2.default)(), _dec7 = (0, _httpVerb2.default)('get'), _dec8 = (0, _route2.default)('/v1/devices/:deviceID/events/:eventNamePrefix?*'), _dec9 = (0, _serverSentEvents2.default)(), _dec10 = (0, _httpVerb2.default)('post'), _dec11 = (0, _route2.default)('/v1/devices/events'), (_class = function (_Controller) {
+var EventsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _route2.default)('/v1/ping'), _dec3 = (0, _anonymous2.default)(), _dec4 = (0, _httpVerb2.default)('get'), _dec5 = (0, _route2.default)('/v1/events/:eventNamePrefix?*'), _dec6 = (0, _serverSentEvents2.default)(), _dec7 = (0, _httpVerb2.default)('get'), _dec8 = (0, _route2.default)('/v1/devices/events/:eventNamePrefix?*'), _dec9 = (0, _serverSentEvents2.default)(), _dec10 = (0, _httpVerb2.default)('get'), _dec11 = (0, _route2.default)('/v1/devices/:deviceID/events/:eventNamePrefix?*'), _dec12 = (0, _serverSentEvents2.default)(), _dec13 = (0, _httpVerb2.default)('post'), _dec14 = (0, _route2.default)('/v1/devices/events'), (_class = function (_Controller) {
   (0, _inherits3.default)(EventsController, _Controller);
 
   function EventsController(eventManager) {
@@ -142,22 +150,18 @@ var EventsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _rout
       }
     }
   }, {
-    key: 'getEvents',
+    key: 'ping',
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(eventNamePrefix) {
-        var subscriptionID;
+      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(payload) {
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), { userID: this.user.id });
-                _context.next = 3;
-                return this._closeStream(subscriptionID);
+                return _context.abrupt('return', this.ok((0, _extends3.default)({}, payload, {
+                  serverPayload: Math.random()
+                })));
 
-              case 3:
-                return _context.abrupt('return', this.ok());
-
-              case 4:
+              case 1:
               case 'end':
                 return _context.stop();
             }
@@ -165,14 +169,14 @@ var EventsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _rout
         }, _callee, this);
       }));
 
-      function getEvents(_x) {
+      function ping(_x) {
         return _ref.apply(this, arguments);
       }
 
-      return getEvents;
+      return ping;
     }()
   }, {
-    key: 'getMyEvents',
+    key: 'getEvents',
     value: function () {
       var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(eventNamePrefix) {
         var subscriptionID;
@@ -180,10 +184,7 @@ var EventsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _rout
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), {
-                  mydevices: true,
-                  userID: this.user.id
-                });
+                subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), { userID: this.user.id });
                 _context2.next = 3;
                 return this._closeStream(subscriptionID);
 
@@ -198,23 +199,23 @@ var EventsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _rout
         }, _callee2, this);
       }));
 
-      function getMyEvents(_x2) {
+      function getEvents(_x2) {
         return _ref2.apply(this, arguments);
       }
 
-      return getMyEvents;
+      return getEvents;
     }()
   }, {
-    key: 'getDeviceEvents',
+    key: 'getMyEvents',
     value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(deviceID, eventNamePrefix) {
+      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(eventNamePrefix) {
         var subscriptionID;
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), {
-                  deviceID: deviceID,
+                  mydevices: true,
                   userID: this.user.id
                 });
                 _context3.next = 3;
@@ -231,8 +232,41 @@ var EventsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _rout
         }, _callee3, this);
       }));
 
-      function getDeviceEvents(_x3, _x4) {
+      function getMyEvents(_x3) {
         return _ref3.apply(this, arguments);
+      }
+
+      return getMyEvents;
+    }()
+  }, {
+    key: 'getDeviceEvents',
+    value: function () {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(deviceID, eventNamePrefix) {
+        var subscriptionID;
+        return _regenerator2.default.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), {
+                  deviceID: deviceID,
+                  userID: this.user.id
+                });
+                _context4.next = 3;
+                return this._closeStream(subscriptionID);
+
+              case 3:
+                return _context4.abrupt('return', this.ok());
+
+              case 4:
+              case 'end':
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this);
+      }));
+
+      function getDeviceEvents(_x4, _x5) {
+        return _ref4.apply(this, arguments);
       }
 
       return getDeviceEvents;
@@ -240,11 +274,11 @@ var EventsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _rout
   }, {
     key: 'publish',
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(postBody) {
+      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(postBody) {
         var eventData;
-        return _regenerator2.default.wrap(function _callee4$(_context4) {
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
                 eventData = {
                   data: postBody.data,
@@ -256,23 +290,23 @@ var EventsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _rout
 
 
                 this._eventManager.publish(eventData);
-                return _context4.abrupt('return', this.ok({ ok: true }));
+                return _context5.abrupt('return', this.ok({ ok: true }));
 
               case 3:
               case 'end':
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
 
-      function publish(_x5) {
-        return _ref4.apply(this, arguments);
+      function publish(_x6) {
+        return _ref5.apply(this, arguments);
       }
 
       return publish;
     }()
   }]);
   return EventsController;
-}(_Controller3.default), (_applyDecoratedDescriptor(_class.prototype, 'getEvents', [_dec, _dec2, _dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getMyEvents', [_dec4, _dec5, _dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getMyEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getDeviceEvents', [_dec7, _dec8, _dec9], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getDeviceEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'publish', [_dec10, _dec11], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'publish'), _class.prototype)), _class));
+}(_Controller3.default), (_applyDecoratedDescriptor(_class.prototype, 'ping', [_dec, _dec2, _dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'ping'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getEvents', [_dec4, _dec5, _dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getMyEvents', [_dec7, _dec8, _dec9], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getMyEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getDeviceEvents', [_dec10, _dec11, _dec12], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getDeviceEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'publish', [_dec13, _dec14], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'publish'), _class.prototype)), _class));
 exports.default = EventsController;

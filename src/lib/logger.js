@@ -19,15 +19,36 @@
 *
 */
 
+import chalk from 'chalk';
+import settings from '../settings';
+
+function _transform(...params: Array<any>): Array<any> {
+  return params.map((param: any): string => {
+    if (typeof param === 'string') {
+      return param;
+    }
+
+    return JSON.stringify(param);
+  });
+}
+
 class Logger {
-  static log() {
-    // eslint-disable-next-line prefer-rest-params
-    console.log(...arguments);
+  static log(...params: Array<any>) {
+    if (settings.SHOW_VERBOSE_DEVICE_LOGS) {
+      console.log(_transform(...params));
+    }
   }
 
-  static error() {
-    // eslint-disable-next-line prefer-rest-params
-    console.error(...arguments);
+  static info(...params: Array<any>) {
+    console.log(chalk.cyan(_transform(...params)));
+  }
+
+  static warn(...params: Array<any>) {
+    console.warn(chalk.yellow(_transform(...params)));
+  }
+
+  static error(...params: Array<any>) {
+    console.error(chalk.red(_transform(...params)));
   }
 }
 

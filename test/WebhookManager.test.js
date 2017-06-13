@@ -45,7 +45,7 @@ test(
   'should run basic request',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const data = 'testData';
     const event = getEvent(data);
     const defaultRequestData = getDefaultRequestData(event);
@@ -57,10 +57,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
@@ -75,7 +72,7 @@ test(
   'should run basic request without default data',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const webhook = {
       ...WEBHOOK_BASE,
       noDefaults: true,
@@ -105,7 +102,7 @@ test(
   'should compile json body',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const data = '{"t":"123"}';
     const event = getEvent(data);
     const webhook = {
@@ -141,7 +138,7 @@ test(
   'should compile form body',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const data = '{"t":"123","g": "foo bar"}';
     const event = getEvent(data);
     const webhook = {
@@ -182,7 +179,7 @@ test(
   'should compile request auth header',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const data = `{"username":"123","password": "foobar"}`;
     const event = getEvent(data);
     const webhook = {
@@ -207,10 +204,7 @@ test(
         }),
       );
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.url, WEBHOOK_BASE.url);
@@ -224,7 +218,7 @@ test(
   'should compile request headers',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const data = `{"t":"123","g": "foobar"}`;
     const event = getEvent(data);
     const webhook = {
@@ -243,10 +237,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(
         JSON.stringify(requestOptions.headers),
         JSON.stringify({
@@ -266,7 +257,7 @@ test(
   'should compile request url',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const data = '{"t":"123","g": "foobar"}';
     const event = getEvent(data);
     const webhook = {
@@ -282,10 +273,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
@@ -300,7 +288,7 @@ test(
   'should compile request query',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const data = '{"t":"123","g": "foobar"}';
     const event = getEvent(data);
     const webhook = {
@@ -319,10 +307,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(
@@ -340,7 +325,7 @@ test(
   'should compile requestType',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const data = `{"t":"123","requestType": "post"}`;
     const event = getEvent(data);
     const webhook = {
@@ -356,10 +341,7 @@ test(
     ) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(
-        JSON.stringify(requestOptions.form),
-        JSON.stringify(defaultRequestData),
-      );
+      t.is(requestOptions.form, undefined);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, 'POST');
       t.is(requestOptions.url, WEBHOOK_BASE.url);
@@ -373,7 +355,7 @@ test(
   'should throw an error if wrong requestType is provided',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const testRequestType = 'wrongRequestType';
     const data = `{"t":"123","requestType": "${testRequestType}"}`;
     const event = getEvent(data);
@@ -397,7 +379,7 @@ test(
   'should publish sent event',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const event = getEvent();
 
     t.context.eventPublisher.publish = sinon.spy(({
@@ -418,7 +400,7 @@ test(
   'should publish default topic',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const event = getEvent();
     manager._callWebhook = sinon.stub().returns('data');
 
@@ -440,7 +422,7 @@ test(
   'should compile response topic and publish',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const event = getEvent();
     const webhook = {
       ...WEBHOOK_BASE,
@@ -466,7 +448,7 @@ test(
   'should compile response body and publish',
   async t => {
     const manager =
-      new WebhookManager(t.context.repository, t.context.eventPublisher);
+      new WebhookManager(t.context.eventPublisher, null, null, t.context.repository);
     const event = getEvent();
     const webhook = {
       ...WEBHOOK_BASE,

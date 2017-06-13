@@ -1,16 +1,28 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _classCallCheck2 = require("babel-runtime/helpers/classCallCheck");
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = require("babel-runtime/helpers/createClass");
+var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _chalk = require('chalk');
+
+var _chalk2 = _interopRequireDefault(_chalk);
+
+var _settings = require('../settings');
+
+var _settings2 = _interopRequireDefault(_settings);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -35,26 +47,40 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 *
 */
 
+function _transform() {
+  for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
+    params[_key] = arguments[_key];
+  }
+
+  return params.map(_stringify2.default);
+}
+
 var Logger = function () {
   function Logger() {
     (0, _classCallCheck3.default)(this, Logger);
   }
 
   (0, _createClass3.default)(Logger, null, [{
-    key: "log",
+    key: 'log',
     value: function log() {
-      var _console;
-
-      // eslint-disable-next-line prefer-rest-params
-      (_console = console).log.apply(_console, arguments);
+      if (_settings2.default.SHOW_VERBOSE_DEVICE_LOGS) {
+        console.log(_transform.apply(undefined, arguments));
+      }
     }
   }, {
-    key: "error",
+    key: 'info',
+    value: function info() {
+      console.log(_chalk2.default.cyan(_transform.apply(undefined, arguments)));
+    }
+  }, {
+    key: 'warn',
+    value: function warn() {
+      console.warn(_chalk2.default.yellow(_transform.apply(undefined, arguments)));
+    }
+  }, {
+    key: 'error',
     value: function error() {
-      var _console2;
-
-      // eslint-disable-next-line prefer-rest-params
-      (_console2 = console).error.apply(_console2, arguments);
+      console.error(_chalk2.default.red(_transform.apply(undefined, arguments)));
     }
   }]);
   return Logger;

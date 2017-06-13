@@ -22,8 +22,8 @@ var _RouteConfig2 = _interopRequireDefault(_RouteConfig);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (container, settings) {
-  var app = (0, _express2.default)();
+exports.default = function (container, settings, existingApp) {
+  var app = existingApp || (0, _express2.default)();
 
   var setCORSHeaders = function setCORSHeaders(request, response, next) {
     if (request.method === 'OPTIONS') {

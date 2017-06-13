@@ -1,20 +1,23 @@
 // @flow
 
+import type { EventPublisher } from 'spark-protocol';
+import type PermissionManager from './PermissionManager';
 import type {
   Event,
-  Repository,
+  IWebhookLogger,
+  IWebhookRepository,
   RequestOptions,
   RequestType,
   Webhook,
   WebhookMutator,
 } from '../types';
-import type { EventPublisher } from 'spark-protocol';
 
 import hogan from 'hogan.js';
 import HttpError from '../lib/HttpError';
 import logger from '../lib/logger';
 import nullthrows from 'nullthrows';
 import request from 'request';
+import settings from '../settings';
 import throttle from 'lodash/throttle';
 
 const parseEventData = (event: Event): Object => {
@@ -58,45 +61,56 @@ const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
 const MAX_RESPONSE_MESSAGE_SIZE = 100000;
 
+const WEBHOOK_DEFAULTS = {
+  rejectUnauthorized: true,
+};
+
 class WebhookManager {
   _eventPublisher: EventPublisher;
   _subscriptionIDsByWebhookID: Map<string, string> = new Map();
   _errorsCountByWebhookID: Map<string, number> = new Map();
-  _webhookRepository: Repository<Webhook>;
+  _webhookRepository: IWebhookRepository;
+  _webhookLogger: IWebhookLogger;
+  _permissonManager: PermissionManager;
 
   constructor(
-    webhookRepository: Repository<Webhook>,
     eventPublisher: EventPublisher,
+    permissionManager: PermissionManager,
+    webhookLogger: IWebhookLogger,
+    webhookRepository: IWebhookRepository,
   ) {
-    this._webhookRepository = webhookRepository;
     this._eventPublisher = eventPublisher;
+    this._permissonManager = permissionManager;
+    this._webhookLogger = webhookLogger;
+    this._webhookRepository = webhookRepository;
 
     (async (): Promise<void> => await this._init())();
   }
 
   create = async (model: WebhookMutator): Promise<Webhook> => {
-    const webhook = await this._webhookRepository.create(model);
+    const webhook = await this._webhookRepository.create({
+      ...WEBHOOK_DEFAULTS,
+      ...model,
+    });
     this._subscribeWebhook(webhook);
     return webhook;
   };
 
-  deleteByID = async (
-    webhookID: string,
-    userID: string,
-  ): Promise<void> => {
-    const webhook = await this._webhookRepository.getById(webhookID, userID);
+  deleteByID = async (webhookID: string): Promise<void> => {
+    const webhook = await this._permissonManager.getEntityByID('webhook', webhookID);
     if (!webhook) {
       throw new HttpError('no webhook found', 404);
     }
-    await this._webhookRepository.deleteById(webhookID);
+
+    await this._webhookRepository.deleteByID(webhookID);
     this._unsubscribeWebhookByID(webhookID);
   };
 
-  getAll = async (userID: string): Promise<Array<Webhook>> =>
-    await this._webhookRepository.getAll(userID);
+  getAll = async (): Promise<Array<Webhook>> =>
+    await this._permissonManager.getAllEntitiesForCurrentUser('webhook');
 
-  getByID = async (webhookID: string, userID: string): Promise<Webhook> => {
-    const webhook = await this._webhookRepository.getById(webhookID, userID);
+  getByID = async (webhookID: string): Promise<Webhook> => {
+    const webhook = await this._permissonManager.getEntityByID('webhook', webhookID);
     if (!webhook) {
       throw new HttpError('no webhook found', 404);
     }
@@ -116,9 +130,11 @@ class WebhookManager {
       webhook.event,
       this._onNewWebhookEvent(webhook),
       {
-        deviceID: webhook.deviceID,
-        mydevices: webhook.mydevices,
-        userID: webhook.ownerID,
+        filterOptions: {
+          deviceID: webhook.deviceID,
+          mydevices: webhook.mydevices,
+          userID: webhook.ownerID,
+        },
       },
     );
     this._subscriptionIDsByWebhookID.set(webhook.id, subscriptionID);
@@ -206,13 +222,13 @@ class WebhookManager {
         webhookVariablesObject,
       );
 
-      const isJsonRequest = !!requestJson;
+      const isJsonRequest = !!requestJson || !requestFormData;
       const requestOptions = {
         auth: (requestAuth: any),
-        body: isJsonRequest
+        body: isJsonRequest && requestJson
           ? this._getRequestData(requestJson, event, webhook.noDefaults)
           : undefined,
-        form: !isJsonRequest
+        form: !isJsonRequest && requestFormData
           ? this._getRequestData(requestFormData, event, webhook.noDefaults)
           : undefined,
         headers: requestHeaders,
@@ -257,12 +273,20 @@ class WebhookManager {
           `hook-response/${event.name}/${index}`;
 
         this._eventPublisher.publish({
-          data: chunk,
+          data: chunk.toString(),
           isPublic: false,
           name: responseEventName,
           userID: event.userID,
         });
       });
+
+      this._webhookLogger.log(
+        event,
+        webhook,
+        requestOptions,
+        responseBody,
+        responseEventData,
+      );
     } catch (error) {
       logger.error(`webhookError: ${error}`);
     }
@@ -338,6 +362,7 @@ class WebhookManager {
       SPARK_EVENT_NAME: event.name,
       SPARK_EVENT_VALUE: event.data,
       SPARK_PUBLISHED_AT: event.publishedAt,
+      ...settings.WEBHOOK_TEMPLATE_PARAMETERS,
     };
 
     const eventDataVariables = parseEventData(event);

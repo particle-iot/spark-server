@@ -18,8 +18,9 @@ import routeConfig from './RouteConfig';
 export default (
   container: Container,
   settings: Settings,
+  existingApp?: express$Application,
 ): $Application => {
-  const app = express();
+  const app = existingApp || express();
 
   const setCORSHeaders: Middleware = (
     request: $Request,

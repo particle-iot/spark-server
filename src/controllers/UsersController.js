@@ -1,8 +1,8 @@
 // @flow
 
 import type {
+  IUserRepository,
   UserCredentials,
-  UserRepository,
 } from '../types';
 
 import basicAuthParser from 'basic-auth-parser';
@@ -13,9 +13,9 @@ import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 
 class UsersController extends Controller {
-  _userRepository: UserRepository;
+  _userRepository: IUserRepository;
 
-  constructor(userRepository: UserRepository) {
+  constructor(userRepository: IUserRepository) {
     super();
     this._userRepository = userRepository;
   }

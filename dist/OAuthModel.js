@@ -8,6 +8,10 @@ var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -16,13 +20,13 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _oauthClients = require('./oauthClients.json');
+
+var _oauthClients2 = _interopRequireDefault(_oauthClients);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var OAUTH_CLIENTS = [{
-  clientId: 'CLI2',
-  clientSecret: 'client_secret_here',
-  grants: ['password']
-}];
+var OAUTH_CLIENTS = _oauthClients2.default;
 
 var OauthModel = function OauthModel(userRepository) {
   var _this = this;
@@ -62,10 +66,9 @@ var OauthModel = function OauthModel(userRepository) {
               return _context.abrupt('return', null);
 
             case 8:
-              return _context.abrupt('return', {
-                accessToken: userTokenObject.accessToken,
+              return _context.abrupt('return', (0, _extends3.default)({}, userTokenObject, {
                 user: user
-              });
+              }));
 
             case 9:
             case 'end':

@@ -1,7 +1,7 @@
 // @flow
 /* eslint-disable */
 
-import type { DeviceManager } from '../types';
+import type DeviceManager from '../managers/DeviceManager';
 
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';

@@ -1,34 +1,39 @@
 // @flow
 
 import type { File } from 'express';
-import type { DeviceServer } from 'spark-protocol';
+import type { EventPublisher } from 'spark-protocol';
+import type PermissionManager from './PermissionManager';
 import type {
   Device,
-  DeviceAttributeRepository,
   DeviceAttributes,
-  Repository,
+  IDeviceKeyRepository,
+  IDeviceAttributeRepository,
+  IDeviceFirmwareRepository,
 } from '../types';
-import type DeviceFirmwareRepository from '../repository/DeviceFirmwareFileRepository';
 
-import ursa from 'ursa';
+import { SPARK_SERVER_EVENTS } from 'spark-protocol';
+import NodeRSA from 'node-rsa';
 import HttpError from '../lib/HttpError';
 
 class DeviceManager {
-  _deviceAttributeRepository: DeviceAttributeRepository;
-  _deviceFirmwareRepository: DeviceFirmwareRepository;
-  _deviceKeyRepository: Repository<string>;
-  _deviceServer: DeviceServer;
+  _deviceAttributeRepository: IDeviceAttributeRepository;
+  _deviceFirmwareRepository: IDeviceFirmwareRepository;
+  _deviceKeyRepository: IDeviceKeyRepository;
+  _permissionManager: PermissionManager;
+  _eventPublisher: EventPublisher;
 
   constructor(
-    deviceAttributeRepository: DeviceAttributeRepository,
-    deviceFirmwareRepository: DeviceFirmwareRepository,
-    deviceKeyRepository: Repository<string>,
-    deviceServer: DeviceServer,
+    deviceAttributeRepository: IDeviceAttributeRepository,
+    deviceFirmwareRepository: IDeviceFirmwareRepository,
+    deviceKeyRepository: IDeviceKeyRepository,
+    permissionManager: PermissionManager,
+    eventPublisher: EventPublisher,
   ) {
     this._deviceAttributeRepository = deviceAttributeRepository;
     this._deviceFirmwareRepository = deviceFirmwareRepository;
     this._deviceKeyRepository = deviceKeyRepository;
-    this._deviceServer = deviceServer;
+    this._permissionManager = permissionManager;
+    this._eventPublisher = eventPublisher;
   }
 
   claimDevice = async (
@@ -36,13 +41,17 @@ class DeviceManager {
     userID: string,
   ): Promise<DeviceAttributes> => {
     const deviceAttributes =
-      await this._deviceAttributeRepository.getById(deviceID);
+      await this._deviceAttributeRepository.getByID(deviceID);
 
     if (!deviceAttributes) {
       throw new HttpError('No device found', 404);
     }
     if (deviceAttributes.ownerID && deviceAttributes.ownerID !== userID) {
       throw new HttpError('The device belongs to someone else.');
+    }
+
+    if (deviceAttributes.ownerID && deviceAttributes.ownerID === userID) {
+      throw new HttpError('The device is already claimed.');
     }
 
     const attributesToSave = {
@@ -52,12 +61,9 @@ class DeviceManager {
     return await this._deviceAttributeRepository.update(attributesToSave);
   };
 
-  unclaimDevice = async (
-    deviceID: string,
-    userID: string,
-  ): Promise<DeviceAttributes> => {
+  unclaimDevice = async (deviceID: string): Promise<DeviceAttributes> => {
     const deviceAttributes =
-      await this._deviceAttributeRepository.getById(deviceID, userID);
+      await this._permissionManager.getEntityByID('deviceAttributes', deviceID);
 
     if (!deviceAttributes) {
       throw new HttpError('No device found', 404);
@@ -70,35 +76,40 @@ class DeviceManager {
     return await this._deviceAttributeRepository.update(attributesToSave);
   };
 
-  getByID = async (deviceID: string, userID: string): Promise<Device> => {
-    const attributes = await this._deviceAttributeRepository.getById(
+  getByID = async (deviceID: string): Promise<Device> => {
+    const attributes = await this._permissionManager.getEntityByID(
+      'deviceAttributes',
       deviceID,
-      userID,
     );
 
     if (!attributes) {
       throw new HttpError('No device found', 404);
     }
 
-    const device = this._deviceServer.getDevice(attributes.deviceID);
+    const pingResponse = await this._eventPublisher.publishAndListenForResponse({
+      context: { deviceID },
+      name: SPARK_SERVER_EVENTS.PING_DEVICE,
+    });
 
     return {
       ...attributes,
-      connected: device && device.ping().connected || false,
+      connected: pingResponse.connected || false,
       lastFlashedAppName: null,
-      lastHeard: device && device.ping().lastPing || attributes.lastHeard,
+      lastHeard: pingResponse.lastPing || attributes.lastHeard,
     };
   };
 
-  getDetailsByID = async (
-    deviceID: string,
-    userID: string,
-  ): Promise<Device> => {
-    const device = this._deviceServer.getDevice(deviceID);
-
-    const [attributes, description] = await Promise.all([
-      this._deviceAttributeRepository.getById(deviceID, userID),
-      device && device.getDescription(),
+  getDetailsByID = async (deviceID: string): Promise<Device> => {
+    const [attributes, description, pingResponse] = await Promise.all([
+      this._permissionManager.getEntityByID('deviceAttributes', deviceID),
+      this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID },
+        name: SPARK_SERVER_EVENTS.GET_DEVICE_DESCRIPTION,
+      }),
+      this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID },
+        name: SPARK_SERVER_EVENTS.PING_DEVICE },
+      ),
     ]);
 
     if (!attributes) {
@@ -107,26 +118,30 @@ class DeviceManager {
 
     return {
       ...attributes,
-      connected: device && device.ping().connected || false,
-      functions: description ? description.state.f : null,
+      connected: pingResponse.connected,
+      functions: description.state ? description.state.f : null,
       lastFlashedAppName: null,
-      lastHeard: device && device.ping().lastPing || attributes.lastHeard,
-      variables: description ? description.state.v : null,
+      lastHeard: pingResponse.lastPing || attributes.lastHeard,
+      variables: description.state ? description.state.v : null,
     };
   };
 
-  getAll = async (userID: string): Promise<Array<Device>> => {
+  getAll = async (): Promise<Array<Device>> => {
     const devicesAttributes =
-      await this._deviceAttributeRepository.getAll(userID);
+      await this._permissionManager.getAllEntitiesForCurrentUser('deviceAttributes');
+
     const devicePromises = devicesAttributes.map(
       async (attributes: DeviceAttributes): Promise<Object> => {
-        const device = this._deviceServer.getDevice(attributes.deviceID);
+        const pingResponse = this._eventPublisher.publishAndListenForResponse({
+          context: { deviceID: attributes.deviceID },
+          name: SPARK_SERVER_EVENTS.PING_DEVICE,
+        });
 
         return {
           ...attributes,
-          connected: device && device.ping().connected || false,
+          connected: pingResponse.connected || false,
           lastFlashedAppName: null,
-          lastHeard: device && device.ping().lastPing || attributes.lastHeard,
+          lastHeard: pingResponse.lastPing || attributes.lastHeard,
         };
       },
     );
@@ -136,75 +151,80 @@ class DeviceManager {
 
   callFunction = async (
     deviceID: string,
-    userID: string,
     functionName: string,
     functionArguments: {[key: string]: string},
   ): Promise<*> => {
-    const doesUserHaveAccess =
-      await this._deviceAttributeRepository.doesUserHaveAccess(
-        deviceID,
-        userID,
-      );
-    if (!doesUserHaveAccess) {
-      throw new HttpError('No device found', 404);
-    }
-
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
-    }
-
-    return await device.callFunction(
-      functionName,
-      functionArguments,
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
+      deviceID,
     );
+    const callFunctionResponse =
+      await this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID, functionArguments, functionName },
+        name: SPARK_SERVER_EVENTS.CALL_DEVICE_FUNCTION,
+      });
+
+    const { error } = callFunctionResponse;
+    if (error) {
+      throw new HttpError(error);
+    }
+
+    return callFunctionResponse;
   };
 
   getVariableValue = async (
     deviceID: string,
-    userID: string,
-    varName: string,
+    variableName: string,
   ): Promise<*> => {
-    const doesUserHaveAccess =
-      await this._deviceAttributeRepository.doesUserHaveAccess(
-        deviceID,
-        userID,
-      );
-    if (!doesUserHaveAccess) {
-      throw new HttpError('No device found', 404);
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
+      deviceID,
+    );
+
+    const getVariableResponse =
+      await this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID, variableName },
+        name: SPARK_SERVER_EVENTS.GET_DEVICE_VARIABLE_VALUE,
+      });
+
+    const { error, result } = getVariableResponse;
+    if (error) {
+      throw new HttpError(error);
     }
 
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
-    }
-
-    return await device.getVariableValue(varName);
+    return result;
   };
 
   flashBinary = async (
     deviceID: string,
     file: File,
-  ): Promise<string> => {
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
+  ): Promise<*> => {
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
+      deviceID,
+    );
+
+    const flashResponse = await this._eventPublisher.publishAndListenForResponse({
+      context: { deviceID, fileBuffer: file.buffer },
+      name: SPARK_SERVER_EVENTS.FLASH_DEVICE,
+    });
+
+    const { error } = flashResponse;
+    if (error) {
+      throw new HttpError(error);
     }
 
-    return await device.flash(file.buffer);
+    return flashResponse;
   };
 
   flashKnownApp = async (
     deviceID: string,
-    userID: string,
     appName: string,
-  ): Promise<string> => {
-    if (await !this._deviceAttributeRepository.doesUserHaveAccess(
+  ): Promise<*> => {
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
       deviceID,
-      userID,
-    )) {
-      throw new HttpError('No device found', 404);
-    }
+    );
 
     const knownFirmware = this._deviceFirmwareRepository.getByName(appName);
 
@@ -212,30 +232,47 @@ class DeviceManager {
       throw new HttpError(`No firmware ${appName} found`, 404);
     }
 
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
+    const flashResponse = await this._eventPublisher.publishAndListenForResponse({
+      context: { deviceID, fileBuffer: knownFirmware },
+      name: SPARK_SERVER_EVENTS.FLASH_DEVICE,
+    });
+
+    const { error } = flashResponse;
+    if (error) {
+      throw new HttpError(error);
     }
 
-    return await device.flash(knownFirmware);
+    return flashResponse;
   };
 
   provision = async (
     deviceID: string,
     userID: string,
     publicKey: string,
+    algorithm: 'ecc' | 'rsa',
   ): Promise<*> => {
+    if (algorithm === 'ecc') {
+      return null;
+    }
+
     try {
-      const createdKey = ursa.createPublicKey(publicKey);
-      if (!ursa.isPublicKey(createdKey)) {
+      const createdKey = new NodeRSA(
+        publicKey,
+        'pkcs1-public-pem',
+        {
+          encryptionScheme: 'pkcs1',
+          signingScheme: 'pkcs1',
+        },
+      );
+      if (!createdKey.isPublic()) {
         throw new HttpError('Not a public key');
       }
     } catch (error) {
       throw new HttpError(`Key error ${error}`);
     }
 
-    await this._deviceKeyRepository.update(deviceID, publicKey);
-    const existingAttributes = await this._deviceAttributeRepository.getById(
+    await this._deviceKeyRepository.update({ deviceID, key: publicKey });
+    const existingAttributes = await this._deviceAttributeRepository.getByID(
       deviceID,
     );
     const attributes = {
@@ -247,37 +284,39 @@ class DeviceManager {
     };
     await this._deviceAttributeRepository.update(attributes);
 
-    return await this.getByID(deviceID, userID);
+    return await this.getByID(deviceID);
   };
 
   raiseYourHand = async (
     deviceID: string,
-    userID: string,
     shouldShowSignal: boolean,
   ): Promise<void> => {
-    if (await !this._deviceAttributeRepository.doesUserHaveAccess(
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
       deviceID,
-      userID,
-    )) {
-      throw new HttpError('No device found', 404);
+    );
+
+    const raiseYourHandResponse =
+      await this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID, shouldShowSignal },
+        name: SPARK_SERVER_EVENTS.RAISE_YOUR_HAND,
+      });
+
+    const { error } = raiseYourHandResponse;
+    if (error) {
+      throw new HttpError(error);
     }
 
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
-    }
-
-    return await device.raiseYourHand(shouldShowSignal);
+    return raiseYourHandResponse;
   };
 
   renameDevice = async (
     deviceID: string,
-    userID: string,
     name: string,
   ): Promise<DeviceAttributes> => {
-    const attributes = await this._deviceAttributeRepository.getById(
+    const attributes = await this._permissionManager.getEntityByID(
+      'deviceAttributes',
       deviceID,
-      userID,
     );
 
     if (!attributes) {

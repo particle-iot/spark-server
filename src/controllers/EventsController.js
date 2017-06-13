@@ -4,6 +4,7 @@ import type { Event, EventData } from '../types';
 import type EventManager from '../managers/EventManager';
 
 import Controller from './Controller';
+import anonymous from '../decorators/anonymous';
 import route from '../decorators/route';
 import httpVerb from '../decorators/httpVerb';
 import serverSentEvents from '../decorators/serverSentEvents';
@@ -41,6 +42,16 @@ class EventsController extends Controller {
       logger.error(`pipeEvents - write error: ${error}`);
       throw error;
     }
+  }
+
+  @httpVerb('post')
+  @route('/v1/ping')
+  @anonymous()
+  async ping(payload: Object): Promise<*> {
+    return this.ok({
+      ...payload,
+      serverPayload: Math.random(),
+    });
   }
 
   @httpVerb('get')

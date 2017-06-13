@@ -4,6 +4,7 @@ import type { File } from 'express';
 
 import crypto from 'crypto';
 import fs from 'fs';
+import logger from '../lib/logger';
 import path from 'path';
 import mkdirp from 'mkdirp';
 import rmfr from 'rmfr';
@@ -123,7 +124,7 @@ class FirmwareCompilationManager {
 
     const errors = [];
     makeProcess.stderr.on('data', (data: string) => {
-      console.log(`${data}`);
+      logger.error(`${data}`);
       errors.push(`${data}`);
     });
 

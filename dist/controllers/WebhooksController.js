@@ -103,7 +103,7 @@ var validateWebhookMutator = function validateWebhookMutator(webhookMutator) {
   return null;
 };
 
-var WebhooksController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _route2.default)('/v1/webhooks'), _dec3 = (0, _httpVerb2.default)('get'), _dec4 = (0, _route2.default)('/v1/webhooks/:webhookId'), _dec5 = (0, _httpVerb2.default)('post'), _dec6 = (0, _route2.default)('/v1/webhooks'), _dec7 = (0, _httpVerb2.default)('delete'), _dec8 = (0, _route2.default)('/v1/webhooks/:webhookId'), (_class = function (_Controller) {
+var WebhooksController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _route2.default)('/v1/webhooks'), _dec3 = (0, _httpVerb2.default)('get'), _dec4 = (0, _route2.default)('/v1/webhooks/:webhookID'), _dec5 = (0, _httpVerb2.default)('post'), _dec6 = (0, _route2.default)('/v1/webhooks'), _dec7 = (0, _httpVerb2.default)('delete'), _dec8 = (0, _route2.default)('/v1/webhooks/:webhookID'), (_class = function (_Controller) {
   (0, _inherits3.default)(WebhooksController, _Controller);
 
   function WebhooksController(webhookManager) {
@@ -125,7 +125,7 @@ var WebhooksController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
               case 0:
                 _context.t0 = this;
                 _context.next = 3;
-                return this._webhookManager.getAll(this.user.id);
+                return this._webhookManager.getAll();
 
               case 3:
                 _context.t1 = _context.sent;
@@ -146,16 +146,16 @@ var WebhooksController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
       return getAll;
     }()
   }, {
-    key: 'getById',
+    key: 'getByID',
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(webhookId) {
+      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(webhookID) {
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.t0 = this;
                 _context2.next = 3;
-                return this._webhookManager.getByID(webhookId, this.user.id);
+                return this._webhookManager.getByID(webhookID);
 
               case 3:
                 _context2.t1 = _context2.sent;
@@ -169,11 +169,11 @@ var WebhooksController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
         }, _callee2, this);
       }));
 
-      function getById(_x) {
+      function getByID(_x) {
         return _ref2.apply(this, arguments);
       }
 
-      return getById;
+      return getByID;
     }()
   }, {
     key: 'create',
@@ -224,15 +224,15 @@ var WebhooksController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
       return create;
     }()
   }, {
-    key: 'deleteById',
+    key: 'deleteByID',
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(webhookId) {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(webhookID) {
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return this._webhookManager.deleteByID(webhookId, this.user.id);
+                return this._webhookManager.deleteByID(webhookID);
 
               case 2:
                 return _context4.abrupt('return', this.ok({ ok: true }));
@@ -245,13 +245,13 @@ var WebhooksController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
         }, _callee4, this);
       }));
 
-      function deleteById(_x3) {
+      function deleteByID(_x3) {
         return _ref4.apply(this, arguments);
       }
 
-      return deleteById;
+      return deleteByID;
     }()
   }]);
   return WebhooksController;
-}(_Controller3.default), (_applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec, _dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getById', [_dec3, _dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getById'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'create', [_dec5, _dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteById', [_dec7, _dec8], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteById'), _class.prototype)), _class));
+}(_Controller3.default), (_applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec, _dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByID', [_dec3, _dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByID'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'create', [_dec5, _dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteByID', [_dec7, _dec8], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteByID'), _class.prototype)), _class));
 exports.default = WebhooksController;

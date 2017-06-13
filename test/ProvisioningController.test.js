@@ -1,9 +1,11 @@
 /* eslint-disable */
 import test from 'ava';
 import request from 'supertest';
+import sinon from 'sinon';
 import ouathClients from '../src/oauthClients.json';
 import app from './setup/testApp';
 import TestData from './setup/TestData';
+import { SPARK_SERVER_EVENTS } from 'spark-protocol';
 
 const container = app.container;
 let DEVICE_ID;
@@ -15,6 +17,27 @@ test.before(async () => {
   const USER_CREDENTIALS = TestData.getUser();
   DEVICE_ID = TestData.getID();
   TEST_PUBLIC_KEY = TestData.getPublicKey();
+
+  sinon.stub(
+    container.constitute('EventPublisher'),
+    'publishAndListenForResponse',
+    ({ name }) => {
+      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_DESCRIPTION) {
+        return {
+          state : {
+            f: null,
+            v: null,
+          },
+        };
+      }
+      if(name === SPARK_SERVER_EVENTS.PING_DEVICE) {
+        return {
+          connected: true,
+          lastPing: new Date(),
+        };
+      }
+    }
+  );
 
   const userResponse = await request(app)
     .post('/v1/users')
@@ -71,7 +94,7 @@ test('should throw an error if public key is not provided', async t => {
 });
 
 test.after.always(async (): Promise<void> => {
-  await container.constitute('UserRepository').deleteById(testUser.id);
-  await container.constitute('DeviceAttributeRepository').deleteById(DEVICE_ID);
-  await container.constitute('DeviceKeyRepository').delete(DEVICE_ID);
+  await container.constitute('UserRepository').deleteByID(testUser.id);
+  await container.constitute('DeviceAttributeRepository').deleteByID(DEVICE_ID);
+  await container.constitute('DeviceKeyRepository').deleteByID(DEVICE_ID);
 });

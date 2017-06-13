@@ -1,14 +1,21 @@
 // @flow
 
-import type { TokenObject, User, UserCredentials } from '../types';
+import type {
+  IUserRepository,
+  TokenObject,
+  User,
+  UserCredentials,
+  UserRole,
+} from '../types';
 
 import uuid from 'uuid';
 import { JSONFileManager, memoizeGet, memoizeSet } from 'spark-protocol';
 import PasswordHasher from '../lib/PasswordHasher';
 import HttpError from '../lib/HttpError';
 
-class UserFileRepository {
+class UserFileRepository implements IUserRepository {
   _fileManager: JSONFileManager;
+  _currentUser: User;
 
   constructor(path: string) {
     this._fileManager = new JSONFileManager(path);
@@ -16,6 +23,7 @@ class UserFileRepository {
 
   createWithCredentials = async (
     userCredentials: UserCredentials,
+    userRole: ?UserRole = null,
   ): Promise<User> => {
     const { username, password } = userCredentials;
 
@@ -24,6 +32,7 @@ class UserFileRepository {
     const modelToSave = {
       accessTokens: [],
       passwordHash,
+      role: userRole,
       salt,
       username,
     };
@@ -49,10 +58,26 @@ class UserFileRepository {
     return modelToSave;
   }
 
-  @memoizeSet()
-  async update(model: User): Promise<User> {
-    this._fileManager.writeFile(`${model.id}.json`, model);
-    return model;
+  deleteAccessToken = async (userID: string, token: string): Promise<*> => {
+    const user = await this.getByID(userID);
+    if (!user) {
+      throw new Error('User doesn\'t exist');
+    }
+
+    const userToSave = {
+      ...user,
+      accessTokens: user.accessTokens.filter(
+        (tokenObject: TokenObject): boolean =>
+        tokenObject.accessToken !== token,
+      ),
+    };
+
+    await this.update(userToSave);
+  };
+
+  @memoizeSet(['id'])
+  async deleteByID(id: string): Promise<void> {
+    this._fileManager.deleteFile(`${id}.json`);
   }
 
   @memoizeGet()
@@ -60,8 +85,17 @@ class UserFileRepository {
     return this._fileManager.getAllData();
   }
 
+  // This isn't a good one to memoize as we can't key off user ID and there
+  // isn't a good way to clear the cache.
+  getByAccessToken = async (accessToken: string): Promise<?User> =>
+    (await this.getAll()).find((user: User): boolean =>
+      user.accessTokens.some((tokenObject: TokenObject): boolean =>
+        tokenObject.accessToken === accessToken,
+      ),
+    );
+
   @memoizeGet(['id'])
-  async getById(id: string): Promise<?User> {
+  async getByID(id: string): Promise<?User> {
     return this._fileManager.getFile(`${id}.json`);
   }
 
@@ -70,6 +104,43 @@ class UserFileRepository {
     return (await this.getAll()).find(
       (user: User): boolean => user.username === username,
     );
+  }
+
+  getCurrentUser = (): User => this._currentUser;
+
+  @memoizeGet(['username'])
+  async isUserNameInUse(username: string): Promise<boolean> {
+    return (await this.getAll()).some((user: User): boolean =>
+      user.username === username,
+    );
+  }
+
+  saveAccessToken = async (
+    userID: string,
+    tokenObject: TokenObject,
+  ): Promise<*> => {
+    const user = await this.getByID(userID);
+
+    if (!user) {
+      throw new HttpError('Could not find user for user ID');
+    }
+
+    const userToSave = {
+      ...user,
+      accessTokens: [...user.accessTokens, tokenObject],
+    };
+
+    return await this.update(userToSave);
+  }
+
+  setCurrentUser = (user: User) => {
+    this._currentUser = user;
+  }
+
+  @memoizeSet()
+  async update(model: User): Promise<User> {
+    this._fileManager.writeFile(`${model.id}.json`, model);
+    return model;
   }
 
   validateLogin = async (username: string, password: string): Promise<User> => {
@@ -90,63 +161,6 @@ class UserFileRepository {
       throw error;
     }
   };
-
-  // This isn't a good one to memoize as we can't key off user ID and there
-  // isn't a good way to clear the cache.
-  getByAccessToken = async (accessToken: string): Promise<?User> =>
-    (await this.getAll()).find((user: User): boolean =>
-      user.accessTokens.some((tokenObject: TokenObject): boolean =>
-        tokenObject.accessToken === accessToken,
-      ),
-    );
-
-  deleteAccessToken = async (userID: string, token: string): Promise<*> => {
-    const user = await this.getById(userID);
-    if (!user) {
-      throw new Error('User doesn\'t exist');
-    }
-
-    const userToSave = {
-      ...user,
-      accessTokens: user.accessTokens.filter(
-        (tokenObject: TokenObject): boolean =>
-          tokenObject.accessToken !== token,
-      ),
-    };
-
-    await this.update(userToSave);
-  };
-
-  @memoizeSet(['id'])
-  async deleteById(id: string): Promise<void> {
-    this._fileManager.deleteFile(`${id}.json`);
-  }
-
-
-  @memoizeGet(['username'])
-  async isUserNameInUse(username: string): Promise<boolean> {
-    return (await this.getAll()).some((user: User): boolean =>
-      user.username === username,
-    );
-  }
-
-  saveAccessToken = async (
-    userID: string,
-    tokenObject: TokenObject,
-  ): Promise<*> => {
-    const user = await this.getById(userID);
-
-    if (!user) {
-      throw new HttpError('Could not find user for user ID');
-    }
-
-    const userToSave = {
-      ...user,
-      accessTokens: [...user.accessTokens, tokenObject],
-    };
-
-    return await this.update(userToSave);
-  }
 }
 
 export default UserFileRepository;

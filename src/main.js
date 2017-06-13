@@ -1,14 +1,18 @@
 // @flow
 
-import { Container } from 'constitute';
-import os from 'os';
 import arrayFlatten from 'array-flatten';
-import logger from './lib/logger';
 import createApp from './app';
+import nulltrhows from 'nullthrows';
+import fs from 'fs';
+import http from 'http';
+import https from 'https';
+import os from 'os';
 import defaultBindings from './defaultBindings';
+import logger from './lib/logger';
 import settings from './settings';
+import { Container } from 'constitute';
 
-const NODE_PORT = process.env.NODE_PORT || 8080;
+const NODE_PORT = process.env.NODE_PORT || settings.EXPRESS_SERVER_CONFIG.PORT;
 
 process.on('uncaughtException', (exception: Error) => {
   logger.error(
@@ -37,10 +41,34 @@ deviceServer.start();
 
 const app = createApp(container, settings);
 
-app.listen(
-  NODE_PORT,
-  (): void => console.log(`express server started on port ${NODE_PORT}`),
-);
+const onServerStartListen = (): void =>
+  console.log(`express server started on port ${NODE_PORT}`);
+
+const {
+  SSL_PRIVATE_KEY_FILEPATH: privateKeyFilePath,
+  SSL_CERTIFICATE_FILEPATH: certificateFilePath,
+  USE_SSL: useSSL,
+  ...expressConfig
+} = settings.EXPRESS_SERVER_CONFIG;
+
+if (useSSL) {
+  const options = {
+    cert: certificateFilePath && fs.readFileSync(
+      nulltrhows(certificateFilePath),
+    ),
+    key: privateKeyFilePath && fs.readFileSync(
+      nulltrhows(privateKeyFilePath),
+    ),
+    ...expressConfig,
+  };
+  https
+    .createServer(options, (app: any))
+    .listen(NODE_PORT, onServerStartListen);
+} else {
+  http
+    .createServer((app: any))
+    .listen(NODE_PORT, onServerStartListen);
+}
 
 const addresses = arrayFlatten(
   Object.entries(os.networkInterfaces()).map(

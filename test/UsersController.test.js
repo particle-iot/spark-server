@@ -83,5 +83,5 @@ test.serial('should delete the access token for the user', async t => {
 });
 
 test.after.always(async (): Promise<void> => {
-  await container.constitute('UserRepository').deleteById(user.id);
+  await container.constitute('UserRepository').deleteByID(user.id);
 });

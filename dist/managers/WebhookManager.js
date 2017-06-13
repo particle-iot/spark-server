@@ -4,17 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends2 = require('babel-runtime/helpers/extends');
-
-var _extends3 = _interopRequireDefault(_extends2);
-
 var _promise = require('babel-runtime/core-js/promise');
 
 var _promise2 = _interopRequireDefault(_promise);
-
-var _typeof2 = require('babel-runtime/helpers/typeof');
-
-var _typeof3 = _interopRequireDefault(_typeof2);
 
 var _stringify = require('babel-runtime/core-js/json/stringify');
 
@@ -23,6 +15,10 @@ var _stringify2 = _interopRequireDefault(_stringify);
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
 
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
@@ -98,7 +94,11 @@ var WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 var MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
 var MAX_RESPONSE_MESSAGE_SIZE = 100000;
 
-var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) {
+var WEBHOOK_DEFAULTS = {
+  rejectUnauthorized: true
+};
+
+var WebhookManager = function WebhookManager(eventPublisher, permissionManager, webhookLogger, webhookRepository) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, WebhookManager);
@@ -113,7 +113,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
           switch (_context.prev = _context.next) {
             case 0:
               _context.next = 2;
-              return _this._webhookRepository.create(model);
+              return _this._webhookRepository.create((0, _extends3.default)({}, WEBHOOK_DEFAULTS, model));
 
             case 2:
               webhook = _context.sent;
@@ -135,14 +135,14 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
   }();
 
   this.deleteByID = function () {
-    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(webhookID, userID) {
+    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(webhookID) {
       var webhook;
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return _this._webhookRepository.getById(webhookID, userID);
+              return _this._permissonManager.getEntityByID('webhook', webhookID);
 
             case 2:
               webhook = _context2.sent;
@@ -156,7 +156,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
 
             case 5:
               _context2.next = 7;
-              return _this._webhookRepository.deleteById(webhookID);
+              return _this._webhookRepository.deleteByID(webhookID);
 
             case 7:
               _this._unsubscribeWebhookByID(webhookID);
@@ -169,45 +169,39 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
       }, _callee2, _this);
     }));
 
-    return function (_x2, _x3) {
+    return function (_x2) {
       return _ref2.apply(this, arguments);
     };
   }();
 
-  this.getAll = function () {
-    var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(userID) {
-      return _regenerator2.default.wrap(function _callee3$(_context3) {
-        while (1) {
-          switch (_context3.prev = _context3.next) {
-            case 0:
-              _context3.next = 2;
-              return _this._webhookRepository.getAll(userID);
+  this.getAll = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+    return _regenerator2.default.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.next = 2;
+            return _this._permissonManager.getAllEntitiesForCurrentUser('webhook');
 
-            case 2:
-              return _context3.abrupt('return', _context3.sent);
+          case 2:
+            return _context3.abrupt('return', _context3.sent);
 
-            case 3:
-            case 'end':
-              return _context3.stop();
-          }
+          case 3:
+          case 'end':
+            return _context3.stop();
         }
-      }, _callee3, _this);
-    }));
-
-    return function (_x4) {
-      return _ref3.apply(this, arguments);
-    };
-  }();
+      }
+    }, _callee3, _this);
+  }));
 
   this.getByID = function () {
-    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(webhookID, userID) {
+    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(webhookID) {
       var webhook;
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
               _context4.next = 2;
-              return _this._webhookRepository.getById(webhookID, userID);
+              return _this._permissonManager.getEntityByID('webhook', webhookID);
 
             case 2:
               webhook = _context4.sent;
@@ -230,7 +224,7 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
       }, _callee4, _this);
     }));
 
-    return function (_x5, _x6) {
+    return function (_x3) {
       return _ref4.apply(this, arguments);
     };
   }();
@@ -261,9 +255,11 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
 
   this._subscribeWebhook = function (webhook) {
     var subscriptionID = _this._eventPublisher.subscribe(webhook.event, _this._onNewWebhookEvent(webhook), {
-      deviceID: webhook.deviceID,
-      mydevices: webhook.mydevices,
-      userID: webhook.ownerID
+      filterOptions: {
+        deviceID: webhook.deviceID,
+        mydevices: webhook.mydevices,
+        userID: webhook.ownerID
+      }
     });
     _this._subscriptionIDsByWebhookID.set(webhook.id, subscriptionID);
   };
@@ -303,111 +299,85 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
   };
 
   this.runWebhook = function () {
-    var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(webhook, event) {
-      var _ret;
+    var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(webhook, event) {
+      var webhookVariablesObject, requestAuth, requestJson, requestFormData, requestHeaders, requestUrl, requestQuery, responseTopic, requestType, isJsonRequest, requestOptions, _responseBody, isResponseBodyAnObject, responseTemplate, responseEventData, chunks;
 
-      return _regenerator2.default.wrap(function _callee7$(_context7) {
+      return _regenerator2.default.wrap(function _callee6$(_context6) {
         while (1) {
-          switch (_context7.prev = _context7.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
-              _context7.prev = 0;
-              return _context7.delegateYield(_regenerator2.default.mark(function _callee6() {
-                var webhookVariablesObject, requestAuth, requestJson, requestFormData, requestHeaders, requestUrl, requestQuery, responseTopic, requestType, isJsonRequest, requestOptions, responseBody, isResponseBodyAnObject, responseTemplate, responseEventData, chunks;
-                return _regenerator2.default.wrap(function _callee6$(_context6) {
-                  while (1) {
-                    switch (_context6.prev = _context6.next) {
-                      case 0:
-                        webhookVariablesObject = _this._getEventVariables(event);
-                        requestAuth = _this._compileJsonTemplate(webhook.auth, webhookVariablesObject);
-                        requestJson = _this._compileJsonTemplate(webhook.json, webhookVariablesObject);
-                        requestFormData = _this._compileJsonTemplate(webhook.form, webhookVariablesObject);
-                        requestHeaders = _this._compileJsonTemplate(webhook.headers, webhookVariablesObject);
-                        requestUrl = _this._compileTemplate(webhook.url, webhookVariablesObject);
-                        requestQuery = _this._compileJsonTemplate(webhook.query, webhookVariablesObject);
-                        responseTopic = _this._compileTemplate(webhook.responseTopic, webhookVariablesObject);
-                        requestType = _this._compileTemplate(webhook.requestType, webhookVariablesObject);
-                        isJsonRequest = !!requestJson;
-                        requestOptions = {
-                          auth: requestAuth,
-                          body: isJsonRequest ? _this._getRequestData(requestJson, event, webhook.noDefaults) : undefined,
-                          form: !isJsonRequest ? _this._getRequestData(requestFormData, event, webhook.noDefaults) : undefined,
-                          headers: requestHeaders,
-                          json: true,
-                          method: validateRequestType((0, _nullthrows2.default)(requestType)),
-                          qs: requestQuery,
-                          strictSSL: webhook.rejectUnauthorized,
-                          url: (0, _nullthrows2.default)(requestUrl)
-                        };
-                        _context6.next = 13;
-                        return _this._callWebhook(webhook, event, requestOptions);
+              _context6.prev = 0;
+              webhookVariablesObject = _this._getEventVariables(event);
+              requestAuth = _this._compileJsonTemplate(webhook.auth, webhookVariablesObject);
+              requestJson = _this._compileJsonTemplate(webhook.json, webhookVariablesObject);
+              requestFormData = _this._compileJsonTemplate(webhook.form, webhookVariablesObject);
+              requestHeaders = _this._compileJsonTemplate(webhook.headers, webhookVariablesObject);
+              requestUrl = _this._compileTemplate(webhook.url, webhookVariablesObject);
+              requestQuery = _this._compileJsonTemplate(webhook.query, webhookVariablesObject);
+              responseTopic = _this._compileTemplate(webhook.responseTopic, webhookVariablesObject);
+              requestType = _this._compileTemplate(webhook.requestType, webhookVariablesObject);
+              isJsonRequest = !!requestJson || !requestFormData;
+              requestOptions = {
+                auth: requestAuth,
+                body: isJsonRequest && requestJson ? _this._getRequestData(requestJson, event, webhook.noDefaults) : undefined,
+                form: !isJsonRequest && requestFormData ? _this._getRequestData(requestFormData, event, webhook.noDefaults) : undefined,
+                headers: requestHeaders,
+                json: true,
+                method: validateRequestType((0, _nullthrows2.default)(requestType)),
+                qs: requestQuery,
+                strictSSL: webhook.rejectUnauthorized,
+                url: (0, _nullthrows2.default)(requestUrl)
+              };
+              _context6.next = 14;
+              return _this._callWebhook(webhook, event, requestOptions);
 
-                      case 13:
-                        responseBody = _context6.sent;
+            case 14:
+              _responseBody = _context6.sent;
 
-                        if (responseBody) {
-                          _context6.next = 16;
-                          break;
-                        }
-
-                        return _context6.abrupt('return', {
-                          v: void 0
-                        });
-
-                      case 16:
-                        isResponseBodyAnObject = responseBody === Object(responseBody);
-                        responseTemplate = webhook.responseTemplate && isResponseBodyAnObject && _hogan2.default.compile(webhook.responseTemplate).render(responseBody);
-                        responseEventData = responseTemplate || (isResponseBodyAnObject ? (0, _stringify2.default)(responseBody) : responseBody);
-                        chunks = splitBufferIntoChunks(Buffer.from(responseEventData).slice(0, MAX_RESPONSE_MESSAGE_SIZE), MAX_RESPONSE_MESSAGE_CHUNK_SIZE);
-
-
-                        chunks.forEach(function (chunk, index) {
-                          var responseEventName = responseTopic && responseTopic + '/' + index || 'hook-response/' + event.name + '/' + index;
-
-                          _this._eventPublisher.publish({
-                            data: chunk,
-                            isPublic: false,
-                            name: responseEventName,
-                            userID: event.userID
-                          });
-                        });
-
-                      case 21:
-                      case 'end':
-                        return _context6.stop();
-                    }
-                  }
-                }, _callee6, _this);
-              })(), 't0', 2);
-
-            case 2:
-              _ret = _context7.t0;
-
-              if (!((typeof _ret === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret)) === "object")) {
-                _context7.next = 5;
+              if (_responseBody) {
+                _context6.next = 17;
                 break;
               }
 
-              return _context7.abrupt('return', _ret.v);
+              return _context6.abrupt('return');
 
-            case 5:
-              _context7.next = 10;
+            case 17:
+              isResponseBodyAnObject = _responseBody === Object(_responseBody);
+              responseTemplate = webhook.responseTemplate && isResponseBodyAnObject && _hogan2.default.compile(webhook.responseTemplate).render(_responseBody);
+              responseEventData = responseTemplate || (isResponseBodyAnObject ? (0, _stringify2.default)(_responseBody) : _responseBody);
+              chunks = splitBufferIntoChunks(Buffer.from(responseEventData).slice(0, MAX_RESPONSE_MESSAGE_SIZE), MAX_RESPONSE_MESSAGE_CHUNK_SIZE);
+
+
+              chunks.forEach(function (chunk, index) {
+                var responseEventName = responseTopic && responseTopic + '/' + index || 'hook-response/' + event.name + '/' + index;
+
+                _this._eventPublisher.publish({
+                  data: chunk.toString(),
+                  isPublic: false,
+                  name: responseEventName,
+                  userID: event.userID
+                });
+              });
+
+              _this._webhookLogger.log(event, webhook, requestOptions, _responseBody, responseEventData);
+              _context6.next = 28;
               break;
 
-            case 7:
-              _context7.prev = 7;
-              _context7.t1 = _context7['catch'](0);
+            case 25:
+              _context6.prev = 25;
+              _context6.t0 = _context6['catch'](0);
 
-              _logger2.default.error('webhookError: ' + _context7.t1);
+              _logger2.default.error('webhookError: ' + _context6.t0);
 
-            case 10:
+            case 28:
             case 'end':
-              return _context7.stop();
+              return _context6.stop();
           }
         }
-      }, _callee7, _this, [[0, 7]]);
+      }, _callee6, _this, [[0, 25]]);
     }));
 
-    return function (_x7, _x8) {
+    return function (_x4, _x5) {
       return _ref6.apply(this, arguments);
     };
   }();
@@ -512,26 +482,28 @@ var WebhookManager = function WebhookManager(webhookRepository, eventPublisher) 
     _this._errorsCountByWebhookID.set(webhookID, 0);
   };
 
-  this._webhookRepository = webhookRepository;
   this._eventPublisher = eventPublisher;
+  this._permissonManager = permissionManager;
+  this._webhookLogger = webhookLogger;
+  this._webhookRepository = webhookRepository;
 
-  (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8() {
-    return _regenerator2.default.wrap(function _callee8$(_context8) {
+  (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7() {
+    return _regenerator2.default.wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
-            _context8.next = 2;
+            _context7.next = 2;
             return _this._init();
 
           case 2:
-            return _context8.abrupt('return', _context8.sent);
+            return _context7.abrupt('return', _context7.sent);
 
           case 3:
           case 'end':
-            return _context8.stop();
+            return _context7.stop();
         }
       }
-    }, _callee8, _this);
+    }, _callee7, _this);
   }))();
 };
 

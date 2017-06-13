@@ -119,13 +119,22 @@ var ProvisioningController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0
 
               case 2:
                 _context.next = 4;
-                return this._deviceManager.provision(coreID, this.user.id, postBody.publicKey);
+                return this._deviceManager.provision(coreID, this.user.id, postBody.publicKey, postBody.alogrithm);
 
               case 4:
                 device = _context.sent;
+
+                if (device) {
+                  _context.next = 7;
+                  break;
+                }
+
+                throw new _HttpError2.default('Provisioning error');
+
+              case 7:
                 return _context.abrupt('return', this.ok((0, _deviceToAPI2.default)(device)));
 
-              case 6:
+              case 8:
               case 'end':
                 return _context.stop();
             }

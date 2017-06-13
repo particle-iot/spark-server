@@ -1,6 +1,6 @@
 // @flow
 
-import type { DeviceManager } from '../types';
+import type DeviceManager from '../managers/DeviceManager';
 
 import Controller from './Controller';
 import httpVerb from '../decorators/httpVerb';
@@ -21,7 +21,12 @@ class ProvisioningController extends Controller {
   @route('/v1/provisioning/:coreID')
   async provision(
     coreID: string,
-    postBody: { publicKey: string },
+    postBody: {
+      alogrithm: 'ecc' | 'rsa',
+      filename: 'cli',
+      order: string, // not sure what this is used for
+      publicKey: string,
+    },
   ): Promise<*> {
     if (!postBody.publicKey) {
       throw new HttpError('No key provided');
@@ -31,7 +36,12 @@ class ProvisioningController extends Controller {
       coreID,
       this.user.id,
       postBody.publicKey,
+      postBody.alogrithm,
     );
+
+    if (!device) {
+      throw new HttpError('Provisioning error');
+    }
 
     return this.ok(deviceToAPI(device));
   }

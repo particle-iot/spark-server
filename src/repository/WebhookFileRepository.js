@@ -1,12 +1,12 @@
 // @flow
 
-import type { Webhook, WebhookMutator } from '../types';
+import type { IWebhookRepository, Webhook, WebhookMutator } from '../types';
 
 import uuid from 'uuid';
 import { JSONFileManager, memoizeGet, memoizeSet } from 'spark-protocol';
 import HttpError from '../lib/HttpError';
 
-class WebhookFileRepository {
+class WebhookFileRepository implements IWebhookRepository {
   _fileManager: JSONFileManager;
 
   constructor(path: string) {
@@ -31,7 +31,7 @@ class WebhookFileRepository {
   }
 
   @memoizeSet(['id'])
-  async deleteById(id: string): Promise<void> {
+  async deleteByID(id: string): Promise<void> {
     this._fileManager.deleteFile(`${id}.json`);
   }
 
@@ -47,18 +47,12 @@ class WebhookFileRepository {
     return allData;
   };
 
-  getById = async (id: string, userID: ?string = null): Promise<?Webhook> => {
-    const webhook = await this._getByID(id);
-
-    if (
-      !webhook ||
-      webhook.ownerID !== userID
-    ) {
-      return null;
-    }
-
-    return webhook;
-  };
+  @memoizeGet(['id'])
+  async getByID(
+    id: string,
+  ): Promise<?Webhook> {
+    return this._fileManager.getFile(`${id}.json`);
+  }
 
   // eslint-disable-next-line no-unused-vars
   update = async (model: WebhookMutator): Promise<Webhook> => {
@@ -68,13 +62,6 @@ class WebhookFileRepository {
   @memoizeGet()
   async _getAll(): Promise<Array<Webhook>> {
     return this._fileManager.getAllData();
-  }
-
-  @memoizeGet(['id'])
-  async _getByID(
-    id: string,
-  ): Promise<?Webhook> {
-    return this._fileManager.getFile(`${id}.json`);
   }
 }
 

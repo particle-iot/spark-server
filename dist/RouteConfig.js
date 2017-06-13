@@ -36,10 +36,6 @@ var _getOwnPropertyNames = require('babel-runtime/core-js/object/get-own-propert
 
 var _getOwnPropertyNames2 = _interopRequireDefault(_getOwnPropertyNames);
 
-var _expressOauthServer = require('express-oauth-server');
-
-var _expressOauthServer2 = _interopRequireDefault(_expressOauthServer);
-
 var _nullthrows = require('nullthrows');
 
 var _nullthrows2 = _interopRequireDefault(_nullthrows);
@@ -47,10 +43,6 @@ var _nullthrows2 = _interopRequireDefault(_nullthrows);
 var _multer = require('multer');
 
 var _multer2 = _interopRequireDefault(_multer);
-
-var _OAuthModel = require('./OAuthModel');
-
-var _OAuthModel2 = _interopRequireDefault(_OAuthModel);
 
 var _HttpError = require('./lib/HttpError');
 
@@ -68,13 +60,15 @@ var maybe = function maybe(middleware, condition) {
   };
 };
 
-var injectUserMiddleware = function injectUserMiddleware() {
+var injectUserMiddleware = function injectUserMiddleware(container) {
   return function (request, response, next) {
     var oauthInfo = response.locals.oauth;
     if (oauthInfo) {
       var token = oauthInfo.token;
+      var user = token && token.user;
       // eslint-disable-next-line no-param-reassign
-      request.user = token && token.user;
+      request.user = user;
+      container.constitute('UserRepository').setCurrentUser(user);
     }
     next();
   };
@@ -98,16 +92,12 @@ var serverSentEventsMiddleware = function serverSentEventsMiddleware() {
 };
 
 exports.default = function (app, container, controllers, settings) {
-  var oauth = new _expressOauthServer2.default({
-    ACCESS_TOKEN_LIFETIME: settings.ACCESS_TOKEN_LIFETIME,
-    allowBearerTokensInQueryString: true,
-    model: new _OAuthModel2.default(container.constitute('UserRepository'))
-  });
-
   var filesMiddleware = function filesMiddleware() {
     var allowedUploads = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     return (0, _nullthrows2.default)(allowedUploads).length ? (0, _multer2.default)().fields(allowedUploads) : (0, _multer2.default)().any();
   };
+
+  var oauth = container.constitute('OAuthServer');
 
   app.post(settings.LOGIN_ROUTE, oauth.token());
 
@@ -125,7 +115,7 @@ exports.default = function (app, container, controllers, settings) {
       if (!httpVerb) {
         return;
       }
-      app[httpVerb](route, maybe(oauth.authenticate(), !anonymous), maybe(serverSentEventsMiddleware(), serverSentEvents), injectUserMiddleware(), maybe(filesMiddleware(allowedUploads), allowedUploads), function () {
+      app[httpVerb](route, maybe(oauth.authenticate(), !anonymous), maybe(serverSentEventsMiddleware(), serverSentEvents), injectUserMiddleware(container), maybe(filesMiddleware(allowedUploads), allowedUploads), function () {
         var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(request, response) {
           var argumentNames, values, controllerInstance, _request$body, access_token, body, functionResult, result, httpError;
 
@@ -161,47 +151,65 @@ exports.default = function (app, container, controllers, settings) {
                   functionResult = mappedFunction.call.apply(mappedFunction, [controllerInstance].concat((0, _toConsumableArray3.default)(values), [body]));
 
                   if (!functionResult.then) {
+                    _context.next = 24;
+                    break;
+                  }
+
+                  if (serverSentEvents) {
                     _context.next = 17;
                     break;
                   }
 
-                  _context.next = 13;
-                  return _promise2.default.race([functionResult, !serverSentEvents ? new _promise2.default(function (resolve, reject) {
+                  _context.next = 14;
+                  return _promise2.default.race([functionResult, new _promise2.default(function (resolve, reject) {
                     return setTimeout(function () {
                       return reject(new Error('timeout'));
                     }, settings.API_TIMEOUT);
-                  }) : null]);
+                  })]);
 
-                case 13:
-                  result = _context.sent;
-
-                  response.status((0, _nullthrows2.default)(result).status).json((0, _nullthrows2.default)(result).data);
-                  _context.next = 18;
+                case 14:
+                  _context.t0 = _context.sent;
+                  _context.next = 20;
                   break;
 
                 case 17:
-                  response.status(functionResult.status).json(functionResult.data);
+                  _context.next = 19;
+                  return functionResult;
 
-                case 18:
-                  _context.next = 24;
-                  break;
+                case 19:
+                  _context.t0 = _context.sent;
 
                 case 20:
-                  _context.prev = 20;
-                  _context.t0 = _context['catch'](8);
-                  httpError = new _HttpError2.default(_context.t0);
+                  result = _context.t0;
+
+
+                  response.status((0, _nullthrows2.default)(result).status).json((0, _nullthrows2.default)(result).data);
+                  _context.next = 25;
+                  break;
+
+                case 24:
+                  response.status(functionResult.status).json(functionResult.data);
+
+                case 25:
+                  _context.next = 31;
+                  break;
+
+                case 27:
+                  _context.prev = 27;
+                  _context.t1 = _context['catch'](8);
+                  httpError = new _HttpError2.default(_context.t1);
 
                   response.status(httpError.status).json({
                     error: httpError.message,
                     ok: false
                   });
 
-                case 24:
+                case 31:
                 case 'end':
                   return _context.stop();
               }
             }
-          }, _callee, undefined, [[8, 20]]);
+          }, _callee, undefined, [[8, 27]]);
         }));
 
         return function (_x2, _x3) {

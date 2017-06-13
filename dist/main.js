@@ -8,35 +8,59 @@ var _entries = require('babel-runtime/core-js/object/entries');
 
 var _entries2 = _interopRequireDefault(_entries);
 
-var _constitute = require('constitute');
+var _extends2 = require('babel-runtime/helpers/extends');
 
-var _os = require('os');
+var _extends3 = _interopRequireDefault(_extends2);
 
-var _os2 = _interopRequireDefault(_os);
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
 var _arrayFlatten = require('array-flatten');
 
 var _arrayFlatten2 = _interopRequireDefault(_arrayFlatten);
 
-var _logger = require('./lib/logger');
-
-var _logger2 = _interopRequireDefault(_logger);
-
 var _app = require('./app');
 
 var _app2 = _interopRequireDefault(_app);
+
+var _nullthrows = require('nullthrows');
+
+var _nullthrows2 = _interopRequireDefault(_nullthrows);
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _http = require('http');
+
+var _http2 = _interopRequireDefault(_http);
+
+var _https = require('https');
+
+var _https2 = _interopRequireDefault(_https);
+
+var _os = require('os');
+
+var _os2 = _interopRequireDefault(_os);
 
 var _defaultBindings = require('./defaultBindings');
 
 var _defaultBindings2 = _interopRequireDefault(_defaultBindings);
 
+var _logger = require('./lib/logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
 var _settings = require('./settings');
 
 var _settings2 = _interopRequireDefault(_settings);
 
+var _constitute = require('constitute');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var NODE_PORT = process.env.NODE_PORT || 8080;
+var NODE_PORT = process.env.NODE_PORT || _settings2.default.EXPRESS_SERVER_CONFIG.PORT;
 
 process.on('uncaughtException', function (exception) {
   _logger2.default.error('uncaughtException', { message: exception.message, stack: exception.stack }); // logging with MetaData
@@ -62,9 +86,26 @@ deviceServer.start();
 
 var app = (0, _app2.default)(container, _settings2.default);
 
-app.listen(NODE_PORT, function () {
+var onServerStartListen = function onServerStartListen() {
   return console.log('express server started on port ' + NODE_PORT);
-});
+};
+
+var _settings$EXPRESS_SER = _settings2.default.EXPRESS_SERVER_CONFIG,
+    privateKeyFilePath = _settings$EXPRESS_SER.SSL_PRIVATE_KEY_FILEPATH,
+    certificateFilePath = _settings$EXPRESS_SER.SSL_CERTIFICATE_FILEPATH,
+    useSSL = _settings$EXPRESS_SER.USE_SSL,
+    expressConfig = (0, _objectWithoutProperties3.default)(_settings$EXPRESS_SER, ['SSL_PRIVATE_KEY_FILEPATH', 'SSL_CERTIFICATE_FILEPATH', 'USE_SSL']);
+
+
+if (useSSL) {
+  var options = (0, _extends3.default)({
+    cert: certificateFilePath && _fs2.default.readFileSync((0, _nullthrows2.default)(certificateFilePath)),
+    key: privateKeyFilePath && _fs2.default.readFileSync((0, _nullthrows2.default)(privateKeyFilePath))
+  }, expressConfig);
+  _https2.default.createServer(options, app).listen(NODE_PORT, onServerStartListen);
+} else {
+  _http2.default.createServer(app).listen(NODE_PORT, onServerStartListen);
+}
 
 var addresses = (0, _arrayFlatten2.default)((0, _entries2.default)(_os2.default.networkInterfaces()).map(
 // eslint-disable-next-line no-unused-vars

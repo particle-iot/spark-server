@@ -13,22 +13,42 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* eslint-disable sorting/sort-object-props */
 exports.default = {
   BUILD_DIRECTORY: _path2.default.join(__dirname, '../data/build'),
+  DEFAULT_ADMIN_PASSWORD: 'adminPassword',
+  DEFAULT_ADMIN_USERNAME: '__admin__',
   DEVICE_DIRECTORY: _path2.default.join(__dirname, '../data/deviceKeys'),
+  ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
   FIRMWARE_DIRECTORY: _path2.default.join(__dirname, '../data/knownApps'),
   FIRMWARE_REPOSITORY_DIRECTORY: _path2.default.join(__dirname, '../../spark-firmware'),
   SERVER_KEY_FILENAME: 'default_key.pem',
   SERVER_KEYS_DIRECTORY: _path2.default.join(__dirname, '../data'),
   USERS_DIRECTORY: _path2.default.join(__dirname, '../data/users'),
   WEBHOOKS_DIRECTORY: _path2.default.join(__dirname, '../data/webhooks'),
-
   ACCESS_TOKEN_LIFETIME: 7776000, // 90 days,
   API_TIMEOUT: 30000, // Timeout for API requests.
-  CRYPTO_SALT: 'aes-128-cbc',
-  LOG_REQUESTS: true,
+  CRYPTO_ALGORITHM: 'aes-128-cbc',
+  LOG_REQUESTS: false,
   LOGIN_ROUTE: '/oauth/token',
-
-  PORT: 5683,
-  HOST: 'localhost'
+  EXPRESS_SERVER_CONFIG: {
+    PORT: 8080,
+    SSL_CERTIFICATE_FILEPATH: null,
+    SSL_PRIVATE_KEY_FILEPATH: null,
+    USE_SSL: false
+  },
+  DB_CONFIG: {
+    OPTIONS: {
+      cacheMaxObjSize: 1024,
+      cacheSize: 1000,
+      memStore: false,
+      nativeObjectID: true,
+      searchInArray: true
+    },
+    PATH: _path2.default.join(__dirname, '../data/db'),
+    URL: null
+  },
+  TCP_DEVICE_SERVER_CONFIG: {
+    HOST: 'localhost',
+    PORT: 5683
+  }
 }; /**
    *    Copyright (C) 2013-2014 Spark Labs, Inc. All rights reserved. -  https://www.spark.io/
    *
