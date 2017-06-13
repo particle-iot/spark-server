@@ -255,9 +255,11 @@ var WebhookManager = function WebhookManager(eventPublisher, permissionManager, 
 
   this._subscribeWebhook = function (webhook) {
     var subscriptionID = _this._eventPublisher.subscribe(webhook.event, _this._onNewWebhookEvent(webhook), {
-      deviceID: webhook.deviceID,
-      mydevices: webhook.mydevices,
-      userID: webhook.ownerID
+      filterOptions: {
+        deviceID: webhook.deviceID,
+        mydevices: webhook.mydevices,
+        userID: webhook.ownerID
+      }
     });
     _this._subscriptionIDsByWebhookID.set(webhook.id, subscriptionID);
   };

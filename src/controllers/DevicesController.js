@@ -133,33 +133,7 @@ class DevicesController extends Controller {
       return this.ok({ name: updatedAttributes.name, ok: true });
     }
 
-    // 2 flash device with known application
-    if (postBody.app_id) {
-      const flashStatus = await this._deviceManager.flashKnownApp(
-        deviceID,
-        postBody.app_id,
-      );
-
-      return this.ok({ id: deviceID, status: flashStatus });
-    }
-
-    // 3 flash device with custom application
-    if (this.request.files && !(this.request.files: any).file) {
-      throw new Error('Firmware file not provided');
-    }
-
-    const file =
-      this.request.files &&
-      (this.request.files: any).file[0];
-
-    if (file && file.originalname.endsWith('.bin')) {
-      const flashStatus = await this._deviceManager
-        .flashBinary(deviceID, file);
-
-      return this.ok({ id: deviceID, status: flashStatus });
-    }
-
-    // 4
+    // 2
     // If signal exists then we want to toggle nyan mode. This just makes the
     // LED change colors.
     if (postBody.signal) {
@@ -173,6 +147,32 @@ class DevicesController extends Controller {
       );
 
       return this.ok({ id: deviceID, ok: true });
+    }
+
+    // 3 flash device with known application
+    if (postBody.app_id) {
+      const flashResult = await this._deviceManager.flashKnownApp(
+        deviceID,
+        postBody.app_id,
+      );
+
+      return this.ok({ id: deviceID, status: flashResult.status });
+    }
+
+    // 4 flash device with custom application
+    if (this.request.files && !(this.request.files: any).file) {
+      throw new Error('Firmware file not provided');
+    }
+
+    const file =
+      this.request.files &&
+      (this.request.files: any).file[0];
+
+    if (file && file.originalname.endsWith('.bin')) {
+      const flashResult = await this._deviceManager
+        .flashBinary(deviceID, file);
+
+      return this.ok({ id: deviceID, status: flashResult.status });
     }
 
     throw new HttpError('Did not update device');

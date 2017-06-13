@@ -1,7 +1,7 @@
 // @flow
 
 import type { File } from 'express';
-import type { DeviceServer } from 'spark-protocol';
+import type { EventPublisher } from 'spark-protocol';
 import type PermissionManager from './PermissionManager';
 import type {
   Device,
@@ -11,28 +11,29 @@ import type {
   IDeviceFirmwareRepository,
 } from '../types';
 
-import ursa from 'ursa';
+import { SPARK_SERVER_EVENTS } from 'spark-protocol';
+import NodeRSA from 'node-rsa';
 import HttpError from '../lib/HttpError';
 
 class DeviceManager {
   _deviceAttributeRepository: IDeviceAttributeRepository;
   _deviceFirmwareRepository: IDeviceFirmwareRepository;
   _deviceKeyRepository: IDeviceKeyRepository;
-  _deviceServer: DeviceServer;
   _permissionManager: PermissionManager;
+  _eventPublisher: EventPublisher;
 
   constructor(
     deviceAttributeRepository: IDeviceAttributeRepository,
     deviceFirmwareRepository: IDeviceFirmwareRepository,
     deviceKeyRepository: IDeviceKeyRepository,
-    deviceServer: DeviceServer,
     permissionManager: PermissionManager,
+    eventPublisher: EventPublisher,
   ) {
     this._deviceAttributeRepository = deviceAttributeRepository;
     this._deviceFirmwareRepository = deviceFirmwareRepository;
     this._deviceKeyRepository = deviceKeyRepository;
-    this._deviceServer = deviceServer;
     this._permissionManager = permissionManager;
+    this._eventPublisher = eventPublisher;
   }
 
   claimDevice = async (
@@ -85,22 +86,30 @@ class DeviceManager {
       throw new HttpError('No device found', 404);
     }
 
-    const device = this._deviceServer.getDevice(attributes.deviceID);
+    const pingResponse = await this._eventPublisher.publishAndListenForResponse({
+      context: { deviceID },
+      name: SPARK_SERVER_EVENTS.PING_DEVICE,
+    });
 
     return {
       ...attributes,
-      connected: device && device.ping().connected || false,
+      connected: pingResponse.connected || false,
       lastFlashedAppName: null,
-      lastHeard: device && device.ping().lastPing || attributes.lastHeard,
+      lastHeard: pingResponse.lastPing || attributes.lastHeard,
     };
   };
 
   getDetailsByID = async (deviceID: string): Promise<Device> => {
-    const device = this._deviceServer.getDevice(deviceID);
-
-    const [attributes, description] = await Promise.all([
+    const [attributes, description, pingResponse] = await Promise.all([
       this._permissionManager.getEntityByID('deviceAttributes', deviceID),
-      device && device.getDescription(),
+      this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID },
+        name: SPARK_SERVER_EVENTS.GET_DEVICE_DESCRIPTION,
+      }),
+      this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID },
+        name: SPARK_SERVER_EVENTS.PING_DEVICE },
+      ),
     ]);
 
     if (!attributes) {
@@ -109,11 +118,11 @@ class DeviceManager {
 
     return {
       ...attributes,
-      connected: device && device.ping().connected || false,
-      functions: description ? description.state.f : null,
+      connected: pingResponse.connected,
+      functions: description.state ? description.state.f : null,
       lastFlashedAppName: null,
-      lastHeard: device && device.ping().lastPing || attributes.lastHeard,
-      variables: description ? description.state.v : null,
+      lastHeard: pingResponse.lastPing || attributes.lastHeard,
+      variables: description.state ? description.state.v : null,
     };
   };
 
@@ -123,13 +132,16 @@ class DeviceManager {
 
     const devicePromises = devicesAttributes.map(
       async (attributes: DeviceAttributes): Promise<Object> => {
-        const device = this._deviceServer.getDevice(attributes.deviceID);
+        const pingResponse = this._eventPublisher.publishAndListenForResponse({
+          context: { deviceID: attributes.deviceID },
+          name: SPARK_SERVER_EVENTS.PING_DEVICE,
+        });
 
         return {
           ...attributes,
-          connected: device && device.ping().connected || false,
+          connected: pingResponse.connected || false,
           lastFlashedAppName: null,
-          lastHeard: device && device.ping().lastPing || attributes.lastHeard,
+          lastHeard: pingResponse.lastPing || attributes.lastHeard,
         };
       },
     );
@@ -146,56 +158,69 @@ class DeviceManager {
       'deviceAttributes',
       deviceID,
     );
+    const callFunctionResponse =
+      await this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID, functionArguments, functionName },
+        name: SPARK_SERVER_EVENTS.CALL_DEVICE_FUNCTION,
+      });
 
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
+    const { error } = callFunctionResponse;
+    if (error) {
+      throw new HttpError(error);
     }
 
-    return await device.callFunction(
-      functionName,
-      functionArguments,
-    );
+    return callFunctionResponse;
   };
 
   getVariableValue = async (
     deviceID: string,
-    varName: string,
+    variableName: string,
   ): Promise<*> => {
     await this._permissionManager.checkPermissionsForEntityByID(
       'deviceAttributes',
       deviceID,
     );
 
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
+    const getVariableResponse =
+      await this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID, variableName },
+        name: SPARK_SERVER_EVENTS.GET_DEVICE_VARIABLE_VALUE,
+      });
+
+    const { error, result } = getVariableResponse;
+    if (error) {
+      throw new HttpError(error);
     }
 
-    return await device.getVariableValue(varName);
+    return result;
   };
 
   flashBinary = async (
     deviceID: string,
     file: File,
-  ): Promise<string> => {
+  ): Promise<*> => {
     await this._permissionManager.checkPermissionsForEntityByID(
       'deviceAttributes',
       deviceID,
     );
 
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
+    const flashResponse = await this._eventPublisher.publishAndListenForResponse({
+      context: { deviceID, fileBuffer: file.buffer },
+      name: SPARK_SERVER_EVENTS.FLASH_DEVICE,
+    });
+
+    const { error } = flashResponse;
+    if (error) {
+      throw new HttpError(error);
     }
 
-    return await device.flash(file.buffer);
+    return flashResponse;
   };
 
   flashKnownApp = async (
     deviceID: string,
     appName: string,
-  ): Promise<string> => {
+  ): Promise<*> => {
     await this._permissionManager.checkPermissionsForEntityByID(
       'deviceAttributes',
       deviceID,
@@ -207,12 +232,17 @@ class DeviceManager {
       throw new HttpError(`No firmware ${appName} found`, 404);
     }
 
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
+    const flashResponse = await this._eventPublisher.publishAndListenForResponse({
+      context: { deviceID, fileBuffer: knownFirmware },
+      name: SPARK_SERVER_EVENTS.FLASH_DEVICE,
+    });
+
+    const { error } = flashResponse;
+    if (error) {
+      throw new HttpError(error);
     }
 
-    return await device.flash(knownFirmware);
+    return flashResponse;
   };
 
   provision = async (
@@ -226,8 +256,15 @@ class DeviceManager {
     }
 
     try {
-      const createdKey = ursa.createPublicKey(publicKey);
-      if (!ursa.isPublicKey(createdKey)) {
+      const createdKey = new NodeRSA(
+        publicKey,
+        'pkcs1-public-pem',
+        {
+          encryptionScheme: 'pkcs1',
+          signingScheme: 'pkcs1',
+        },
+      );
+      if (!createdKey.isPublic()) {
         throw new HttpError('Not a public key');
       }
     } catch (error) {
@@ -259,12 +296,18 @@ class DeviceManager {
       deviceID,
     );
 
-    const device = this._deviceServer.getDevice(deviceID);
-    if (!device) {
-      throw new HttpError('Could not get device for ID', 404);
+    const raiseYourHandResponse =
+      await this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID, shouldShowSignal },
+        name: SPARK_SERVER_EVENTS.RAISE_YOUR_HAND,
+      });
+
+    const { error } = raiseYourHandResponse;
+    if (error) {
+      throw new HttpError(error);
     }
 
-    return await device.raiseYourHand(shouldShowSignal);
+    return raiseYourHandResponse;
   };
 
   renameDevice = async (

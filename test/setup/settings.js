@@ -44,4 +44,5 @@ export default {
     PATH: path.join(__dirname, '../__test_data__/db'),
     URL: null,
   },
+  WEBHOOK_TEMPLATE_PARAMETERS: {},
 };

@@ -117,7 +117,8 @@ class PermissionManager {
       await this._userRepository.getByUsername(settings.DEFAULT_ADMIN_USERNAME);
     if (defaultAdminUser) {
       logger.info(
-        `Default admin accessToken: ${defaultAdminUser.accessTokens[0].accessToken}`,
+        'Default admin accessToken: ' +
+          `${defaultAdminUser.accessTokens[0].accessToken}`,
       );
     } else {
       await this._createDefaultAdminUser();
