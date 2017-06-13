@@ -1,5 +1,11 @@
 
+# Run Spark Server from Docker HUB
 
+If you have installed Docker you can start a ParticleServer directly from CommandLine.
+
+[https://hub.docker.com/r/keatec/spark-server/](https://hub.docker.com/r/keatec/spark-server/)
+
+Follow link for more informations !
 
 
 # Build a Spark-Server as a Docker Image
