@@ -12,13 +12,13 @@ var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
-var _regenerator = require('babel-runtime/regenerator');
-
-var _regenerator2 = _interopRequireDefault(_regenerator);
-
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
+
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
 
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
@@ -30,9 +30,9 @@ var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
 var _sparkProtocol = require('spark-protocol');
 
-var _ursa = require('ursa');
+var _nodeRsa = require('node-rsa');
 
-var _ursa2 = _interopRequireDefault(_ursa);
+var _nodeRsa2 = _interopRequireDefault(_nodeRsa);
 
 var _HttpError = require('../lib/HttpError');
 
@@ -47,7 +47,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.claimDevice = function () {
     var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(deviceID, userID) {
-      var deviceAttributes, attributesToSave;
+      var deviceAttributes;
       return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -82,16 +82,13 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               throw new _HttpError2.default('The device is already claimed.');
 
             case 9:
-              attributesToSave = (0, _extends3.default)({}, deviceAttributes, {
-                ownerID: userID
-              });
-              _context.next = 12;
-              return _this._deviceAttributeRepository.update(attributesToSave);
+              _context.next = 11;
+              return _this._deviceAttributeRepository.updateByID(deviceID, { ownerID: userID });
 
-            case 12:
+            case 11:
               return _context.abrupt('return', _context.sent);
 
-            case 13:
+            case 12:
             case 'end':
               return _context.stop();
           }
@@ -106,7 +103,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.unclaimDevice = function () {
     var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(deviceID) {
-      var deviceAttributes, attributesToSave;
+      var deviceAttributes;
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
@@ -125,16 +122,13 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               throw new _HttpError2.default('No device found', 404);
 
             case 5:
-              attributesToSave = (0, _extends3.default)({}, deviceAttributes, {
-                ownerID: null
-              });
-              _context2.next = 8;
-              return _this._deviceAttributeRepository.update(attributesToSave);
+              _context2.next = 7;
+              return _this._deviceAttributeRepository.updateByID(deviceID, { ownerID: null });
 
-            case 8:
+            case 7:
               return _context2.abrupt('return', _context2.sent);
 
-            case 9:
+            case 8:
             case 'end':
               return _context2.stop();
           }
@@ -265,17 +259,21 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
                   while (1) {
                     switch (_context5.prev = _context5.next) {
                       case 0:
-                        pingResponse = _this._eventPublisher.publishAndListenForResponse({
+                        _context5.next = 2;
+                        return _this._eventPublisher.publishAndListenForResponse({
                           context: { deviceID: attributes.deviceID },
                           name: _sparkProtocol.SPARK_SERVER_EVENTS.PING_DEVICE
                         });
+
+                      case 2:
+                        pingResponse = _context5.sent;
                         return _context5.abrupt('return', (0, _extends3.default)({}, attributes, {
                           connected: pingResponse.connected || false,
                           lastFlashedAppName: null,
                           lastHeard: pingResponse.lastPing || attributes.lastHeard
                         }));
 
-                      case 2:
+                      case 4:
                       case 'end':
                         return _context5.stop();
                     }
@@ -485,7 +483,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.provision = function () {
     var _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(deviceID, userID, publicKey, algorithm) {
-      var createdKey, existingAttributes, attributes;
+      var createdKey;
       return _regenerator2.default.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
@@ -499,9 +497,12 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
             case 2:
               _context11.prev = 2;
-              createdKey = _ursa2.default.createPublicKey(publicKey);
+              createdKey = new _nodeRsa2.default(publicKey, 'pkcs1-public-pem', {
+                encryptionScheme: 'pkcs1',
+                signingScheme: 'pkcs1'
+              });
 
-              if (_ursa2.default.isPublicKey(createdKey)) {
+              if (createdKey.isPublic()) {
                 _context11.next = 6;
                 break;
               }
@@ -519,32 +520,27 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
             case 11:
               _context11.next = 13;
-              return _this._deviceKeyRepository.update({ deviceID: deviceID, key: publicKey });
+              return _this._deviceKeyRepository.updateByID(deviceID, {
+                deviceID: deviceID,
+                key: publicKey
+              });
 
             case 13:
               _context11.next = 15;
-              return _this._deviceAttributeRepository.getByID(deviceID);
-
-            case 15:
-              existingAttributes = _context11.sent;
-              attributes = (0, _extends3.default)({
-                deviceID: deviceID
-              }, existingAttributes, {
+              return _this._deviceAttributeRepository.updateByID(deviceID, {
                 ownerID: userID,
                 registrar: userID,
                 timestamp: new Date()
               });
-              _context11.next = 19;
-              return _this._deviceAttributeRepository.update(attributes);
 
-            case 19:
-              _context11.next = 21;
+            case 15:
+              _context11.next = 17;
               return _this.getByID(deviceID);
 
-            case 21:
+            case 17:
               return _context11.abrupt('return', _context11.sent);
 
-            case 22:
+            case 18:
             case 'end':
               return _context11.stop();
           }
@@ -603,7 +599,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.renameDevice = function () {
     var _ref15 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee13(deviceID, name) {
-      var attributes, attributesToSave;
+      var attributes;
       return _regenerator2.default.wrap(function _callee13$(_context13) {
         while (1) {
           switch (_context13.prev = _context13.next) {
@@ -622,16 +618,13 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               throw new _HttpError2.default('No device found', 404);
 
             case 5:
-              attributesToSave = (0, _extends3.default)({}, attributes, {
-                name: name
-              });
-              _context13.next = 8;
-              return _this._deviceAttributeRepository.update(attributesToSave);
+              _context13.next = 7;
+              return _this._deviceAttributeRepository.updateByID(deviceID, { name: name });
 
-            case 8:
+            case 7:
               return _context13.abrupt('return', _context13.sent);
 
-            case 9:
+            case 8:
             case 'end':
               return _context13.stop();
           }

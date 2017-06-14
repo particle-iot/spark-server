@@ -242,7 +242,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
               break;
             }
 
-            _logger2.default.info('Default admin accessToken: ' + defaultAdminUser.accessTokens[0].accessToken);
+            _logger2.default.info('Default admin accessToken: ' + ('' + defaultAdminUser.accessTokens[0].accessToken));
             _context6.next = 9;
             break;
 

@@ -119,14 +119,14 @@ var DeviceKeyDatabaseRepository = function DeviceKeyDatabaseRepository(database)
     };
   }();
 
-  this.update = function () {
-    var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(model) {
+  this.updateByID = function () {
+    var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(deviceID, props) {
       return _regenerator2.default.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
               _context5.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { deviceID: model.deviceID }, null, { $set: (0, _extends3.default)({}, model) }, { new: true, upsert: true });
+              return _this._database.findAndModify(_this._collectionName, { deviceID: deviceID }, null, { $set: (0, _extends3.default)({}, props) }, { new: true, upsert: true });
 
             case 2:
               return _context5.abrupt('return', _context5.sent);
@@ -139,7 +139,7 @@ var DeviceKeyDatabaseRepository = function DeviceKeyDatabaseRepository(database)
       }, _callee5, _this);
     }));
 
-    return function (_x4) {
+    return function (_x4, _x5) {
       return _ref5.apply(this, arguments);
     };
   }();

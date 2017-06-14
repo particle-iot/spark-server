@@ -36,12 +36,15 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
   getByID = async (deviceID: string): Promise<?DeviceAttributes> =>
     await this._database.findOne(this._collectionName, { deviceID });
 
-  update = async (model: DeviceAttributes): Promise<DeviceAttributes> =>
+  updateByID = async (
+    deviceID: string,
+    props: $Shape<DeviceAttributes>,
+  ): Promise<DeviceAttributes> =>
     await this._database.findAndModify(
       this._collectionName,
-      { deviceID: model.deviceID },
+      { deviceID },
       null,
-      { $set: { ...model, timeStamp: new Date() } },
+      { $set: { ...props, timeStamp: new Date() } },
       { new: true, upsert: true },
     );
 }

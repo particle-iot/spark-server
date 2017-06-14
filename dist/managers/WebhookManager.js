@@ -52,6 +52,10 @@ var _request = require('request');
 
 var _request2 = _interopRequireDefault(_request);
 
+var _settings = require('../settings');
+
+var _settings2 = _interopRequireDefault(_settings);
+
 var _throttle = require('lodash/throttle');
 
 var _throttle2 = _interopRequireDefault(_throttle);
@@ -423,7 +427,7 @@ var WebhookManager = function WebhookManager(eventPublisher, permissionManager, 
   };
 
   this._getEventVariables = function (event) {
-    var defaultWebhookVariables = {
+    var defaultWebhookVariables = (0, _extends3.default)({
       PARTICLE_DEVICE_ID: event.deviceID,
       PARTICLE_EVENT_NAME: event.name,
       PARTICLE_EVENT_VALUE: event.data,
@@ -433,7 +437,7 @@ var WebhookManager = function WebhookManager(eventPublisher, permissionManager, 
       SPARK_EVENT_NAME: event.name,
       SPARK_EVENT_VALUE: event.data,
       SPARK_PUBLISHED_AT: event.publishedAt
-    };
+    }, _settings2.default.WEBHOOK_TEMPLATE_PARAMETERS);
 
     var eventDataVariables = parseEventData(event);
 

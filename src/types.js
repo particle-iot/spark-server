@@ -198,7 +198,7 @@ export interface IBaseRepository<TModel> {
   deleteByID(id: string): Promise<void>;
   getAll(): Promise<Array<TModel>>;
   getByID(id: string): Promise<?TModel>;
-  update(model: TModel): Promise<TModel>;
+  updateByID(id: string, props: $Shape<TModel>): Promise<TModel>;
 }
 
 export interface IWebhookRepository extends IBaseRepository<Webhook> {}
@@ -209,7 +209,7 @@ export interface IDeviceKeyRepository extends IBaseRepository<DeviceKeyObject> {
 
 export interface IUserRepository extends IBaseRepository<User> {
   createWithCredentials(credentials: UserCredentials): Promise<User>;
-  deleteAccessToken(userID: string, accessToken: string): Promise<void>;
+  deleteAccessToken(userID: string, accessToken: string): Promise<User>;
   getByAccessToken(accessToken: string): Promise<?User>;
   getByUsername(username: string): Promise<?User>;
   getCurrentUser(): User;

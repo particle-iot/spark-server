@@ -52,7 +52,13 @@ function _transform() {
     params[_key] = arguments[_key];
   }
 
-  return params.map(_stringify2.default);
+  return params.map(function (param) {
+    if (typeof param === 'string') {
+      return param;
+    }
+
+    return (0, _stringify2.default)(param);
+  });
 }
 
 var Logger = function () {

@@ -133,7 +133,7 @@ var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
     };
   }();
 
-  this.update = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5() {
+  this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5() {
     return _regenerator2.default.wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {

@@ -316,14 +316,14 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
     _this._currentUser = user;
   };
 
-  this.update = function () {
-    var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(model) {
+  this.updateByID = function () {
+    var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(id, props) {
       return _regenerator2.default.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
             case 0:
               _context11.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { _id: model.id }, null, { $set: (0, _extends3.default)({}, model, { timeStamp: new Date() }) }, { new: true, upsert: true });
+              return _this._database.findAndModify(_this._collectionName, { _id: id }, null, { $set: (0, _extends3.default)({}, props, { timeStamp: new Date() }) }, { new: true, upsert: true });
 
             case 2:
               return _context11.abrupt('return', _context11.sent);
@@ -336,7 +336,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee11, _this);
     }));
 
-    return function (_x13) {
+    return function (_x13, _x14) {
       return _ref11.apply(this, arguments);
     };
   }();
@@ -392,7 +392,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
       }, _callee12, _this, [[0, 14]]);
     }));
 
-    return function (_x14, _x15) {
+    return function (_x15, _x16) {
       return _ref12.apply(this, arguments);
     };
   }();

@@ -48,6 +48,10 @@ exports.default = {
   TCP_DEVICE_SERVER_CONFIG: {
     HOST: 'localhost',
     PORT: 5683
+  },
+  // Override template parameters in webhooks with this object
+  WEBHOOK_TEMPLATE_PARAMETERS: {
+    // SOME_AUTH_TOKEN: '12312312',
   }
 }; /**
    *    Copyright (C) 2013-2014 Spark Labs, Inc. All rights reserved. -  https://www.spark.io/
