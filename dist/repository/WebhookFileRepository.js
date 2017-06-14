@@ -116,26 +116,20 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
       };
     }();
 
-    this.update = function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(model) {
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                throw new _HttpError2.default('Not implemented');
+    this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2() {
+      return _regenerator2.default.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              throw new _HttpError2.default('Not implemented');
 
-              case 1:
-              case 'end':
-                return _context2.stop();
-            }
+            case 1:
+            case 'end':
+              return _context2.stop();
           }
-        }, _callee2, _this);
-      }));
-
-      return function (_x2) {
-        return _ref2.apply(this, arguments);
-      };
-    }();
+        }
+      }, _callee2, _this);
+    }));
 
     this._fileManager = new _sparkProtocol.JSONFileManager(path);
   }
@@ -183,7 +177,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
         }, _callee3, this);
       }));
 
-      function create(_x3) {
+      function create(_x2) {
         return _ref3.apply(this, arguments);
       }
 
@@ -207,7 +201,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
         }, _callee4, this);
       }));
 
-      function deleteByID(_x4) {
+      function deleteByID(_x3) {
         return _ref4.apply(this, arguments);
       }
 
@@ -231,7 +225,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
         }, _callee5, this);
       }));
 
-      function getByID(_x5) {
+      function getByID(_x4) {
         return _ref5.apply(this, arguments);
       }
 

@@ -14,7 +14,7 @@ class WebhookFileRepository implements IWebhookRepository {
   }
 
   @memoizeSet()
-  async create(model: $Shape<Webhook>): Promise<Webhook> {
+  async create(model: WebhookMutator): Promise<Webhook> {
     let id = uuid();
     while (await this._fileManager.hasFile(`${id}.json`)) {
       id = uuid();
@@ -55,7 +55,7 @@ class WebhookFileRepository implements IWebhookRepository {
   }
 
   // eslint-disable-next-line no-unused-vars
-  update = async (model: WebhookMutator): Promise<Webhook> => {
+  updateByID = async (): Promise<Webhook> => {
     throw new HttpError('Not implemented');
   };
 

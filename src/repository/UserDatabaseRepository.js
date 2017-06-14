@@ -51,7 +51,7 @@ class UserDatabaseRepository implements IUserRepository {
     );
   };
 
-  deleteAccessToken = async (userID: string, accessToken: string): Promise<void> =>
+  deleteAccessToken = async (userID: string, accessToken: string): Promise<User> =>
     await this._database.findAndModify(
       this._collectionName,
       { _id: userID },
@@ -113,14 +113,14 @@ class UserDatabaseRepository implements IUserRepository {
 
   setCurrentUser = (user: User) => {
     this._currentUser = user;
-  }
+  };
 
-  update = async (model: User): Promise<User> =>
+  updateByID = async (id: string, props: $Shape<User>): Promise<User> =>
     await this._database.findAndModify(
       this._collectionName,
-      { _id: model.id },
+      { _id: id },
       null,
-      { $set: { ...model, timeStamp: new Date() } },
+      { $set: { ...props, timeStamp: new Date() } },
       { new: true, upsert: true },
     );
 
