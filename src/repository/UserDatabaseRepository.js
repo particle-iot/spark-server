@@ -120,7 +120,7 @@ class UserDatabaseRepository implements IUserRepository {
       this._collectionName,
       { _id: id },
       null,
-      { $set: { ...props, timeStamp: new Date() } },
+      { $set: { ...props } },
       { new: true, upsert: true },
     );
 

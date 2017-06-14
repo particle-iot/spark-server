@@ -86,7 +86,7 @@ class DevicesController extends Controller {
   @httpVerb('get')
   @route('/v1/devices/:deviceID')
   async getDevice(deviceID: string): Promise<*> {
-    const device = await this._deviceManager.getDetailsByID(deviceID);
+    const device = await this._deviceManager.getByID(deviceID);
     return this.ok(deviceToAPI(device));
   }
 
