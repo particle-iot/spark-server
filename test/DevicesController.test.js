@@ -20,6 +20,8 @@ let userToken;
 let connectedDeviceToApiAttributes;
 let disconnectedDeviceToApiAttributes;
 
+const getConnectedAttributes = () => connectedDeviceToApiAttributes;
+
 const TEST_LAST_HEARD = new Date();
 const TEST_DEVICE_FUNTIONS = ['testFunction'];
 const TEST_FUNCTION_ARGUMENT = 'testArgument';
@@ -44,11 +46,11 @@ test.before(async () => {
         return deviceID === CONNECTED_DEVICE_ID
           ? {
               connected: true,
-              lastPing: TEST_LAST_HEARD,
+              lastHeard: TEST_LAST_HEARD,
             }
           : {
               connected: false,
-              lastPing: null,
+              lastHeard: null,
             };
       }
 
@@ -64,12 +66,13 @@ test.before(async () => {
         }
       }
 
-      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_DESCRIPTION) {
+      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES) {
         return {
-          state: {
-            f: TEST_DEVICE_FUNTIONS,
-            v: TEST_DEVICE_VARIABLES,
-          },
+          deviceID: CONNECTED_DEVICE_ID,
+          functions: TEST_DEVICE_FUNTIONS,
+          lastHeard: TEST_LAST_HEARD,
+          ownerID: testUser.id,
+          variables: TEST_DEVICE_VARIABLES,
         };
       }
 
@@ -211,14 +214,14 @@ test.serial('should return all devices', async t => {
 
 test.serial('should unclaim device', async t => {
   const unclaimResponse = await request(app)
-    .delete(`/v1/devices/${CONNECTED_DEVICE_ID}`)
+    .delete(`/v1/devices/${DISCONNECTED_DEVICE_ID}`)
     .query({ access_token: userToken });
 
   t.is(unclaimResponse.status, 200);
   t.is(unclaimResponse.body.ok, true);
 
   const getDeviceResponse = await request(app)
-    .get(`/v1/devices/${CONNECTED_DEVICE_ID}`)
+    .get(`/v1/devices/${DISCONNECTED_DEVICE_ID}`)
     .query({ access_token: userToken });
 
   t.is(getDeviceResponse.status, 403);
@@ -230,14 +233,14 @@ test.serial('should claim device', async t => {
     .set('Content-Type', 'application/x-www-form-urlencoded')
     .send({
       access_token: userToken,
-      id: CONNECTED_DEVICE_ID,
+      id: DISCONNECTED_DEVICE_ID,
     });
 
   t.is(claimDeviceResponse.status, 200);
   t.is(claimDeviceResponse.body.ok, true);
 
   const getDeviceResponse = await request(app)
-    .get(`/v1/devices/${CONNECTED_DEVICE_ID}`)
+    .get(`/v1/devices/${DISCONNECTED_DEVICE_ID}`)
     .query({ access_token: userToken });
 
   t.is(getDeviceResponse.status, 200);

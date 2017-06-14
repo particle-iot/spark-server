@@ -22,18 +22,13 @@ test.before(async () => {
     container.constitute('EventPublisher'),
     'publishAndListenForResponse',
     ({ name }) => {
-      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_DESCRIPTION) {
-        return {
-          state : {
-            f: null,
-            v: null,
-          },
-        };
+      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES) {
+        return { error: new Error('Could not get device for ID') };
       }
       if(name === SPARK_SERVER_EVENTS.PING_DEVICE) {
         return {
           connected: true,
-          lastPing: new Date(),
+          lastHeard: new Date(),
         };
       }
     }
