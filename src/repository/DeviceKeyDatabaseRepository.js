@@ -31,12 +31,15 @@ class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
       { deviceID },
     );
 
-  update = async (model: DeviceKeyObject): Promise<DeviceKeyObject> =>
+  updateByID = async (
+    deviceID: string,
+    props: $Shape<DeviceKeyObject>,
+  ): Promise<DeviceKeyObject> =>
     await this._database.findAndModify(
       this._collectionName,
-      { deviceID: model.deviceID },
+      { deviceID },
       null,
-      { $set: { ...model } },
+      { $set: { ...props } },
       { new: true, upsert: true },
     );
 }

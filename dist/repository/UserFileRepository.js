@@ -8,13 +8,13 @@ var _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-pr
 
 var _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
 
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
 var _regenerator = require('babel-runtime/regenerator');
 
@@ -132,7 +132,7 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
 
     this.deleteAccessToken = function () {
       var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(userID, token) {
-        var user, userToSave;
+        var user;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -151,13 +151,15 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
                 throw new Error('User doesn\'t exist');
 
               case 5:
-                userToSave = (0, _extends3.default)({}, user, {
+                _context2.next = 7;
+                return _this.updateByID(userID, {
                   accessTokens: user.accessTokens.filter(function (tokenObject) {
                     return tokenObject.accessToken !== token;
                   })
                 });
-                _context2.next = 8;
-                return _this.update(userToSave);
+
+              case 7:
+                return _context2.abrupt('return', _context2.sent);
 
               case 8:
               case 'end':
@@ -209,7 +211,7 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
 
     this.saveAccessToken = function () {
       var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(userID, tokenObject) {
-        var user, userToSave;
+        var user;
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
@@ -228,16 +230,13 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
                 throw new _HttpError2.default('Could not find user for user ID');
 
               case 5:
-                userToSave = (0, _extends3.default)({}, user, {
-                  accessTokens: [].concat((0, _toConsumableArray3.default)(user.accessTokens), [tokenObject])
-                });
-                _context4.next = 8;
-                return _this.update(userToSave);
+                _context4.next = 7;
+                return _this.updateByID(userID, { accessTokens: [].concat((0, _toConsumableArray3.default)(user.accessTokens), [tokenObject]) });
 
-              case 8:
+              case 7:
                 return _context4.abrupt('return', _context4.sent);
 
-              case 9:
+              case 8:
               case 'end':
                 return _context4.stop();
             }
@@ -504,17 +503,26 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
       return isUserNameInUse;
     }()
   }, {
-    key: 'update',
+    key: 'updateByID',
     value: function () {
-      var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(model) {
+      var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(id, props) {
+        var user, modelToSave;
         return _regenerator2.default.wrap(function _callee12$(_context12) {
           while (1) {
             switch (_context12.prev = _context12.next) {
               case 0:
-                this._fileManager.writeFile(model.id + '.json', model);
-                return _context12.abrupt('return', model);
+                _context12.next = 2;
+                return this.getByID(id);
 
               case 2:
+                user = _context12.sent;
+                modelToSave = (0, _extends3.default)({}, user || {}, props);
+
+
+                this._fileManager.writeFile(id + '.json', modelToSave);
+                return _context12.abrupt('return', modelToSave);
+
+              case 6:
               case 'end':
                 return _context12.stop();
             }
@@ -522,13 +530,13 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee12, this);
       }));
 
-      function update(_x15) {
+      function updateByID(_x15, _x16) {
         return _ref12.apply(this, arguments);
       }
 
-      return update;
+      return updateByID;
     }()
   }]);
   return UserFileRepository;
-}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteByID', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteByID'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByID', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByID'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByUsername', [_dec5], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByUsername'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'isUserNameInUse', [_dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'isUserNameInUse'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'update', [_dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'update'), _class.prototype)), _class));
+}(), (_applyDecoratedDescriptor(_class.prototype, 'create', [_dec], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'create'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteByID', [_dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteByID'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAll', [_dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAll'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByID', [_dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByID'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getByUsername', [_dec5], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getByUsername'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'isUserNameInUse', [_dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'isUserNameInUse'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'updateByID', [_dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'updateByID'), _class.prototype)), _class));
 exports.default = UserFileRepository;

@@ -54,11 +54,10 @@ class DeviceManager {
       throw new HttpError('The device is already claimed.');
     }
 
-    const attributesToSave = {
-      ...deviceAttributes,
-      ownerID: userID,
-    };
-    return await this._deviceAttributeRepository.update(attributesToSave);
+    return await this._deviceAttributeRepository.updateByID(
+      deviceID,
+      { ownerID: userID },
+    );
   };
 
   unclaimDevice = async (deviceID: string): Promise<DeviceAttributes> => {
@@ -69,11 +68,10 @@ class DeviceManager {
       throw new HttpError('No device found', 404);
     }
 
-    const attributesToSave = {
-      ...deviceAttributes,
-      ownerID: null,
-    };
-    return await this._deviceAttributeRepository.update(attributesToSave);
+    return await this._deviceAttributeRepository.updateByID(
+      deviceID,
+      { ownerID: null },
+    );
   };
 
   getByID = async (deviceID: string): Promise<Device> => {
@@ -132,11 +130,10 @@ class DeviceManager {
 
     const devicePromises = devicesAttributes.map(
       async (attributes: DeviceAttributes): Promise<Object> => {
-        const pingResponse = this._eventPublisher.publishAndListenForResponse({
+        const pingResponse = await this._eventPublisher.publishAndListenForResponse({
           context: { deviceID: attributes.deviceID },
           name: SPARK_SERVER_EVENTS.PING_DEVICE,
         });
-
         return {
           ...attributes,
           connected: pingResponse.connected || false,
@@ -271,19 +268,22 @@ class DeviceManager {
       throw new HttpError(`Key error ${error}`);
     }
 
-    await this._deviceKeyRepository.update({ deviceID, key: publicKey });
-    const existingAttributes = await this._deviceAttributeRepository.getByID(
+    await this._deviceKeyRepository.updateByID(
       deviceID,
+      {
+        deviceID,
+        key: publicKey,
+      },
     );
-    const attributes = {
-      deviceID,
-      ...existingAttributes,
-      ownerID: userID,
-      registrar: userID,
-      timestamp: new Date(),
-    };
-    await this._deviceAttributeRepository.update(attributes);
 
+    await this._deviceAttributeRepository.updateByID(
+      deviceID,
+      {
+        ownerID: userID,
+        registrar: userID,
+        timestamp: new Date(),
+      },
+    );
     return await this.getByID(deviceID);
   };
 
@@ -323,11 +323,7 @@ class DeviceManager {
       throw new HttpError('No device found', 404);
     }
 
-    const attributesToSave = {
-      ...attributes,
-      name,
-    };
-    return await this._deviceAttributeRepository.update(attributesToSave);
+    return await this._deviceAttributeRepository.updateByID(deviceID, { name });
   }
 }
 

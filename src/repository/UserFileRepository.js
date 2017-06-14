@@ -58,21 +58,21 @@ class UserFileRepository implements IUserRepository {
     return modelToSave;
   }
 
-  deleteAccessToken = async (userID: string, token: string): Promise<*> => {
+  deleteAccessToken = async (userID: string, token: string): Promise<User> => {
     const user = await this.getByID(userID);
     if (!user) {
       throw new Error('User doesn\'t exist');
     }
 
-    const userToSave = {
-      ...user,
-      accessTokens: user.accessTokens.filter(
-        (tokenObject: TokenObject): boolean =>
-        tokenObject.accessToken !== token,
-      ),
-    };
-
-    await this.update(userToSave);
+    return await this.updateByID(
+      userID,
+      {
+        accessTokens: user.accessTokens.filter(
+          (tokenObject: TokenObject): boolean =>
+            tokenObject.accessToken !== token,
+        ),
+      },
+    );
   };
 
   @memoizeSet(['id'])
@@ -125,22 +125,23 @@ class UserFileRepository implements IUserRepository {
       throw new HttpError('Could not find user for user ID');
     }
 
-    const userToSave = {
-      ...user,
-      accessTokens: [...user.accessTokens, tokenObject],
-    };
-
-    return await this.update(userToSave);
-  }
+    return await this.updateByID(
+      userID,
+      { accessTokens: [...user.accessTokens, tokenObject] },
+    );
+  };
 
   setCurrentUser = (user: User) => {
     this._currentUser = user;
-  }
+  };
 
   @memoizeSet()
-  async update(model: User): Promise<User> {
-    this._fileManager.writeFile(`${model.id}.json`, model);
-    return model;
+  async updateByID(id: string, props: $Shape<User>): Promise<User> {
+    const user = await this.getByID(id);
+    const modelToSave = { ...(user || {}), ...props };
+
+    this._fileManager.writeFile(`${id}.json`, modelToSave);
+    return modelToSave;
   }
 
   validateLogin = async (username: string, password: string): Promise<User> => {

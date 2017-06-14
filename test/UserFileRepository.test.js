@@ -37,7 +37,7 @@ test(
 
     await testAllAccessors();
 
-    await repository.update(user);
+    await repository.updateByID(user.id, user);
     await testAllAccessors();
 
     await repository.deleteByID(user.id);
