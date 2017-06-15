@@ -74,7 +74,7 @@ class TestData {
   static getPublicKey = (): string => {
     const key = new NodeRSA({ b: 1024 });
 
-    return key.exportKey('pkcs1-public-pem');
+    return key.exportKey('pkcs8-public-pem');
   };
 }
 

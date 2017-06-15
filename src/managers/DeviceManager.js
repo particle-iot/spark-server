@@ -244,14 +244,8 @@ class DeviceManager {
     }
 
     try {
-      const createdKey = new NodeRSA(
-        publicKey,
-        'pkcs1-public-pem',
-        {
-          encryptionScheme: 'pkcs1',
-          signingScheme: 'pkcs1',
-        },
-      );
+      const createdKey = new NodeRSA(publicKey);
+
       if (!createdKey.isPublic()) {
         throw new HttpError('Not a public key');
       }
