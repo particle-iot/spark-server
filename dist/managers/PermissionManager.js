@@ -119,7 +119,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
               return _context3.abrupt('return', null);
 
             case 5:
-              if (_this.doesUserHaveAccess(entity.ownerID)) {
+              if (_this.doesUserHaveAccess(entity)) {
                 _context3.next = 7;
                 break;
               }
@@ -181,7 +181,9 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
     }, _callee4, _this, [[0, 9]]);
   }));
 
-  this.doesUserHaveAccess = function (ownerID) {
+  this.doesUserHaveAccess = function (_ref5) {
+    var ownerID = _ref5.ownerID;
+
     var currentUser = _this._userRepository.getCurrentUser();
     return currentUser.role === 'administrator' || currentUser.id === ownerID;
   };
