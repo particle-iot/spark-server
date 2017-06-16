@@ -22,18 +22,13 @@ test.before(async () => {
     container.constitute('EventPublisher'),
     'publishAndListenForResponse',
     ({ name }) => {
-      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_DESCRIPTION) {
-        return {
-          state : {
-            f: null,
-            v: null,
-          },
-        };
+      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES) {
+        return { error: new Error('Could not get device for ID') };
       }
       if(name === SPARK_SERVER_EVENTS.PING_DEVICE) {
         return {
           connected: true,
-          lastPing: new Date(),
+          lastHeard: new Date(),
         };
       }
     }
@@ -69,6 +64,7 @@ test('provision and add keys for a device.', async t => {
     .post(`/v1/provisioning/${DEVICE_ID}`)
     .query({ access_token: userToken })
     .send({ publicKey: TEST_PUBLIC_KEY });
+  console.log(response.body);
 
   t.is(response.status, 200);
   t.is(response.body.id, DEVICE_ID);

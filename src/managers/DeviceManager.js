@@ -40,20 +40,28 @@ class DeviceManager {
     deviceID: string,
     userID: string,
   ): Promise<DeviceAttributes> => {
-    const deviceAttributes =
+    // todo check: we may not need to get attributes from db here.
+    const attributes =
       await this._deviceAttributeRepository.getByID(deviceID);
 
-    if (!deviceAttributes) {
+    if (!attributes) {
       throw new HttpError('No device found', 404);
     }
-    if (deviceAttributes.ownerID && deviceAttributes.ownerID !== userID) {
+    if (attributes.ownerID && attributes.ownerID !== userID) {
       throw new HttpError('The device belongs to someone else.');
     }
 
-    if (deviceAttributes.ownerID && deviceAttributes.ownerID === userID) {
+    if (attributes.ownerID && attributes.ownerID === userID) {
       throw new HttpError('The device is already claimed.');
     }
 
+    // update connected device attributes
+    await this._eventPublisher.publishAndListenForResponse({
+      context: { attributes: { ownerID: userID }, deviceID },
+      name: SPARK_SERVER_EVENTS.UPDATE_DEVICE_ATTRIBUTES,
+    });
+
+    // todo check: we may not need to update attributes in db here.
     return await this._deviceAttributeRepository.updateByID(
       deviceID,
       { ownerID: userID },
@@ -61,12 +69,13 @@ class DeviceManager {
   };
 
   unclaimDevice = async (deviceID: string): Promise<DeviceAttributes> => {
-    const deviceAttributes =
-      await this._permissionManager.getEntityByID('deviceAttributes', deviceID);
+    await this.getByID(deviceID);
 
-    if (!deviceAttributes) {
-      throw new HttpError('No device found', 404);
-    }
+    // update connected device attributes
+    await this._eventPublisher.publishAndListenForResponse({
+      context: { attributes: { ownerID: null }, deviceID },
+      name: SPARK_SERVER_EVENTS.UPDATE_DEVICE_ATTRIBUTES,
+    });
 
     return await this._deviceAttributeRepository.updateByID(
       deviceID,
@@ -74,41 +83,26 @@ class DeviceManager {
     );
   };
 
-  getByID = async (deviceID: string): Promise<Device> => {
-    const attributes = await this._permissionManager.getEntityByID(
-      'deviceAttributes',
-      deviceID,
-    );
-
-    if (!attributes) {
-      throw new HttpError('No device found', 404);
-    }
-
-    const pingResponse = await this._eventPublisher.publishAndListenForResponse({
-      context: { deviceID },
-      name: SPARK_SERVER_EVENTS.PING_DEVICE,
-    });
-
-    return {
-      ...attributes,
-      connected: pingResponse.connected || false,
-      lastFlashedAppName: null,
-      lastHeard: pingResponse.lastPing || attributes.lastHeard,
-    };
+  getAttributesByID = async (deviceID: string): Promise<DeviceAttributes> => {
+    // eslint-disable-next-line no-unused-vars
+    const { connected, ...attributes } = await this.getByID(deviceID);
+    return attributes;
   };
 
-  getDetailsByID = async (deviceID: string): Promise<Device> => {
-    const [attributes, description, pingResponse] = await Promise.all([
-      this._permissionManager.getEntityByID('deviceAttributes', deviceID),
-      this._eventPublisher.publishAndListenForResponse({
+  getByID = async (deviceID: string): Promise<Device> => {
+    const connectedDeviceAttributes = await this._eventPublisher
+      .publishAndListenForResponse({
         context: { deviceID },
-        name: SPARK_SERVER_EVENTS.GET_DEVICE_DESCRIPTION,
-      }),
-      this._eventPublisher.publishAndListenForResponse({
-        context: { deviceID },
-        name: SPARK_SERVER_EVENTS.PING_DEVICE },
-      ),
-    ]);
+        name: SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES,
+      });
+
+    const attributes = !connectedDeviceAttributes.error &&
+      this._permissionManager.doesUserHaveAccess(connectedDeviceAttributes)
+        ? connectedDeviceAttributes
+        : await this._permissionManager.getEntityByID(
+          'deviceAttributes',
+          deviceID,
+        );
 
     if (!attributes) {
       throw new HttpError('No device found', 404);
@@ -116,11 +110,8 @@ class DeviceManager {
 
     return {
       ...attributes,
-      connected: pingResponse.connected,
-      functions: description.state ? description.state.f : null,
+      connected: !connectedDeviceAttributes.error,
       lastFlashedAppName: null,
-      lastHeard: pingResponse.lastPing || attributes.lastHeard,
-      variables: description.state ? description.state.v : null,
     };
   };
 
@@ -138,7 +129,7 @@ class DeviceManager {
           ...attributes,
           connected: pingResponse.connected || false,
           lastFlashedAppName: null,
-          lastHeard: pingResponse.lastPing || attributes.lastHeard,
+          lastHeard: pingResponse.lastHeard || attributes.lastHeard,
         };
       },
     );
@@ -253,14 +244,8 @@ class DeviceManager {
     }
 
     try {
-      const createdKey = new NodeRSA(
-        publicKey,
-        'pkcs1-public-pem',
-        {
-          encryptionScheme: 'pkcs1',
-          signingScheme: 'pkcs1',
-        },
-      );
+      const createdKey = new NodeRSA(publicKey);
+
       if (!createdKey.isPublic()) {
         throw new HttpError('Not a public key');
       }
@@ -314,14 +299,14 @@ class DeviceManager {
     deviceID: string,
     name: string,
   ): Promise<DeviceAttributes> => {
-    const attributes = await this._permissionManager.getEntityByID(
-      'deviceAttributes',
-      deviceID,
-    );
+    // eslint-disable-next-line no-unused-vars
+    const attributes = await this.getAttributesByID(deviceID);
 
-    if (!attributes) {
-      throw new HttpError('No device found', 404);
-    }
+    // update connected device attributes
+    await this._eventPublisher.publishAndListenForResponse({
+      context: { attributes: { name }, deviceID },
+      name: SPARK_SERVER_EVENTS.UPDATE_DEVICE_ATTRIBUTES,
+    });
 
     return await this._deviceAttributeRepository.updateByID(deviceID, { name });
   }

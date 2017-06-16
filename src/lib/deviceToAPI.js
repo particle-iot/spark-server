@@ -25,7 +25,7 @@ const deviceToAPI = (device: Device, result?: mixed): DeviceAPIType => ({
   cellular: device.isCellular,
   connected: device.connected,
   current_build_target: device.currentBuildTarget,
-  functions: device.functions,
+  functions: device.functions || null,
   id: device.deviceID,
   imei: device.imei,
   last_app: device.lastFlashedAppName,
@@ -37,7 +37,7 @@ const deviceToAPI = (device: Device, result?: mixed): DeviceAPIType => ({
   product_id: device.particleProductId,
   return_value: result,
   status: 'normal',
-  variables: device.variables,
+  variables: device.variables || null,
 });
 
 export default deviceToAPI;

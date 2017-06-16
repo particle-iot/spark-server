@@ -8,7 +8,7 @@ var deviceToAPI = function deviceToAPI(device, result) {
     cellular: device.isCellular,
     connected: device.connected,
     current_build_target: device.currentBuildTarget,
-    functions: device.functions,
+    functions: device.functions || null,
     id: device.deviceID,
     imei: device.imei,
     last_app: device.lastFlashedAppName,
@@ -20,7 +20,7 @@ var deviceToAPI = function deviceToAPI(device, result) {
     product_id: device.particleProductId,
     return_value: result,
     status: 'normal',
-    variables: device.variables
+    variables: device.variables || null
   };
 };
 

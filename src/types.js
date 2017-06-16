@@ -57,14 +57,21 @@ export type Client = {
   grants: Array<GrantType>,
 };
 
+
+export type Device = DeviceAttributes & {
+  connected: boolean,
+};
+
 export type DeviceAttributes = {
   appHash: ?string,
   currentBuildTarget: string,
   deviceID: string,
+  functions?: ?Array<string>,
   imei?: string,
   ip: string,
   isCellular: boolean,
   last_iccid?: string,
+  lastFlashedAppName: ?string,
   lastHeard: Date,
   name: string,
   ownerID: ?string,
@@ -72,6 +79,7 @@ export type DeviceAttributes = {
   productFirmwareVersion: number,
   registrar: string,
   timestamp: Date,
+  variables?: ?Object,
 };
 
 export type DeviceKeyObject = {
@@ -125,13 +133,6 @@ export type UserCredentials = {
 export type UserRole = 'administrator';
 
 export type ProtectedEntityName = 'deviceAttributes' | 'webhook';
-
-export type Device = DeviceAttributes & {
-  connected: boolean,
-  functions?: ?Array<string>,
-  lastFlashedAppName: ?string,
-  variables?: ?Object,
-};
 
 export type Settings = {
   ACCESS_TOKEN_LIFETIME: number,

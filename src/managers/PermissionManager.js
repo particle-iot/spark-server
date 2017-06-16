@@ -51,9 +51,11 @@ class PermissionManager {
     if (!entity) {
       return null;
     }
-    if (!this._doesUserHaveAccess(entity.ownerID)) {
+
+    if (!this.doesUserHaveAccess(entity)) {
       throw new HttpError('User doesn\'t have access', 403);
     }
+
     return entity;
   };
 
@@ -77,7 +79,7 @@ class PermissionManager {
     }
   };
 
-  _doesUserHaveAccess = (ownerID: ?string): boolean => {
+  doesUserHaveAccess = ({ ownerID }: Object): boolean => {
     const currentUser = this._userRepository.getCurrentUser();
     return currentUser.role === 'administrator' || currentUser.id === ownerID;
   };

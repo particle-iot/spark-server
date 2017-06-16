@@ -289,7 +289,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
             switch (_context6.prev = _context6.next) {
               case 0:
                 _context6.next = 2;
-                return this._deviceManager.getDetailsByID(deviceID);
+                return this._deviceManager.getByID(deviceID);
 
               case 2:
                 device = _context6.sent;
