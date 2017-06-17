@@ -22,7 +22,7 @@ class ProvisioningController extends Controller {
   async provision(
     coreID: string,
     postBody: {
-      alogrithm: 'ecc' | 'rsa',
+      algorithm: 'ecc' | 'rsa',
       filename: 'cli',
       order: string, // not sure what this is used for
       publicKey: string,
@@ -36,7 +36,7 @@ class ProvisioningController extends Controller {
       coreID,
       this.user.id,
       postBody.publicKey,
-      postBody.alogrithm,
+      postBody.algorithm,
     );
 
     if (!device) {
