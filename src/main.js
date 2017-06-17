@@ -42,7 +42,7 @@ deviceServer.start();
 const app = createApp(container, settings);
 
 const onServerStartListen = (): void =>
-  console.log(`express server started on port ${NODE_PORT}`);
+  logger.info(`express server started on port ${NODE_PORT}`);
 
 const {
   SSL_PRIVATE_KEY_FILEPATH: privateKeyFilePath,
@@ -83,5 +83,5 @@ const addresses = arrayFlatten(
   ),
 );
 addresses.forEach((address: string): void =>
-  console.log(`Your device server IP address is: ${address}`),
+  logger.info(`Your device server IP address is: ${address}`),
 );

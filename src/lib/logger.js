@@ -19,12 +19,18 @@
 *
 */
 
+import { Container } from 'constitute';
+
 import chalk from 'chalk';
 import settings from '../settings';
 
+function isObject(obj: any): boolean {
+  return obj === Object(obj);
+}
+
 function _transform(...params: Array<any>): Array<any> {
   return params.map((param: any): string => {
-    if (typeof param === 'string') {
+    if (!isObject(param)) {
       return param;
     }
 
@@ -32,23 +38,42 @@ function _transform(...params: Array<any>): Array<any> {
   });
 }
 
+function getDate(): string {
+  return (new Date()).toISOString();
+}
+
 class Logger {
+  static container: Container;
+
   static log(...params: Array<any>) {
     if (settings.SHOW_VERBOSE_DEVICE_LOGS) {
-      console.log(_transform(...params));
+      Logger._log(`[${getDate()}]`, _transform(...params));
     }
   }
 
   static info(...params: Array<any>) {
-    console.log(chalk.cyan(_transform(...params)));
+    Logger._log(
+      `[${getDate()}]`,
+      chalk.cyan(_transform(...params)),
+    );
   }
 
   static warn(...params: Array<any>) {
-    console.warn(chalk.yellow(_transform(...params)));
+    Logger._log(
+      `[${getDate()}]`,
+      chalk.yellow(_transform(...params)),
+    );
   }
 
   static error(...params: Array<any>) {
-    console.error(chalk.red(_transform(...params)));
+    Logger._log(
+      `[${getDate()}]`,
+      chalk.red(_transform(...params)),
+    );
+  }
+
+  static _log(...params: Array<any>): Function {
+    return Logger.container.constitute('LOGGING_FUNCTION')(...params);
   }
 }
 
