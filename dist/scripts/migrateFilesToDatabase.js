@@ -251,6 +251,7 @@ var insertUsers = function () {
             var fileName = _ref10.fileName,
                 fileBuffer = _ref10.fileBuffer;
             return {
+              algorithm: 'rsa',
               deviceID: fileName.substring(0, fileName.indexOf('.pub.pem')),
               key: fileBuffer.toString()
             };
