@@ -56,6 +56,8 @@ export default {
     PATH: path.join(__dirname, '../data/db'),
     URL: null,
   },
+  SHOW_VERBOSE_DEVICE_LOGS: false,
+
   TCP_DEVICE_SERVER_CONFIG: {
     HOST: 'localhost',
     PORT: 5683,

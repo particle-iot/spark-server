@@ -421,7 +421,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
               case 18:
                 file = this.request.files && this.request.files.file[0];
 
-                if (!(file && file.originalname.endsWith('.bin'))) {
+                if (!(file && (file.originalname === 'binary' || file.originalname.endsWith('.bin')))) {
                   _context8.next = 24;
                   break;
                 }
