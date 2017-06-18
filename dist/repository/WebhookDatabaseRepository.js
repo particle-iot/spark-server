@@ -20,13 +20,17 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _collectionNames = require('./collectionNames');
+
+var _collectionNames2 = _interopRequireDefault(_collectionNames);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, WebhookDatabaseRepository);
-  this._collectionName = 'webhooks';
+  this._collectionName = _collectionNames2.default.WEBHOOKS;
 
   this.create = function () {
     var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(model) {
@@ -90,7 +94,7 @@ var WebhookDatabaseRepository = function WebhookDatabaseRepository(database) {
             case 0:
               query = userID ? { ownerID: userID } : {};
               _context3.next = 3;
-              return _this._database.find(_this._collectionName, query, { timeout: false });
+              return _this._database.find(_this._collectionName, query);
 
             case 3:
               return _context3.abrupt('return', _context3.sent);
