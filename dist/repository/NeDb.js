@@ -4,6 +4,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _values = require('babel-runtime/core-js/object/values');
+
+var _values2 = _interopRequireDefault(_values);
+
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -36,9 +44,13 @@ var _mkdirp = require('mkdirp');
 
 var _mkdirp2 = _interopRequireDefault(_mkdirp);
 
-var _tingodb = require('tingodb');
+var _nedbCore = require('nedb-core');
 
-var _tingodb2 = _interopRequireDefault(_tingodb);
+var _nedbCore2 = _interopRequireDefault(_nedbCore);
+
+var _collectionNames = require('./collectionNames');
+
+var _collectionNames2 = _interopRequireDefault(_collectionNames);
 
 var _promisify = require('../lib/promisify');
 
@@ -48,15 +60,15 @@ var _BaseMongoDb3 = _interopRequireDefault(_BaseMongoDb2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var TingoDb = function (_BaseMongoDb) {
-  (0, _inherits3.default)(TingoDb, _BaseMongoDb);
+var NeDb = function (_BaseMongoDb) {
+  (0, _inherits3.default)(NeDb, _BaseMongoDb);
 
-  function TingoDb(path, options) {
+  function NeDb(path) {
     var _this2 = this;
 
-    (0, _classCallCheck3.default)(this, TingoDb);
+    (0, _classCallCheck3.default)(this, NeDb);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (TingoDb.__proto__ || (0, _getPrototypeOf2.default)(TingoDb)).call(this));
+    var _this = (0, _possibleConstructorReturn3.default)(this, (NeDb.__proto__ || (0, _getPrototypeOf2.default)(NeDb)).call(this));
 
     _this.insertOne = function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(collectionName, entity) {
@@ -67,17 +79,17 @@ var TingoDb = function (_BaseMongoDb) {
                 _context2.next = 2;
                 return _this.__runForCollection(collectionName, function () {
                   var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(collection) {
-                    var insertResults;
+                    var insertResult;
                     return _regenerator2.default.wrap(function _callee$(_context) {
                       while (1) {
                         switch (_context.prev = _context.next) {
                           case 0:
                             _context.next = 2;
-                            return (0, _promisify.promisify)(collection, 'insert', entity, { fullResult: true });
+                            return (0, _promisify.promisify)(collection, 'insert', entity);
 
                           case 2:
-                            insertResults = _context.sent;
-                            return _context.abrupt('return', _this.__translateResultItem(insertResults[0]));
+                            insertResult = _context.sent;
+                            return _context.abrupt('return', _this.__translateResultItem(insertResult));
 
                           case 4:
                           case 'end':
@@ -123,7 +135,7 @@ var TingoDb = function (_BaseMongoDb) {
                         switch (_context3.prev = _context3.next) {
                           case 0:
                             _context3.next = 2;
-                            return (0, _promisify.promisify)(collection.find(query, { timeout: false }), 'toArray');
+                            return (0, _promisify.promisify)(collection, 'find', query);
 
                           case 2:
                             resultItems = _context3.sent;
@@ -167,19 +179,23 @@ var TingoDb = function (_BaseMongoDb) {
                 _context6.next = 2;
                 return _this.__runForCollection(collectionName, function () {
                   var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(collection) {
-                    var modifiedItem;
+                    var _ref7, _ref8, count, resultItem;
+
                     return _regenerator2.default.wrap(function _callee5$(_context5) {
                       while (1) {
                         switch (_context5.prev = _context5.next) {
                           case 0:
                             _context5.next = 2;
-                            return (0, _promisify.promisify)(collection, 'findAndModify', query, null, updateQuery, { new: true, upsert: true });
+                            return (0, _promisify.promisify)(collection, 'update', query, updateQuery, { returnUpdatedDocs: true, upsert: true });
 
                           case 2:
-                            modifiedItem = _context5.sent;
-                            return _context5.abrupt('return', _this.__translateResultItem(modifiedItem));
+                            _ref7 = _context5.sent;
+                            _ref8 = (0, _slicedToArray3.default)(_ref7, 2);
+                            count = _ref8[0];
+                            resultItem = _ref8[1];
+                            return _context5.abrupt('return', _this.__translateResultItem(resultItem));
 
-                          case 4:
+                          case 7:
                           case 'end':
                             return _context5.stop();
                         }
@@ -209,14 +225,14 @@ var TingoDb = function (_BaseMongoDb) {
     }();
 
     _this.findOne = function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(collectionName, query) {
+      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(collectionName, query) {
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
                 _context8.next = 2;
                 return _this.__runForCollection(collectionName, function () {
-                  var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(collection) {
+                  var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(collection) {
                     var resultItem;
                     return _regenerator2.default.wrap(function _callee7$(_context7) {
                       while (1) {
@@ -238,7 +254,7 @@ var TingoDb = function (_BaseMongoDb) {
                   }));
 
                   return function (_x13) {
-                    return _ref8.apply(this, arguments);
+                    return _ref10.apply(this, arguments);
                   };
                 }());
 
@@ -254,19 +270,19 @@ var TingoDb = function (_BaseMongoDb) {
       }));
 
       return function (_x11, _x12) {
-        return _ref7.apply(this, arguments);
+        return _ref9.apply(this, arguments);
       };
     }();
 
     _this.remove = function () {
-      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(collectionName, query) {
+      var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(collectionName, query) {
         return _regenerator2.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
                 _context10.next = 2;
                 return _this.__runForCollection(collectionName, function () {
-                  var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(collection) {
+                  var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(collection) {
                     return _regenerator2.default.wrap(function _callee9$(_context9) {
                       while (1) {
                         switch (_context9.prev = _context9.next) {
@@ -286,7 +302,7 @@ var TingoDb = function (_BaseMongoDb) {
                   }));
 
                   return function (_x16) {
-                    return _ref10.apply(this, arguments);
+                    return _ref12.apply(this, arguments);
                   };
                 }());
 
@@ -302,17 +318,17 @@ var TingoDb = function (_BaseMongoDb) {
       }));
 
       return function (_x14, _x15) {
-        return _ref9.apply(this, arguments);
+        return _ref11.apply(this, arguments);
       };
     }();
 
     _this.__runForCollection = function () {
-      var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(collectionName, callback) {
+      var _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(collectionName, callback) {
         return _regenerator2.default.wrap(function _callee11$(_context11) {
           while (1) {
             switch (_context11.prev = _context11.next) {
               case 0:
-                return _context11.abrupt('return', callback(_this._database.collection(collectionName)));
+                return _context11.abrupt('return', callback(_this._database[collectionName]));
 
               case 1:
               case 'end':
@@ -323,21 +339,27 @@ var TingoDb = function (_BaseMongoDb) {
       }));
 
       return function (_x17, _x18) {
-        return _ref11.apply(this, arguments);
+        return _ref13.apply(this, arguments);
       };
     }();
-
-    var Db = (0, _tingodb2.default)(options).Db;
 
     if (!_fs2.default.existsSync(path)) {
       _mkdirp2.default.sync(path);
     }
 
-    _this._database = new Db(path, {});
+    _this._database = {};
+
+    (0, _values2.default)(_collectionNames2.default).forEach(function (collectionName) {
+      var colName = collectionName;
+      _this._database[collectionName] = new _nedbCore2.default({
+        autoload: true,
+        filename: path + '/' + colName + '.db'
+      });
+    });
     return _this;
   }
 
-  return TingoDb;
+  return NeDb;
 }(_BaseMongoDb3.default);
 
-exports.default = TingoDb;
+exports.default = NeDb;

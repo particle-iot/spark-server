@@ -87,7 +87,7 @@ deviceServer.start();
 var app = (0, _app2.default)(container, _settings2.default);
 
 var onServerStartListen = function onServerStartListen() {
-  return console.log('express server started on port ' + NODE_PORT);
+  return _logger2.default.info('express server started on port ' + NODE_PORT);
 };
 
 var _settings$EXPRESS_SER = _settings2.default.EXPRESS_SERVER_CONFIG,
@@ -121,5 +121,5 @@ function (_ref) {
   });
 }));
 addresses.forEach(function (address) {
-  return console.log('Your device server IP address is: ' + address);
+  return _logger2.default.info('Your device server IP address is: ' + address);
 });

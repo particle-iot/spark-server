@@ -28,6 +28,10 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _ecKey = require('ec-key');
+
+var _ecKey2 = _interopRequireDefault(_ecKey);
+
 var _sparkProtocol = require('spark-protocol');
 
 var _nodeRsa = require('node-rsa');
@@ -477,66 +481,88 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
   this.provision = function () {
     var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(deviceID, userID, publicKey, algorithm) {
-      var createdKey;
+      var eccKey, createdKey;
       return _regenerator2.default.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
             case 0:
               if (!(algorithm === 'ecc')) {
-                _context11.next = 2;
+                _context11.next = 12;
                 break;
               }
 
-              return _context11.abrupt('return', null);
+              _context11.prev = 1;
+              eccKey = new _ecKey2.default(publicKey, 'pem');
 
-            case 2:
-              _context11.prev = 2;
-              createdKey = new _nodeRsa2.default(publicKey);
-
-              if (createdKey.isPublic()) {
-                _context11.next = 6;
+              if (!eccKey.isPrivateECKey) {
+                _context11.next = 5;
                 break;
               }
 
               throw new _HttpError2.default('Not a public key');
 
-            case 6:
-              _context11.next = 11;
+            case 5:
+              _context11.next = 10;
               break;
 
-            case 8:
-              _context11.prev = 8;
-              _context11.t0 = _context11['catch'](2);
+            case 7:
+              _context11.prev = 7;
+              _context11.t0 = _context11['catch'](1);
               throw new _HttpError2.default('Key error ' + _context11.t0);
 
-            case 11:
-              _context11.next = 13;
+            case 10:
+              _context11.next = 21;
+              break;
+
+            case 12:
+              _context11.prev = 12;
+              createdKey = new _nodeRsa2.default(publicKey);
+
+              if (createdKey.isPublic()) {
+                _context11.next = 16;
+                break;
+              }
+
+              throw new _HttpError2.default('Not a public key');
+
+            case 16:
+              _context11.next = 21;
+              break;
+
+            case 18:
+              _context11.prev = 18;
+              _context11.t1 = _context11['catch'](12);
+              throw new _HttpError2.default('Key error ' + _context11.t1);
+
+            case 21:
+              _context11.next = 23;
               return _this._deviceKeyRepository.updateByID(deviceID, {
+                algorithm: algorithm,
                 deviceID: deviceID,
                 key: publicKey
               });
 
-            case 13:
-              _context11.next = 15;
+            case 23:
+              _context11.next = 25;
               return _this._deviceAttributeRepository.updateByID(deviceID, {
                 ownerID: userID,
                 registrar: userID,
                 timestamp: new Date()
               });
 
-            case 15:
-              _context11.next = 17;
+            case 25:
+              _context11.next = 27;
               return _this.getByID(deviceID);
 
-            case 17:
+            case 27:
               return _context11.abrupt('return', _context11.sent);
 
-            case 18:
+            case 28:
             case 'end':
               return _context11.stop();
           }
         }
-      }, _callee11, _this, [[2, 8]]);
+      }, _callee11, _this, [[1, 7], [12, 18]]);
     }));
 
     return function (_x16, _x17, _x18, _x19) {

@@ -37,7 +37,7 @@ export default {
   ACCESS_TOKEN_LIFETIME: 7776000, // 90 days,
   API_TIMEOUT: 30000, // Timeout for API requests.
   CRYPTO_ALGORITHM: 'aes-128-cbc',
-  LOG_REQUESTS: false,
+  LOG_REQUESTS: true,
   LOGIN_ROUTE: '/oauth/token',
   EXPRESS_SERVER_CONFIG: {
     PORT: 8080,
@@ -56,6 +56,8 @@ export default {
     PATH: path.join(__dirname, '../data/db'),
     URL: null,
   },
+  SHOW_VERBOSE_DEVICE_LOGS: false,
+
   TCP_DEVICE_SERVER_CONFIG: {
     HOST: 'localhost',
     PORT: 5683,

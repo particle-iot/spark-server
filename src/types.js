@@ -83,6 +83,7 @@ export type DeviceAttributes = {
 };
 
 export type DeviceKeyObject = {
+  algorithm: 'ecc' | 'rsa',
   deviceID: string,
   key: string,
 };

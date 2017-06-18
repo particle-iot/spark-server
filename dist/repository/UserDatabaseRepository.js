@@ -20,6 +20,10 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _collectionNames = require('./collectionNames');
+
+var _collectionNames2 = _interopRequireDefault(_collectionNames);
+
 var _PasswordHasher = require('../lib/PasswordHasher');
 
 var _PasswordHasher2 = _interopRequireDefault(_PasswordHasher);
@@ -34,7 +38,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, UserDatabaseRepository);
-  this._collectionName = 'users';
+  this._collectionName = _collectionNames2.default.USERS;
 
   this.create = function () {
     var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(user) {
@@ -114,7 +118,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { _id: userID }, null, { $pull: { accessTokens: { accessToken: accessToken } } }, { new: true });
+              return _this._database.findAndModify(_this._collectionName, { _id: userID }, { $pull: { accessTokens: { accessToken: accessToken } } });
 
             case 2:
               return _context3.abrupt('return', _context3.sent);
@@ -294,7 +298,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context10.prev = _context10.next) {
             case 0:
               _context10.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { _id: userID }, null, { $push: { accessTokens: tokenObject } }, { new: true });
+              return _this._database.findAndModify(_this._collectionName, { _id: userID }, { $push: { accessTokens: tokenObject } });
 
             case 2:
               return _context10.abrupt('return', _context10.sent);
@@ -323,7 +327,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context11.prev = _context11.next) {
             case 0:
               _context11.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { _id: id }, null, { $set: (0, _extends3.default)({}, props) }, { new: true, upsert: true });
+              return _this._database.findAndModify(_this._collectionName, { _id: id }, { $set: (0, _extends3.default)({}, props) });
 
             case 2:
               return _context11.abrupt('return', _context11.sent);

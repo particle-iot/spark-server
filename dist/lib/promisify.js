@@ -5,6 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.promisify = undefined;
 
+var _toConsumableArray2 = require("babel-runtime/helpers/toConsumableArray");
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _promise = require("babel-runtime/core-js/promise");
 
 var _promise2 = _interopRequireDefault(_promise);
@@ -17,12 +21,17 @@ var promisify = exports.promisify = function promisify(object, fnName) {
   }
 
   return new _promise2.default(function (resolve, reject) {
-    return object[fnName].apply(object, args.concat([function (error, result) {
+    return object[fnName].apply(object, args.concat([function (error) {
+      for (var _len2 = arguments.length, callbackArgs = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        callbackArgs[_key2 - 1] = arguments[_key2];
+      }
+
       if (error) {
         reject(error);
-        return;
+        return null;
       }
-      resolve(result);
+
+      return callbackArgs.length <= 1 ? resolve.apply(undefined, (0, _toConsumableArray3.default)(callbackArgs)) : resolve(callbackArgs);
     }]));
   });
 };

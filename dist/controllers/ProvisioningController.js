@@ -119,7 +119,7 @@ var ProvisioningController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0
 
               case 2:
                 _context.next = 4;
-                return this._deviceManager.provision(coreID, this.user.id, postBody.publicKey, postBody.alogrithm);
+                return this._deviceManager.provision(coreID, this.user.id, postBody.publicKey, postBody.algorithm);
 
               case 4:
                 device = _context.sent;

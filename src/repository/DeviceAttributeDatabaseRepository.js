@@ -1,15 +1,18 @@
 // @flow
 
+import type { CollectionName } from './collectionNames';
 import type {
   DeviceAttributes,
   IBaseDatabase,
   IDeviceAttributeRepository,
 } from '../types';
 
+import COLLECTION_NAMES from './collectionNames';
+
 // getByID, deleteByID and update uses model.deviceID as ID for querying
 class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
   _database: IBaseDatabase;
-  _collectionName: string = 'deviceAttributes';
+  _collectionName: CollectionName = COLLECTION_NAMES.DEVICE_ATTRIBUTES;
   _permissionManager: Object;
 
   constructor(database: IBaseDatabase, permissionManager: Object) {
@@ -29,7 +32,6 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     return await this._database.find(
       this._collectionName,
       query,
-      { timeout: false },
     );
   };
 
@@ -43,9 +45,7 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     await this._database.findAndModify(
       this._collectionName,
       { deviceID },
-      null,
       { $set: { ...props, timeStamp: new Date() } },
-      { new: true, upsert: true },
     );
 }
 export default DeviceAttributeDatabaseRepository;

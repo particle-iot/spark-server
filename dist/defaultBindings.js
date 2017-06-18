@@ -74,9 +74,9 @@ var _DeviceFirmwareFileRepository = require('./repository/DeviceFirmwareFileRepo
 
 var _DeviceFirmwareFileRepository2 = _interopRequireDefault(_DeviceFirmwareFileRepository);
 
-var _TingoDb = require('./repository/TingoDb');
+var _NeDb = require('./repository/NeDb');
 
-var _TingoDb2 = _interopRequireDefault(_TingoDb);
+var _NeDb2 = _interopRequireDefault(_NeDb);
 
 var _DeviceAttributeDatabaseRepository = require('./repository/DeviceAttributeDatabaseRepository');
 
@@ -94,6 +94,10 @@ var _WebhookDatabaseRepository = require('./repository/WebhookDatabaseRepository
 
 var _WebhookDatabaseRepository2 = _interopRequireDefault(_WebhookDatabaseRepository);
 
+var _logger = require('./lib/logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
 var _settings = require('./settings');
 
 var _settings2 = _interopRequireDefault(_settings);
@@ -108,6 +112,9 @@ exports.default = function (container, newSettings) {
 
   // spark protocol container bindings
   (0, _sparkProtocol.defaultBindings)(container, newSettings);
+
+  container.bindValue('LOGGING_FUNCTION', console.log);
+  _logger2.default.container = container;
 
   // settings
   container.bindValue('DATABASE_PATH', _settings2.default.DB_CONFIG.PATH);
@@ -130,7 +137,7 @@ exports.default = function (container, newSettings) {
 
   container.bindClass('OAuthServer', _expressOauthServer2.default, ['OAUTH_SETTINGS']);
 
-  container.bindClass('Database', _TingoDb2.default, ['DATABASE_PATH', 'DATABASE_OPTIONS']);
+  container.bindClass('Database', _NeDb2.default, ['DATABASE_PATH']);
 
   // lib
   container.bindClass('WebhookLogger', _WebhookLogger2.default, []);

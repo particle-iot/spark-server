@@ -112,6 +112,7 @@ const insertUsers = async (
 
     await Promise.all(getFiles(settings.DEVICE_DIRECTORY, '.pub.pem')
       .map(({ fileName, fileBuffer }: FileObject): DeviceKeyObject => ({
+        algorithm: 'rsa',
         deviceID: fileName.substring(0, fileName.indexOf('.pub.pem')),
         key: fileBuffer.toString(),
       }))

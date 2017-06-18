@@ -168,7 +168,11 @@ class DevicesController extends Controller {
       this.request.files &&
       (this.request.files: any).file[0];
 
-    if (file && file.originalname.endsWith('.bin')) {
+    if (
+      file && (
+        file.originalname === 'binary' || file.originalname.endsWith('.bin')
+      )
+    ) {
       const flashResult = await this._deviceManager
         .flashBinary(deviceID, file);
 

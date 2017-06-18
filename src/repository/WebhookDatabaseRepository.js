@@ -1,10 +1,13 @@
 // @flow
 
+import type { CollectionName } from './collectionNames';
 import type { IBaseDatabase, IWebhookRepository, Webhook } from '../types';
+
+import COLLECTION_NAMES from './collectionNames';
 
 class WebhookDatabaseRepository implements IWebhookRepository {
   _database: IBaseDatabase;
-  _collectionName: string = 'webhooks';
+  _collectionName: CollectionName = COLLECTION_NAMES.WEBHOOKS;
 
   constructor(database: IBaseDatabase) {
     this._database = database;
@@ -27,7 +30,6 @@ class WebhookDatabaseRepository implements IWebhookRepository {
     return await this._database.find(
       this._collectionName,
       query,
-      { timeout: false },
     );
   };
 

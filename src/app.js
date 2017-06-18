@@ -42,7 +42,11 @@ export default (
   };
 
   if (settings.LOG_REQUESTS) {
-    app.use(morgan('combined'));
+    app.use(morgan(
+      '[:date[iso]] :remote-addr - :remote-user ":method :url ' +
+      'HTTP/:http-version" :status :res[content-length] ":referrer" ' +
+      '":user-agent"',
+    ));
   }
 
   app.use(bodyParser.json());

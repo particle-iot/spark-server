@@ -103,6 +103,18 @@ You'll need to run `particle config particle`, `particle keys server cloud_publi
 
 At this point you should be able to run normal cloud commands and flash binaries.  You can add any webhooks you need, call functions, or get variable values.
 
+Electron Support
+==============================================
+Yes, this supports Electron but only over TCP. TCP will drastically increase
+the amount of data used so watch out.
+
+In order to set up your Electron to work on the server you need to run the
+following while the device is in DFU-mode:
+```
+particle keys server default_key.pub.pem IP_ADDRESS 5683 --protocol tcp
+// Sometimes you need to run the next line as well
+particle keys protocol tcp
+```
 
 What's different to the original spark-server?
 ==============================================

@@ -11,6 +11,7 @@ import type {
   IDeviceFirmwareRepository,
 } from '../types';
 
+import ECKey from 'ec-key';
 import { SPARK_SERVER_EVENTS } from 'spark-protocol';
 import NodeRSA from 'node-rsa';
 import HttpError from '../lib/HttpError';
@@ -192,10 +193,11 @@ class DeviceManager {
       deviceID,
     );
 
-    const flashResponse = await this._eventPublisher.publishAndListenForResponse({
-      context: { deviceID, fileBuffer: file.buffer },
-      name: SPARK_SERVER_EVENTS.FLASH_DEVICE,
-    });
+    const flashResponse =
+      await this._eventPublisher.publishAndListenForResponse({
+        context: { deviceID, fileBuffer: file.buffer },
+        name: SPARK_SERVER_EVENTS.FLASH_DEVICE,
+      });
 
     const { error } = flashResponse;
     if (error) {
@@ -240,22 +242,30 @@ class DeviceManager {
     algorithm: 'ecc' | 'rsa',
   ): Promise<*> => {
     if (algorithm === 'ecc') {
-      return null;
-    }
-
-    try {
-      const createdKey = new NodeRSA(publicKey);
-
-      if (!createdKey.isPublic()) {
-        throw new HttpError('Not a public key');
+      try {
+        const eccKey = new ECKey(publicKey, 'pem');
+        if (eccKey.isPrivateECKey) {
+          throw new HttpError('Not a public key');
+        }
+      } catch (error) {
+        throw new HttpError(`Key error ${error}`);
       }
-    } catch (error) {
-      throw new HttpError(`Key error ${error}`);
+    } else {
+      try {
+        const createdKey = new NodeRSA(publicKey);
+
+        if (!createdKey.isPublic()) {
+          throw new HttpError('Not a public key');
+        }
+      } catch (error) {
+        throw new HttpError(`Key error ${error}`);
+      }
     }
 
     await this._deviceKeyRepository.updateByID(
       deviceID,
       {
+        algorithm,
         deviceID,
         key: publicKey,
       },
