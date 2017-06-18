@@ -20,85 +20,27 @@
 */
 
 import { Container } from 'constitute';
-
-import chalk from 'chalk';
-import settings from '../settings';
-
-function isObject(obj: any): boolean {
-  return obj === Object(obj);
-}
-
-function _transform(...params: Array<any>): Array<any> {
-  return params.map((param: any): string => {
-    if (!isObject(param)) {
-      return param;
-    }
-
-    return JSON.stringify(param);
-  });
-}
-
-function getDate(): string {
-  return (new Date()).toISOString();
-}
+import { Logger as DefaultLogger } from './defaultLogger';
+import { ILogger } from '../types';
 
 
-export class Logger {
+let logger : ILogger = DefaultLogger;
 
-   log(...params: Array<any>) {
-    if (settings.SHOW_VERBOSE_DEVICE_LOGS) {
-      this._log(`[${getDate()}]`, _transform(...params));
-    }
-  }
-
-   info(...params: Array<any>) {
-    this._log(
-      `[${getDate()}]`,
-      chalk.cyan(_transform(...params)),
-    );
-  }
-
-   warn(...params: Array<any>) {
-    this._log(
-      `[${getDate()}]`,
-      chalk.yellow(_transform(...params)),
-    );
-  }
-
-   error(...params: Array<any>) {
-    this._log(
-      `[${getDate()}]`,
-      chalk.red(_transform(...params)),
-    );
-  }
-
-  setContainer (container) {
-      this._log = container.constitute('LOGGING_FUNCTION');
-  }
-
-   _log(...params: Array<any>): Function {
-      // This function is only called if Logger is called before "useContainer" was called
-      console.log(...params);
-  }
-}
-
-var logger = new Logger();
 
 export default {
-    useContainer (container) {
-        logger = new (container.constitute('LOGGING_CLASS'));
-        logger.setContainer(container);
-    },
-    warn(...params: Array<any>) {
-        logger.warn(...params);
-    },
-    info(...params: Array<any>) {
-        logger.info(...params);
-    }, 
-    error(...params: Array<any>) {
-        logger.error(...params);
-    }, 
-    log(...params: Array<any>) {
-        logger.log(...params);
-    } 
+  error(...params: Array<any>) {
+    logger.error(...params);
+  },
+  info(...params: Array<any>) {
+    logger.info(...params);
+  },
+  initialize(container: Container) {
+    logger = container.constitute('LOGGING_CLASS');
+  },
+  log(...params: Array<any>) {
+    logger.log(...params);
+  },
+  warn(...params: Array<any>) {
+    logger.warn(...params);
+  },
 };

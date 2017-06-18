@@ -44,8 +44,8 @@
     "watch": "babel ./src --out-dir ./dist --watch"
   },
   "pre-commit": [
-   /* "lint",
-    "test"*/
+    "lint",
+    "test"
   ],
   "ava": {
     "verbose": true,

@@ -38,7 +38,7 @@ defaultBindings(container, settings);
 
 // You may override Logger here
 
-logger.useContainer(container);
+logger.initialize(container);
 
 const deviceServer = container.constitute('DeviceServer');
 deviceServer.start();

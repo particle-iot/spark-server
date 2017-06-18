@@ -26,8 +26,7 @@ import DeviceAttributeDatabaseRepository from
 import DeviceKeyDatabaseRepository from './repository/DeviceKeyDatabaseRepository';
 import UserDatabaseRepository from './repository/UserDatabaseRepository';
 import WebhookDatabaseRepository from './repository/WebhookDatabaseRepository';
-import logger from './lib/logger';
-import {Logger} from './lib/logger';
+import { Logger as DefaultLogger } from './lib/defaultLogger';
 import settings from './settings';
 
 export default (container: Container, newSettings: Settings) => {
@@ -40,8 +39,7 @@ export default (container: Container, newSettings: Settings) => {
   defaultBindings(container, newSettings);
 
   // Bind Logger Elements, Function and Class
-  container.bindValue('LOGGING_FUNCTION', console.log);
-  container.bindValue('LOGGING_CLASS', Logger);
+  container.bindValue('LOGGING_CLASS', DefaultLogger);
 
   // settings
   container.bindValue('DATABASE_PATH', settings.DB_CONFIG.PATH);
