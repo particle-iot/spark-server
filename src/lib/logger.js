@@ -42,39 +42,62 @@ function getDate(): string {
   return (new Date()).toISOString();
 }
 
-class Logger {
-  static container: Container;
 
-  static log(...params: Array<any>) {
+export class Logger {
+
+   log(...params: Array<any>) {
     if (settings.SHOW_VERBOSE_DEVICE_LOGS) {
-      Logger._log(`[${getDate()}]`, _transform(...params));
+      this._log(`[${getDate()}]`, _transform(...params));
     }
   }
 
-  static info(...params: Array<any>) {
-    Logger._log(
+   info(...params: Array<any>) {
+    this._log(
       `[${getDate()}]`,
       chalk.cyan(_transform(...params)),
     );
   }
 
-  static warn(...params: Array<any>) {
-    Logger._log(
+   warn(...params: Array<any>) {
+    this._log(
       `[${getDate()}]`,
       chalk.yellow(_transform(...params)),
     );
   }
 
-  static error(...params: Array<any>) {
-    Logger._log(
+   error(...params: Array<any>) {
+    this._log(
       `[${getDate()}]`,
       chalk.red(_transform(...params)),
     );
   }
 
-  static _log(...params: Array<any>): Function {
-    return Logger.container.constitute('LOGGING_FUNCTION')(...params);
+  setContainer (container) {
+      this._log = container.constitute('LOGGING_FUNCTION');
+  }
+
+   _log(...params: Array<any>): Function {
+      console.log(...params);
   }
 }
 
-export default Logger;
+var logger = new Logger();
+
+export default {
+    useContainer (container) {
+        logger = new (container.constitute('LOGGING_CLASS'));
+        logger.setContainer(container);
+    },
+    warn(...params: Array<any>) {
+        logger.warn(...params);
+    },
+    info(...params: Array<any>) {
+        logger.info(...params);
+    }, 
+    error(...params: Array<any>) {
+        logger.error(...params);
+    }, 
+    log(...params: Array<any>) {
+        logger.log(...params);
+    } 
+};
