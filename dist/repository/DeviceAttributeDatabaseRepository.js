@@ -20,6 +20,10 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _collectionNames = require('./collectionNames');
+
+var _collectionNames2 = _interopRequireDefault(_collectionNames);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // getByID, deleteByID and update uses model.deviceID as ID for querying
@@ -27,7 +31,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
   var _this = this;
 
   (0, _classCallCheck3.default)(this, DeviceAttributeDatabaseRepository);
-  this._collectionName = 'deviceAttributes';
+  this._collectionName = _collectionNames2.default.DEVICE_ATTRIBUTES;
   this.create = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
@@ -78,7 +82,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
             case 0:
               query = userID ? { ownerID: userID } : {};
               _context3.next = 3;
-              return _this._database.find(_this._collectionName, query, { timeout: false });
+              return _this._database.find(_this._collectionName, query);
 
             case 3:
               return _context3.abrupt('return', _context3.sent);
@@ -128,7 +132,7 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
           switch (_context5.prev = _context5.next) {
             case 0:
               _context5.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { deviceID: deviceID }, null, { $set: (0, _extends3.default)({}, props, { timeStamp: new Date() }) }, { new: true, upsert: true });
+              return _this._database.findAndModify(_this._collectionName, { deviceID: deviceID }, { $set: (0, _extends3.default)({}, props, { timeStamp: new Date() }) });
 
             case 2:
               return _context5.abrupt('return', _context5.sent);

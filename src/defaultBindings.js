@@ -20,7 +20,7 @@ import WebhookManager from './managers/WebhookManager';
 import EventManager from './managers/EventManager';
 import PermissionManager from './managers/PermissionManager';
 import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
-import TingoDb from './repository/TingoDb';
+import NeDb from './repository/NeDb';
 import DeviceAttributeDatabaseRepository from
   './repository/DeviceAttributeDatabaseRepository';
 import DeviceKeyDatabaseRepository from './repository/DeviceKeyDatabaseRepository';
@@ -74,8 +74,8 @@ export default (container: Container, newSettings: Settings) => {
 
   container.bindClass(
     'Database',
-    TingoDb,
-    ['DATABASE_PATH', 'DATABASE_OPTIONS'],
+    NeDb,
+    ['DATABASE_PATH'],
   );
 
   // lib

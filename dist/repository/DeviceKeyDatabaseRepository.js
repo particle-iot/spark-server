@@ -20,6 +20,10 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _collectionNames = require('./collectionNames');
+
+var _collectionNames2 = _interopRequireDefault(_collectionNames);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // getByID, deleteByID and update uses model.deviceID as ID for querying
@@ -27,7 +31,7 @@ var DeviceKeyDatabaseRepository = function DeviceKeyDatabaseRepository(database)
   var _this = this;
 
   (0, _classCallCheck3.default)(this, DeviceKeyDatabaseRepository);
-  this._collectionName = 'deviceKeys';
+  this._collectionName = _collectionNames2.default.DEVICE_KEYS;
 
   this.create = function () {
     var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(model) {
@@ -126,7 +130,7 @@ var DeviceKeyDatabaseRepository = function DeviceKeyDatabaseRepository(database)
           switch (_context5.prev = _context5.next) {
             case 0:
               _context5.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { deviceID: deviceID }, null, { $set: (0, _extends3.default)({}, props) }, { new: true, upsert: true });
+              return _this._database.findAndModify(_this._collectionName, { deviceID: deviceID }, { $set: (0, _extends3.default)({}, props) });
 
             case 2:
               return _context5.abrupt('return', _context5.sent);

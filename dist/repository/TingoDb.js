@@ -109,11 +109,7 @@ var TingoDb = function (_BaseMongoDb) {
     }();
 
     _this.find = function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(collectionName) {
-        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-          args[_key - 1] = arguments[_key];
-        }
-
+      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(collectionName, query) {
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
@@ -127,7 +123,7 @@ var TingoDb = function (_BaseMongoDb) {
                         switch (_context3.prev = _context3.next) {
                           case 0:
                             _context3.next = 2;
-                            return (0, _promisify.promisify)(collection.find.apply(collection, args), 'toArray');
+                            return (0, _promisify.promisify)(collection.find(query, { timeout: false }), 'toArray');
 
                           case 2:
                             resultItems = _context3.sent;
@@ -141,7 +137,7 @@ var TingoDb = function (_BaseMongoDb) {
                     }, _callee3, _this2);
                   }));
 
-                  return function (_x5) {
+                  return function (_x6) {
                     return _ref4.apply(this, arguments);
                   };
                 }());
@@ -157,17 +153,13 @@ var TingoDb = function (_BaseMongoDb) {
         }, _callee4, _this2);
       }));
 
-      return function (_x4) {
+      return function (_x4, _x5) {
         return _ref3.apply(this, arguments);
       };
     }();
 
     _this.findAndModify = function () {
-      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(collectionName) {
-        for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-          args[_key2 - 1] = arguments[_key2];
-        }
-
+      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(collectionName, query, updateQuery) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
@@ -181,7 +173,7 @@ var TingoDb = function (_BaseMongoDb) {
                         switch (_context5.prev = _context5.next) {
                           case 0:
                             _context5.next = 2;
-                            return _promisify.promisify.apply(undefined, [collection, 'findAndModify'].concat(args));
+                            return (0, _promisify.promisify)(collection, 'findAndModify', query, null, updateQuery, { new: true, upsert: true });
 
                           case 2:
                             modifiedItem = _context5.sent;
@@ -195,7 +187,7 @@ var TingoDb = function (_BaseMongoDb) {
                     }, _callee5, _this2);
                   }));
 
-                  return function (_x7) {
+                  return function (_x10) {
                     return _ref6.apply(this, arguments);
                   };
                 }());
@@ -211,17 +203,13 @@ var TingoDb = function (_BaseMongoDb) {
         }, _callee6, _this2);
       }));
 
-      return function (_x6) {
+      return function (_x7, _x8, _x9) {
         return _ref5.apply(this, arguments);
       };
     }();
 
     _this.findOne = function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(collectionName) {
-        for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-          args[_key3 - 1] = arguments[_key3];
-        }
-
+      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(collectionName, query) {
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
@@ -235,7 +223,7 @@ var TingoDb = function (_BaseMongoDb) {
                         switch (_context7.prev = _context7.next) {
                           case 0:
                             _context7.next = 2;
-                            return _promisify.promisify.apply(undefined, [collection, 'findOne'].concat(args));
+                            return (0, _promisify.promisify)(collection, 'findOne', query);
 
                           case 2:
                             resultItem = _context7.sent;
@@ -249,7 +237,7 @@ var TingoDb = function (_BaseMongoDb) {
                     }, _callee7, _this2);
                   }));
 
-                  return function (_x9) {
+                  return function (_x13) {
                     return _ref8.apply(this, arguments);
                   };
                 }());
@@ -265,7 +253,7 @@ var TingoDb = function (_BaseMongoDb) {
         }, _callee8, _this2);
       }));
 
-      return function (_x8) {
+      return function (_x11, _x12) {
         return _ref7.apply(this, arguments);
       };
     }();
@@ -297,7 +285,7 @@ var TingoDb = function (_BaseMongoDb) {
                     }, _callee9, _this2);
                   }));
 
-                  return function (_x12) {
+                  return function (_x16) {
                     return _ref10.apply(this, arguments);
                   };
                 }());
@@ -313,7 +301,7 @@ var TingoDb = function (_BaseMongoDb) {
         }, _callee10, _this2);
       }));
 
-      return function (_x10, _x11) {
+      return function (_x14, _x15) {
         return _ref9.apply(this, arguments);
       };
     }();
@@ -334,7 +322,7 @@ var TingoDb = function (_BaseMongoDb) {
         }, _callee11, _this2);
       }));
 
-      return function (_x13, _x14) {
+      return function (_x17, _x18) {
         return _ref11.apply(this, arguments);
       };
     }();

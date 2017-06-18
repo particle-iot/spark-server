@@ -8,11 +8,14 @@ export const promisify = (
   new Promise((
     resolve: (result: any) => void,
     reject: (error: Error) => void,
-  ): void => object[fnName](...args, (error: Error, result: any) => {
+  ): void => object[fnName](...args, (error: Error, ...callbackArgs: any): ?Function => {
     if (error) {
       reject(error);
-      return;
+      return null;
     }
-    resolve(result);
+
+    return callbackArgs.length <= 1
+      ? resolve(...callbackArgs)
+      : resolve(callbackArgs);
   }),
 );

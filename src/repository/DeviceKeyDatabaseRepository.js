@@ -1,12 +1,19 @@
 // @flow
 
-import type { DeviceKeyObject, IBaseDatabase, IDeviceKeyRepository } from '../types';
+import type { CollectionName } from './collectionNames';
+import type {
+  DeviceKeyObject,
+  IBaseDatabase,
+  IDeviceKeyRepository,
+} from '../types';
+
+import COLLECTION_NAMES from './collectionNames';
 
 
 // getByID, deleteByID and update uses model.deviceID as ID for querying
 class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
   _database: IBaseDatabase;
-  _collectionName: string = 'deviceKeys';
+  _collectionName: CollectionName = COLLECTION_NAMES.DEVICE_KEYS;
 
   constructor(database: IBaseDatabase) {
     this._database = database;
@@ -38,9 +45,7 @@ class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
     await this._database.findAndModify(
       this._collectionName,
       { deviceID },
-      null,
       { $set: { ...props } },
-      { new: true, upsert: true },
     );
 }
 

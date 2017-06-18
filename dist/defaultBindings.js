@@ -74,9 +74,9 @@ var _DeviceFirmwareFileRepository = require('./repository/DeviceFirmwareFileRepo
 
 var _DeviceFirmwareFileRepository2 = _interopRequireDefault(_DeviceFirmwareFileRepository);
 
-var _TingoDb = require('./repository/TingoDb');
+var _NeDb = require('./repository/NeDb');
 
-var _TingoDb2 = _interopRequireDefault(_TingoDb);
+var _NeDb2 = _interopRequireDefault(_NeDb);
 
 var _DeviceAttributeDatabaseRepository = require('./repository/DeviceAttributeDatabaseRepository');
 
@@ -137,7 +137,7 @@ exports.default = function (container, newSettings) {
 
   container.bindClass('OAuthServer', _expressOauthServer2.default, ['OAUTH_SETTINGS']);
 
-  container.bindClass('Database', _TingoDb2.default, ['DATABASE_PATH', 'DATABASE_OPTIONS']);
+  container.bindClass('Database', _NeDb2.default, ['DATABASE_PATH']);
 
   // lib
   container.bindClass('WebhookLogger', _WebhookLogger2.default, []);

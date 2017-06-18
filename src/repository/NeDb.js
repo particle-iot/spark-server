@@ -1,26 +1,34 @@
 // @flow
 
 import type { IBaseDatabase } from '../types';
+import type { CollectionName } from './collectionNames';
 
 import fs from 'fs';
 import mkdirp from 'mkdirp';
-import tingoDb from 'tingodb';
+import Datastore from 'nedb-core';
+import COLLECTION_NAMES from './collectionNames';
 import { promisify } from '../lib/promisify';
 import BaseMongoDb from './BaseMongoDb';
 
-class TingoDb extends BaseMongoDb implements IBaseDatabase {
+class NeDb extends BaseMongoDb implements IBaseDatabase {
   _database: Object;
 
-  constructor(path: string, options: Object) {
+  constructor(path: string) {
     super();
-
-    const Db = tingoDb(options).Db;
 
     if (!fs.existsSync(path)) {
       mkdirp.sync(path);
     }
 
-    this._database = new Db(path, {});
+    this._database = {};
+
+    Object.values(COLLECTION_NAMES).forEach((collectionName: mixed) => {
+      const colName: CollectionName = (collectionName: any);
+      this._database[collectionName] = new Datastore({
+        autoload: true,
+        filename: `${path}/${colName}.db`,
+      });
+    });
   }
 
   insertOne = async (
@@ -29,14 +37,13 @@ class TingoDb extends BaseMongoDb implements IBaseDatabase {
   ): Promise<*> => await this.__runForCollection(
     collectionName,
     async (collection: Object): Promise<*> => {
-      const insertResults = await promisify(
+      const insertResult = await promisify(
         collection,
         'insert',
         entity,
-        { fullResult: true },
       );
 
-      return this.__translateResultItem(insertResults[0]);
+      return this.__translateResultItem(insertResult);
     },
   );
 
@@ -46,10 +53,7 @@ class TingoDb extends BaseMongoDb implements IBaseDatabase {
   ): Promise<*> => await this.__runForCollection(
     collectionName,
     async (collection: Object): Promise<*> => {
-      const resultItems = await promisify(
-        collection.find(query, { timeout: false }),
-        'toArray',
-      );
+      const resultItems = await promisify(collection, 'find', query);
       return resultItems.map(this.__translateResultItem);
     },
   );
@@ -61,15 +65,16 @@ class TingoDb extends BaseMongoDb implements IBaseDatabase {
   ): Promise<*> => await this.__runForCollection(
     collectionName,
     async (collection: Object): Promise<*> => {
-      const modifiedItem = await promisify(
+      // eslint-disable-next-line no-unused-vars
+      const [count, resultItem] = await promisify(
         collection,
-        'findAndModify',
+        'update',
         query,
-        null,
         updateQuery,
-        { new: true, upsert: true },
+        { returnUpdatedDocs: true, upsert: true },
       );
-      return this.__translateResultItem(modifiedItem);
+
+      return this.__translateResultItem(resultItem);
     },
   );
 
@@ -96,7 +101,7 @@ class TingoDb extends BaseMongoDb implements IBaseDatabase {
   __runForCollection = async (
     collectionName: string,
     callback: (collection: Object) => Promise<*>,
-  ): Promise<*> => callback(this._database.collection(collectionName));
+  ): Promise<*> => callback(this._database[collectionName]);
 }
 
-export default TingoDb;
+export default NeDb;

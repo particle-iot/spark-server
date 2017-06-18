@@ -1,5 +1,6 @@
 // @flow
 
+import type { CollectionName } from './collectionNames';
 import type {
   IBaseDatabase,
   IUserRepository,
@@ -9,12 +10,13 @@ import type {
   UserRole,
 } from '../types';
 
+import COLLECTION_NAMES from './collectionNames';
 import PasswordHasher from '../lib/PasswordHasher';
 import HttpError from '../lib/HttpError';
 
 class UserDatabaseRepository implements IUserRepository {
   _database: IBaseDatabase;
-  _collectionName: string = 'users';
+  _collectionName: CollectionName = COLLECTION_NAMES.USERS;
   _currentUser: User;
 
   constructor(database: IBaseDatabase) {
@@ -55,9 +57,7 @@ class UserDatabaseRepository implements IUserRepository {
     await this._database.findAndModify(
       this._collectionName,
       { _id: userID },
-      null,
       { $pull: { accessTokens: { accessToken } } },
-      { new: true },
     );
 
   deleteByID = async (id: string): Promise<void> =>
@@ -106,9 +106,7 @@ class UserDatabaseRepository implements IUserRepository {
   ): Promise<*> => await this._database.findAndModify(
     this._collectionName,
     { _id: userID },
-    null,
     { $push: { accessTokens: tokenObject } },
-    { new: true },
   );
 
   setCurrentUser = (user: User) => {
@@ -119,9 +117,7 @@ class UserDatabaseRepository implements IUserRepository {
     await this._database.findAndModify(
       this._collectionName,
       { _id: id },
-      null,
       { $set: { ...props } },
-      { new: true, upsert: true },
     );
 
   validateLogin = async (username: string, password: string): Promise<User> => {
