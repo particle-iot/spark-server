@@ -36,6 +36,10 @@ process.on('uncaughtException', (exception: Error) => {
 const container = new Container();
 defaultBindings(container, settings);
 
+// You may override Logger here
+
+logger.useContainer(container);
+
 const deviceServer = container.constitute('DeviceServer');
 deviceServer.start();
 

@@ -27,6 +27,7 @@ import DeviceKeyDatabaseRepository from './repository/DeviceKeyDatabaseRepositor
 import UserDatabaseRepository from './repository/UserDatabaseRepository';
 import WebhookDatabaseRepository from './repository/WebhookDatabaseRepository';
 import logger from './lib/logger';
+import {Logger} from './lib/logger';
 import settings from './settings';
 
 export default (container: Container, newSettings: Settings) => {
@@ -38,8 +39,9 @@ export default (container: Container, newSettings: Settings) => {
   // spark protocol container bindings
   defaultBindings(container, newSettings);
 
+  // Bind Logger Elements, Function and Class
   container.bindValue('LOGGING_FUNCTION', console.log);
-  logger.container = container;
+  container.bindValue('LOGGING_CLASS', Logger);
 
   // settings
   container.bindValue('DATABASE_PATH', settings.DB_CONFIG.PATH);

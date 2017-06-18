@@ -77,6 +77,7 @@ export class Logger {
   }
 
    _log(...params: Array<any>): Function {
+      // This function is only called if Logger is called before "useContainer" was called
       console.log(...params);
   }
 }
