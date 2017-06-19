@@ -12,10 +12,6 @@ var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
 
-var _logger = require('./lib/logger');
-
-var _logger2 = _interopRequireDefault(_logger);
-
 var _morgan = require('morgan');
 
 var _morgan2 = _interopRequireDefault(_morgan);

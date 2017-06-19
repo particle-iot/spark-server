@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = undefined;
 
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
@@ -12,62 +13,32 @@ var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _stringify = require('babel-runtime/core-js/json/stringify');
+var _DefaultLogger = require('./DefaultLogger');
 
-var _stringify2 = _interopRequireDefault(_stringify);
-
-var _constitute = require('constitute');
-
-var _chalk = require('chalk');
-
-var _chalk2 = _interopRequireDefault(_chalk);
-
-var _settings = require('../settings');
-
-var _settings2 = _interopRequireDefault(_settings);
+var _types = require('../types');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function isObject(obj) {
-  return obj === Object(obj);
-} /**
-  *    Copyright (C) 2013-2014 Spark Labs, Inc. All rights reserved. -  https://www.spark.io/
-  *
-  *    This program is free software: you can redistribute it and/or modify
-  *    it under the terms of the GNU Affero General Public License, version 3,
-  *    as published by the Free Software Foundation.
-  *
-  *    This program is distributed in the hope that it will be useful,
-  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  *    GNU Affero General Public License for more details.
-  *
-  *    You should have received a copy of the GNU Affero General Public License
-  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  *
-  *    You can download the source here: https://github.com/spark/spark-server
-  *
-  * 
-  *
-  */
-
-function _transform() {
-  for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
-    params[_key] = arguments[_key];
-  }
-
-  return params.map(function (param) {
-    if (!isObject(param)) {
-      return param;
-    }
-
-    return (0, _stringify2.default)(param);
-  });
-}
-
-function getDate() {
-  return new Date().toISOString();
-}
+/**
+*    Copyright (C) 2013-2014 Spark Labs, Inc. All rights reserved. -  https://www.spark.io/
+*
+*    This program is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU Affero General Public License, version 3,
+*    as published by the Free Software Foundation.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU Affero General Public License for more details.
+*
+*    You should have received a copy of the GNU Affero General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+*    You can download the source here: https://github.com/spark/spark-server
+*
+* 
+*
+*/
 
 var Logger = function () {
   function Logger() {
@@ -75,34 +46,41 @@ var Logger = function () {
   }
 
   (0, _createClass3.default)(Logger, null, [{
-    key: 'log',
-    value: function log() {
-      if (_settings2.default.SHOW_VERBOSE_DEVICE_LOGS) {
-        Logger._log('[' + getDate() + ']', _transform.apply(undefined, arguments));
-      }
+    key: 'error',
+    value: function error() {
+      var _Logger$_logger;
+
+      (_Logger$_logger = Logger._logger).error.apply(_Logger$_logger, arguments);
     }
   }, {
     key: 'info',
     value: function info() {
-      Logger._log('[' + getDate() + ']', _chalk2.default.cyan(_transform.apply(undefined, arguments)));
+      var _Logger$_logger2;
+
+      (_Logger$_logger2 = Logger._logger).info.apply(_Logger$_logger2, arguments);
+    }
+  }, {
+    key: 'initialize',
+    value: function initialize(logger) {
+      Logger._logger = logger;
+    }
+  }, {
+    key: 'log',
+    value: function log() {
+      var _Logger$_logger3;
+
+      (_Logger$_logger3 = Logger._logger).log.apply(_Logger$_logger3, arguments);
     }
   }, {
     key: 'warn',
     value: function warn() {
-      Logger._log('[' + getDate() + ']', _chalk2.default.yellow(_transform.apply(undefined, arguments)));
-    }
-  }, {
-    key: 'error',
-    value: function error() {
-      Logger._log('[' + getDate() + ']', _chalk2.default.red(_transform.apply(undefined, arguments)));
-    }
-  }, {
-    key: '_log',
-    value: function _log() {
-      return Logger.container.constitute('LOGGING_FUNCTION').apply(undefined, arguments);
+      var _Logger$_logger4;
+
+      (_Logger$_logger4 = Logger._logger).warn.apply(_Logger$_logger4, arguments);
     }
   }]);
   return Logger;
 }();
 
+Logger._logger = _DefaultLogger.DefaultLogger;
 exports.default = Logger;
