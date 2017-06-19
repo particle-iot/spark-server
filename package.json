@@ -30,6 +30,7 @@
     "build": "babel ./src --out-dir ./dist --copy-files",
     "build:clean": "rimraf ./build",
     "build:watch": "babel ./src --out-dir ./dist --watch",
+    "git:clean": "git checkout -q -- ./dist/*",
     "lint": "eslint --fix --max-warnings 0 -- .",
     "migrate-to-mongo": "babel-node ./src/scripts/migrateFilesToDatabase mongo",
     "migrate-to-tingo": "babel-node ./src/scripts/migrateFilesToDatabase tingo",
