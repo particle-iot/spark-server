@@ -19,11 +19,10 @@
 *
 */
 
-import { Container } from 'constitute';
 import { Logger as DefaultLogger } from './DefaultLogger';
 import { ILogger } from '../types';
 
-export class Logger {
+export default class Logger {
   static _logger: ILogger = DefaultLogger;
 
   static error(...params: Array<any>) {
@@ -34,8 +33,8 @@ export class Logger {
     Logger._logger.info(...params);
   }
 
-  static initialize(container: Container) {
-    Logger._logger = container.constitute('LOGGING_CLASS');
+  static initialize(logger: ILogger) {
+    Logger._logger = logger;
   }
 
   static log(...params: Array<any>) {

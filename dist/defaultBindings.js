@@ -94,6 +94,8 @@ var _WebhookDatabaseRepository = require('./repository/WebhookDatabaseRepository
 
 var _WebhookDatabaseRepository2 = _interopRequireDefault(_WebhookDatabaseRepository);
 
+var _DefaultLogger = require('./lib/DefaultLogger');
+
 var _logger = require('./lib/logger');
 
 var _logger2 = _interopRequireDefault(_logger);
@@ -113,8 +115,9 @@ exports.default = function (container, newSettings) {
   // spark protocol container bindings
   (0, _sparkProtocol.defaultBindings)(container, newSettings);
 
-  container.bindValue('LOGGING_FUNCTION', console.log);
-  _logger2.default.container = container;
+  // Bind Logger Elements, Function and Class
+  container.bindValue('LOGGING_CLASS', _DefaultLogger.Logger);
+  _logger2.default.initialize(container.constitute('LOGGING_CLASS'));
 
   // settings
   container.bindValue('DATABASE_PATH', _settings2.default.DB_CONFIG.PATH);
