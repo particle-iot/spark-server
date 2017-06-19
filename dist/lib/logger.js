@@ -82,5 +82,5 @@ var Logger = function () {
   return Logger;
 }();
 
-Logger._logger = _DefaultLogger.Logger;
+Logger._logger = _DefaultLogger.DefaultLogger;
 exports.default = Logger;

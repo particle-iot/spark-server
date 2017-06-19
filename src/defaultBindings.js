@@ -26,7 +26,7 @@ import DeviceAttributeDatabaseRepository from
 import DeviceKeyDatabaseRepository from './repository/DeviceKeyDatabaseRepository';
 import UserDatabaseRepository from './repository/UserDatabaseRepository';
 import WebhookDatabaseRepository from './repository/WebhookDatabaseRepository';
-import { Logger as DefaultLogger } from './lib/DefaultLogger';
+import { DefaultLogger } from './lib/DefaultLogger';
 import logger from './lib/logger';
 import settings from './settings';
 

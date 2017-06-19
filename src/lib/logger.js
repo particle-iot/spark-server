@@ -19,7 +19,7 @@
 *
 */
 
-import { Logger as DefaultLogger } from './DefaultLogger';
+import { DefaultLogger } from './DefaultLogger';
 import { ILogger } from '../types';
 
 export default class Logger {

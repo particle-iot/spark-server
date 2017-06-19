@@ -116,7 +116,7 @@ exports.default = function (container, newSettings) {
   (0, _sparkProtocol.defaultBindings)(container, newSettings);
 
   // Bind Logger Elements, Function and Class
-  container.bindValue('LOGGING_CLASS', _DefaultLogger.Logger);
+  container.bindValue('LOGGING_CLASS', _DefaultLogger.DefaultLogger);
   _logger2.default.initialize(container.constitute('LOGGING_CLASS'));
 
   // settings

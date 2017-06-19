@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Logger = undefined;
+exports.DefaultLogger = undefined;
 
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
@@ -70,32 +70,32 @@ function getDate() {
   return new Date().toISOString();
 }
 
-var Logger = exports.Logger = function () {
-  function Logger() {
-    (0, _classCallCheck3.default)(this, Logger);
+var DefaultLogger = exports.DefaultLogger = function () {
+  function DefaultLogger() {
+    (0, _classCallCheck3.default)(this, DefaultLogger);
   }
 
-  (0, _createClass3.default)(Logger, null, [{
+  (0, _createClass3.default)(DefaultLogger, null, [{
     key: 'log',
     value: function log() {
       if (_settings2.default.SHOW_VERBOSE_DEVICE_LOGS) {
-        Logger._log('[' + getDate() + ']', _transform.apply(undefined, arguments));
+        DefaultLogger._log('[' + getDate() + ']', _transform.apply(undefined, arguments));
       }
     }
   }, {
     key: 'info',
     value: function info() {
-      Logger._log('[' + getDate() + ']', _chalk2.default.cyan(_transform.apply(undefined, arguments)));
+      DefaultLogger._log('[' + getDate() + ']', _chalk2.default.cyan(_transform.apply(undefined, arguments)));
     }
   }, {
     key: 'warn',
     value: function warn() {
-      Logger._log('[' + getDate() + ']', _chalk2.default.yellow(_transform.apply(undefined, arguments)));
+      DefaultLogger._log('[' + getDate() + ']', _chalk2.default.yellow(_transform.apply(undefined, arguments)));
     }
   }, {
     key: 'error',
     value: function error() {
-      Logger._log('[' + getDate() + ']', _chalk2.default.red(_transform.apply(undefined, arguments)));
+      DefaultLogger._log('[' + getDate() + ']', _chalk2.default.red(_transform.apply(undefined, arguments)));
     }
   }, {
     key: '_log',
@@ -105,5 +105,5 @@ var Logger = exports.Logger = function () {
       (_console = console).log.apply(_console, arguments);
     }
   }]);
-  return Logger;
+  return DefaultLogger;
 }();
