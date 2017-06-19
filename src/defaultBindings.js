@@ -26,7 +26,7 @@ import DeviceAttributeDatabaseRepository from
 import DeviceKeyDatabaseRepository from './repository/DeviceKeyDatabaseRepository';
 import UserDatabaseRepository from './repository/UserDatabaseRepository';
 import WebhookDatabaseRepository from './repository/WebhookDatabaseRepository';
-import { Logger as DefaultLogger } from './lib/defaultLogger';
+import { Logger as DefaultLogger } from './lib/DefaultLogger';
 import settings from './settings';
 
 export default (container: Container, newSettings: Settings) => {

@@ -20,27 +20,28 @@
 */
 
 import { Container } from 'constitute';
-import { Logger as DefaultLogger } from './defaultLogger';
+import { Logger as DefaultLogger } from './DefaultLogger';
 import { ILogger } from '../types';
 
+export class Logger {
+  static _logger: ILogger = DefaultLogger;
 
-let logger : ILogger = DefaultLogger;
+  static error(...params: Array<any>) {
+    Logger._logger.error(...params);
+  }
 
+  static info(...params: Array<any>) {
+    Logger._logger.info(...params);
+  }
 
-export default {
-  error(...params: Array<any>) {
-    logger.error(...params);
-  },
-  info(...params: Array<any>) {
-    logger.info(...params);
-  },
-  initialize(container: Container) {
-    logger = container.constitute('LOGGING_CLASS');
-  },
-  log(...params: Array<any>) {
-    logger.log(...params);
-  },
-  warn(...params: Array<any>) {
-    logger.warn(...params);
-  },
-};
+  static initialize(container: Container) {
+    Logger._logger = container.constitute('LOGGING_CLASS');
+  }
+
+  static log(...params: Array<any>) {
+    Logger._logger.log(...params);
+  }
+  static warn(...params: Array<any>) {
+    Logger._logger.warn(...params);
+  }
+}

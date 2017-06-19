@@ -19,7 +19,6 @@
 *
 */
 
-
 import chalk from 'chalk';
 import settings from '../settings';
 import { ILogger } from '../types';
@@ -41,7 +40,6 @@ function _transform(...params: Array<any>): Array<any> {
 function getDate(): string {
   return (new Date()).toISOString();
 }
-
 
 export class Logger implements ILogger {
 
@@ -75,4 +73,3 @@ export class Logger implements ILogger {
     console.log(...params);
   }
 }
-

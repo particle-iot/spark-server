@@ -233,10 +233,9 @@ export interface IBaseDatabase {
   remove(collectionName: string, query: Object): Promise<*>;
 }
 
-
 export interface ILogger {
-  static error(params: Array<any>): void,
-  static info(params: Array<any>): void,
-  static log(params: Array<any>): void,
-  static warn(params: Array<any>): void,
+  static error(params: Array<any>): void;
+  static info(params: Array<any>): void;
+  static log(params: Array<any>): void;
+  static warn(params: Array<any>): void;
 }
