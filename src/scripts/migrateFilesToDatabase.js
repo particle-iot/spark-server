@@ -4,13 +4,13 @@ import type { DeviceKeyObject } from '../types';
 
 import fs from 'fs';
 import settings from '../settings';
-import { MongoClient, ObjectId } from 'mongodb';
-import TingoDb from '../repository/TingoDb';
+import { ObjectId } from 'mongodb';
+import NeDb from '../repository/NeDb';
 import MongoDb from '../repository/MongoDb';
 
-type DatabaseType = 'mongo' | 'tingo';
+type DatabaseType = 'mongo' | 'nedb';
 
-type Database = TingoDb | MongoDb;
+type Database = MongoDb | NeDb;
 
 type FileObject = {
   fileName: string,
@@ -20,14 +20,25 @@ type FileObject = {
 const DATABASE_TYPE: DatabaseType = ((process.argv[2]): any);
 
 const setupDatabase = async (): Promise<Database> => {
-  if (DATABASE_TYPE === 'tingo') {
-    return new TingoDb(settings.DB_CONFIG.PATH, settings.DB_CONFIG.OPTIONS);
-  }
   if (DATABASE_TYPE === 'mongo') {
-    const mongoConnection = await MongoClient.connect(settings.DB_CONFIG.URL);
-    return new MongoDb(mongoConnection);
+    if (!settings.DB_CONFIG.URL) {
+      throw new Error(
+        'You should provide mongoDB connection URL' +
+          'in settings.DB_CONFIG.URL',
+      );
+    }
+    return new MongoDb(settings.DB_CONFIG.URL, settings.DB_CONFIG.OPTIONS);
   }
 
+  if (DATABASE_TYPE === 'nedb') {
+    if (!settings.DB_CONFIG.PATH) {
+      throw new Error(
+        'You should provide path to dir where NeDB will store the db files' +
+          'in settings.DB_CONFIG.PATH',
+      );
+    }
+    return new NeDb(settings.DB_CONFIG.PATH);
+  }
   throw new Error('Wrong database type');
 };
 
