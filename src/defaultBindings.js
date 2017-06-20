@@ -45,7 +45,6 @@ export default (container: Container, newSettings: Settings) => {
 
   // settings
   container.bindValue('DATABASE_PATH', settings.DB_CONFIG.PATH);
-  container.bindValue('DATABASE_OPTIONS', settings.DB_CONFIG.OPTIONS);
   container.bindValue('DEVICE_DIRECTORY', settings.DEVICE_DIRECTORY);
   container.bindValue('FIRMWARE_DIRECTORY', settings.FIRMWARE_DIRECTORY);
   container.bindValue('SERVER_KEY_FILENAME', settings.SERVER_KEY_FILENAME);

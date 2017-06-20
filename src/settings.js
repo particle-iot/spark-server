@@ -46,15 +46,7 @@ export default {
     USE_SSL: false,
   },
   DB_CONFIG: {
-    OPTIONS: {
-      cacheMaxObjSize: 1024,
-      cacheSize: 1000,
-      memStore: false,
-      nativeObjectID: true,
-      searchInArray: true,
-    },
     PATH: path.join(__dirname, '../data/db'),
-    URL: null,
   },
   SHOW_VERBOSE_DEVICE_LOGS: false,
 
