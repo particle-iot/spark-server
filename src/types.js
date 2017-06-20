@@ -89,8 +89,9 @@ export type DeviceKeyObject = {
 };
 
 export type Event = EventData & {
-  ttl: number,
+  broadcasted?: boolean,
   publishedAt: Date,
+  ttl: number,
 };
 
 export type EventData = {
