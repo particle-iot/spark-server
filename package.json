@@ -61,7 +61,6 @@
   "dependencies": {
     "array-flatten": "^2.1.1",
     "babel-cli": "^6.22.2",
-    "babel-loader": "^6.2.10",
     "babel-runtime": "^6.22.0",
     "basic-auth-parser": "0.0.2",
     "binary-version-reader": "^0.5.0",
@@ -82,7 +81,6 @@
     "node-rsa": "^0.4.2",
     "nullthrows": "^1.0.0",
     "request": "*",
-    "rimraf": "^2.5.4",
     "rmfr": "^1.0.1",
     "spark-protocol": "git+https://github.com/Brewskey/spark-protocol.git#dev",
     "tingodb": "git+https://github.com/Brewskey/tingodb.git",
