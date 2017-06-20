@@ -141,9 +141,9 @@ export type Settings = {
   BUILD_DIRECTORY: string,
   CRYPTO_ALGORITHM: string,
   DB_CONFIG: {
-    OPTIONS: Object,
-    PATH: ?string,
-    URL: ?string,
+    OPTIONS?: Object,
+    PATH?: string,
+    URL?: string,
   },
   DEFAULT_ADMIN_PASSWORD: string,
   DEFAULT_ADMIN_USERNAME: string,

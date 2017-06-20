@@ -2,15 +2,21 @@
 
 import type { IBaseDatabase } from '../types';
 
+import EventEmitter from 'events';
 import BaseMongoDb from './BaseMongoDb';
+import Logger from '../lib/logger';
+import { MongoClient } from 'mongodb';
+
+const DB_READY_EVENT = 'dbReady';
 
 class MongoDb extends BaseMongoDb implements IBaseDatabase {
-  _database: Object;
+  _database: ?Object = null;
+  _statusEventEmitter = new EventEmitter();
 
-  constructor(database: Object) {
+  constructor(url: string, options?: Object = {}) {
     super();
 
-    this._database = database;
+    (async (): Promise<void> => await this._init(url, options))();
   }
 
   insertOne = async (
@@ -81,9 +87,52 @@ class MongoDb extends BaseMongoDb implements IBaseDatabase {
   __runForCollection = async (
     collectionName: string,
     callback: (collection: Object) => Promise<*>,
-  ): Promise<*> => callback(
-    this._database.collection(collectionName),
-  ).catch((error: Error): void => console.error(error));
+  ): Promise<*> => {
+    await this._isDbReady();
+    // hack for flow:
+    if (!this._database) {
+      throw new Error('database is not initialized');
+    }
+    return callback(
+      this._database.collection(collectionName),
+    ).catch((error: Error): void => Logger.error(error));
+  };
+
+  _init = async (url: string, options: Object): Promise<void> => {
+    const database = await MongoClient.connect(url, options);
+
+    database.on(
+      'error',
+      (error: Error): void =>
+        Logger.error('DB connection Error: ', error),
+    );
+
+    database.on(
+      'open',
+      (): void => Logger.log('DB connected'),
+    );
+
+    database.on(
+      'close',
+      (str: string): void => Logger.log('DB disconnected: ', str),
+    );
+
+    this._database = database;
+    this._statusEventEmitter.emit(DB_READY_EVENT);
+  };
+
+  _isDbReady = async (): Promise<void> => {
+    if (this._database) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve: () => void) => {
+      this._statusEventEmitter.once(
+        DB_READY_EVENT,
+        (): void => resolve(),
+      );
+    });
+  };
 }
 
 export default MongoDb;
