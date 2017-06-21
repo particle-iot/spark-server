@@ -34,15 +34,7 @@ export default {
     PORT: 5683,
   },
   DB_CONFIG: {
-    OPTIONS: {
-      cacheMaxObjSize: 1024,
-      cacheSize: 1000,
-      memStore: true,
-      nativeObjectID: true,
-      searchInArray: true,
-    },
     PATH: path.join(__dirname, '../__test_data__/db'),
-    URL: null,
   },
   WEBHOOK_TEMPLATE_PARAMETERS: {},
 };

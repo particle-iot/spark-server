@@ -121,7 +121,6 @@ exports.default = function (container, newSettings) {
 
   // settings
   container.bindValue('DATABASE_PATH', _settings2.default.DB_CONFIG.PATH);
-  container.bindValue('DATABASE_OPTIONS', _settings2.default.DB_CONFIG.OPTIONS);
   container.bindValue('DEVICE_DIRECTORY', _settings2.default.DEVICE_DIRECTORY);
   container.bindValue('FIRMWARE_DIRECTORY', _settings2.default.FIRMWARE_DIRECTORY);
   container.bindValue('SERVER_KEY_FILENAME', _settings2.default.SERVER_KEY_FILENAME);

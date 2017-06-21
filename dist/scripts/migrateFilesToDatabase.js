@@ -34,9 +34,9 @@ var _settings2 = _interopRequireDefault(_settings);
 
 var _mongodb = require('mongodb');
 
-var _TingoDb = require('../repository/TingoDb');
+var _NeDb = require('../repository/NeDb');
 
-var _TingoDb2 = _interopRequireDefault(_TingoDb);
+var _NeDb2 = _interopRequireDefault(_NeDb);
 
 var _MongoDb = require('../repository/MongoDb');
 
@@ -48,35 +48,45 @@ var DATABASE_TYPE = process.argv[2];
 
 var setupDatabase = function () {
   var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-    var mongoConnection;
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            if (!(DATABASE_TYPE === 'tingo')) {
-              _context.next = 2;
+            if (!(DATABASE_TYPE === 'mongo')) {
+              _context.next = 4;
               break;
             }
 
-            return _context.abrupt('return', new _TingoDb2.default(_settings2.default.DB_CONFIG.PATH, _settings2.default.DB_CONFIG.OPTIONS));
+            if (_settings2.default.DB_CONFIG.URL) {
+              _context.next = 3;
+              break;
+            }
 
-          case 2:
-            if (!(DATABASE_TYPE === 'mongo')) {
+            throw new Error('You should provide mongoDB connection URL' + 'in settings.DB_CONFIG.URL');
+
+          case 3:
+            return _context.abrupt('return', new _MongoDb2.default(_settings2.default.DB_CONFIG.URL, _settings2.default.DB_CONFIG.OPTIONS));
+
+          case 4:
+            if (!(DATABASE_TYPE === 'nedb')) {
+              _context.next = 8;
+              break;
+            }
+
+            if (_settings2.default.DB_CONFIG.PATH) {
               _context.next = 7;
               break;
             }
 
-            _context.next = 5;
-            return _mongodb.MongoClient.connect(_settings2.default.DB_CONFIG.URL);
-
-          case 5:
-            mongoConnection = _context.sent;
-            return _context.abrupt('return', new _MongoDb2.default(mongoConnection));
+            throw new Error('You should provide path to dir where NeDB will store the db files' + 'in settings.DB_CONFIG.PATH');
 
           case 7:
-            throw new Error('Wrong database type');
+            return _context.abrupt('return', new _NeDb2.default(_settings2.default.DB_CONFIG.PATH));
 
           case 8:
+            throw new Error('Wrong database type');
+
+          case 9:
           case 'end':
             return _context.stop();
         }

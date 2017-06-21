@@ -132,6 +132,7 @@ class WebhookManager {
       {
         filterOptions: {
           deviceID: webhook.deviceID,
+          listenToBroadcastedEvents: false,
           mydevices: webhook.mydevices,
           userID: webhook.ownerID,
         },
