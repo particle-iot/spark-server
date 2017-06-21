@@ -7,14 +7,19 @@
 */
 
 /* eslint-disable */
-import type { Event } from '../src/types';
+import type { Event } from '../types';
 
 import { Container } from 'constitute';
-import { defaultBindings } from 'spark-server';
+import defaultBindings from '../defaultBindings';
+import settings from '../settings.js';
 
 const container = new Container();
 defaultBindings(container, settings);
 
-container.constitute('EVENT_PROVIDER').onNewEvent((event: Event) => {
-  // do piping stuff here.
+const deviceServer = container.constitute('DeviceServer');
+deviceServer.start();
+
+const evProvider = container.constitute('EVENT_PROVIDER');
+evProvider.onNewEvent((event: Event) => {
+  console.log('Event');
 });
