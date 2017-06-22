@@ -7,16 +7,19 @@ import type Controller from '../controllers/Controller';
 export default (
   fileName: ?string = undefined,
   maxCount: number = 0,
-): Decorator<Controller> =>
-  (target: Controller, name: $Keys<Controller>, descriptor: Descriptor): Descriptor => {
-    const allowedUploads = (target: any)[name].allowedUploads || [];
-    if (fileName) {
-      allowedUploads.push({
-        maxCount,
-        name: fileName,
-      });
-    }
+): Decorator<Controller> => (
+  target: Controller,
+  name: $Keys<Controller>,
+  descriptor: Descriptor,
+): Descriptor => {
+  const allowedUploads = (target: any)[name].allowedUploads || [];
+  if (fileName) {
+    allowedUploads.push({
+      maxCount,
+      name: fileName,
+    });
+  }
 
-    (target: any)[name].allowedUploads = allowedUploads;
-    return descriptor;
-  };
+  (target: any)[name].allowedUploads = allowedUploads;
+  return descriptor;
+};

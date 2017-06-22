@@ -63,7 +63,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var NODE_PORT = process.env.NODE_PORT || _settings2.default.EXPRESS_SERVER_CONFIG.PORT;
 
 process.on('uncaughtException', function (exception) {
-  _logger2.default.error('uncaughtException', { message: exception.message, stack: exception.stack }); // logging with MetaData
+  _logger2.default.error('uncaughtException', {
+    message: exception.message,
+    stack: exception.stack
+  }); // logging with MetaData
   process.exit(1); // exit with failure
 });
 

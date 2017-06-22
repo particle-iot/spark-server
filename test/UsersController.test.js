@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type {  TokenObject, UserCredentials } from '../src/types';
+import type { TokenObject, UserCredentials } from '../src/types';
 
 import test from 'ava';
 import request from 'supertest';
@@ -15,11 +15,10 @@ let userToken;
 test.serial('should create new user', async t => {
   USER_CREDENTIALS = TestData.getUser();
 
-  const response = await request(app)
-    .post('/v1/users')
-    .send(USER_CREDENTIALS);
+  const response = await request(app).post('/v1/users').send(USER_CREDENTIALS);
 
-  user = await container.constitute('UserRepository')
+  user = await container
+    .constitute('UserRepository')
     .getByUsername(USER_CREDENTIALS.username);
 
   t.is(response.status, 200);
@@ -28,9 +27,7 @@ test.serial('should create new user', async t => {
 });
 
 test.serial('should throw an error if username already in use', async t => {
-  const response = await request(app)
-    .post('/v1/users')
-    .send(USER_CREDENTIALS);
+  const response = await request(app).post('/v1/users').send(USER_CREDENTIALS);
   t.is(response.status, 400);
   t.is(response.body.error, 'user with the username already exists');
 });
@@ -64,7 +61,6 @@ test.serial('should return all access tokens for the user', async t => {
   t.truthy(Array.isArray(tokens) && tokens.length > 0);
 });
 
-
 test.serial('should delete the access token for the user', async t => {
   const deleteResponse = await request(app)
     .delete(`/v1/access_tokens/${userToken}`)
@@ -77,9 +73,12 @@ test.serial('should delete the access token for the user', async t => {
   const allTokens = allTokensResponse.body;
 
   t.is(deleteResponse.status, 200);
-  t.falsy(allTokens.some((tokenObject: TokenObject): boolean =>
-    tokenObject.accessToken === userToken,
-  ));
+  t.falsy(
+    allTokens.some(
+      (tokenObject: TokenObject): boolean =>
+        tokenObject.accessToken === userToken,
+    ),
+  );
 });
 
 test.after.always(async (): Promise<void> => {

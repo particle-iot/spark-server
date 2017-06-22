@@ -38,10 +38,7 @@ class PasswordHasher {
     });
   }
 
-  static hash(
-    password: string,
-    salt: string,
-  ): Promise<*> {
+  static hash(password: string, salt: string): Promise<*> {
     return new Promise((resolve: Function, reject: Function) => {
       crypto.pbkdf2(
         password,

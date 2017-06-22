@@ -2,12 +2,7 @@
 
 import oauthClients from './oauthClients.json';
 
-import type {
-  Client,
-  IUserRepository,
-  TokenObject,
-  User,
-} from './types';
+import type { Client, IUserRepository, TokenObject, User } from './types';
 
 const OAUTH_CLIENTS = oauthClients;
 
@@ -40,8 +35,9 @@ class OauthModel {
   };
 
   getClient = (clientId: string, clientSecret: string): ?Client =>
-    OAUTH_CLIENTS.find((client: Client): boolean =>
-      client.clientId === clientId && client.clientSecret === clientSecret,
+    OAUTH_CLIENTS.find(
+      (client: Client): boolean =>
+        client.clientId === clientId && client.clientSecret === clientSecret,
     );
 
   getUser = async (username: string, password: string): Promise<User> =>

@@ -40,17 +40,14 @@ class WebhookFileRepository implements IWebhookRepository {
 
     if (userID) {
       return allData.filter(
-        (webhook: Webhook): boolean =>
-          webhook.ownerID === userID,
+        (webhook: Webhook): boolean => webhook.ownerID === userID,
       );
     }
     return allData;
   };
 
   @memoizeGet(['id'])
-  async getByID(
-    id: string,
-  ): Promise<?Webhook> {
+  async getByID(id: string): Promise<?Webhook> {
     return this._fileManager.getFile(`${id}.json`);
   }
 

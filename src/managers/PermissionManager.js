@@ -25,7 +25,10 @@ class PermissionManager {
     oauthServer: Object,
   ) {
     this._userRepository = userRepository;
-    this._repositoriesByEntityName.set('deviceAttributes', deviceAttributeRepository);
+    this._repositoriesByEntityName.set(
+      'deviceAttributes',
+      deviceAttributeRepository,
+    );
     this._repositoriesByEntityName.set('webhook', webhookRepository);
     this._oauthServer = oauthServer;
 
@@ -35,25 +38,30 @@ class PermissionManager {
   checkPermissionsForEntityByID = async (
     entityName: ProtectedEntityName,
     id: string,
-  ): Promise<boolean> => !!(await this.getEntityByID(entityName, id));
+  ): Promise<boolean> => !!await this.getEntityByID(entityName, id);
 
-  getAllEntitiesForCurrentUser = async (entityName: ProtectedEntityName): Promise<*> => {
+  getAllEntitiesForCurrentUser = async (
+    entityName: ProtectedEntityName,
+  ): Promise<*> => {
     const currentUser = this._userRepository.getCurrentUser();
-    return await nullthrows(this._repositoriesByEntityName.get(entityName))
-      .getAll(currentUser.id);
+    return await nullthrows(
+      this._repositoriesByEntityName.get(entityName),
+    ).getAll(currentUser.id);
   };
 
   getEntityByID = async (
     entityName: ProtectedEntityName,
     id: string,
   ): Promise<*> => {
-    const entity = await nullthrows(this._repositoriesByEntityName.get(entityName)).getByID(id);
+    const entity = await nullthrows(
+      this._repositoriesByEntityName.get(entityName),
+    ).getByID(id);
     if (!entity) {
       return null;
     }
 
     if (!this.doesUserHaveAccess(entity)) {
-      throw new HttpError('User doesn\'t have access', 403);
+      throw new HttpError("User doesn't have access", 403);
     }
 
     return entity;
@@ -71,9 +79,7 @@ class PermissionManager {
 
       const token = await this._generateAdminToken();
 
-      logger.info(
-        `New default admin user created with token: ${token}`,
-      );
+      logger.info(`New default admin user created with token: ${token}`);
     } catch (error) {
       logger.error(`Error during default admin user creating: ${error}`);
     }
@@ -115,8 +121,9 @@ class PermissionManager {
   };
 
   _init = async (): Promise<void> => {
-    const defaultAdminUser =
-      await this._userRepository.getByUsername(settings.DEFAULT_ADMIN_USERNAME);
+    const defaultAdminUser = await this._userRepository.getByUsername(
+      settings.DEFAULT_ADMIN_USERNAME,
+    );
     if (defaultAdminUser) {
       logger.info(
         'Default admin accessToken: ' +

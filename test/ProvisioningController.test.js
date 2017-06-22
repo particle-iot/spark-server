@@ -22,23 +22,24 @@ test.before(async () => {
     container.constitute('EventPublisher'),
     'publishAndListenForResponse',
     ({ name }) => {
-      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES) {
+      if (name === SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES) {
         return { error: new Error('Could not get device for ID') };
       }
-      if(name === SPARK_SERVER_EVENTS.PING_DEVICE) {
+      if (name === SPARK_SERVER_EVENTS.PING_DEVICE) {
         return {
           connected: true,
           lastHeard: new Date(),
         };
       }
-    }
+    },
   );
 
   const userResponse = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
 
-  testUser = await container.constitute('UserRepository')
+  testUser = await container
+    .constitute('UserRepository')
     .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)

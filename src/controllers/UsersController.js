@@ -1,9 +1,6 @@
 // @flow
 
-import type {
-  IUserRepository,
-  UserCredentials,
-} from '../types';
+import type { IUserRepository, UserCredentials } from '../types';
 
 import basicAuthParser from 'basic-auth-parser';
 import Controller from './Controller';
@@ -25,16 +22,15 @@ class UsersController extends Controller {
   @anonymous()
   async createUser(userCredentials: UserCredentials): Promise<*> {
     try {
-      const isUserNameInUse =
-        await this._userRepository.isUserNameInUse(userCredentials.username);
+      const isUserNameInUse = await this._userRepository.isUserNameInUse(
+        userCredentials.username,
+      );
 
       if (isUserNameInUse) {
         throw new HttpError('user with the username already exists');
       }
 
-      await this._userRepository.createWithCredentials(
-        userCredentials,
-      );
+      await this._userRepository.createWithCredentials(userCredentials);
 
       return this.ok({ ok: true });
     } catch (error) {
@@ -49,10 +45,7 @@ class UsersController extends Controller {
     const { username, password } = basicAuthParser(
       this.request.get('authorization'),
     );
-    const user = await this._userRepository.validateLogin(
-      username,
-      password,
-    );
+    const user = await this._userRepository.validateLogin(username, password);
 
     this._userRepository.deleteAccessToken(user.id, token);
 

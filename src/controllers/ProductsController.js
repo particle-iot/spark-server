@@ -19,49 +19,38 @@ class ProductsController extends Controller {
 
   @httpVerb('get')
   @route('/v1/products')
-  // eslint-disable-next-line class-methods-use-this
   async getProducts(): Promise<*> {
     throw new HttpError('not supported in the current server version');
   }
 
   @httpVerb('post')
   @route('/v1/products')
-  // eslint-disable-next-line class-methods-use-this
   async createProduct(): Promise<*> {
     throw new HttpError('not supported in the current server version');
   }
 
   @httpVerb('get')
   @route('/v1/products/:productIdOrSlug')
-  async getProduct(
-    productIdOrSlug: string,
-  ): Promise<*> {
+  async getProduct(productIdOrSlug: string): Promise<*> {
     throw new HttpError('Not implemented');
   }
 
   @httpVerb('post')
   @route('/v1/products/:productIdOrSlug/device_claims')
-  // eslint-disable-next-line class-methods-use-this
-  async generateClaimCode(
-    productIdOrSlug: string,
-  ): Promise<*> {
+  async generateClaimCode(productIdOrSlug: string): Promise<*> {
     throw new HttpError('not supported in the current server version');
   }
 
   @httpVerb('get')
   @route('/v1/products/:productIdOrSlug/firmware')
-  async getFirmware(
-    productIdOrSlug: string,
-  ): Promise<*> {
+  async getFirmware(productIdOrSlug: string): Promise<*> {
     throw new HttpError('Not implemented');
   }
 
   // {version: number, name: 'current', binary: File, title: string, description: string}
   @httpVerb('post')
   @route('/v1/products/:productIdOrSlug/firmware')
-  async getFirmware(
-    productIdOrSlug: string,
-  ): Promise<*> {
+  async getFirmware(productIdOrSlug: string): Promise<*> {
     /*
     {
     "updated_at": "2017-01-23T05:55:11.592Z",
@@ -99,9 +88,7 @@ class ProductsController extends Controller {
 
   @httpVerb('get')
   @route('/v1/products/:productIdOrSlug/devices')
-  async getDevices(
-    productIdOrSlug: string,
-  ): Promise<*> {
+  async getDevices(productIdOrSlug: string): Promise<*> {
     throw new HttpError('Not implemented');
   }
 
@@ -110,7 +97,7 @@ class ProductsController extends Controller {
   async setFirmwareVersion(
     productIdOrSlug: string,
     deviceID: string,
-    body: {desired_firmware_version: number},
+    body: { desired_firmware_version: number },
   ): Promise<*> {
     /*
     {
@@ -124,7 +111,6 @@ class ProductsController extends Controller {
 
   @httpVerb('delete')
   @route('/v1/products/:productIdOrSlug/devices/:deviceID')
-  // eslint-disable-next-line class-methods-use-this
   async removeDeviceFromProduct(
     productIdOrSlug: string,
     deviceID: string,
@@ -134,9 +120,7 @@ class ProductsController extends Controller {
 
   @httpVerb('get')
   @route('/v1/products/:productIdOrSlug/config')
-  async getConfig(
-    productIdOrSlug: string,
-  ): Promise<*> {
+  async getConfig(productIdOrSlug: string): Promise<*> {
     /*
     {
       "product_configuration": [
@@ -154,16 +138,12 @@ class ProductsController extends Controller {
 
   @httpVerb('get')
   @route('/v1/products/:productIdOrSlug/events/:eventPrefix?*')
-  async getEvents(
-    productIdOrSlug: string,
-    eventName: string,
-  ): Promise<*> {
+  async getEvents(productIdOrSlug: string, eventName: string): Promise<*> {
     throw new HttpError('Not implemented');
   }
 
   @httpVerb('delete')
   @route('/v1/products/:productIdOrSlug/team/:username')
-  // eslint-disable-next-line class-methods-use-this
   async removeTeamMember(
     productIdOrSlug: string,
     username: string,

@@ -25,14 +25,10 @@ class DeviceClaimsController extends Controller {
   @httpVerb('post')
   @route('/v1/device_claims')
   async createClaimCode(): Promise<*> {
-    const claimCode = this._claimCodeManager.createClaimCode(
-      this.user.id,
-    );
+    const claimCode = this._claimCodeManager.createClaimCode(this.user.id);
 
     const devices = await this._deviceManager.getAll();
-    const deviceIDs = devices.map(
-      (device: Device): string => device.deviceID,
-    );
+    const deviceIDs = devices.map((device: Device): string => device.deviceID);
     return this.ok({ claim_code: claimCode, device_ids: deviceIDs });
   }
 }

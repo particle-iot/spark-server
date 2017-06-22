@@ -21,23 +21,24 @@ test.before(async () => {
     container.constitute('EventPublisher'),
     'publishAndListenForResponse',
     ({ name }) => {
-      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES) {
+      if (name === SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES) {
         return { error: new Error('Could not get device for ID') };
       }
-      if(name === SPARK_SERVER_EVENTS.PING_DEVICE) {
+      if (name === SPARK_SERVER_EVENTS.PING_DEVICE) {
         return {
           connected: true,
           lastHeard: new Date(),
         };
       }
-    }
+    },
   );
 
   const userResponse = await request(app)
     .post('/v1/users')
     .send(USER_CREDENTIALS);
 
-  testUser = await container.constitute('UserRepository')
+  testUser = await container
+    .constitute('UserRepository')
     .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)
@@ -69,23 +70,18 @@ test.before(async () => {
   }
 });
 
+test("should return claimCode, and user's devices ids", async t => {
+  const response = await request(app)
+    .post(`/v1/device_claims`)
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .send({ access_token: userToken });
 
-test(
-  'should return claimCode, and user\'s devices ids',
-  async t => {
-    const response = await request(app)
-      .post(`/v1/device_claims`)
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .send({ access_token: userToken });
-
-    t.is(response.status, 200);
-    t.truthy(response.body.claim_code);
-    t.truthy(
-      response.body.device_ids &&
-      response.body.device_ids[0] === DEVICE_ID
-    );
-  },
-);
+  t.is(response.status, 200);
+  t.truthy(response.body.claim_code);
+  t.truthy(
+    response.body.device_ids && response.body.device_ids[0] === DEVICE_ID,
+  );
+});
 
 test.after.always(async (): Promise<void> => {
   await container.constitute('UserRepository').deleteByID(testUser.id);
