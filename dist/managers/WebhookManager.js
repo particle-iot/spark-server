@@ -387,7 +387,10 @@ var WebhookManager = function WebhookManager(eventPublisher, permissionManager, 
     };
   }();
 
-  this.runWebhookThrottled = (0, _throttle2.default)(this.runWebhook, WEBHOOK_THROTTLE_TIME, { leading: false, trailing: true });
+  this.runWebhookThrottled = (0, _throttle2.default)(this.runWebhook, WEBHOOK_THROTTLE_TIME, {
+    leading: false,
+    trailing: true
+  });
 
   this._callWebhook = function (webhook, event, requestOptions) {
     return new _promise2.default(function (resolve, reject) {

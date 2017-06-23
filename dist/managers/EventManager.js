@@ -16,7 +16,9 @@ var EventManager = function EventManager(eventPublisher) {
   (0, _classCallCheck3.default)(this, EventManager);
 
   this.subscribe = function (eventNamePrefix, eventHandler, filterOptions) {
-    return _this._eventPublisher.subscribe(eventNamePrefix, eventHandler, { filterOptions: filterOptions });
+    return _this._eventPublisher.subscribe(eventNamePrefix, eventHandler, {
+      filterOptions: filterOptions
+    });
   };
 
   this.unsubscribe = function (subscriptionID) {

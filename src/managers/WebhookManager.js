@@ -38,7 +38,7 @@ const splitBufferIntoChunks = (
   const chunks = [];
   let ii = 0;
   while (ii < buffer.length) {
-    chunks.push(buffer.slice(ii, ii += chunkSize));
+    chunks.push(buffer.slice(ii, (ii += chunkSize)));
   }
 
   return chunks;
@@ -53,9 +53,7 @@ const validateRequestType = (requestType: string): RequestType => {
   return upperRequestType;
 };
 
-const REQUEST_TYPES: Array<RequestType> = [
-  'DELETE', 'GET', 'POST', 'PUT',
-];
+const REQUEST_TYPES: Array<RequestType> = ['DELETE', 'GET', 'POST', 'PUT'];
 const MAX_WEBHOOK_ERRORS_COUNT = 10;
 const WEBHOOK_THROTTLE_TIME = 1000 * 60; // 1min;
 const MAX_RESPONSE_MESSAGE_CHUNK_SIZE = 512;
@@ -97,7 +95,10 @@ class WebhookManager {
   };
 
   deleteByID = async (webhookID: string): Promise<void> => {
-    const webhook = await this._permissonManager.getEntityByID('webhook', webhookID);
+    const webhook = await this._permissonManager.getEntityByID(
+      'webhook',
+      webhookID,
+    );
     if (!webhook) {
       throw new HttpError('no webhook found', 404);
     }
@@ -110,7 +111,10 @@ class WebhookManager {
     await this._permissonManager.getAllEntitiesForCurrentUser('webhook');
 
   getByID = async (webhookID: string): Promise<Webhook> => {
-    const webhook = await this._permissonManager.getEntityByID('webhook', webhookID);
+    const webhook = await this._permissonManager.getEntityByID(
+      'webhook',
+      webhookID,
+    );
     if (!webhook) {
       throw new HttpError('no webhook found', 404);
     }
@@ -120,8 +124,8 @@ class WebhookManager {
 
   _init = async (): Promise<void> => {
     const allWebhooks = await this._webhookRepository.getAll();
-    allWebhooks.forEach(
-      (webhook: Webhook): void => this._subscribeWebhook(webhook),
+    allWebhooks.forEach((webhook: Webhook): void =>
+      this._subscribeWebhook(webhook),
     );
   };
 
@@ -151,37 +155,34 @@ class WebhookManager {
     this._subscriptionIDsByWebhookID.delete(webhookID);
   };
 
-  _onNewWebhookEvent = (webhook: Webhook): (event: Event) => void =>
-    (event: Event) => {
-      try {
-        const webhookErrorCount =
-          this._errorsCountByWebhookID.get(webhook.id) || 0;
+  _onNewWebhookEvent = (webhook: Webhook): ((event: Event) => void) => (
+    event: Event,
+  ) => {
+    try {
+      const webhookErrorCount =
+        this._errorsCountByWebhookID.get(webhook.id) || 0;
 
-        if (webhookErrorCount < MAX_WEBHOOK_ERRORS_COUNT) {
-          this.runWebhook(webhook, event);
-          return;
-        }
-
-        this._eventPublisher.publish({
-          data: 'Too many errors, webhook disabled',
-          isPublic: false,
-          name: this._compileErrorResponseTopic(
-            webhook,
-            event,
-          ),
-          userID: event.userID,
-        });
-
-        this.runWebhookThrottled(webhook, event);
-      } catch (error) {
-        logger.error(`webhookError: ${error}`);
+      if (webhookErrorCount < MAX_WEBHOOK_ERRORS_COUNT) {
+        this.runWebhook(webhook, event);
+        return;
       }
-    };
+
+      this._eventPublisher.publish({
+        data: 'Too many errors, webhook disabled',
+        isPublic: false,
+        name: this._compileErrorResponseTopic(webhook, event),
+        userID: event.userID,
+      });
+
+      this.runWebhookThrottled(webhook, event);
+    } catch (error) {
+      logger.error(`webhookError: ${error}`);
+    }
+  };
 
   runWebhook = async (webhook: Webhook, event: Event): Promise<void> => {
     try {
-      const webhookVariablesObject =
-        this._getEventVariables(event);
+      const webhookVariablesObject = this._getEventVariables(event);
 
       const requestAuth = this._compileJsonTemplate(
         webhook.auth,
@@ -253,24 +254,22 @@ class WebhookManager {
       const isResponseBodyAnObject = responseBody === Object(responseBody);
 
       const responseTemplate =
-        webhook.responseTemplate && isResponseBodyAnObject && hogan
-          .compile(webhook.responseTemplate)
-          .render(responseBody);
+        webhook.responseTemplate &&
+        isResponseBodyAnObject &&
+        hogan.compile(webhook.responseTemplate).render(responseBody);
 
-      const responseEventData = responseTemplate || (isResponseBodyAnObject
-        ? JSON.stringify(responseBody)
-        : responseBody);
+      const responseEventData =
+        responseTemplate ||
+        (isResponseBodyAnObject ? JSON.stringify(responseBody) : responseBody);
 
       const chunks = splitBufferIntoChunks(
-        Buffer
-          .from(responseEventData)
-          .slice(0, MAX_RESPONSE_MESSAGE_SIZE),
+        Buffer.from(responseEventData).slice(0, MAX_RESPONSE_MESSAGE_SIZE),
         MAX_RESPONSE_MESSAGE_CHUNK_SIZE,
       );
 
       chunks.forEach((chunk: Buffer, index: number) => {
         const responseEventName =
-          responseTopic && `${responseTopic}/${index}` ||
+          (responseTopic && `${responseTopic}/${index}`) ||
           `hook-response/${event.name}/${index}`;
 
         this._eventPublisher.publish({
@@ -293,64 +292,62 @@ class WebhookManager {
     }
   };
 
-  runWebhookThrottled = throttle(
-    this.runWebhook,
-    WEBHOOK_THROTTLE_TIME,
-    { leading: false, trailing: true },
-  );
+  runWebhookThrottled = throttle(this.runWebhook, WEBHOOK_THROTTLE_TIME, {
+    leading: false,
+    trailing: true,
+  });
 
   _callWebhook = (
     webhook: Webhook,
     event: Event,
     requestOptions: RequestOptions,
-  ): Promise<*> => new Promise(
-    (
-      resolve: (responseBody: string | Buffer | Object) => void,
-      reject: (error: Error) => void,
-    ): void => request(
-      requestOptions,
+  ): Promise<*> =>
+    new Promise(
       (
-        error: ?Error,
-        response: http$IncomingMessage,
-        responseBody: string | Buffer | Object,
-      ) => {
-        const onResponseError = (errorMessage: ?string) => {
-          this._incrementWebhookErrorCounter(webhook.id);
+        resolve: (responseBody: string | Buffer | Object) => void,
+        reject: (error: Error) => void,
+      ): void =>
+        request(
+          requestOptions,
+          (
+            error: ?Error,
+            response: http$IncomingMessage,
+            responseBody: string | Buffer | Object,
+          ) => {
+            const onResponseError = (errorMessage: ?string) => {
+              this._incrementWebhookErrorCounter(webhook.id);
 
-          this._eventPublisher.publish({
-            data: errorMessage,
-            isPublic: false,
-            name: this._compileErrorResponseTopic(
-              webhook,
-              event,
-            ),
-            userID: event.userID,
-          });
+              this._eventPublisher.publish({
+                data: errorMessage,
+                isPublic: false,
+                name: this._compileErrorResponseTopic(webhook, event),
+                userID: event.userID,
+              });
 
-          reject(new Error(errorMessage));
-        };
+              reject(new Error(errorMessage));
+            };
 
-        if (error) {
-          onResponseError(error.message);
-          return;
-        }
-        if (response.statusCode >= 400) {
-          onResponseError((response: any).statusMessage);
-          return;
-        }
+            if (error) {
+              onResponseError(error.message);
+              return;
+            }
+            if (response.statusCode >= 400) {
+              onResponseError((response: any).statusMessage);
+              return;
+            }
 
-        this._resetWebhookErrorCounter(webhook.id);
+            this._resetWebhookErrorCounter(webhook.id);
 
-        this._eventPublisher.publish({
-          isPublic: false,
-          name: `hook-sent/${event.name}`,
-          userID: event.userID,
-        });
+            this._eventPublisher.publish({
+              isPublic: false,
+              name: `hook-sent/${event.name}`,
+              userID: event.userID,
+            });
 
-        resolve(responseBody);
-      },
-    ),
-  );
+            resolve(responseBody);
+          },
+        ),
+    );
 
   _getEventVariables = (event: Event): Object => {
     const defaultWebhookVariables = {
@@ -392,9 +389,7 @@ class WebhookManager {
   };
 
   _compileTemplate = (template?: ?string, variables: Object): ?string =>
-    template && hogan
-      .compile(template)
-      .render(variables);
+    template && hogan.compile(template).render(variables);
 
   _compileJsonTemplate = (template?: ?Object, variables: Object): ?Object => {
     if (!template) {
@@ -414,10 +409,10 @@ class WebhookManager {
 
   _compileErrorResponseTopic = (webhook: Webhook, event: Event): string => {
     const variables = this._getEventVariables(event);
-    return this._compileTemplate(
-      webhook.errorResponseTopic,
-      variables,
-    ) || `hook-error/${event.name}`;
+    return (
+      this._compileTemplate(webhook.errorResponseTopic, variables) ||
+      `hook-error/${event.name}`
+    );
   };
 
   _incrementWebhookErrorCounter = (webhookID: string) => {

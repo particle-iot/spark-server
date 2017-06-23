@@ -31,72 +31,60 @@ class NeDb extends BaseMongoDb implements IBaseDatabase {
     });
   }
 
-  insertOne = async (
-    collectionName: string,
-    entity: Object,
-  ): Promise<*> => await this.__runForCollection(
-    collectionName,
-    async (collection: Object): Promise<*> => {
-      const insertResult = await promisify(
-        collection,
-        'insert',
-        entity,
-      );
+  insertOne = async (collectionName: string, entity: Object): Promise<*> =>
+    await this.__runForCollection(
+      collectionName,
+      async (collection: Object): Promise<*> => {
+        const insertResult = await promisify(collection, 'insert', entity);
 
-      return this.__translateResultItem(insertResult);
-    },
-  );
+        return this.__translateResultItem(insertResult);
+      },
+    );
 
-  find = async (
-    collectionName: string,
-    query: Object,
-  ): Promise<*> => await this.__runForCollection(
-    collectionName,
-    async (collection: Object): Promise<*> => {
-      const resultItems = await promisify(collection, 'find', query);
-      return resultItems.map(this.__translateResultItem);
-    },
-  );
+  find = async (collectionName: string, query: Object): Promise<*> =>
+    await this.__runForCollection(
+      collectionName,
+      async (collection: Object): Promise<*> => {
+        const resultItems = await promisify(collection, 'find', query);
+        return resultItems.map(this.__translateResultItem);
+      },
+    );
 
   findAndModify = async (
     collectionName: string,
     query: Object,
     updateQuery: Object,
-  ): Promise<*> => await this.__runForCollection(
-    collectionName,
-    async (collection: Object): Promise<*> => {
-      // eslint-disable-next-line no-unused-vars
-      const [count, resultItem] = await promisify(
-        collection,
-        'update',
-        query,
-        updateQuery,
-        { returnUpdatedDocs: true, upsert: true },
-      );
+  ): Promise<*> =>
+    await this.__runForCollection(
+      collectionName,
+      async (collection: Object): Promise<*> => {
+        const [
+          count, // eslint-disable-line no-unused-vars
+          resultItem,
+        ] = await promisify(collection, 'update', query, updateQuery, {
+          returnUpdatedDocs: true,
+          upsert: true,
+        });
 
-      return this.__translateResultItem(resultItem);
-    },
-  );
+        return this.__translateResultItem(resultItem);
+      },
+    );
 
-  findOne = async (
-    collectionName: string,
-    query: Object,
-  ): Promise<*> => await this.__runForCollection(
-    collectionName,
-    async (collection: Object): Promise<*> => {
-      const resultItem = await promisify(collection, 'findOne', query);
-      return this.__translateResultItem(resultItem);
-    },
-  );
+  findOne = async (collectionName: string, query: Object): Promise<*> =>
+    await this.__runForCollection(
+      collectionName,
+      async (collection: Object): Promise<*> => {
+        const resultItem = await promisify(collection, 'findOne', query);
+        return this.__translateResultItem(resultItem);
+      },
+    );
 
-  remove = async (
-    collectionName: string,
-    query: Object,
-  ): Promise<*> => await this.__runForCollection(
-    collectionName,
-    async (collection: Object): Promise<*> =>
-      await promisify(collection, 'remove', query),
-  );
+  remove = async (collectionName: string, query: Object): Promise<*> =>
+    await this.__runForCollection(
+      collectionName,
+      async (collection: Object): Promise<*> =>
+        await promisify(collection, 'remove', query),
+    );
 
   __runForCollection = async (
     collectionName: string,

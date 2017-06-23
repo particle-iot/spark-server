@@ -9,7 +9,6 @@ import type {
 
 import COLLECTION_NAMES from './collectionNames';
 
-
 // getByID, deleteByID and update uses model.deviceID as ID for querying
 class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
   _database: IBaseDatabase;
@@ -20,10 +19,10 @@ class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
   }
 
   create = async (model: DeviceKeyObject): Promise<DeviceKeyObject> =>
-    await this._database.insertOne(
-      this._collectionName,
-      { _id: model.deviceID, ...model },
-    );
+    await this._database.insertOne(this._collectionName, {
+      _id: model.deviceID,
+      ...model,
+    });
 
   deleteByID = async (deviceID: string): Promise<void> =>
     await this._database.remove(this._collectionName, { deviceID });
@@ -33,10 +32,7 @@ class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
   };
 
   getByID = async (deviceID: string): Promise<?DeviceKeyObject> =>
-    await this._database.findOne(
-      this._collectionName,
-      { deviceID },
-    );
+    await this._database.findOne(this._collectionName, { deviceID });
 
   updateByID = async (
     deviceID: string,

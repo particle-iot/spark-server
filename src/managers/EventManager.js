@@ -21,11 +21,9 @@ class EventManager {
     eventHandler: (event: Event) => void,
     filterOptions: FilterOptions,
   ): string =>
-    this._eventPublisher.subscribe(
-      eventNamePrefix,
-      eventHandler,
-      { filterOptions },
-    );
+    this._eventPublisher.subscribe(eventNamePrefix, eventHandler, {
+      filterOptions,
+    });
 
   unsubscribe = (subscriptionID: string): void =>
     this._eventPublisher.unsubscribe(subscriptionID);

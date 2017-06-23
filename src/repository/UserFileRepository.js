@@ -61,18 +61,15 @@ class UserFileRepository implements IUserRepository {
   deleteAccessToken = async (userID: string, token: string): Promise<User> => {
     const user = await this.getByID(userID);
     if (!user) {
-      throw new Error('User doesn\'t exist');
+      throw new Error("User doesn't exist");
     }
 
-    return await this.updateByID(
-      userID,
-      {
-        accessTokens: user.accessTokens.filter(
-          (tokenObject: TokenObject): boolean =>
-            tokenObject.accessToken !== token,
-        ),
-      },
-    );
+    return await this.updateByID(userID, {
+      accessTokens: user.accessTokens.filter(
+        (tokenObject: TokenObject): boolean =>
+          tokenObject.accessToken !== token,
+      ),
+    });
   };
 
   @memoizeSet(['id'])
@@ -89,8 +86,9 @@ class UserFileRepository implements IUserRepository {
   // isn't a good way to clear the cache.
   getByAccessToken = async (accessToken: string): Promise<?User> =>
     (await this.getAll()).find((user: User): boolean =>
-      user.accessTokens.some((tokenObject: TokenObject): boolean =>
-        tokenObject.accessToken === accessToken,
+      user.accessTokens.some(
+        (tokenObject: TokenObject): boolean =>
+          tokenObject.accessToken === accessToken,
       ),
     );
 
@@ -110,8 +108,8 @@ class UserFileRepository implements IUserRepository {
 
   @memoizeGet(['username'])
   async isUserNameInUse(username: string): Promise<boolean> {
-    return (await this.getAll()).some((user: User): boolean =>
-      user.username === username,
+    return (await this.getAll()).some(
+      (user: User): boolean => user.username === username,
     );
   }
 
@@ -125,10 +123,9 @@ class UserFileRepository implements IUserRepository {
       throw new HttpError('Could not find user for user ID');
     }
 
-    return await this.updateByID(
-      userID,
-      { accessTokens: [...user.accessTokens, tokenObject] },
-    );
+    return await this.updateByID(userID, {
+      accessTokens: [...user.accessTokens, tokenObject],
+    });
   };
 
   setCurrentUser = (user: User) => {
@@ -149,7 +146,7 @@ class UserFileRepository implements IUserRepository {
       const user = await this.getByUsername(username);
 
       if (!user) {
-        throw new Error('User doesn\'t exist');
+        throw new Error("User doesn't exist");
       }
 
       const hash = await PasswordHasher.hash(password, user.salt);

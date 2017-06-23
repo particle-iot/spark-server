@@ -1,0 +1,2 @@
+# hide dist files in commit diffs.
+dist/* linguist-generated

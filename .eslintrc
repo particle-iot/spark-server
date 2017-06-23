@@ -1,11 +1,15 @@
 {
-  "extends": "airbnb-base",
+  "extends": [
+    "airbnb-base",
+    "prettier"
+  ],
   "parser": "babel-eslint",
   "plugins": [
     "flowtype",
     "sorting"
   ],
   "rules": {
+    "class-methods-use-this": 0,
     "eol-last": 2,
     "flowtype/define-flow-type": 1,
     "flowtype/require-parameter-type": 1,

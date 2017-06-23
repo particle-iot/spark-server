@@ -14,46 +14,52 @@ import nullthrows from 'nullthrows';
 import multer from 'multer';
 import HttpError from './lib/HttpError';
 
-const maybe = (middleware: Middleware, condition: boolean): Middleware =>
-  (request: $Request, response: $Response, next: NextFunction) => {
-    if (condition) {
-      middleware(request, response, next);
-    } else {
-      next();
-    }
-  };
-
-const injectUserMiddleware = (container: Container): Middleware =>
-  (request: $Request, response: $Response, next: NextFunction) => {
-    const oauthInfo = response.locals.oauth;
-    if (oauthInfo) {
-      const token = (oauthInfo: any).token;
-      const user = token && token.user;
-      // eslint-disable-next-line no-param-reassign
-      (request: any).user = user;
-      container.constitute('UserRepository').setCurrentUser(user);
-    }
+const maybe = (middleware: Middleware, condition: boolean): Middleware => (
+  request: $Request,
+  response: $Response,
+  next: NextFunction,
+) => {
+  if (condition) {
+    middleware(request, response, next);
+  } else {
     next();
-  };
+  }
+};
+
+const injectUserMiddleware = (container: Container): Middleware => (
+  request: $Request,
+  response: $Response,
+  next: NextFunction,
+) => {
+  const oauthInfo = response.locals.oauth;
+  if (oauthInfo) {
+    const token = (oauthInfo: any).token;
+    const user = token && token.user;
+    // eslint-disable-next-line no-param-reassign
+    (request: any).user = user;
+    container.constitute('UserRepository').setCurrentUser(user);
+  }
+  next();
+};
 
 // in old codebase there was _keepAlive() function in controllers , which
 // prevents of closing server-sent-events stream if there aren't events for
 // a long time, but according to the docs sse keep connection alive automatically.
 // if there will be related issues in the future, we can return _keepAlive() back.
-const serverSentEventsMiddleware = (): Middleware =>
-  (request: $Request, response: $Response, next: NextFunction) => {
-    request.socket.setNoDelay();
-    response.writeHead(
-      200,
-      {
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-        'Content-Type': 'text/event-stream',
-      },
-    );
+const serverSentEventsMiddleware = (): Middleware => (
+  request: $Request,
+  response: $Response,
+  next: NextFunction,
+) => {
+  request.socket.setNoDelay();
+  response.writeHead(200, {
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+    'Content-Type': 'text/event-stream',
+  });
 
-    next();
-  };
+  next();
+};
 
 export default (
   app: $Application,
@@ -61,12 +67,15 @@ export default (
   controllers: Array<string>,
   settings: Settings,
 ) => {
-  const filesMiddleware = (allowedUploads: ?Array<{
-    maxCount: number,
-    name: string,
-  }> = []): Middleware => nullthrows(allowedUploads).length
-    ? multer().fields(allowedUploads)
-    : multer().any();
+  const filesMiddleware = (
+    allowedUploads: ?Array<{
+      maxCount: number,
+      name: string,
+    }> = [],
+  ): Middleware =>
+    nullthrows(allowedUploads).length
+      ? multer().fields(allowedUploads)
+      : multer().any();
 
   const oauth = container.constitute('OAuthServer');
 
@@ -96,11 +105,13 @@ export default (
         injectUserMiddleware(container),
         maybe(filesMiddleware(allowedUploads), allowedUploads),
         async (request: $Request, response: $Response): Promise<void> => {
-          const argumentNames = (route.match(/:[\w]*/g) || []).map(
-            (argumentName: string): string => argumentName.replace(':', ''),
+          const argumentNames = (route.match(/:[\w]*/g) || [])
+            .map((argumentName: string): string =>
+              argumentName.replace(':', ''),
+            );
+          const values = argumentNames.map(
+            (argument: string): string => request.params[argument],
           );
-          const values = argumentNames
-            .map((argument: string): string => request.params[argument]);
 
           let controllerInstance = container.constitute(controllerName);
 
@@ -133,15 +144,15 @@ export default (
             if (functionResult.then) {
               const result = !serverSentEvents
                 ? await Promise.race([
-                  functionResult,
-                  new Promise(
-                    (resolve: () => void, reject: () => void): number =>
-                      setTimeout(
-                        (): void => reject(new Error('timeout')),
-                        settings.API_TIMEOUT,
-                      ),
-                  ),
-                ])
+                    functionResult,
+                    new Promise(
+                      (resolve: () => void, reject: () => void): number =>
+                        setTimeout(
+                          (): void => reject(new Error('timeout')),
+                          settings.API_TIMEOUT,
+                        ),
+                    ),
+                  ])
                 : await functionResult;
 
               response
@@ -157,7 +168,8 @@ export default (
               ok: false,
             });
           }
-        });
+        },
+      );
     });
   });
 
@@ -165,18 +177,18 @@ export default (
     response.sendStatus(404);
   });
 
-  (app: any).use((
-    error: Error,
-    request: $Request,
-    response: $Response,
-    // eslint-disable-next-line no-unused-vars
-    next: NextFunction,
-  ) => {
-    response
-      .status(400)
-      .json({
+  (app: any).use(
+    (
+      error: Error,
+      request: $Request,
+      response: $Response,
+      // eslint-disable-next-line no-unused-vars
+      next: NextFunction,
+    ) => {
+      response.status(400).json({
         error: error.code ? error.code : error,
         ok: false,
       });
-  });
+    },
+  );
 };

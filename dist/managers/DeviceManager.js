@@ -94,7 +94,9 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
             case 11:
               _context.next = 13;
-              return _this._deviceAttributeRepository.updateByID(deviceID, { ownerID: userID });
+              return _this._deviceAttributeRepository.updateByID(deviceID, {
+                ownerID: userID
+              });
 
             case 13:
               return _context.abrupt('return', _context.sent);
@@ -130,7 +132,9 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
 
             case 4:
               _context2.next = 6;
-              return _this._deviceAttributeRepository.updateByID(deviceID, { ownerID: null });
+              return _this._deviceAttributeRepository.updateByID(deviceID, {
+                ownerID: null
+              });
 
             case 6:
               return _context2.abrupt('return', _context2.sent);

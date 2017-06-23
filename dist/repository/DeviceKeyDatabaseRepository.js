@@ -40,7 +40,9 @@ var DeviceKeyDatabaseRepository = function DeviceKeyDatabaseRepository(database)
           switch (_context.prev = _context.next) {
             case 0:
               _context.next = 2;
-              return _this._database.insertOne(_this._collectionName, (0, _extends3.default)({ _id: model.deviceID }, model));
+              return _this._database.insertOne(_this._collectionName, (0, _extends3.default)({
+                _id: model.deviceID
+              }, model));
 
             case 2:
               return _context.abrupt('return', _context.sent);

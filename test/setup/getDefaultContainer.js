@@ -5,7 +5,6 @@ import defaultBindings from '../../src/defaultBindings';
 import settings from './settings';
 import DeviceServerMock from './DeviceServerMock';
 
-
 const container = new Container();
 // TODO - we should be creating different bindings per test so we can mock out
 // different modules to test
