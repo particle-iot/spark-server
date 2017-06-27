@@ -118,12 +118,11 @@ function (_ref) {
       nic = _ref2[1];
 
   return nic.filter(function (address) {
-    logger.debug({ found: address }, 'Network Interface');
     return address.family === 'IPv4' && address.address !== '127.0.0.1';
   }).map(function (address) {
     return address.address;
   });
 }));
-addresses.forEach(function (aAddress) {
-  return logger.info({ address: aAddress }, 'Server IP address found');
+addresses.forEach(function (address) {
+  return logger.info({ address: address }, 'Server IP address found');
 });

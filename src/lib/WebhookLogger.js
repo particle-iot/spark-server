@@ -7,9 +7,9 @@ const logger = Logger.createModuleLogger(module);
 class WebhookLogger implements IWebhookLogger {
   _lastLog: Array<any>;
 
-  log(...argsarray: Array<any>) {
-    this._lastLog = argsarray;
-    logger.info({ args: argsarray }, 'WebHook');
+  log(...args: Array<any>) {
+    this._lastLog = args;
+    logger.info({ ...args }, 'WebHookLogger called');
   }
 }
 

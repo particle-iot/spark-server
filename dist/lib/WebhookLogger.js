@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -28,12 +32,12 @@ var WebhookLogger = function () {
   (0, _createClass3.default)(WebhookLogger, [{
     key: 'log',
     value: function log() {
-      for (var _len = arguments.length, argsarray = Array(_len), _key = 0; _key < _len; _key++) {
-        argsarray[_key] = arguments[_key];
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
       }
 
-      this._lastLog = argsarray;
-      logger.info({ args: argsarray }, 'WebHook');
+      this._lastLog = args;
+      logger.info((0, _extends3.default)({}, args), 'WebHookLogger called');
     }
   }]);
   return WebhookLogger;

@@ -71,7 +71,7 @@ var parseEventData = function parseEventData(event) {
     }
     return {};
   } catch (error) {
-    logger.warn({ err: error, evdata: event.data }, 'parseEventData failed');
+    logger.warn({ err: error, eventData: event.data }, 'parseEventData failed');
     return {};
   }
 };
