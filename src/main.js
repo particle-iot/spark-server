@@ -80,6 +80,6 @@ const addresses = arrayFlatten(
         .map((address: Object): boolean => address.address),
   ),
 );
-addresses.forEach((aAddress: string): void =>
-  logger.info({ address: aAddress }, 'Server IP address found'),
+addresses.forEach((address: string): void =>
+  logger.info({ address }, 'Server IP address found'),
 );
