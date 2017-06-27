@@ -30,23 +30,41 @@
     "build": "babel ./src --out-dir ./dist --copy-files",
     "build:clean": "rimraf ./build",
     "build:watch": "babel ./src --out-dir ./dist --watch",
-    "examples:build" : "babel ./examples --out-dir ./dist/examples --ignore node_modules",
-    "examples:run:eventprovider" : "node ./dist/examples/eventProvider.js",
+    "git-add": "git add",
     "lint": "eslint --fix --max-warnings 0 -- .",
+    "lint-staged": "lint-staged",
     "migrate-files-to-mongo": "babel-node ./src/scripts/migrateFilesToDatabase mongo",
     "migrate-files-to-nedb": "babel-node ./src/scripts/migrateFilesToDatabase nedb",
     "prebuild": "npm run build:clean",
-    "start:warn": "babel-node ./src/main.js --trace-warnings",
+    "prettify": "prettier --single-quote --trailing-comma all --write",
     "start": "nodemon --exec babel-node ./src/main.js --watch src --watch ../spark-protocol/dist --ignore data",
     "start:debug": "nodemon --exec babel-node ./src/main.js --watch src --watch ../spark-protocol/src --ignore data",
     "start:prod": "node ./dist/main.js",
+    "start:warn": "babel-node ./src/main.js --trace-warnings",
     "test": "ava --serial --no-cache",
     "test:watch": "ava --watch --serial",
     "update-firmware": "node ./node_modules/spark-protocol/dist/scripts/update-firmware-binaries",
     "watch": "babel ./src --out-dir ./dist --watch"
   },
+  "lint-staged": {
+    "examples/**/*.js": [
+      "lint",
+      "prettify",
+      "git add"
+    ],
+    "src/**/*.js": [
+      "lint",
+      "prettify",
+      "git add"
+    ],
+    "test/**/*.js": [
+      "lint",
+      "prettify",
+      "git add"
+    ]
+  },
   "pre-commit": [
-    "lint",
+    "lint-staged",
     "test"
   ],
   "ava": {
@@ -104,12 +122,15 @@
     "babel-register": "^6.18.0",
     "eslint": "^3.11.0",
     "eslint-config-airbnb-base": "^10.0.1",
+    "eslint-config-prettier": "^2.2.0",
     "eslint-plugin-flowtype": "^2.28.2",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-sorting": "^0.3.0",
     "flow-bin": "^0.37.4",
+    "lint-staged": "^4.0.0",
     "nodemon": "^1.11.0",
     "pre-commit": "^1.2.2",
+    "prettier": "^1.4.4",
     "rimraf": "^2.5.4",
     "sinon": "^1.17.7",
     "supertest": "^2.0.1",
