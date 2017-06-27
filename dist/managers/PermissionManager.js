@@ -124,7 +124,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
                 break;
               }
 
-              throw new _HttpError2.default('User doesn\'t have access', 403);
+              throw new _HttpError2.default("User doesn't have access", 403);
 
             case 7:
               return _context3.abrupt('return', entity);

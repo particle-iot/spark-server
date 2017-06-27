@@ -148,7 +148,7 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
                   break;
                 }
 
-                throw new Error('User doesn\'t exist');
+                throw new Error("User doesn't exist");
 
               case 5:
                 _context2.next = 7;
@@ -231,7 +231,9 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
 
               case 5:
                 _context4.next = 7;
-                return _this.updateByID(userID, { accessTokens: [].concat((0, _toConsumableArray3.default)(user.accessTokens), [tokenObject]) });
+                return _this.updateByID(userID, {
+                  accessTokens: [].concat((0, _toConsumableArray3.default)(user.accessTokens), [tokenObject])
+                });
 
               case 7:
                 return _context4.abrupt('return', _context4.sent);
@@ -272,7 +274,7 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
                   break;
                 }
 
-                throw new Error('User doesn\'t exist');
+                throw new Error("User doesn't exist");
 
               case 6:
                 _context5.next = 8;

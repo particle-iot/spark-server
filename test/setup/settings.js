@@ -11,7 +11,10 @@ export default {
   DEVICE_DIRECTORY: path.join(__dirname, '../__test_data__/deviceKeys'),
   ENABLE_SYSTEM_FIRWMARE_AUTOUPDATES: true,
   FIRMWARE_DIRECTORY: path.join(__dirname, '../__test_data__/knownApps'),
-  FIRMWARE_REPOSITORY_DIRECTORY: path.join(__dirname, '../__test_data__/firmware'),
+  FIRMWARE_REPOSITORY_DIRECTORY: path.join(
+    __dirname,
+    '../__test_data__/firmware',
+  ),
   SERVER_KEY_FILENAME: 'default_key.pem',
   SERVER_KEYS_DIRECTORY: path.join(__dirname, '../__test_data__'),
   USERS_DIRECTORY: path.join(__dirname, '../__test_data__/users'),

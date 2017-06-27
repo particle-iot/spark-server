@@ -38,11 +38,10 @@ function _transform(...params: Array<any>): Array<any> {
 }
 
 function getDate(): string {
-  return (new Date()).toISOString();
+  return new Date().toISOString();
 }
 
 export class DefaultLogger implements ILogger {
-
   static log(...params: Array<any>) {
     if (settings.SHOW_VERBOSE_DEVICE_LOGS) {
       DefaultLogger._log(`[${getDate()}]`, _transform(...params));
@@ -50,24 +49,15 @@ export class DefaultLogger implements ILogger {
   }
 
   static info(...params: Array<any>) {
-    DefaultLogger._log(
-      `[${getDate()}]`,
-      chalk.cyan(_transform(...params)),
-    );
+    DefaultLogger._log(`[${getDate()}]`, chalk.cyan(_transform(...params)));
   }
 
   static warn(...params: Array<any>) {
-    DefaultLogger._log(
-      `[${getDate()}]`,
-      chalk.yellow(_transform(...params)),
-    );
+    DefaultLogger._log(`[${getDate()}]`, chalk.yellow(_transform(...params)));
   }
 
   static error(...params: Array<any>) {
-    DefaultLogger._log(
-      `[${getDate()}]`,
-      chalk.red(_transform(...params)),
-    );
+    DefaultLogger._log(`[${getDate()}]`, chalk.red(_transform(...params)));
   }
   static _log(...params: Array<any>) {
     console.log(...params);

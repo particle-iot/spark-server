@@ -33,16 +33,16 @@ test.before(async () => {
     container.constitute('EventPublisher'),
     'publishAndListenForResponse',
     ({
-       name,
-       context: {
-         deviceID,
-         functionArguments,
-         functionName,
-         shouldShowSignal,
-         variableName,
-       },
+      name,
+      context: {
+        deviceID,
+        functionArguments,
+        functionName,
+        shouldShowSignal,
+        variableName,
+      },
     }) => {
-      if(name === SPARK_SERVER_EVENTS.PING_DEVICE) {
+      if (name === SPARK_SERVER_EVENTS.PING_DEVICE) {
         return deviceID === CONNECTED_DEVICE_ID
           ? {
               connected: true,
@@ -54,19 +54,19 @@ test.before(async () => {
             };
       }
 
-      if(deviceID !== CONNECTED_DEVICE_ID) {
-        return { error: new Error('Could not get device for ID')};
+      if (deviceID !== CONNECTED_DEVICE_ID) {
+        return { error: new Error('Could not get device for ID') };
       }
 
-      if(name === SPARK_SERVER_EVENTS.CALL_DEVICE_FUNCTION) {
-        if(TEST_DEVICE_FUNTIONS.includes(functionName)) {
-          return functionArguments.argument
+      if (name === SPARK_SERVER_EVENTS.CALL_DEVICE_FUNCTION) {
+        if (TEST_DEVICE_FUNTIONS.includes(functionName)) {
+          return functionArguments.argument;
         } else {
           return { error: new Error(`Unknown Function ${functionName}`) };
         }
       }
 
-      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES) {
+      if (name === SPARK_SERVER_EVENTS.GET_DEVICE_ATTRIBUTES) {
         return {
           deviceID: CONNECTED_DEVICE_ID,
           functions: TEST_DEVICE_FUNTIONS,
@@ -76,21 +76,21 @@ test.before(async () => {
         };
       }
 
-      if(name === SPARK_SERVER_EVENTS.GET_DEVICE_VARIABLE_VALUE) {
-        if(!TEST_DEVICE_VARIABLES.includes(variableName)) {
-          throw new Error(`Variable not found`)
+      if (name === SPARK_SERVER_EVENTS.GET_DEVICE_VARIABLE_VALUE) {
+        if (!TEST_DEVICE_VARIABLES.includes(variableName)) {
+          throw new Error(`Variable not found`);
         }
         return { result: TEST_VARIABLE_RESULT };
       }
 
       if (name === SPARK_SERVER_EVENTS.FLASH_DEVICE) {
-        return { status: 'Update finished' }
+        return { status: 'Update finished' };
       }
 
-      if(name === SPARK_SERVER_EVENTS.RAISE_YOUR_HAND) {
+      if (name === SPARK_SERVER_EVENTS.RAISE_YOUR_HAND) {
         return shouldShowSignal ? { status: 1 } : { status: 0 };
       }
-    }
+    },
   );
   const { filePath, fileBuffer } = await TestData.createCustomFirmwareBinary();
   customFirmwareFilePath = filePath;
@@ -100,7 +100,8 @@ test.before(async () => {
     .post('/v1/users')
     .send(USER_CREDENTIALS);
 
-  testUser = await container.constitute('UserRepository')
+  testUser = await container
+    .constitute('UserRepository')
     .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)
@@ -150,47 +151,40 @@ test('should throw an error for compile source code endpoint', async t => {
   t.is(response.status, 400);
 });
 
+test.serial('should return device details for connected device', async t => {
+  const response = await request(app)
+    .get(`/v1/devices/${CONNECTED_DEVICE_ID}`)
+    .query({ access_token: userToken });
 
-test.serial(
-  'should return device details for connected device',
-  async t => {
-    const response = await request(app)
-      .get(`/v1/devices/${CONNECTED_DEVICE_ID}`)
-      .query({ access_token: userToken });
+  t.is(response.status, 200);
+  t.is(response.body.connected, true);
+  t.is(
+    JSON.stringify(response.body.functions),
+    JSON.stringify(TEST_DEVICE_FUNTIONS),
+  );
+  t.is(response.body.id, connectedDeviceToApiAttributes.id);
+  t.is(response.body.name, connectedDeviceToApiAttributes.name);
+  t.is(response.body.ownerID, connectedDeviceToApiAttributes.ownerID);
+  t.is(
+    JSON.stringify(response.body.variables),
+    JSON.stringify(TEST_DEVICE_VARIABLES),
+  );
+  t.is(response.body.last_heard, TEST_LAST_HEARD.toISOString());
+});
 
-    t.is(response.status, 200);
-    t.is(response.body.connected, true);
-    t.is(
-      JSON.stringify(response.body.functions),
-      JSON.stringify(TEST_DEVICE_FUNTIONS),
-    );
-    t.is(response.body.id, connectedDeviceToApiAttributes.id);
-    t.is(response.body.name, connectedDeviceToApiAttributes.name);
-    t.is(response.body.ownerID, connectedDeviceToApiAttributes.ownerID);
-    t.is(
-      JSON.stringify(response.body.variables),
-      JSON.stringify(TEST_DEVICE_VARIABLES),
-    );
-    t.is(response.body.last_heard, TEST_LAST_HEARD.toISOString());
-  },
-);
+test.serial('should return device details for disconnected device', async t => {
+  const response = await request(app)
+    .get(`/v1/devices/${DISCONNECTED_DEVICE_ID}`)
+    .query({ access_token: userToken });
 
-test.serial(
-  'should return device details for disconnected device',
-  async t => {
-    const response = await request(app)
-      .get(`/v1/devices/${DISCONNECTED_DEVICE_ID}`)
-      .query({ access_token: userToken });
-
-    t.is(response.status, 200);
-    t.is(response.body.connected, false);
-    t.is(response.body.functions, null);
-    t.is(response.body.id, disconnectedDeviceToApiAttributes.id);
-    t.is(response.body.name, disconnectedDeviceToApiAttributes.name);
-    t.is(response.body.ownerID, disconnectedDeviceToApiAttributes.ownerID);
-    t.is(response.body.variables, null);
-  },
-);
+  t.is(response.status, 200);
+  t.is(response.body.connected, false);
+  t.is(response.body.functions, null);
+  t.is(response.body.id, disconnectedDeviceToApiAttributes.id);
+  t.is(response.body.name, disconnectedDeviceToApiAttributes.name);
+  t.is(response.body.ownerID, disconnectedDeviceToApiAttributes.ownerID);
+  t.is(response.body.variables, null);
+});
 
 test.serial('should throw an error if device not found', async t => {
   const response = await request(app)
@@ -265,10 +259,9 @@ test.serial(
 test.serial(
   'should throw an error if device belongs to somebody else',
   async t => {
-    const deviceAttributesStub = sinon.stub(
-      container.constitute('DeviceAttributeRepository'),
-      'getByID',
-    ).returns({ ownerID: TestData.getID()});
+    const deviceAttributesStub = sinon
+      .stub(container.constitute('DeviceAttributeRepository'), 'getByID')
+      .returns({ ownerID: TestData.getID() });
 
     const claimDeviceResponse = await request(app)
       .post('/v1/devices')
@@ -303,95 +296,77 @@ test.serial(
   },
 );
 
-test.serial(
-  'should throw an error if function doesn\'t exist',
-  async t => {
-    const callFunctionResponse = await request(app)
-      .post(`/v1/devices/${CONNECTED_DEVICE_ID}/wrong${TEST_DEVICE_FUNTIONS[0]}`)
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .send({
-        access_token: userToken,
-      });
+test.serial("should throw an error if function doesn't exist", async t => {
+  const callFunctionResponse = await request(app)
+    .post(`/v1/devices/${CONNECTED_DEVICE_ID}/wrong${TEST_DEVICE_FUNTIONS[0]}`)
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .send({
+      access_token: userToken,
+    });
 
-    t.is(callFunctionResponse.status, 404);
-    t.is(callFunctionResponse.body.error, 'Function not found');
-  },
-);
+  t.is(callFunctionResponse.status, 404);
+  t.is(callFunctionResponse.body.error, 'Function not found');
+});
 
-test.serial(
-  'should return variable value',
-  async t => {
-    const getVariableResponse = await request(app)
-      .get(`/v1/devices/${CONNECTED_DEVICE_ID}/${TEST_DEVICE_VARIABLES[0]}/`)
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .query({ access_token: userToken });
+test.serial('should return variable value', async t => {
+  const getVariableResponse = await request(app)
+    .get(`/v1/devices/${CONNECTED_DEVICE_ID}/${TEST_DEVICE_VARIABLES[0]}/`)
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .query({ access_token: userToken });
 
-    t.is(getVariableResponse.status, 200);
-    t.is(getVariableResponse.body.result, TEST_VARIABLE_RESULT);
-  },
-);
+  t.is(getVariableResponse.status, 200);
+  t.is(getVariableResponse.body.result, TEST_VARIABLE_RESULT);
+});
 
-test.serial(
-  'should throw an error if variable not found',
-  async t => {
-    const getVariableResponse = await request(app)
-      .get(`/v1/devices/${CONNECTED_DEVICE_ID}/wrong${TEST_DEVICE_VARIABLES[0]}/`)
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .query({ access_token: userToken });
+test.serial('should throw an error if variable not found', async t => {
+  const getVariableResponse = await request(app)
+    .get(`/v1/devices/${CONNECTED_DEVICE_ID}/wrong${TEST_DEVICE_VARIABLES[0]}/`)
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .query({ access_token: userToken });
 
-    t.is(getVariableResponse.status, 404);
-    t.is(getVariableResponse.body.error, 'Variable not found');
-  },
-);
+  t.is(getVariableResponse.status, 404);
+  t.is(getVariableResponse.body.error, 'Variable not found');
+});
 
-test.serial(
-  'should rename device',
-  async t => {
-    const newDeviceName = 'newDeviceName';
+test.serial('should rename device', async t => {
+  const newDeviceName = 'newDeviceName';
 
-    const renameDeviceResponse = await request(app)
-      .put(`/v1/devices/${CONNECTED_DEVICE_ID}`)
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .send({
-        access_token: userToken,
-        name: newDeviceName,
-      });
+  const renameDeviceResponse = await request(app)
+    .put(`/v1/devices/${CONNECTED_DEVICE_ID}`)
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .send({
+      access_token: userToken,
+      name: newDeviceName,
+    });
 
-    t.is(renameDeviceResponse.status, 200);
-    t.is(renameDeviceResponse.body.name, newDeviceName);
-  },
-);
+  t.is(renameDeviceResponse.status, 200);
+  t.is(renameDeviceResponse.body.name, newDeviceName);
+});
 
-test.serial(
-  'should invoke raise your hand on device',
-  async t => {
-    const raiseYourHandResponse = await request(app)
-      .put(`/v1/devices/${CONNECTED_DEVICE_ID}`)
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .send({
-        access_token: userToken,
-        signal: '1',
-      });
+test.serial('should invoke raise your hand on device', async t => {
+  const raiseYourHandResponse = await request(app)
+    .put(`/v1/devices/${CONNECTED_DEVICE_ID}`)
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .send({
+      access_token: userToken,
+      signal: '1',
+    });
 
-    t.is(raiseYourHandResponse.status, 200);
-  },
-);
+  t.is(raiseYourHandResponse.status, 200);
+});
 
-test.serial(
-  'should throw an error if signal is wrong value',
-  async t => {
-    const raiseYourHandResponse = await request(app)
-      .put(`/v1/devices/${CONNECTED_DEVICE_ID}`)
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .send({
-        access_token: userToken,
-        signal: 'some wrong value',
-      });
+test.serial('should throw an error if signal is wrong value', async t => {
+  const raiseYourHandResponse = await request(app)
+    .put(`/v1/devices/${CONNECTED_DEVICE_ID}`)
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .send({
+      access_token: userToken,
+      signal: 'some wrong value',
+    });
 
-    t.is(raiseYourHandResponse.status, 400);
-    t.truthy(raiseYourHandResponse.body.error, 'Wrong signal value');
-  },
-);
+  t.is(raiseYourHandResponse.status, 400);
+  t.truthy(raiseYourHandResponse.body.error, 'Wrong signal value');
+});
 
 test.serial(
   'should start device flashing process with known application',
@@ -399,10 +374,9 @@ test.serial(
     const knownAppName = 'knownAppName';
     const knownAppBuffer = new Buffer(knownAppName);
 
-    const deviceFirmwareStub = sinon.stub(
-      container.constitute('DeviceFirmwareRepository'),
-      'getByName',
-    ).returns(knownAppBuffer);
+    const deviceFirmwareStub = sinon
+      .stub(container.constitute('DeviceFirmwareRepository'), 'getByName')
+      .returns(knownAppBuffer);
 
     const flashKnownAppResponse = await request(app)
       .put(`/v1/devices/${CONNECTED_DEVICE_ID}`)
@@ -433,10 +407,7 @@ test.serial(
       });
 
     t.is(flashKnownAppResponse.status, 404);
-    t.is(
-      flashKnownAppResponse.body.error,
-      `No firmware ${knownAppName} found`,
-    );
+    t.is(flashKnownAppResponse.body.error, `No firmware ${knownAppName} found`);
   },
 );
 
@@ -487,8 +458,16 @@ test.serial(
 test.after.always(async (): Promise<void> => {
   await TestData.deleteCustomFirmwareBinary(customFirmwareFilePath);
   await container.constitute('UserRepository').deleteByID(testUser.id);
-  await container.constitute('DeviceAttributeRepository').deleteByID(CONNECTED_DEVICE_ID);
-  await container.constitute('DeviceKeyRepository').deleteByID(CONNECTED_DEVICE_ID);
-  await container.constitute('DeviceAttributeRepository').deleteByID(DISCONNECTED_DEVICE_ID);
-  await container.constitute('DeviceKeyRepository').deleteByID(DISCONNECTED_DEVICE_ID);
+  await container
+    .constitute('DeviceAttributeRepository')
+    .deleteByID(CONNECTED_DEVICE_ID);
+  await container
+    .constitute('DeviceKeyRepository')
+    .deleteByID(CONNECTED_DEVICE_ID);
+  await container
+    .constitute('DeviceAttributeRepository')
+    .deleteByID(DISCONNECTED_DEVICE_ID);
+  await container
+    .constitute('DeviceKeyRepository')
+    .deleteByID(DISCONNECTED_DEVICE_ID);
 });

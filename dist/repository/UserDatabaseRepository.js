@@ -184,7 +184,9 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
           switch (_context6.prev = _context6.next) {
             case 0:
               _context6.next = 2;
-              return _this._database.findOne(_this._collectionName, { accessTokens: { $elemMatch: { accessToken: accessToken } } });
+              return _this._database.findOne(_this._collectionName, {
+                accessTokens: { $elemMatch: { accessToken: accessToken } }
+              });
 
             case 2:
               user = _context6.sent;
@@ -195,7 +197,9 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
               }
 
               _context6.next = 6;
-              return _this._database.findOne(_this._collectionName, { 'accessTokens.accessToken': accessToken });
+              return _this._database.findOne(_this._collectionName, {
+                'accessTokens.accessToken': accessToken
+              });
 
             case 6:
               user = _context6.sent;
@@ -354,7 +358,9 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
             case 0:
               _context12.prev = 0;
               _context12.next = 3;
-              return _this._database.findOne(_this._collectionName, { username: username });
+              return _this._database.findOne(_this._collectionName, {
+                username: username
+              });
 
             case 3:
               user = _context12.sent;
@@ -364,7 +370,7 @@ var UserDatabaseRepository = function UserDatabaseRepository(database) {
                 break;
               }
 
-              throw new _HttpError2.default('User doesn\'t exist', 404);
+              throw new _HttpError2.default("User doesn't exist", 404);
 
             case 6:
               _context12.next = 8;

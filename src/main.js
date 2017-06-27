@@ -15,10 +15,10 @@ import { Container } from 'constitute';
 const NODE_PORT = process.env.NODE_PORT || settings.EXPRESS_SERVER_CONFIG.PORT;
 
 process.on('uncaughtException', (exception: Error) => {
-  logger.error(
-    'uncaughtException',
-    { message: exception.message, stack: exception.stack },
-  ); // logging with MetaData
+  logger.error('uncaughtException', {
+    message: exception.message,
+    stack: exception.stack,
+  }); // logging with MetaData
   process.exit(1); // exit with failure
 });
 
@@ -53,21 +53,16 @@ const {
 
 if (useSSL) {
   const options = {
-    cert: certificateFilePath && fs.readFileSync(
-      nulltrhows(certificateFilePath),
-    ),
-    key: privateKeyFilePath && fs.readFileSync(
-      nulltrhows(privateKeyFilePath),
-    ),
+    cert:
+      certificateFilePath && fs.readFileSync(nulltrhows(certificateFilePath)),
+    key: privateKeyFilePath && fs.readFileSync(nulltrhows(privateKeyFilePath)),
     ...expressConfig,
   };
   https
     .createServer(options, (app: any))
     .listen(NODE_PORT, onServerStartListen);
 } else {
-  http
-    .createServer((app: any))
-    .listen(NODE_PORT, onServerStartListen);
+  http.createServer((app: any)).listen(NODE_PORT, onServerStartListen);
 }
 
 const addresses = arrayFlatten(
@@ -75,9 +70,9 @@ const addresses = arrayFlatten(
     // eslint-disable-next-line no-unused-vars
     ([name, nic]: [string, mixed]): Array<string> =>
       (nic: any)
-        .filter((address: Object): boolean =>
-          address.family === 'IPv4' &&
-          address.address !== '127.0.0.1',
+        .filter(
+          (address: Object): boolean =>
+            address.family === 'IPv4' && address.address !== '127.0.0.1',
         )
         .map((address: Object): boolean => address.address),
   ),

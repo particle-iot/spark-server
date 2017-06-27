@@ -25,7 +25,8 @@ test.before(async () => {
     .post('/v1/users')
     .send(USER_CREDENTIALS);
 
-  testUser = await container.constitute('UserRepository')
+  testUser = await container
+    .constitute('UserRepository')
     .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)
@@ -41,7 +42,7 @@ test.before(async () => {
 
   userToken = tokenResponse.body.access_token;
 
-  if(!userToken) {
+  if (!userToken) {
     throw new Error('test user creation fails');
   }
 });
@@ -62,7 +63,7 @@ test.serial('should create a new webhook object', async t => {
   t.truthy(testWebhook.id && testWebhook.event && testWebhook.url);
 });
 
-test('should throw an error if event isn\'t provided', async t => {
+test("should throw an error if event isn't provided", async t => {
   const response = await request(app)
     .post('/v1/webhooks')
     .query({ access_token: userToken })
@@ -75,7 +76,7 @@ test('should throw an error if event isn\'t provided', async t => {
   t.is(response.body.error, 'no event name provided');
 });
 
-test('should throw an error if url isn\'t provided', async t => {
+test("should throw an error if url isn't provided", async t => {
   const response = await request(app)
     .post('/v1/webhooks')
     .query({ access_token: userToken })
@@ -88,7 +89,7 @@ test('should throw an error if url isn\'t provided', async t => {
   t.is(response.body.error, 'no url provided');
 });
 
-test('should throw an error if requestType isn\'t provided', async t => {
+test("should throw an error if requestType isn't provided", async t => {
   const response = await request(app)
     .post('/v1/webhooks')
     .query({ access_token: userToken })
@@ -138,9 +139,9 @@ test.serial('should delete webhook', async t => {
 
   const webhooks = allWebhooksResponse.body;
 
-  t.falsy(webhooks.some((webhook: Webhook): boolean =>
-    webhook.id === testWebhook.id,
-  ));
+  t.falsy(
+    webhooks.some((webhook: Webhook): boolean => webhook.id === testWebhook.id),
+  );
 });
 
 test.after.always(async (): Promise<void> => {

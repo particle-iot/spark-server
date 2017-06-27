@@ -120,13 +120,17 @@ var parseFile = function parseFile(file) {
 
 var mapOwnerID = function mapOwnerID(userIDsMap) {
   return function (item) {
-    return (0, _extends3.default)({}, item, { ownerID: userIDsMap.get(item.ownerID) || null
+    return (0, _extends3.default)({}, item, {
+      ownerID: userIDsMap.get(item.ownerID) || null
     });
   };
 };
 
 var translateDeviceID = function translateDeviceID(item) {
-  return (0, _extends3.default)({}, item, { _id: new _mongodb.ObjectId(item.deviceID), id: item.deviceID });
+  return (0, _extends3.default)({}, item, {
+    _id: new _mongodb.ObjectId(item.deviceID),
+    id: item.deviceID
+  });
 };
 
 // eslint-disable-next-line no-unused-vars

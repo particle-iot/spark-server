@@ -57,7 +57,6 @@ export type Client = {
   grants: Array<GrantType>,
 };
 
-
 export type Device = DeviceAttributes & {
   connected: boolean,
 };
@@ -104,10 +103,7 @@ export type EventData = {
   userID: string,
 };
 
-export type GrantType =
-  'bearer_token'|
-  'password'|
-  'refresh_token';
+export type GrantType = 'bearer_token' | 'password' | 'refresh_token';
 
 export type TokenObject = {
   accessToken: string,
@@ -167,7 +163,7 @@ export type Settings = {
     PORT: number,
   },
   USERS_DIRECTORY: string,
-  WEBHOOK_TEMPLATE_PARAMETERS: {[key: string]: string},
+  WEBHOOK_TEMPLATE_PARAMETERS: { [key: string]: string },
   WEBHOOKS_DIRECTORY: string,
 };
 
@@ -197,29 +193,31 @@ export type Product = {
 };
 
 export interface IBaseRepository<TModel> {
-  create(model: TModel | $Shape<TModel>): Promise<TModel>;
-  deleteByID(id: string): Promise<void>;
-  getAll(): Promise<Array<TModel>>;
-  getByID(id: string): Promise<?TModel>;
-  updateByID(id: string, props: $Shape<TModel>): Promise<TModel>;
+  create(model: TModel | $Shape<TModel>): Promise<TModel>,
+  deleteByID(id: string): Promise<void>,
+  getAll(): Promise<Array<TModel>>,
+  getByID(id: string): Promise<?TModel>,
+  updateByID(id: string, props: $Shape<TModel>): Promise<TModel>,
 }
 
 export interface IWebhookRepository extends IBaseRepository<Webhook> {}
 
-export interface IDeviceAttributeRepository extends IBaseRepository<DeviceAttributes> {}
+export interface IDeviceAttributeRepository
+  extends IBaseRepository<DeviceAttributes> {}
 
-export interface IDeviceKeyRepository extends IBaseRepository<DeviceKeyObject> {}
+export interface IDeviceKeyRepository
+  extends IBaseRepository<DeviceKeyObject> {}
 
 export interface IUserRepository extends IBaseRepository<User> {
-  createWithCredentials(credentials: UserCredentials): Promise<User>;
-  deleteAccessToken(userID: string, accessToken: string): Promise<User>;
-  getByAccessToken(accessToken: string): Promise<?User>;
-  getByUsername(username: string): Promise<?User>;
-  getCurrentUser(): User;
-  isUserNameInUse(username: string): Promise<boolean>;
-  saveAccessToken(userID: string, tokenObject: TokenObject): Promise<User>;
-  setCurrentUser(user: User): void;
-  validateLogin(username: string, password: string): Promise<User>;
+  createWithCredentials(credentials: UserCredentials): Promise<User>,
+  deleteAccessToken(userID: string, accessToken: string): Promise<User>,
+  getByAccessToken(accessToken: string): Promise<?User>,
+  getByUsername(username: string): Promise<?User>,
+  getCurrentUser(): User,
+  isUserNameInUse(username: string): Promise<boolean>,
+  saveAccessToken(userID: string, tokenObject: TokenObject): Promise<User>,
+  setCurrentUser(user: User): void,
+  validateLogin(username: string, password: string): Promise<User>,
 }
 
 export interface IDeviceFirmwareRepository {
@@ -227,16 +225,16 @@ export interface IDeviceFirmwareRepository {
 }
 
 export interface IBaseDatabase {
-  find(collectionName: string, ...args: Array<any>): Promise<*>;
-  findAndModify(collectionName: string, ...args: Array<any>): Promise<*>;
-  findOne(collectionName: string, ...args: Array<any>): Promise<*>;
-  insertOne(collectionName: string, ...args: Array<any>): Promise<*>;
-  remove(collectionName: string, query: Object): Promise<*>;
+  find(collectionName: string, ...args: Array<any>): Promise<*>,
+  findAndModify(collectionName: string, ...args: Array<any>): Promise<*>,
+  findOne(collectionName: string, ...args: Array<any>): Promise<*>,
+  insertOne(collectionName: string, ...args: Array<any>): Promise<*>,
+  remove(collectionName: string, query: Object): Promise<*>,
 }
 
 export interface ILogger {
-  static error(params: Array<any>): void;
-  static info(params: Array<any>): void;
-  static log(params: Array<any>): void;
-  static warn(params: Array<any>): void;
+  static error(params: Array<any>): void,
+  static info(params: Array<any>): void,
+  static log(params: Array<any>): void,
+  static warn(params: Array<any>): void,
 }

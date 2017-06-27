@@ -1,10 +1,10 @@
 // @flow
 
 export type CollectionName =
-  'deviceAttributes'|
-  'deviceKeys'|
-  'users'|
-  'webhooks';
+  | 'deviceAttributes'
+  | 'deviceKeys'
+  | 'users'
+  | 'webhooks';
 
 const COLLECTION_NAMES: { [key: string]: CollectionName } = {
   DEVICE_ATTRIBUTES: 'deviceAttributes',

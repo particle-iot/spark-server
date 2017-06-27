@@ -21,8 +21,7 @@ import EventManager from './managers/EventManager';
 import PermissionManager from './managers/PermissionManager';
 import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileRepository';
 import NeDb from './repository/NeDb';
-import DeviceAttributeDatabaseRepository from
-  './repository/DeviceAttributeDatabaseRepository';
+import DeviceAttributeDatabaseRepository from './repository/DeviceAttributeDatabaseRepository';
 import DeviceKeyDatabaseRepository from './repository/DeviceKeyDatabaseRepository';
 import UserDatabaseRepository from './repository/UserDatabaseRepository';
 import WebhookDatabaseRepository from './repository/WebhookDatabaseRepository';
@@ -61,113 +60,55 @@ export default (container: Container, newSettings: Settings) => {
     ['OAuthModel'],
   );
 
-  container.bindClass(
-    'OAuthModel',
-    OAuthModel,
-    ['UserRepository'],
-  );
+  container.bindClass('OAuthModel', OAuthModel, ['UserRepository']);
 
-  container.bindClass(
-    'OAuthServer',
-    OAuthServer,
-    ['OAUTH_SETTINGS'],
-  );
+  container.bindClass('OAuthServer', OAuthServer, ['OAUTH_SETTINGS']);
 
-  container.bindClass(
-    'Database',
-    NeDb,
-    ['DATABASE_PATH'],
-  );
+  container.bindClass('Database', NeDb, ['DATABASE_PATH']);
 
   // lib
-  container.bindClass(
-    'WebhookLogger',
-    WebhookLogger,
-    [],
-  );
+  container.bindClass('WebhookLogger', WebhookLogger, []);
 
   // controllers
-  container.bindClass(
-    'DeviceClaimsController',
-    DeviceClaimsController,
-    [
-      'DeviceManager',
-      'ClaimCodeManager',
-    ],
-  );
-  container.bindClass(
-    'DevicesController',
-    DevicesController,
-    ['DeviceManager'],
-  );
-  container.bindClass(
-    'EventsController',
-    EventsController,
-    ['EventManager'],
-  );
-  container.bindClass(
-    'PermissionManager',
-    PermissionManager,
-    [
-      'DeviceAttributeRepository',
-      'UserRepository',
-      'WebhookRepository',
-      'OAuthServer',
-    ],
-  );
-  container.bindClass(
-    'OauthClientsController',
-    OauthClientsController,
-    [],
-  );
-  container.bindClass(
-    'ProductsController',
-    ProductsController,
-    [],
-  );
-  container.bindClass(
-    'ProvisioningController',
-    ProvisioningController,
-    ['DeviceManager'],
-  );
-  container.bindClass(
-    'UsersController',
-    UsersController,
-    ['UserRepository'],
-  );
-  container.bindClass(
-    'WebhooksController',
-    WebhooksController,
-    ['WebhookManager'],
-  );
+  container.bindClass('DeviceClaimsController', DeviceClaimsController, [
+    'DeviceManager',
+    'ClaimCodeManager',
+  ]);
+  container.bindClass('DevicesController', DevicesController, [
+    'DeviceManager',
+  ]);
+  container.bindClass('EventsController', EventsController, ['EventManager']);
+  container.bindClass('PermissionManager', PermissionManager, [
+    'DeviceAttributeRepository',
+    'UserRepository',
+    'WebhookRepository',
+    'OAuthServer',
+  ]);
+  container.bindClass('OauthClientsController', OauthClientsController, []);
+  container.bindClass('ProductsController', ProductsController, []);
+  container.bindClass('ProvisioningController', ProvisioningController, [
+    'DeviceManager',
+  ]);
+  container.bindClass('UsersController', UsersController, ['UserRepository']);
+  container.bindClass('WebhooksController', WebhooksController, [
+    'WebhookManager',
+  ]);
 
   // managers
-  container.bindClass(
-    'DeviceManager',
-    DeviceManager,
-    [
-      'DeviceAttributeRepository',
-      'DeviceFirmwareRepository',
-      'DeviceKeyRepository',
-      'PermissionManager',
-      'EventPublisher',
-    ],
-  );
-  container.bindClass(
-    'EventManager',
-    EventManager,
-    ['EventPublisher'],
-  );
-  container.bindClass(
-    'WebhookManager',
-    WebhookManager,
-    [
-      'EventPublisher',
-      'PermissionManager',
-      'WebhookLogger',
-      'WebhookRepository',
-    ],
-  );
+  container.bindClass('DeviceManager', DeviceManager, [
+    'DeviceAttributeRepository',
+    'DeviceFirmwareRepository',
+    'DeviceKeyRepository',
+    'PermissionManager',
+    'EventPublisher',
+  ]);
+  container.bindClass('EventManager', EventManager, ['EventPublisher']);
+  container.bindClass('WebhookManager', WebhookManager, [
+    'EventPublisher',
+    'PermissionManager',
+    'WebhookLogger',
+    'WebhookRepository',
+  ]);
 
   // Repositories
   container.bindClass(
@@ -180,19 +121,11 @@ export default (container: Container, newSettings: Settings) => {
     DeviceFirmwareFileRepository,
     ['FIRMWARE_DIRECTORY'],
   );
-  container.bindClass(
-    'DeviceKeyRepository',
-    DeviceKeyDatabaseRepository,
-    ['Database'],
-  );
-  container.bindClass(
-    'UserRepository',
-    UserDatabaseRepository,
-    ['Database'],
-  );
-  container.bindClass(
-    'WebhookRepository',
-    WebhookDatabaseRepository,
-    ['Database'],
-  );
+  container.bindClass('DeviceKeyRepository', DeviceKeyDatabaseRepository, [
+    'Database',
+  ]);
+  container.bindClass('UserRepository', UserDatabaseRepository, ['Database']);
+  container.bindClass('WebhookRepository', WebhookDatabaseRepository, [
+    'Database',
+  ]);
 };

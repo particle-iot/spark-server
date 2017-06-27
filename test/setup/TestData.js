@@ -17,43 +17,34 @@ type CreateCustomFirmwareResult = {
 
 class TestData {
   static createCustomFirmwareBinary = (): Promise<CreateCustomFirmwareResult> =>
-    new Promise((
-      resolve: (result: CreateCustomFirmwareResult) => void,
-      reject: (error: Error) => void,
-    ) => {
-      const filePath =
-        `${settings.CUSTOM_FIRMWARE_DIRECTORY}/customApp-${TestData.getID()}.bin`;
-      const fileBuffer = crypto.randomBytes(100);
+    new Promise(
+      (
+        resolve: (result: CreateCustomFirmwareResult) => void,
+        reject: (error: Error) => void,
+      ) => {
+        const filePath = `${settings.CUSTOM_FIRMWARE_DIRECTORY}/customApp-${TestData.getID()}.bin`;
+        const fileBuffer = crypto.randomBytes(100);
 
-      fs.writeFile(
-        filePath,
-        fileBuffer,
-        (error: ?Error) => {
+        fs.writeFile(filePath, fileBuffer, (error: ?Error) => {
           if (error) {
             reject(error);
             return;
           }
           resolve({ fileBuffer, filePath });
-        },
-      );
-    });
+        });
+      },
+    );
 
   static deleteCustomFirmwareBinary = (filePath: string): Promise<void> =>
-    new Promise((
-      resolve: () => void,
-      reject: (error: Error) => void,
-    ) => {
-      fs.unlink(
-        filePath,
-        (error: ?Error) => {
-          if (error) {
-            reject(error);
-            return;
-          }
+    new Promise((resolve: () => void, reject: (error: Error) => void) => {
+      fs.unlink(filePath, (error: ?Error) => {
+        if (error) {
+          reject(error);
+          return;
+        }
 
-          resolve();
-        },
-      );
+        resolve();
+      });
     });
 
   static getUser = (): UserCredentials => ({

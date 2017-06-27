@@ -24,10 +24,10 @@ const NODE_PORT = process.env.NODE_PORT || settings.EXPRESS_SERVER_CONFIG.PORT;
 const useHttp = NODE_PORT !== 443;
 
 process.on('uncaughtException', (exception: Error) => {
-  logger.error(
-    'uncaughtException',
-    { message: exception.message, stack: exception.stack },
-  ); // logging with MetaData
+  logger.error('uncaughtException', {
+    message: exception.message,
+    stack: exception.stack,
+  }); // logging with MetaData
   process.exit(1); // exit with failure
 });
 
@@ -37,11 +37,7 @@ defaultBindings(container, settings);
 // you have to override database bindings to use MongoDB instead of neDB:
 container.bindValue('DATABASE_URL', settings.DB_CONFIG.URL);
 container.bindValue('DATABASE_OPTIONS', settings.DB_CONFIG.OPTIONS);
-container.bindClass(
-  'Database',
-  MongoDb,
-  ['DATABASE_URL', 'DATABASE_OPTIONS'],
-);
+container.bindClass('Database', MongoDb, ['DATABASE_URL', 'DATABASE_OPTIONS']);
 
 function promisify<T>(
   call: (serviceCallback: (error: StorageError, result: T) => void) => void,
@@ -67,11 +63,11 @@ const blobService = azure.createBlobService(
 
 (async () => {
   try {
-    const sslCertificate = await promisify(
-      cb => blobService.getBlobToText('keys', settings.SSL_CERTIFICATE, cb),
+    const sslCertificate = await promisify(cb =>
+      blobService.getBlobToText('keys', settings.SSL_CERTIFICATE, cb),
     );
-    const privateKey = await promisify(
-      cb => blobService.getBlobToText('keys', settings.SSL_PRIVATE_KEY, cb),
+    const privateKey = await promisify(cb =>
+      blobService.getBlobToText('keys', settings.SSL_PRIVATE_KEY, cb),
     );
 
     const options = {
@@ -89,21 +85,18 @@ const blobService = azure.createBlobService(
 
     (useHttp
       ? http.createServer(app)
-      : https.createServer(options, app))
-      .listen(
-        NODE_PORT,
-        (): void =>
-          console.log(`express server started on port ${NODE_PORT}`),
-      );
+      : https.createServer(options, app)).listen(NODE_PORT, (): void =>
+      console.log(`express server started on port ${NODE_PORT}`),
+    );
 
     const addresses = arrayFlatten(
       Object.entries(os.networkInterfaces()).map(
         // eslint-disable-next-line no-unused-vars
         ([name, nic]: [string, mixed]): Array<string> =>
           (nic: any)
-            .filter((address: Object): boolean =>
-              address.family === 'IPv4' &&
-              address.address !== '127.0.0.1',
+            .filter(
+              (address: Object): boolean =>
+                address.family === 'IPv4' && address.address !== '127.0.0.1',
             )
             .map((address: Object): boolean => address.address),
       ),
@@ -115,5 +108,3 @@ const blobService = azure.createBlobService(
     console.log('SSL ERROR', error);
   }
 })();
-
-

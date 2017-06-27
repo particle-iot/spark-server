@@ -14,23 +14,17 @@ class WebhookDatabaseRepository implements IWebhookRepository {
   }
 
   create = async (model: $Shape<Webhook>): Promise<Webhook> =>
-    await this._database.insertOne(
-      this._collectionName,
-      {
-        ...model,
-        created_at: new Date(),
-      },
-    );
+    await this._database.insertOne(this._collectionName, {
+      ...model,
+      created_at: new Date(),
+    });
 
   deleteByID = async (id: string): Promise<void> =>
     await this._database.remove(this._collectionName, { _id: id });
 
   getAll = async (userID: ?string = null): Promise<Array<Webhook>> => {
     const query = userID ? { ownerID: userID } : {};
-    return await this._database.find(
-      this._collectionName,
-      query,
-    );
+    return await this._database.find(this._collectionName, query);
   };
 
   getByID = async (id: string): Promise<?Webhook> =>
