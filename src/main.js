@@ -73,10 +73,10 @@ const addresses = arrayFlatten(
     // eslint-disable-next-line no-unused-vars
     ([name, nic]: [string, mixed]): Array<string> =>
       (nic: any)
-        .filter((address: Object): boolean => {
-          logger.debug({ found: address }, 'Network Interface');
-          return address.family === 'IPv4' && address.address !== '127.0.0.1';
-        })
+       .filter((address: Object): boolean =>
+          address.family === 'IPv4' &&
+          address.address !== '127.0.0.1',
+        )
         .map((address: Object): boolean => address.address),
   ),
 );

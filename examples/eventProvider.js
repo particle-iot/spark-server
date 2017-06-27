@@ -35,12 +35,10 @@ defaultBindings(container, settings);
 const deviceServer = container.constitute('DeviceServer');
 deviceServer.start();
 
-/*
 const evProvider = container.constitute('EVENT_PROVIDER');
 evProvider.onNewEvent((event: Event) => {
   logger.info('Event onNewEvent',event);
 });
-*/
 
 
 
