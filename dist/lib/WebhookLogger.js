@@ -18,6 +18,8 @@ var _logger2 = _interopRequireDefault(_logger);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var logger = _logger2.default.createModuleLogger(module);
+
 var WebhookLogger = function () {
   function WebhookLogger() {
     (0, _classCallCheck3.default)(this, WebhookLogger);
@@ -26,12 +28,12 @@ var WebhookLogger = function () {
   (0, _createClass3.default)(WebhookLogger, [{
     key: 'log',
     value: function log() {
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
+      for (var _len = arguments.length, argsarray = Array(_len), _key = 0; _key < _len; _key++) {
+        argsarray[_key] = arguments[_key];
       }
 
-      this._lastLog = args;
-      _logger2.default.log.apply(_logger2.default, args);
+      this._lastLog = argsarray;
+      logger.info({ args: argsarray }, 'WebHook');
     }
   }]);
   return WebhookLogger;

@@ -19,28 +19,24 @@
 *
 */
 
-import { DefaultLogger } from './DefaultLogger';
-import { ILogger } from '../types';
+import bunyan from 'bunyan';
+import { ILoggerCreate } from '../types';
+import path from 'path';
+import settings from '../settings';
 
-export default class Logger {
-  static _logger: ILogger = DefaultLogger;
-
-  static error(...params: Array<any>) {
-    Logger._logger.error(...params);
+export default class Logger implements ILoggerCreate {
+  static createLogger(applicationName: string): bunyan.Logger {
+    return bunyan.createLogger({
+      level: settings.LOG_LEVEL,
+      name: applicationName,
+      serializers: bunyan.stdSerializers,
+    });
   }
-
-  static info(...params: Array<any>) {
-    Logger._logger.info(...params);
-  }
-
-  static initialize(logger: ILogger) {
-    Logger._logger = logger;
-  }
-
-  static log(...params: Array<any>) {
-    Logger._logger.log(...params);
-  }
-  static warn(...params: Array<any>) {
-    Logger._logger.warn(...params);
+  static createModuleLogger(applicationModule: any): bunyan.Logger {
+    return bunyan.createLogger({
+      level: settings.LOG_LEVEL,
+      name: path.basename(applicationModule.filename),
+      serializers: bunyan.stdSerializers,
+    });
   }
 }

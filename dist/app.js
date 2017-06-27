@@ -12,15 +12,21 @@ var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
 
-var _morgan = require('morgan');
+var _logger = require('./lib/logger');
 
-var _morgan2 = _interopRequireDefault(_morgan);
+var _logger2 = _interopRequireDefault(_logger);
 
 var _RouteConfig = require('./RouteConfig');
 
 var _RouteConfig2 = _interopRequireDefault(_RouteConfig);
 
+var _bunyanMiddleware = require('bunyan-middleware');
+
+var _bunyanMiddleware2 = _interopRequireDefault(_bunyanMiddleware);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var logger = _logger2.default.createModuleLogger(module);
 
 exports.default = function (container, settings, existingApp) {
   var app = existingApp || (0, _express2.default)();
@@ -35,16 +41,28 @@ exports.default = function (container, settings, existingApp) {
       });
       return response.sendStatus(204);
     }
-    response.set({ 'Access-Control-Allow-Origin': '*' });
+    response.set({
+      'Access-Control-Allow-Origin': '*'
+    });
     return next();
   };
 
-  if (settings.LOG_REQUESTS) {
-    app.use((0, _morgan2.default)('[:date[iso]] :remote-addr - :remote-user ":method :url ' + 'HTTP/:http-version" :status :res[content-length] ":referrer" ' + '":user-agent"'));
+  if (logger.debug()) {
+    app.use((0, _bunyanMiddleware2.default)({
+      headerName: 'X-Request-Id',
+      level: 'debug',
+      logger: logger,
+      logName: 'req_id',
+      obscureHeaders: [],
+      propertyName: 'reqId'
+    }));
+    logger.warn('Request logging enabled');
   }
 
   app.use(_bodyParser2.default.json());
-  app.use(_bodyParser2.default.urlencoded({ extended: true }));
+  app.use(_bodyParser2.default.urlencoded({
+    extended: true
+  }));
   app.use(setCORSHeaders);
 
   (0, _RouteConfig2.default)(app, container, ['DeviceClaimsController',

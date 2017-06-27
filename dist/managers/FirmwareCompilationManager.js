@@ -36,10 +36,6 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _logger = require('../lib/logger');
-
-var _logger2 = _interopRequireDefault(_logger);
-
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -60,7 +56,13 @@ var _settings = require('../settings');
 
 var _settings2 = _interopRequireDefault(_settings);
 
+var _logger = require('../lib/logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var logger = _logger2.default.createModuleLogger(module);
 
 var IS_COMPILATION_ENABLED = _fs2.default.existsSync(_settings2.default.FIRMWARE_REPOSITORY_DIRECTORY);
 
@@ -163,7 +165,7 @@ FirmwareCompilationManager.compileSource = function () {
             errors = [];
 
             makeProcess.stderr.on('data', function (data) {
-              _logger2.default.error('' + data);
+              logger.error({ data: data }, 'Error from MakeProcess');
               errors.push('' + data);
             });
 

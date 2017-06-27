@@ -12,6 +12,8 @@ import allowUpload from '../decorators/allowUpload';
 import httpVerb from '../decorators/httpVerb';
 import route from '../decorators/route';
 import deviceToAPI from '../lib/deviceToAPI';
+import Logger from '../lib/logger';
+const logger = Logger.createModuleLogger(module);
 
 type CompileConfig = {
   platform_id?: string,
@@ -79,6 +81,11 @@ class DevicesController extends Controller {
       );
     } catch (error) {
       // I wish we could return no devices found but meh :/
+      // at least we should issue a warning
+      logger.warn(
+        { err: error },
+        'get devices throws error, possibly no devices found?',
+      );
       return this.ok([]);
     }
   }

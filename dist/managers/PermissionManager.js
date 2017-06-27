@@ -30,15 +30,17 @@ var _HttpError = require('../lib/HttpError');
 
 var _HttpError2 = _interopRequireDefault(_HttpError);
 
-var _logger = require('../lib/logger');
-
-var _logger2 = _interopRequireDefault(_logger);
-
 var _settings = require('../settings');
 
 var _settings2 = _interopRequireDefault(_settings);
 
+var _logger = require('../lib/logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var logger = _logger2.default.createModuleLogger(module);
 
 var PermissionManager = function PermissionManager(deviceAttributeRepository, userRepository, webhookRepository, oauthServer) {
   var _this = this;
@@ -163,7 +165,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
             token = _context4.sent;
 
 
-            _logger2.default.info('New default admin user created with token: ' + token);
+            logger.info({ token: token }, 'New default admin user created');
             _context4.next = 12;
             break;
 
@@ -171,7 +173,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
             _context4.prev = 9;
             _context4.t0 = _context4['catch'](0);
 
-            _logger2.default.error('Error during default admin user creating: ' + _context4.t0);
+            logger.error({ err: _context4.t0 }, 'Error during default admin user creating');
 
           case 12:
           case 'end':
@@ -244,7 +246,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
               break;
             }
 
-            _logger2.default.info('Default admin accessToken: ' + ('' + defaultAdminUser.accessTokens[0].accessToken));
+            logger.info({ token: defaultAdminUser.accessTokens[0].accessToken }, 'Default Admin token');
             _context6.next = 9;
             break;
 

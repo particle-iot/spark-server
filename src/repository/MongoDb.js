@@ -4,8 +4,9 @@ import type { IBaseDatabase } from '../types';
 
 import EventEmitter from 'events';
 import BaseMongoDb from './BaseMongoDb';
-import Logger from '../lib/logger';
 import { MongoClient } from 'mongodb';
+import Logger from '../lib/logger';
+const logger = Logger.createModuleLogger(module);
 
 const DB_READY_EVENT = 'dbReady';
 
@@ -87,20 +88,22 @@ class MongoDb extends BaseMongoDb implements IBaseDatabase {
     }
     return callback(
       this._database.collection(collectionName),
-    ).catch((error: Error): void => Logger.error(error));
+    ).catch((error: Error): void =>
+      logger.error({ err: error }, 'Run for Collection'),
+    );
   };
 
   _init = async (url: string, options: Object): Promise<void> => {
     const database = await MongoClient.connect(url, options);
 
     database.on('error', (error: Error): void =>
-      Logger.error('DB connection Error: ', error),
+      logger.error({ err: error }, 'DB connection Error: '),
     );
 
-    database.on('open', (): void => Logger.log('DB connected'));
+    database.on('open', (): void => logger.info('DB connected'));
 
     database.on('close', (str: string): void =>
-      Logger.log('DB disconnected: ', str),
+      logger.info({ info: str }, 'DB disconnected: '),
     );
 
     this._database = database;

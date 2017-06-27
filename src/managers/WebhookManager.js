@@ -14,11 +14,12 @@ import type {
 
 import hogan from 'hogan.js';
 import HttpError from '../lib/HttpError';
-import logger from '../lib/logger';
 import nullthrows from 'nullthrows';
 import request from 'request';
 import settings from '../settings';
 import throttle from 'lodash/throttle';
+import Logger from '../lib/logger';
+const logger = Logger.createModuleLogger(module);
 
 const parseEventData = (event: Event): Object => {
   try {
@@ -27,6 +28,7 @@ const parseEventData = (event: Event): Object => {
     }
     return {};
   } catch (error) {
+    logger.warn({ err: error, evdata: event.data }, 'parseEventData failed');
     return {};
   }
 };
@@ -176,7 +178,7 @@ class WebhookManager {
 
       this.runWebhookThrottled(webhook, event);
     } catch (error) {
-      logger.error(`webhookError: ${error}`);
+      logger.error({ err: error }, 'webhookError');
     }
   };
 
@@ -288,7 +290,7 @@ class WebhookManager {
         responseEventData,
       );
     } catch (error) {
-      logger.error(`webhookError: ${error}`);
+      logger.error({ err: error }, 'webhookError');
     }
   };
 

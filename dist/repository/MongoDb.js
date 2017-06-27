@@ -40,13 +40,15 @@ var _BaseMongoDb2 = require('./BaseMongoDb');
 
 var _BaseMongoDb3 = _interopRequireDefault(_BaseMongoDb2);
 
+var _mongodb = require('mongodb');
+
 var _logger = require('../lib/logger');
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var _mongodb = require('mongodb');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var logger = _logger2.default.createModuleLogger(module);
 
 var DB_READY_EVENT = 'dbReady';
 
@@ -360,7 +362,7 @@ var _initialiseProps = function _initialiseProps() {
 
             case 4:
               return _context12.abrupt('return', callback(_this3._database.collection(collectionName)).catch(function (error) {
-                return _logger2.default.error(error);
+                return logger.error({ err: error }, 'Run for Collection');
               }));
 
             case 5:
@@ -391,15 +393,15 @@ var _initialiseProps = function _initialiseProps() {
 
 
               database.on('error', function (error) {
-                return _logger2.default.error('DB connection Error: ', error);
+                return logger.error({ err: error }, 'DB connection Error: ');
               });
 
               database.on('open', function () {
-                return _logger2.default.log('DB connected');
+                return logger.info('DB connected');
               });
 
               database.on('close', function (str) {
-                return _logger2.default.log('DB disconnected: ', str);
+                return logger.info({ info: str }, 'DB disconnected: ');
               });
 
               _this3._database = database;

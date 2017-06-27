@@ -13,9 +13,19 @@ var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _DefaultLogger = require('./DefaultLogger');
+var _bunyan = require('bunyan');
+
+var _bunyan2 = _interopRequireDefault(_bunyan);
 
 var _types = require('../types');
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _settings = require('../settings');
+
+var _settings2 = _interopRequireDefault(_settings);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -46,41 +56,25 @@ var Logger = function () {
   }
 
   (0, _createClass3.default)(Logger, null, [{
-    key: 'error',
-    value: function error() {
-      var _Logger$_logger;
-
-      (_Logger$_logger = Logger._logger).error.apply(_Logger$_logger, arguments);
+    key: 'createLogger',
+    value: function createLogger(applicationName) {
+      return _bunyan2.default.createLogger({
+        level: _settings2.default.LOG_LEVEL,
+        name: applicationName,
+        serializers: _bunyan2.default.stdSerializers
+      });
     }
   }, {
-    key: 'info',
-    value: function info() {
-      var _Logger$_logger2;
-
-      (_Logger$_logger2 = Logger._logger).info.apply(_Logger$_logger2, arguments);
-    }
-  }, {
-    key: 'initialize',
-    value: function initialize(logger) {
-      Logger._logger = logger;
-    }
-  }, {
-    key: 'log',
-    value: function log() {
-      var _Logger$_logger3;
-
-      (_Logger$_logger3 = Logger._logger).log.apply(_Logger$_logger3, arguments);
-    }
-  }, {
-    key: 'warn',
-    value: function warn() {
-      var _Logger$_logger4;
-
-      (_Logger$_logger4 = Logger._logger).warn.apply(_Logger$_logger4, arguments);
+    key: 'createModuleLogger',
+    value: function createModuleLogger(applicationModule) {
+      return _bunyan2.default.createLogger({
+        level: _settings2.default.LOG_LEVEL,
+        name: _path2.default.basename(applicationModule.filename),
+        serializers: _bunyan2.default.stdSerializers
+      });
     }
   }]);
   return Logger;
 }();
 
-Logger._logger = _DefaultLogger.DefaultLogger;
 exports.default = Logger;
