@@ -6,15 +6,36 @@
 * EVENT_PROVIDER is smart enough to filter broadcasted events.
 */
 
-/* eslint-disable */
-import type { Event } from '../src/types';
+/*
+  to build this sample run
 
+    npm run examples:build
+
+  to run
+
+    npm run examples:run:eventprovider
+
+  if this fails, ensure you have to latest version of spark-protocol, run
+
+    npm update spark-protocol
+
+*/
+
+/* eslint-disable */
+
+import type { Event } from '../types';
 import { Container } from 'constitute';
-import { defaultBindings } from 'spark-server';
+import defaultBindings from '../defaultBindings';
+import settings from '../settings.js';
+import logger from '../lib/logger';
 
 const container = new Container();
 defaultBindings(container, settings);
 
-container.constitute('EVENT_PROVIDER').onNewEvent((event: Event) => {
-  // do piping stuff here.
+const deviceServer = container.constitute('DeviceServer');
+deviceServer.start();
+
+const eventProvider = container.constitute('EVENT_PROVIDER');
+eventProvider.onNewEvent((event: Event) => {
+  logger.info('Event onNewEvent', event);
 });

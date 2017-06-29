@@ -195,6 +195,7 @@ var NeDb = function (_BaseMongoDb) {
                             _ref7 = _context5.sent;
                             _ref8 = (0, _slicedToArray3.default)(_ref7, 2);
                             count = _ref8[0];
+                            // eslint-disable-line no-unused-vars
                             resultItem = _ref8[1];
                             return _context5.abrupt('return', _this.__translateResultItem(resultItem));
 

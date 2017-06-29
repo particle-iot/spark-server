@@ -8,8 +8,9 @@ import anonymous from '../decorators/anonymous';
 import route from '../decorators/route';
 import httpVerb from '../decorators/httpVerb';
 import serverSentEvents from '../decorators/serverSentEvents';
-import logger from '../lib/logger';
 import eventToApi from '../lib/eventToApi';
+import Logger from '../lib/logger';
+const logger = Logger.createModuleLogger(module);
 
 class EventsController extends Controller {
   _eventManager: EventManager;
@@ -39,7 +40,7 @@ class EventsController extends Controller {
       this.response.write(`event: ${event.name}\n`);
       this.response.write(`data: ${JSON.stringify(eventToApi(event))}\n\n`);
     } catch (error) {
-      logger.error(`pipeEvents - write error: ${error}`);
+      logger.error({ err: error }, 'pipeEvents - write error');
       throw error;
     }
   }

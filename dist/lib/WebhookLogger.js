@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -18,6 +22,8 @@ var _logger2 = _interopRequireDefault(_logger);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var logger = _logger2.default.createModuleLogger(module);
+
 var WebhookLogger = function () {
   function WebhookLogger() {
     (0, _classCallCheck3.default)(this, WebhookLogger);
@@ -31,7 +37,7 @@ var WebhookLogger = function () {
       }
 
       this._lastLog = args;
-      _logger2.default.log.apply(_logger2.default, args);
+      logger.info((0, _extends3.default)({}, args), 'WebHookLogger called');
     }
   }]);
   return WebhookLogger;

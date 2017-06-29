@@ -48,25 +48,24 @@ var _defaultBindings = require('./defaultBindings');
 
 var _defaultBindings2 = _interopRequireDefault(_defaultBindings);
 
-var _logger = require('./lib/logger');
-
-var _logger2 = _interopRequireDefault(_logger);
-
 var _settings = require('./settings');
 
 var _settings2 = _interopRequireDefault(_settings);
 
 var _constitute = require('constitute');
 
+var _logger = require('./lib/logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var logger = _logger2.default.createModuleLogger(module);
 
 var NODE_PORT = process.env.NODE_PORT || _settings2.default.EXPRESS_SERVER_CONFIG.PORT;
 
 process.on('uncaughtException', function (exception) {
-  _logger2.default.error('uncaughtException', {
-    message: exception.message,
-    stack: exception.stack
-  }); // logging with MetaData
+  logger.error({ err: exception }, 'uncaughtException');
   process.exit(1); // exit with failure
 });
 
@@ -90,7 +89,7 @@ deviceServer.start();
 var app = (0, _app2.default)(container, _settings2.default);
 
 var onServerStartListen = function onServerStartListen() {
-  return _logger2.default.info('express server started on port ' + NODE_PORT);
+  logger.info({ port: NODE_PORT }, 'express server started, with events');
 };
 
 var _settings$EXPRESS_SER = _settings2.default.EXPRESS_SERVER_CONFIG,
@@ -101,6 +100,7 @@ var _settings$EXPRESS_SER = _settings2.default.EXPRESS_SERVER_CONFIG,
 
 
 if (useSSL) {
+  logger.debug({ cert: certificateFilePath, key: privateKeyFilePath }, 'Use SSL');
   var options = (0, _extends3.default)({
     cert: certificateFilePath && _fs2.default.readFileSync((0, _nullthrows2.default)(certificateFilePath)),
     key: privateKeyFilePath && _fs2.default.readFileSync((0, _nullthrows2.default)(privateKeyFilePath))
@@ -124,5 +124,5 @@ function (_ref) {
   });
 }));
 addresses.forEach(function (address) {
-  return _logger2.default.info('Your device server IP address is: ' + address);
+  return logger.info({ address: address }, 'Server IP address found');
 });

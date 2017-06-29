@@ -12,8 +12,10 @@ import type { Settings } from './types';
 
 import bodyParser from 'body-parser';
 import express from 'express';
-import morgan from 'morgan';
+import Logger from './lib/logger';
 import routeConfig from './RouteConfig';
+import bunyanMiddleware from 'bunyan-middleware';
+const logger = Logger.createModuleLogger(module);
 
 export default (
   container: Container,
@@ -37,22 +39,32 @@ export default (
       });
       return response.sendStatus(204);
     }
-    response.set({ 'Access-Control-Allow-Origin': '*' });
+    response.set({
+      'Access-Control-Allow-Origin': '*',
+    });
     return next();
   };
 
-  if (settings.LOG_REQUESTS) {
+  if (logger.debug()) {
     app.use(
-      morgan(
-        '[:date[iso]] :remote-addr - :remote-user ":method :url ' +
-          'HTTP/:http-version" :status :res[content-length] ":referrer" ' +
-          '":user-agent"',
-      ),
+      bunyanMiddleware({
+        headerName: 'X-Request-Id',
+        level: 'debug',
+        logger,
+        logName: 'req_id',
+        obscureHeaders: [],
+        propertyName: 'reqId',
+      }),
     );
+    logger.warn('Request logging enabled');
   }
 
   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(
+    bodyParser.urlencoded({
+      extended: true,
+    }),
+  );
   app.use(setCORSHeaders);
 
   routeConfig(
