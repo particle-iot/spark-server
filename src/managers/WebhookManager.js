@@ -28,7 +28,6 @@ const parseEventData = (event: Event): Object => {
     }
     return {};
   } catch (error) {
-    logger.warn({ err: error, eventData: event.data }, 'parseEventData failed');
     return {};
   }
 };
@@ -229,12 +228,14 @@ class WebhookManager {
       const isJsonRequest = !!requestJson || !requestFormData;
       const requestOptions = {
         auth: (requestAuth: any),
-        body: isJsonRequest && requestJson
-          ? this._getRequestData(requestJson, event, webhook.noDefaults)
-          : undefined,
-        form: !isJsonRequest && requestFormData
-          ? this._getRequestData(requestFormData, event, webhook.noDefaults)
-          : undefined,
+        body:
+          isJsonRequest && requestJson
+            ? this._getRequestData(requestJson, event, webhook.noDefaults)
+            : undefined,
+        form:
+          !isJsonRequest && requestFormData
+            ? this._getRequestData(requestFormData, event, webhook.noDefaults)
+            : undefined,
         headers: requestHeaders,
         json: true,
         method: validateRequestType(nullthrows(requestType)),
