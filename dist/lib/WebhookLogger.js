@@ -37,7 +37,7 @@ var WebhookLogger = function () {
       }
 
       this._lastLog = args;
-      logger.info((0, _extends3.default)({}, args), 'WebHookLogger called');
+      logger.info((0, _extends3.default)({}, args), 'webhook');
     }
   }]);
   return WebhookLogger;
