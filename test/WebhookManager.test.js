@@ -56,7 +56,10 @@ test('should run basic request', async t => {
     (webhook: Webhook, event: Event, requestOptions: RequestOptions) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(requestOptions.form, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
@@ -85,7 +88,7 @@ test('should run basic request without default data', async t => {
     (webhook: Webhook, event: Event, requestOptions: RequestOptions) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(requestOptions.form, undefined);
+      t.is(requestOptions.form, data);
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
@@ -199,7 +202,10 @@ test('should compile request auth header', async t => {
         }),
       );
       t.is(requestOptions.body, undefined);
-      t.is(requestOptions.form, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.url, WEBHOOK_BASE.url);
@@ -231,7 +237,10 @@ test('should compile request headers', async t => {
     (webhook: Webhook, event: Event, requestOptions: RequestOptions) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(requestOptions.form, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
       t.is(
         JSON.stringify(requestOptions.headers),
         JSON.stringify({
@@ -266,7 +275,10 @@ test('should compile request url', async t => {
     (webhook: Webhook, event: Event, requestOptions: RequestOptions) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(requestOptions.form, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(requestOptions.qs, undefined);
@@ -299,7 +311,10 @@ test('should compile request query', async t => {
     (webhook: Webhook, event: Event, requestOptions: RequestOptions) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(requestOptions.form, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, WEBHOOK_BASE.requestType);
       t.is(
@@ -332,7 +347,10 @@ test('should compile requestType', async t => {
     (webhook: Webhook, event: Event, requestOptions: RequestOptions) => {
       t.is(requestOptions.auth, undefined);
       t.is(requestOptions.body, undefined);
-      t.is(requestOptions.form, undefined);
+      t.is(
+        JSON.stringify(requestOptions.form),
+        JSON.stringify(defaultRequestData),
+      );
       t.is(requestOptions.headers, undefined);
       t.is(requestOptions.method, 'POST');
       t.is(requestOptions.url, WEBHOOK_BASE.url);
