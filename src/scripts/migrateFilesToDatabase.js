@@ -74,6 +74,19 @@ const translateDeviceID = (item: Object): Object => ({
 // eslint-disable-next-line no-unused-vars
 const filterID = ({ id, ...otherProps }: Object): Object => ({ ...otherProps });
 
+const deepDateCast = (node: any): any => {
+  Object.keys(node).forEach((key: string) => {
+    if (node[key] === Object(node[key])) {
+      deepDateCast(node[key]);
+    }
+    if (!isNaN(Date.parse(node[key]))) {
+      // eslint-disable-next-line
+      node[key] = new Date(node[key]);
+    }
+  });
+  return node;
+};
+
 const insertItem = (
   database: Object,
   collectionName: string,
@@ -87,7 +100,7 @@ const insertUsers = async (
   const userIDsMap = new Map();
 
   await Promise.all(
-    users.map(async (user: Object): Promise<void> => {
+    users.map(deepDateCast).map(async (user: Object): Promise<void> => {
       const insertedUser = await database.insertOne('users', filterID(user));
       userIDsMap.set(user.id, insertedUser.id);
     }),
@@ -111,6 +124,7 @@ const insertUsers = async (
     await Promise.all(
       getFiles(settings.WEBHOOKS_DIRECTORY)
         .map(({ fileBuffer }: FileObject): Object => parseFile(fileBuffer))
+        .map(deepDateCast)
         .map(mapOwnerID(userIDsMap))
         .map(filterID)
         .map(insertItem(database, 'webhooks')),
@@ -119,6 +133,7 @@ const insertUsers = async (
     await Promise.all(
       getFiles(settings.DEVICE_DIRECTORY)
         .map(({ fileBuffer }: FileObject): Object => parseFile(fileBuffer))
+        .map(deepDateCast)
         .map(mapOwnerID(userIDsMap))
         .map(translateDeviceID)
         .map(filterID)

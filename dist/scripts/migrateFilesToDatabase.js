@@ -8,6 +8,10 @@ var _map = require('babel-runtime/core-js/map');
 
 var _map2 = _interopRequireDefault(_map);
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
@@ -140,6 +144,19 @@ var filterID = function filterID(_ref2) {
   return (0, _extends3.default)({}, otherProps);
 };
 
+var deepDateCast = function deepDateCast(node) {
+  (0, _keys2.default)(node).forEach(function (key) {
+    if (node[key] === Object(node[key])) {
+      deepDateCast(node[key]);
+    }
+    if (!isNaN(Date.parse(node[key]))) {
+      // eslint-disable-next-line
+      node[key] = new Date(node[key]);
+    }
+  });
+  return node;
+};
+
 var insertItem = function insertItem(database, collectionName) {
   return function () {
     var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(item) {
@@ -176,7 +193,7 @@ var insertUsers = function () {
           case 0:
             userIDsMap = new _map2.default();
             _context4.next = 3;
-            return _promise2.default.all(users.map(function () {
+            return _promise2.default.all(users.map(deepDateCast).map(function () {
               var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(user) {
                 var insertedUser;
                 return _regenerator2.default.wrap(function _callee3$(_context3) {
@@ -250,14 +267,14 @@ var insertUsers = function () {
           return _promise2.default.all(getFiles(_settings2.default.WEBHOOKS_DIRECTORY).map(function (_ref8) {
             var fileBuffer = _ref8.fileBuffer;
             return parseFile(fileBuffer);
-          }).map(mapOwnerID(userIDsMap)).map(filterID).map(insertItem(database, 'webhooks')));
+          }).map(deepDateCast).map(mapOwnerID(userIDsMap)).map(filterID).map(insertItem(database, 'webhooks')));
 
         case 12:
           _context5.next = 14;
           return _promise2.default.all(getFiles(_settings2.default.DEVICE_DIRECTORY).map(function (_ref9) {
             var fileBuffer = _ref9.fileBuffer;
             return parseFile(fileBuffer);
-          }).map(mapOwnerID(userIDsMap)).map(translateDeviceID).map(filterID).map(insertItem(database, 'deviceAttributes')));
+          }).map(deepDateCast).map(mapOwnerID(userIDsMap)).map(translateDeviceID).map(filterID).map(insertItem(database, 'deviceAttributes')));
 
         case 14:
           _context5.next = 16;
