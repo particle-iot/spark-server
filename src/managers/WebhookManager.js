@@ -225,17 +225,18 @@ class WebhookManager {
         webhookVariablesObject,
       );
 
-      const isJsonRequest = !!requestJson || !requestFormData;
       const requestOptions = {
         auth: (requestAuth: any),
-        body:
-          isJsonRequest && requestJson
-            ? this._getRequestData(requestJson, event, webhook.noDefaults)
-            : undefined,
-        form:
-          !isJsonRequest && requestFormData
-            ? this._getRequestData(requestFormData, event, webhook.noDefaults)
-            : undefined,
+        body: requestJson
+          ? this._getRequestData(requestJson, event, webhook.noDefaults)
+          : undefined,
+        form: !requestJson
+          ? this._getRequestData(
+              requestFormData || null,
+              event,
+              webhook.noDefaults,
+            ) || event.data
+          : undefined,
         headers: requestHeaders,
         json: true,
         method: validateRequestType(nullthrows(requestType)),
