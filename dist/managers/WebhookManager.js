@@ -326,7 +326,7 @@ var WebhookManager = function WebhookManager(eventPublisher, permissionManager, 
               requestOptions = {
                 auth: requestAuth,
                 body: requestJson ? _this._getRequestData(requestJson, event, webhook.noDefaults) : undefined,
-                form: !requestJson ? _this._getRequestData(requestFormData || null, event, webhook.noDefaults) : undefined,
+                form: !requestJson ? _this._getRequestData(requestFormData || null, event, webhook.noDefaults) || event.data : undefined,
                 headers: requestHeaders,
                 json: true,
                 method: validateRequestType((0, _nullthrows2.default)(requestType)),
