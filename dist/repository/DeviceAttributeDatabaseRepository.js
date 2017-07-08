@@ -4,9 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
 var _regenerator = require('babel-runtime/regenerator');
 
@@ -85,9 +93,10 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
               return _this._database.find(_this._collectionName, query);
 
             case 3:
-              return _context3.abrupt('return', _context3.sent);
+              _context3.t0 = _this._parseVariables;
+              return _context3.abrupt('return', _context3.sent.map(_context3.t0));
 
-            case 4:
+            case 5:
             case 'end':
               return _context3.stop();
           }
@@ -106,13 +115,15 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
-              _context4.next = 2;
+              _context4.t0 = _this;
+              _context4.next = 3;
               return _this._database.findOne(_this._collectionName, { deviceID: deviceID });
 
-            case 2:
-              return _context4.abrupt('return', _context4.sent);
-
             case 3:
+              _context4.t1 = _context4.sent;
+              return _context4.abrupt('return', _context4.t0._parseVariables.call(_context4.t0, _context4.t1));
+
+            case 5:
             case 'end':
               return _context4.stop();
           }
@@ -126,18 +137,24 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
   }();
 
   this.updateByID = function () {
-    var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(deviceID, props) {
+    var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(deviceID, _ref6) {
+      var variables = _ref6.variables,
+          props = (0, _objectWithoutProperties3.default)(_ref6, ['variables']);
+      var attributesToSave;
       return _regenerator2.default.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              _context5.next = 2;
-              return _this._database.findAndModify(_this._collectionName, { deviceID: deviceID }, { $set: (0, _extends3.default)({}, props, { timeStamp: new Date() }) });
-
-            case 2:
-              return _context5.abrupt('return', _context5.sent);
+              attributesToSave = (0, _extends3.default)({}, props, {
+                variables: variables ? (0, _stringify2.default)(variables) : undefined
+              });
+              _context5.next = 3;
+              return _this._database.findAndModify(_this._collectionName, { deviceID: deviceID }, { $set: (0, _extends3.default)({}, attributesToSave, { timeStamp: new Date() }) });
 
             case 3:
+              return _context5.abrupt('return', _context5.sent);
+
+            case 4:
             case 'end':
               return _context5.stop();
           }
@@ -150,8 +167,25 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
     };
   }();
 
+  this._parseVariables = function (attributesFromDB) {
+    if (!attributesFromDB) {
+      return null;
+    }
+
+    var variables = attributesFromDB.variables;
+
+    return (0, _extends3.default)({}, attributesFromDB, {
+      variables: variables ? JSON.parse(variables) : undefined
+    });
+  };
+
   this._database = database;
   this._permissionManager = permissionManager;
-};
+}
+
+// mongo and neDB don't support dots in variables names
+// but some of the server users want to have dots in their device var names
+// so we have to stringify them and parse back.
+;
 
 exports.default = DeviceAttributeDatabaseRepository;
