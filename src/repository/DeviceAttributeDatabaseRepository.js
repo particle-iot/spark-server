@@ -29,20 +29,45 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
 
   getAll = async (userID: ?string = null): Promise<Array<DeviceAttributes>> => {
     const query = userID ? { ownerID: userID } : {};
-    return await this._database.find(this._collectionName, query);
+    return (await this._database.find(this._collectionName, query)).map(
+      this._parseVariables,
+    );
   };
 
   getByID = async (deviceID: string): Promise<?DeviceAttributes> =>
-    await this._database.findOne(this._collectionName, { deviceID });
+    this._parseVariables(
+      await this._database.findOne(this._collectionName, { deviceID }),
+    );
 
   updateByID = async (
     deviceID: string,
-    props: $Shape<DeviceAttributes>,
-  ): Promise<DeviceAttributes> =>
-    await this._database.findAndModify(
+    { variables, ...props }: $Shape<DeviceAttributes>,
+  ): Promise<DeviceAttributes> => {
+    const attributesToSave = {
+      ...props,
+      variables: variables ? JSON.stringify(variables) : undefined,
+    };
+
+    return await this._database.findAndModify(
       this._collectionName,
       { deviceID },
-      { $set: { ...props, timeStamp: new Date() } },
+      { $set: { ...attributesToSave, timeStamp: new Date() } },
     );
+  };
+
+  // mongo and neDB don't support dots in variables names
+  // but some of the server users want to have dots in their device var names
+  // so we have to stringify them and parse back.
+  _parseVariables = (attributesFromDB: ?Object): ?DeviceAttributes => {
+    if (!attributesFromDB) {
+      return null;
+    }
+
+    const { variables } = attributesFromDB;
+    return {
+      ...attributesFromDB,
+      variables: variables ? JSON.parse(variables) : undefined,
+    };
+  };
 }
 export default DeviceAttributeDatabaseRepository;
