@@ -64,10 +64,14 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     }
 
     const { variables } = attributesFromDB;
-    return {
-      ...attributesFromDB,
-      variables: variables ? JSON.parse(variables) : undefined,
-    };
+    try {
+      return {
+        ...attributesFromDB,
+        variables: variables ? JSON.parse(variables) : undefined,
+      };
+    } catch (ignore) {
+      return attributesFromDB;
+    }
   };
 }
 export default DeviceAttributeDatabaseRepository;
