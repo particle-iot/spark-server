@@ -37,7 +37,7 @@ defaultBindings(container, settings);
 // you have to override database bindings to use MongoDB instead of neDB:
 container.bindValue('DATABASE_URL', settings.DB_CONFIG.URL);
 container.bindValue('DATABASE_OPTIONS', settings.DB_CONFIG.OPTIONS);
-container.bindClass('Database', MongoDb, ['DATABASE_URL', 'DATABASE_OPTIONS']);
+container.bindClass('IDatabase', MongoDb, ['DATABASE_URL', 'DATABASE_OPTIONS']);
 
 function promisify<T>(
   call: (serviceCallback: (error: StorageError, result: T) => void) => void,

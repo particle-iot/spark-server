@@ -421,17 +421,19 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
                 return _context8.abrupt('return', this.ok({ id: deviceID, status: flashResult.status }));
 
               case 16:
-                if (!(this.request.files && !this.request.files.file)) {
-                  _context8.next = 18;
+
+                // 4 flash device with custom application
+                file = postBody.file;
+
+                if (file) {
+                  _context8.next = 19;
                   break;
                 }
 
                 throw new Error('Firmware file not provided');
 
-              case 18:
-                file = this.request.files && this.request.files.file[0];
-
-                if (!(file && (file.originalname === 'binary' || file.originalname.endsWith('.bin')))) {
+              case 19:
+                if (!(file.originalname === 'binary' || file.originalname.endsWith('.bin'))) {
                   _context8.next = 24;
                   break;
                 }

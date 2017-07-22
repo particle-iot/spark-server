@@ -31,6 +31,13 @@ class NeDb extends BaseMongoDb implements IBaseDatabase {
     });
   }
 
+  count = async (collectionName: string, query: Object): Promise<number> =>
+    (await this.__runForCollection(
+      collectionName,
+      async (collection: Object): Promise<number> =>
+        await promisify(collection, 'find', query),
+    )) || 0;
+
   insertOne = async (collectionName: string, entity: Object): Promise<*> =>
     await this.__runForCollection(
       collectionName,

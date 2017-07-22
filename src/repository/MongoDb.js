@@ -20,6 +20,15 @@ class MongoDb extends BaseMongoDb implements IBaseDatabase {
     (async (): Promise<void> => await this._init(url, options))();
   }
 
+  count = async (collectionName: string, query: Object): Promise<number> =>
+    await this.__runForCollection(
+      collectionName,
+      async (collection: Object): Promise<*> =>
+        await collection.count(this.__translateQuery(query), {
+          timeout: false,
+        }),
+    );
+
   insertOne = async (collectionName: string, entity: Object): Promise<*> =>
     await this.__runForCollection(
       collectionName,

@@ -180,21 +180,55 @@ export type RequestOptions = {
   url: string,
 };
 
-export type Product = {
+export type PlatformType =
+  | 0 // Core
+  | 6 // Photon
+  | 8 // P1
+  | 10 // Electron
+  | 103; // Bluz
+
+export type Product = {|
   config_id: string,
   description: string,
   hardware_version: string,
-  id: string,
+  id: string, // This should always be swapped out with product_id when sent to the client
+  latest_firmware_version: number,
   name: string,
   organization: string,
-  product_id: number,
-  requires_activation_codes: boolean,
+  platform_id: PlatformType,
+  product_id: string,
   slug: string,
   type: 'Consumer' | 'Hobbyist' | 'Industrial',
-};
+|};
+
+export type ProductFirmware = {|
+  current: boolean,
+  data: Buffer,
+  description: string,
+  device_count: number,
+  id: string,
+  name: string,
+  product_id: string,
+  size: number,
+  title: string,
+  updated_at: Date,
+  version: number,
+|};
+
+export type Organization = {|
+  id: string,
+  name: string,
+  user_ids: Array<string>,
+|};
+
+export type ProductConfig = {|
+  id: string,
+  org_id: string,
+  product_id: string,
+|};
 
 export interface IBaseRepository<TModel> {
-  create(model: TModel | $Shape<TModel>): Promise<TModel>,
+  create(model: $Shape<TModel>): Promise<TModel>,
   deleteByID(id: string): Promise<void>,
   getAll(): Promise<Array<TModel>>,
   getByID(id: string): Promise<?TModel>,
@@ -202,6 +236,24 @@ export interface IBaseRepository<TModel> {
 }
 
 export interface IWebhookRepository extends IBaseRepository<Webhook> {}
+
+export interface IProductRepository extends IBaseRepository<Product> {
+  getByIDOrSlug(productIDOrSlug: string): Promise<?Product>,
+}
+
+export interface IProductConfigRepository
+  extends IBaseRepository<ProductConfig> {
+  getByProductID(productID: string): Promise<?ProductConfig>,
+}
+
+export interface IOrganizationRepository extends IBaseRepository<Organization> {
+  getByUserID(userID: string): Promise<Array<Organization>>,
+}
+
+export interface IProductFirmwareRepository
+  extends IBaseRepository<ProductFirmware> {
+  getAllByProductID(productID: string): Promise<Array<ProductFirmware>>,
+}
 
 export interface IDeviceAttributeRepository
   extends IBaseRepository<DeviceAttributes> {}
@@ -226,6 +278,7 @@ export interface IDeviceFirmwareRepository {
 }
 
 export interface IBaseDatabase {
+  count(collectionName: string, ...args: Array<any>): Promise<number>,
   find(collectionName: string, ...args: Array<any>): Promise<*>,
   findAndModify(collectionName: string, ...args: Array<any>): Promise<*>,
   findOne(collectionName: string, ...args: Array<any>): Promise<*>,

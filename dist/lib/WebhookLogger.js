@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends2 = require('babel-runtime/helpers/extends');
-
-var _extends3 = _interopRequireDefault(_extends2);
-
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -37,7 +33,7 @@ var WebhookLogger = function () {
       }
 
       this._lastLog = args;
-      logger.info((0, _extends3.default)({}, args), 'webhook');
+      logger.info([].concat(args), 'webhook');
     }
   }]);
   return WebhookLogger;
