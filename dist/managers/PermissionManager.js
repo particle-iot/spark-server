@@ -155,7 +155,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, or
             return _this._userRepository.createWithCredentials({
               password: _settings2.default.DEFAULT_ADMIN_PASSWORD,
               username: _settings2.default.DEFAULT_ADMIN_USERNAME
-            });
+            }, 'administrator');
 
           case 3:
             _context4.next = 5;
