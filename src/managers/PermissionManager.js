@@ -74,10 +74,13 @@ class PermissionManager {
 
   _createDefaultAdminUser = async (): Promise<void> => {
     try {
-      await this._userRepository.createWithCredentials({
-        password: settings.DEFAULT_ADMIN_PASSWORD,
-        username: settings.DEFAULT_ADMIN_USERNAME,
-      });
+      await this._userRepository.createWithCredentials(
+        {
+          password: settings.DEFAULT_ADMIN_PASSWORD,
+          username: settings.DEFAULT_ADMIN_USERNAME,
+        },
+        'administrator',
+      );
 
       const token = await this._generateAdminToken();
 

@@ -289,7 +289,10 @@ export interface IDeviceKeyRepository
   extends IBaseRepository<DeviceKeyObject> {}
 
 export interface IUserRepository extends IBaseRepository<User> {
-  createWithCredentials(credentials: UserCredentials): Promise<User>,
+  createWithCredentials(
+    credentials: UserCredentials,
+    userRole: ?UserRole,
+  ): Promise<User>,
   deleteAccessToken(userID: string, accessToken: string): Promise<User>,
   getByAccessToken(accessToken: string): Promise<?User>,
   getByUsername(username: string): Promise<?User>,
