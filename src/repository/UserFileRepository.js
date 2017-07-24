@@ -21,6 +21,8 @@ class UserFileRepository implements IUserRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
+  count = async (): Promise<number> => this._fileManager.count();
+
   createWithCredentials = async (
     userCredentials: UserCredentials,
     userRole: ?UserRole = null,

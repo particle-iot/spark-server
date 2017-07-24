@@ -328,3 +328,111 @@ starts up.
     -H 'cache-control: no-cache' \
     -H 'content-type: application/json'
   ```
+  ##### Product Devices List
+  Pass `per_page` and `page` to paginate. Pages start at `1` instead of zero.
+
+  Example cURL
+  ```
+  curl -X GET \
+    http://192.168.1.19:8080/v1/products/test-device-v100/devices \
+    -H 'authorization: Bearer d2fafe627086dc56472aa0d8cc13ae9c20293371' \
+    -H 'cache-control: no-cache' \
+    -H 'content-type: application/json'
+  ```
+  Sample Response:
+  ```
+  {
+      "accounts": [],
+      "devices": [
+          {
+              "deviceID": "2c0040000547343337373737",
+              "ownerID": "d5C5YtUw0OO9f4mw",
+              "registrar": "d5C5YtUw0OO9f4mw",
+              "timestamp": "2017-07-24T01:24:07.083Z",
+              "timeStamp": "2017-07-24T01:24:07.083Z",
+              "particleProductId": 6,
+              "id": "H4a4pe8dZIaTG829",
+              "denied": false,
+              "development": false,
+              "quarantined": false
+          }
+      ],
+      "meta": {
+          "total_pages": 1
+      }
+  }
+  ```
+  ##### Product Device Get
+  Example cURL
+  ```
+  curl -X GET \
+    http://192.168.1.19:8080/v1/products/test-device-v100/devices/2c0040000547343337373737 \
+    -H 'authorization: Bearer d2fafe627086dc56472aa0d8cc13ae9c20293371' \
+    -H 'cache-control: no-cache' \
+    -H 'content-type: application/json'
+  ```
+  Sample Response:
+  ```
+  {
+      "deviceID": "2c0040000547343337373737",
+      "ownerID": "d5C5YtUw0OO9f4mw",
+      "registrar": "d5C5YtUw0OO9f4mw",
+      "timestamp": "2017-07-24T01:24:07.083Z",
+      "particleProductId": 6,
+      "id": "H4a4pe8dZIaTG829",
+      "denied": false,
+      "development": false,
+      "quarantined": false
+  }
+  ```
+  ##### Product Devices Create
+  This endpoint can be used in two ways. You can either pass `one` as the
+  `import_method` and send an `id`. If you have a CSV, you can pass `many` and
+  send the file (with a field name of `file`).  The format of the file should
+  be a single column of device IDs.
+
+  Example cURL
+  ```
+  curl -X POST \
+    http://192.168.1.19:8080/v1/products/test-device-v100/devices \
+    -H 'authorization: Bearer d2fafe627086dc56472aa0d8cc13ae9c20293371' \
+    -H 'cache-control: no-cache' \
+    -H 'content-type: application/json' \
+    -d '{"id": "27002d001547343339383037", "import_method": "one"}'
+  ```
+  Sample Response:
+  ```
+  {
+      "updated": 1,
+      "nonmemberDeviceIds": [],
+      "invalidDeviceIds": []
+  }
+  ```
+  ##### Product Devices Update
+  You can update `desired_firmware_version` and `notes`
+  Example cURL
+  ```
+  curl -X PUT \
+    http://192.168.1.19:8080/v1/products/test-device-v100/devices/2c0040000547343337373737 \
+    -H 'authorization: Bearer d2fafe627086dc56472aa0d8cc13ae9c20293371' \
+    -H 'cache-control: no-cache' \
+    -H 'content-type: application/json' \
+    -d '{"desired_firmware_version": 2}'
+  ```
+  Sample Response:
+  ```
+  {
+      "id": "41CvO5SGrd6UUDlO",
+      "updated": "2017-07-24T02:23:05.735Z",
+      "parsedFirmware": 2
+  }
+  ```
+  ##### Product Devices Delete
+  Example cURL
+  ```
+  curl -X DELETE \
+    http://192.168.1.19:8080/v1/products/test-device-v100/devices/2c0040000547343337373737 \
+    -H 'authorization: Bearer d2fafe627086dc56472aa0d8cc13ae9c20293371' \
+    -H 'cache-control: no-cache' \
+    -H 'content-type: application/json'
+  ```

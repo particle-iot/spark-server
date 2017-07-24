@@ -98,6 +98,10 @@ var _ProductConfigDatabaseRepository = require('./repository/ProductConfigDataba
 
 var _ProductConfigDatabaseRepository2 = _interopRequireDefault(_ProductConfigDatabaseRepository);
 
+var _ProductDeviceDatabaseRepository = require('./repository/ProductDeviceDatabaseRepository');
+
+var _ProductDeviceDatabaseRepository2 = _interopRequireDefault(_ProductDeviceDatabaseRepository);
+
 var _ProductFirmwareDatabaseRepository = require('./repository/ProductFirmwareDatabaseRepository');
 
 var _ProductFirmwareDatabaseRepository2 = _interopRequireDefault(_ProductFirmwareDatabaseRepository);
@@ -156,7 +160,7 @@ exports.default = function (container, newSettings) {
   container.bindClass('EventsController', _EventsController2.default, ['EventManager']);
   container.bindClass('PermissionManager', _PermissionManager2.default, ['IDeviceAttributeRepository', 'IOrganizationRepository', 'IUserRepository', 'IWebhookRepository', 'OAuthServer']);
   container.bindClass('OauthClientsController', _OauthClientsController2.default, []);
-  container.bindClass('ProductsController', _ProductsController2.default, ['IOrganizationRepository', 'IProductRepository', 'IProductConfigRepository', 'IProductFirmwareRepository']);
+  container.bindClass('ProductsController', _ProductsController2.default, ['IDeviceAttributeRepository', 'IOrganizationRepository', 'IProductRepository', 'IProductConfigRepository', 'IProductDeviceRepository', 'IProductFirmwareRepository']);
   container.bindClass('ProvisioningController', _ProvisioningController2.default, ['DeviceManager']);
   container.bindClass('UsersController', _UsersController2.default, ['IUserRepository']);
   container.bindClass('WebhooksController', _WebhooksController2.default, ['WebhookManager']);
@@ -173,6 +177,7 @@ exports.default = function (container, newSettings) {
   container.bindClass('IOrganizationRepository', _OrganizationDatabaseRepository2.default, ['IDatabase']);
   container.bindClass('IProductRepository', _ProductDatabaseRepository2.default, ['IDatabase']);
   container.bindClass('IProductConfigRepository', _ProductConfigDatabaseRepository2.default, ['IDatabase']);
+  container.bindClass('IProductDeviceRepository', _ProductDeviceDatabaseRepository2.default, ['IDatabase']);
   container.bindClass('IProductFirmwareRepository', _ProductFirmwareDatabaseRepository2.default, ['IDatabase']);
 
   container.bindClass('IUserRepository', _UserDatabaseRepository2.default, ['IDatabase']);

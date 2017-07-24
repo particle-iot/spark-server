@@ -10,16 +10,18 @@ import type {
   UserRole,
 } from '../types';
 
+import BaseRepository from './BaseRepository';
 import COLLECTION_NAMES from './collectionNames';
 import PasswordHasher from '../lib/PasswordHasher';
 import HttpError from '../lib/HttpError';
 
-class UserDatabaseRepository implements IUserRepository {
+class UserDatabaseRepository extends BaseRepository implements IUserRepository {
   _database: IBaseDatabase;
   _collectionName: CollectionName = COLLECTION_NAMES.USERS;
   _currentUser: User;
 
   constructor(database: IBaseDatabase) {
+    super(database, COLLECTION_NAMES.USERS);
     this._database = database;
   }
 

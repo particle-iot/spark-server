@@ -8,6 +8,10 @@ var _promise = require('babel-runtime/core-js/promise');
 
 var _promise2 = _interopRequireDefault(_promise);
 
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -130,9 +134,19 @@ var _initialiseProps = function _initialiseProps() {
               }());
 
             case 2:
-              return _context3.abrupt('return', _context3.sent);
+              _context3.t0 = _context3.sent;
 
-            case 3:
+              if (_context3.t0) {
+                _context3.next = 5;
+                break;
+              }
+
+              _context3.t0 = 0;
+
+            case 5:
+              return _context3.abrupt('return', _context3.t0);
+
+            case 6:
             case 'end':
               return _context3.stop();
           }
@@ -204,19 +218,30 @@ var _initialiseProps = function _initialiseProps() {
               _context7.next = 2;
               return _this3.__runForCollection(collectionName, function () {
                 var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(collection) {
-                  var resultItems;
+                  var page, _query$pageSize, pageSize, otherQuery, result, resultItems;
+
                   return _regenerator2.default.wrap(function _callee6$(_context6) {
                     while (1) {
                       switch (_context6.prev = _context6.next) {
                         case 0:
-                          _context6.next = 2;
-                          return collection.find(_this3.__translateQuery(query), { timeout: false }).toArray();
+                          page = query.page, _query$pageSize = query.pageSize, pageSize = _query$pageSize === undefined ? 25 : _query$pageSize, otherQuery = (0, _objectWithoutProperties3.default)(query, ['page', 'pageSize']);
+                          result = collection.find(_this3.__translateQuery(otherQuery), {
+                            timeout: false
+                          });
 
-                        case 2:
+
+                          if (page) {
+                            result = result.skip((page - 1) * pageSize).limit(pageSize);
+                          }
+
+                          _context6.next = 5;
+                          return result;
+
+                        case 5:
                           resultItems = _context6.sent;
                           return _context6.abrupt('return', resultItems.map(_this3.__translateResultItem));
 
-                        case 4:
+                        case 7:
                         case 'end':
                           return _context6.stop();
                       }

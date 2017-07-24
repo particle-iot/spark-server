@@ -8,12 +8,15 @@ import type {
 } from '../types';
 
 import COLLECTION_NAMES from './collectionNames';
+import BaseRepository from './BaseRepository';
 
-class OrganizationDatabaseRepository implements IOrganizationRepository {
+class OrganizationDatabaseRepository extends BaseRepository
+  implements IOrganizationRepository {
   _database: IBaseDatabase;
   _collectionName: CollectionName = COLLECTION_NAMES.ORGANIZATIONS;
 
   constructor(database: IBaseDatabase) {
+    super(database, COLLECTION_NAMES.ORGANIZATIONS);
     this._database = database;
   }
 

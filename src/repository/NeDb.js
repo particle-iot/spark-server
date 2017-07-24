@@ -35,7 +35,7 @@ class NeDb extends BaseMongoDb implements IBaseDatabase {
     (await this.__runForCollection(
       collectionName,
       async (collection: Object): Promise<number> =>
-        await promisify(collection, 'find', query),
+        await promisify(collection, 'count', query),
     )) || 0;
 
   insertOne = async (collectionName: string, entity: Object): Promise<*> =>
@@ -52,7 +52,15 @@ class NeDb extends BaseMongoDb implements IBaseDatabase {
     await this.__runForCollection(
       collectionName,
       async (collection: Object): Promise<*> => {
-        const resultItems = await promisify(collection, 'find', query);
+        const { page, pageSize = 25, ...otherQuery } = query;
+        let boundFunction = collection.find(otherQuery);
+        if (page) {
+          console.log(page, pageSize);
+          boundFunction = boundFunction
+            .skip((page - 1) * pageSize)
+            .limit(pageSize);
+        }
+        const resultItems = await promisify(boundFunction, 'exec');
         return resultItems.map(this.__translateResultItem);
       },
     );

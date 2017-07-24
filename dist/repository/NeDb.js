@@ -12,6 +12,10 @@ var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -84,7 +88,7 @@ var NeDb = function (_BaseMongoDb) {
                         switch (_context.prev = _context.next) {
                           case 0:
                             _context.next = 2;
-                            return (0, _promisify.promisify)(collection, 'find', query);
+                            return (0, _promisify.promisify)(collection, 'count', query);
 
                           case 2:
                             return _context.abrupt('return', _context.sent);
@@ -187,19 +191,27 @@ var NeDb = function (_BaseMongoDb) {
                 _context6.next = 2;
                 return _this.__runForCollection(collectionName, function () {
                   var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(collection) {
-                    var resultItems;
+                    var page, _query$pageSize, pageSize, otherQuery, boundFunction, resultItems;
+
                     return _regenerator2.default.wrap(function _callee5$(_context5) {
                       while (1) {
                         switch (_context5.prev = _context5.next) {
                           case 0:
-                            _context5.next = 2;
-                            return (0, _promisify.promisify)(collection, 'find', query);
+                            page = query.page, _query$pageSize = query.pageSize, pageSize = _query$pageSize === undefined ? 25 : _query$pageSize, otherQuery = (0, _objectWithoutProperties3.default)(query, ['page', 'pageSize']);
+                            boundFunction = collection.find(otherQuery);
 
-                          case 2:
+                            if (page) {
+                              console.log(page, pageSize);
+                              boundFunction = boundFunction.skip((page - 1) * pageSize).limit(pageSize);
+                            }
+                            _context5.next = 5;
+                            return (0, _promisify.promisify)(boundFunction, 'exec');
+
+                          case 5:
                             resultItems = _context5.sent;
                             return _context5.abrupt('return', resultItems.map(_this.__translateResultItem));
 
-                          case 4:
+                          case 7:
                           case 'end':
                             return _context5.stop();
                         }

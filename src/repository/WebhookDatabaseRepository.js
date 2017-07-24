@@ -4,12 +4,15 @@ import type { CollectionName } from './collectionNames';
 import type { IBaseDatabase, IWebhookRepository, Webhook } from '../types';
 
 import COLLECTION_NAMES from './collectionNames';
+import BaseRepository from './BaseRepository';
 
-class WebhookDatabaseRepository implements IWebhookRepository {
+class WebhookDatabaseRepository extends BaseRepository
+  implements IWebhookRepository {
   _database: IBaseDatabase;
   _collectionName: CollectionName = COLLECTION_NAMES.WEBHOOKS;
 
   constructor(database: IBaseDatabase) {
+    super(database, COLLECTION_NAMES.WEBHOOKS);
     this._database = database;
   }
 

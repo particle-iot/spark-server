@@ -75,7 +75,7 @@ export type DeviceAttributes = {
   lastHeard: Date,
   name: string,
   ownerID: ?string,
-  particleProductId: number,
+  particleProductId: PlatformType,
   productFirmwareVersion: number,
   registrar: string,
   timestamp: Date,
@@ -227,7 +227,19 @@ export type ProductConfig = {|
   product_id: string,
 |};
 
+export type ProductDevice = {|
+  denied: boolean,
+  development: boolean,
+  deviceID: string,
+  id: string,
+  lockedFirmwareVersion: ?number,
+  notes: string,
+  productID: string,
+  quarantined: boolean,
+|};
+
 export interface IBaseRepository<TModel> {
+  count(...filters: Array<any>): Promise<number>,
   create(model: $Shape<TModel>): Promise<TModel>,
   deleteByID(id: string): Promise<void>,
   getAll(): Promise<Array<TModel>>,
@@ -246,6 +258,16 @@ export interface IProductConfigRepository
   getByProductID(productID: string): Promise<?ProductConfig>,
 }
 
+export interface IProductDeviceRepository
+  extends IBaseRepository<ProductDevice> {
+  getAllByProductID(
+    productID: string,
+    page: number,
+    perPage: number,
+  ): Promise<Array<ProductDevice>>,
+  getManyFromDeviceIDs(deviceIDs: Array<string>): Promise<Array<ProductDevice>>,
+}
+
 export interface IOrganizationRepository extends IBaseRepository<Organization> {
   getByUserID(userID: string): Promise<Array<Organization>>,
 }
@@ -256,7 +278,12 @@ export interface IProductFirmwareRepository
 }
 
 export interface IDeviceAttributeRepository
-  extends IBaseRepository<DeviceAttributes> {}
+  extends IBaseRepository<DeviceAttributes> {
+  getManyFromIDs(
+    deviceIDs: Array<string>,
+    ownerID?: string,
+  ): Promise<Array<DeviceAttributes>>,
+}
 
 export interface IDeviceKeyRepository
   extends IBaseRepository<DeviceKeyObject> {}

@@ -13,6 +13,8 @@ class WebhookFileRepository implements IWebhookRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
+  count = async (): Promise<number> => this._fileManager.count();
+
   @memoizeSet()
   async create(model: WebhookMutator): Promise<Webhook> {
     let id = uuid();

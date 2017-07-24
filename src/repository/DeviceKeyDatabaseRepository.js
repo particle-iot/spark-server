@@ -8,13 +8,16 @@ import type {
 } from '../types';
 
 import COLLECTION_NAMES from './collectionNames';
+import BaseRepository from './BaseRepository';
 
 // getByID, deleteByID and update uses model.deviceID as ID for querying
-class DeviceKeyDatabaseRepository implements IDeviceKeyRepository {
+class DeviceKeyDatabaseRepository extends BaseRepository
+  implements IDeviceKeyRepository {
   _database: IBaseDatabase;
   _collectionName: CollectionName = COLLECTION_NAMES.DEVICE_KEYS;
 
   constructor(database: IBaseDatabase) {
+    super(database, COLLECTION_NAMES.DEVICE_KEYS);
     this._database = database;
   }
 

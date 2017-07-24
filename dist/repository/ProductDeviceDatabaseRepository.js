@@ -42,17 +42,17 @@ var _BaseRepository3 = _interopRequireDefault(_BaseRepository2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
-  (0, _inherits3.default)(ProductFirmwareDatabaseRepository, _BaseRepository);
+var ProductDeviceDatabaseRepository = function (_BaseRepository) {
+  (0, _inherits3.default)(ProductDeviceDatabaseRepository, _BaseRepository);
 
-  function ProductFirmwareDatabaseRepository(database) {
+  function ProductDeviceDatabaseRepository(database) {
     var _this2 = this;
 
-    (0, _classCallCheck3.default)(this, ProductFirmwareDatabaseRepository);
+    (0, _classCallCheck3.default)(this, ProductDeviceDatabaseRepository);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (ProductFirmwareDatabaseRepository.__proto__ || (0, _getPrototypeOf2.default)(ProductFirmwareDatabaseRepository)).call(this, database, _collectionNames2.default.PRODUCT_FIRMWARE));
+    var _this = (0, _possibleConstructorReturn3.default)(this, (ProductDeviceDatabaseRepository.__proto__ || (0, _getPrototypeOf2.default)(ProductDeviceDatabaseRepository)).call(this, database, _collectionNames2.default.PRODUCT_DEVICES));
 
-    _this._collectionName = _collectionNames2.default.PRODUCT_FIRMWARE;
+    _this._collectionName = _collectionNames2.default.PRODUCT_DEVICES;
 
     _this.create = function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(model) {
@@ -61,9 +61,7 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return _this._database.insertOne(_this._collectionName, (0, _extends3.default)({}, model, {
-                  updated_at: new Date()
-                }));
+                return _this._database.insertOne(_this._collectionName, (0, _extends3.default)({}, model));
 
               case 2:
                 return _context.abrupt('return', _context.sent);
@@ -136,13 +134,17 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
     }();
 
     _this.getAllByProductID = function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(productID) {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(productID, page, pageSize) {
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return _this._database.find(_this._collectionName, { product_id: productID });
+                return _this._database.find(_this._collectionName, {
+                  page: page,
+                  pageSize: pageSize,
+                  productID: productID
+                });
 
               case 2:
                 return _context4.abrupt('return', _context4.sent);
@@ -155,7 +157,7 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
         }, _callee4, _this2);
       }));
 
-      return function (_x4) {
+      return function (_x4, _x5, _x6) {
         return _ref4.apply(this, arguments);
       };
     }();
@@ -180,19 +182,21 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
         }, _callee5, _this2);
       }));
 
-      return function (_x5) {
+      return function (_x7) {
         return _ref5.apply(this, arguments);
       };
     }();
 
-    _this.updateByID = function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(productFirmwareID, productFirmware) {
+    _this.getManyFromDeviceIDs = function () {
+      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(deviceIDs) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
                 _context6.next = 2;
-                return _this._database.findAndModify(_this._collectionName, { _id: productFirmwareID }, { $set: (0, _extends3.default)({}, productFirmware, { updated_at: new Date() }) });
+                return _this._database.find(_this._collectionName, {
+                  deviceID: { $in: deviceIDs }
+                });
 
               case 2:
                 return _context6.abrupt('return', _context6.sent);
@@ -205,8 +209,48 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
         }, _callee6, _this2);
       }));
 
-      return function (_x6, _x7) {
+      return function (_x8) {
         return _ref6.apply(this, arguments);
+      };
+    }();
+
+    _this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7() {
+      return _regenerator2.default.wrap(function _callee7$(_context7) {
+        while (1) {
+          switch (_context7.prev = _context7.next) {
+            case 0:
+              throw new Error('The method is not implemented');
+
+            case 1:
+            case 'end':
+              return _context7.stop();
+          }
+        }
+      }, _callee7, _this2);
+    }));
+
+    _this.updateByID = function () {
+      var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(productDeviceID, productDevice) {
+        return _regenerator2.default.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _context8.next = 2;
+                return _this._database.findAndModify(_this._collectionName, { _id: productDeviceID }, { $set: (0, _extends3.default)({}, productDevice) });
+
+              case 2:
+                return _context8.abrupt('return', _context8.sent);
+
+              case 3:
+              case 'end':
+                return _context8.stop();
+            }
+          }
+        }, _callee8, _this2);
+      }));
+
+      return function (_x9, _x10) {
+        return _ref8.apply(this, arguments);
       };
     }();
 
@@ -214,7 +258,7 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
     return _this;
   }
 
-  return ProductFirmwareDatabaseRepository;
+  return ProductDeviceDatabaseRepository;
 }(_BaseRepository3.default);
 
-exports.default = ProductFirmwareDatabaseRepository;
+exports.default = ProductDeviceDatabaseRepository;

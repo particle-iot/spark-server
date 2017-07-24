@@ -63,45 +63,53 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               attributes = _context.sent;
 
               if (attributes) {
-                _context.next = 5;
+                _context.next = 7;
                 break;
               }
 
-              throw new _HttpError2.default('No device found', 404);
+              _context.next = 6;
+              return _this._deviceAttributeRepository.updateByID(deviceID, {
+                deviceID: deviceID,
+                ownerID: userID,
+                registrar: userID
+              });
 
-            case 5:
+            case 6:
+              return _context.abrupt('return', _context.sent);
+
+            case 7:
               if (!(attributes.ownerID && attributes.ownerID !== userID)) {
-                _context.next = 7;
+                _context.next = 9;
                 break;
               }
 
               throw new _HttpError2.default('The device belongs to someone else.');
 
-            case 7:
+            case 9:
               if (!(attributes.ownerID && attributes.ownerID === userID)) {
-                _context.next = 9;
+                _context.next = 11;
                 break;
               }
 
               throw new _HttpError2.default('The device is already claimed.');
 
-            case 9:
-              _context.next = 11;
+            case 11:
+              _context.next = 13;
               return _this._eventPublisher.publishAndListenForResponse({
                 context: { attributes: { ownerID: userID }, deviceID: deviceID },
                 name: _sparkProtocol.SPARK_SERVER_EVENTS.UPDATE_DEVICE_ATTRIBUTES
               });
 
-            case 11:
-              _context.next = 13;
+            case 13:
+              _context.next = 15;
               return _this._deviceAttributeRepository.updateByID(deviceID, {
                 ownerID: userID
               });
 
-            case 13:
+            case 15:
               return _context.abrupt('return', _context.sent);
 
-            case 14:
+            case 16:
             case 'end':
               return _context.stop();
           }
@@ -550,8 +558,7 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               _context11.next = 25;
               return _this._deviceAttributeRepository.updateByID(deviceID, {
                 ownerID: userID,
-                registrar: userID,
-                timestamp: new Date()
+                registrar: userID
               });
 
             case 25:

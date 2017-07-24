@@ -26,6 +26,7 @@ import DeviceKeyDatabaseRepository from './repository/DeviceKeyDatabaseRepositor
 import OrganizationDatabaseRepository from './repository/OrganizationDatabaseRepository';
 import ProductDatabaseRepository from './repository/ProductDatabaseRepository';
 import ProductConfigDatabaseRepository from './repository/ProductConfigDatabaseRepository';
+import ProductDeviceDatabaseRepository from './repository/ProductDeviceDatabaseRepository';
 import ProductFirmwareDatabaseRepository from './repository/ProductFirmwareDatabaseRepository';
 import UserDatabaseRepository from './repository/UserDatabaseRepository';
 import WebhookDatabaseRepository from './repository/WebhookDatabaseRepository';
@@ -85,9 +86,11 @@ export default (container: Container, newSettings: Settings) => {
   ]);
   container.bindClass('OauthClientsController', OauthClientsController, []);
   container.bindClass('ProductsController', ProductsController, [
+    'IDeviceAttributeRepository',
     'IOrganizationRepository',
     'IProductRepository',
     'IProductConfigRepository',
+    'IProductDeviceRepository',
     'IProductFirmwareRepository',
   ]);
   container.bindClass('ProvisioningController', ProvisioningController, [
@@ -139,6 +142,11 @@ export default (container: Container, newSettings: Settings) => {
   container.bindClass(
     'IProductConfigRepository',
     ProductConfigDatabaseRepository,
+    ['IDatabase'],
+  );
+  container.bindClass(
+    'IProductDeviceRepository',
+    ProductDeviceDatabaseRepository,
     ['IDatabase'],
   );
   container.bindClass(

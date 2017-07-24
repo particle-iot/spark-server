@@ -8,12 +8,15 @@ import type {
 } from '../types';
 
 import COLLECTION_NAMES from './collectionNames';
+import BaseRepository from './BaseRepository';
 
-class ProductFirmwareDatabaseRepository implements IProductFirmwareRepository {
+class ProductFirmwareDatabaseRepository extends BaseRepository
+  implements IProductFirmwareRepository {
   _database: IBaseDatabase;
   _collectionName: CollectionName = COLLECTION_NAMES.PRODUCT_FIRMWARE;
 
   constructor(database: IBaseDatabase) {
+    super(database, COLLECTION_NAMES.PRODUCT_FIRMWARE);
     this._database = database;
   }
 

@@ -8,14 +8,17 @@ import type {
 } from '../types';
 
 import COLLECTION_NAMES from './collectionNames';
+import BaseRepository from './BaseRepository';
 
 // getByID, deleteByID and update uses model.deviceID as ID for querying
-class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
+class DeviceAttributeDatabaseRepository extends BaseRepository
+  implements IDeviceAttributeRepository {
   _database: IBaseDatabase;
   _collectionName: CollectionName = COLLECTION_NAMES.DEVICE_ATTRIBUTES;
   _permissionManager: Object;
 
   constructor(database: IBaseDatabase, permissionManager: Object) {
+    super(database, COLLECTION_NAMES.DEVICE_ATTRIBUTES);
     this._database = database;
     this._permissionManager = permissionManager;
   }
@@ -39,6 +42,15 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
       await this._database.findOne(this._collectionName, { deviceID }),
     );
 
+  getManyFromIDs = async (
+    deviceIDs: Array<string>,
+    ownerID?: string,
+  ): Promise<Array<DeviceAttributes>> =>
+    (await this._database.find(this._collectionName, {
+      deviceID: { $in: deviceIDs },
+      ownerID,
+    })).map(this._parseVariables);
+
   updateByID = async (
     deviceID: string,
     { variables, ...props }: $Shape<DeviceAttributes>,
@@ -51,7 +63,7 @@ class DeviceAttributeDatabaseRepository implements IDeviceAttributeRepository {
     return await this._database.findAndModify(
       this._collectionName,
       { deviceID },
-      { $set: { ...attributesToSave, timeStamp: new Date() } },
+      { $set: { ...attributesToSave, timestamp: new Date() } },
     );
   };
 

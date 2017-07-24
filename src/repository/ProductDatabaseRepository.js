@@ -4,12 +4,15 @@ import type { CollectionName } from './collectionNames';
 import type { IBaseDatabase, IProductRepository, Product } from '../types';
 
 import COLLECTION_NAMES from './collectionNames';
+import BaseRepository from './BaseRepository';
 
-class ProductDatabaseRepository implements IProductRepository {
+class ProductDatabaseRepository extends BaseRepository
+  implements IProductRepository {
   _database: IBaseDatabase;
   _collectionName: CollectionName = COLLECTION_NAMES.PRODUCTS;
 
   constructor(database: IBaseDatabase) {
+    super(database, COLLECTION_NAMES.PRODUCTS);
     this._database = database;
   }
 

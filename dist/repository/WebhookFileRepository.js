@@ -77,33 +77,15 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
 
     (0, _classCallCheck3.default)(this, WebhookFileRepository);
 
-    this.getAll = function () {
+    this.count = function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-        var userID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        var allData;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
-                return _this._getAll();
+                return _context.abrupt('return', _this._fileManager.count());
 
-              case 2:
-                allData = _context.sent;
-
-                if (!userID) {
-                  _context.next = 5;
-                  break;
-                }
-
-                return _context.abrupt('return', allData.filter(function (webhook) {
-                  return webhook.ownerID === userID;
-                }));
-
-              case 5:
-                return _context.abrupt('return', allData);
-
-              case 6:
+              case 1:
               case 'end':
                 return _context.stop();
             }
@@ -116,19 +98,58 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
       };
     }();
 
-    this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2() {
-      return _regenerator2.default.wrap(function _callee2$(_context2) {
+    this.getAll = function () {
+      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2() {
+        var userID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var allData;
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return _this._getAll();
+
+              case 2:
+                allData = _context2.sent;
+
+                if (!userID) {
+                  _context2.next = 5;
+                  break;
+                }
+
+                return _context2.abrupt('return', allData.filter(function (webhook) {
+                  return webhook.ownerID === userID;
+                }));
+
+              case 5:
+                return _context2.abrupt('return', allData);
+
+              case 6:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, _this);
+      }));
+
+      return function () {
+        return _ref2.apply(this, arguments);
+      };
+    }();
+
+    this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+      return _regenerator2.default.wrap(function _callee3$(_context3) {
         while (1) {
-          switch (_context2.prev = _context2.next) {
+          switch (_context3.prev = _context3.next) {
             case 0:
               throw new _HttpError2.default('Not implemented');
 
             case 1:
             case 'end':
-              return _context2.stop();
+              return _context3.stop();
           }
         }
-      }, _callee2, _this);
+      }, _callee3, _this);
     }));
 
     this._fileManager = new _sparkProtocol.JSONFileManager(path);
@@ -137,26 +158,26 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
   (0, _createClass3.default)(WebhookFileRepository, [{
     key: 'create',
     value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(model) {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(model) {
         var id, modelToSave;
-        return _regenerator2.default.wrap(function _callee3$(_context3) {
+        return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 id = (0, _uuid2.default)();
 
               case 1:
-                _context3.next = 3;
+                _context4.next = 3;
                 return this._fileManager.hasFile(id + '.json');
 
               case 3:
-                if (!_context3.sent) {
-                  _context3.next = 7;
+                if (!_context4.sent) {
+                  _context4.next = 7;
                   break;
                 }
 
                 id = (0, _uuid2.default)();
-                _context3.next = 1;
+                _context4.next = 1;
                 break;
 
               case 7:
@@ -167,33 +188,9 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
 
 
                 this._fileManager.createFile(modelToSave.id + '.json', modelToSave);
-                return _context3.abrupt('return', modelToSave);
+                return _context4.abrupt('return', modelToSave);
 
               case 10:
-              case 'end':
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this);
-      }));
-
-      function create(_x2) {
-        return _ref3.apply(this, arguments);
-      }
-
-      return create;
-    }()
-  }, {
-    key: 'deleteByID',
-    value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(id) {
-        return _regenerator2.default.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                this._fileManager.deleteFile(id + '.json');
-
-              case 1:
               case 'end':
                 return _context4.stop();
             }
@@ -201,21 +198,21 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
         }, _callee4, this);
       }));
 
-      function deleteByID(_x3) {
+      function create(_x2) {
         return _ref4.apply(this, arguments);
       }
 
-      return deleteByID;
+      return create;
     }()
   }, {
-    key: 'getByID',
+    key: 'deleteByID',
     value: function () {
       var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(id) {
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                return _context5.abrupt('return', this._fileManager.getFile(id + '.json'));
+                this._fileManager.deleteFile(id + '.json');
 
               case 1:
               case 'end':
@@ -225,8 +222,32 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
         }, _callee5, this);
       }));
 
-      function getByID(_x4) {
+      function deleteByID(_x3) {
         return _ref5.apply(this, arguments);
+      }
+
+      return deleteByID;
+    }()
+  }, {
+    key: 'getByID',
+    value: function () {
+      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(id) {
+        return _regenerator2.default.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                return _context6.abrupt('return', this._fileManager.getFile(id + '.json'));
+
+              case 1:
+              case 'end':
+                return _context6.stop();
+            }
+          }
+        }, _callee6, this);
+      }));
+
+      function getByID(_x4) {
+        return _ref6.apply(this, arguments);
       }
 
       return getByID;
@@ -237,23 +258,23 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
   }, {
     key: '_getAll',
     value: function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6() {
-        return _regenerator2.default.wrap(function _callee6$(_context6) {
+      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7() {
+        return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
-            switch (_context6.prev = _context6.next) {
+            switch (_context7.prev = _context7.next) {
               case 0:
-                return _context6.abrupt('return', this._fileManager.getAllData());
+                return _context7.abrupt('return', this._fileManager.getAllData());
 
               case 1:
               case 'end':
-                return _context6.stop();
+                return _context7.stop();
             }
           }
-        }, _callee6, this);
+        }, _callee7, this);
       }));
 
       function _getAll() {
-        return _ref6.apply(this, arguments);
+        return _ref7.apply(this, arguments);
       }
 
       return _getAll;
