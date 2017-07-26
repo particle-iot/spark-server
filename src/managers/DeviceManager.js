@@ -240,6 +240,13 @@ class DeviceManager {
     return flashResponse;
   };
 
+  flashProductFirmware = (productID: string, file: File) => {
+    this._eventPublisher.publish({
+      context: { fileBuffer: file.buffer, productID },
+      name: SPARK_SERVER_EVENTS.FLASH_PRODUCT_FIRMWARE,
+    });
+  };
+
   provision = async (
     deviceID: string,
     userID: string,

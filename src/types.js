@@ -265,16 +265,22 @@ export interface IProductDeviceRepository
     page: number,
     perPage: number,
   ): Promise<Array<ProductDevice>>,
+  getFromDeviceID(deviceID: string): Promise<?ProductDevice>,
   getManyFromDeviceIDs(deviceIDs: Array<string>): Promise<Array<ProductDevice>>,
-}
-
-export interface IOrganizationRepository extends IBaseRepository<Organization> {
-  getByUserID(userID: string): Promise<Array<Organization>>,
 }
 
 export interface IProductFirmwareRepository
   extends IBaseRepository<ProductFirmware> {
   getAllByProductID(productID: string): Promise<Array<ProductFirmware>>,
+  getByVersionForProduct(
+    productID: string,
+    version: number,
+  ): Promise<?ProductFirmware>,
+  getCurrentForProduct(productID: string): Promise<?ProductFirmware>,
+}
+
+export interface IOrganizationRepository extends IBaseRepository<Organization> {
+  getByUserID(userID: string): Promise<Array<Organization>>,
 }
 
 export interface IDeviceAttributeRepository

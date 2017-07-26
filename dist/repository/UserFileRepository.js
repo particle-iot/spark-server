@@ -84,27 +84,20 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
     var _this = this;
 
     (0, _classCallCheck3.default)(this, UserFileRepository);
+    this.count = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+      return _regenerator2.default.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              return _context.abrupt('return', _this._fileManager.count());
 
-    this.count = function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-        return _regenerator2.default.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                return _context.abrupt('return', _this._fileManager.count());
-
-              case 1:
-              case 'end':
-                return _context.stop();
-            }
+            case 1:
+            case 'end':
+              return _context.stop();
           }
-        }, _callee, _this);
-      }));
-
-      return function () {
-        return _ref.apply(this, arguments);
-      };
-    }();
+        }
+      }, _callee, _this);
+    }));
 
     this.createWithCredentials = function () {
       var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(userCredentials) {

@@ -17,11 +17,25 @@ organization. This adds a small amount of security in that you will only be
 able to upload new firmware or edit products if you have the admin's access
 token.
 
+In the future we may improve this flow and allow you to manage organizations,
+but the main thing we are trying to handle here is product firmware versioning.
+Since we haven't implemented a customers endpoint, it doesn't make much sense
+to create new organizations.
+
 ## Products Initial Setup
 1. Grab the admin access token. This is logged to the console when the server
 starts up.
 2. Call the [Product Post Endpoint](#product-create) to create your first product.
-3. Call the [Firmware Post Endpoint](#firmware-create) to add a new firmware.  You must set `current` to true in order to activate the firmware for your fleet.
+3. Call the [Firmware Post Endpoint](#firmware-create) to add a new firmware.
+You must set `current` to true in order to activate the firmware for your fleet.
+4. Add some devices to your product with
+[Product Device Post Endpoint](#product-devices-create)
+
+Once you've done this, your products should automatically update when you add
+new versions of the firmware. **If the admin account is not the owner of the
+device, it will be automatically quarantined. You will need to update the
+[Product Device Put Endpoint](#product-devices-update) with
+`{"quarantined": false}` if it's owned by another user.**
 
 ## API
 
@@ -409,7 +423,8 @@ starts up.
   }
   ```
   ##### Product Devices Update
-  You can update `desired_firmware_version` and `notes`
+  You can update `desired_firmware_version`, `notes`, `quarantined`,
+  `denied`, and `development`.
   Example cURL
   ```
   curl -X PUT \
@@ -423,7 +438,7 @@ starts up.
   ```
   {
       "id": "41CvO5SGrd6UUDlO",
-      "updated": "2017-07-24T02:23:05.735Z",
+      "updated_at": "2017-07-24T02:23:05.735Z",
       "parsedFirmware": 2
   }
   ```

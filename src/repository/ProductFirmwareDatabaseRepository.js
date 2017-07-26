@@ -40,6 +40,21 @@ class ProductFirmwareDatabaseRepository extends BaseRepository
   ): Promise<Array<ProductFirmware>> =>
     await this._database.find(this._collectionName, { product_id: productID });
 
+  getByVersionForProduct = async (
+    productID: string,
+    version: number,
+  ): Promise<?ProductFirmware> =>
+    await this._database.findOne(this._collectionName, {
+      product_id: productID,
+      version,
+    });
+
+  getCurrentForProduct = async (productID: string): Promise<?ProductFirmware> =>
+    await this._database.findOne(this._collectionName, {
+      current: true,
+      product_id: productID,
+    });
+
   getByID = async (id: string): Promise<?ProductFirmware> =>
     await this._database.findOne(this._collectionName, { _id: id });
 

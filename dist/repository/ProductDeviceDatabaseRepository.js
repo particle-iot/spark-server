@@ -187,15 +187,15 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
       };
     }();
 
-    _this.getManyFromDeviceIDs = function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(deviceIDs) {
+    _this.getFromDeviceID = function () {
+      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(deviceID) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
                 _context6.next = 2;
-                return _this._database.find(_this._collectionName, {
-                  deviceID: { $in: deviceIDs }
+                return _this._database.findOne(_this._collectionName, {
+                  deviceID: deviceID
                 });
 
               case 2:
@@ -214,43 +214,70 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
       };
     }();
 
-    _this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7() {
-      return _regenerator2.default.wrap(function _callee7$(_context7) {
+    _this.getManyFromDeviceIDs = function () {
+      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(deviceIDs) {
+        return _regenerator2.default.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                _context7.next = 2;
+                return _this._database.find(_this._collectionName, {
+                  deviceID: { $in: deviceIDs }
+                });
+
+              case 2:
+                return _context7.abrupt('return', _context7.sent);
+
+              case 3:
+              case 'end':
+                return _context7.stop();
+            }
+          }
+        }, _callee7, _this2);
+      }));
+
+      return function (_x9) {
+        return _ref7.apply(this, arguments);
+      };
+    }();
+
+    _this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8() {
+      return _regenerator2.default.wrap(function _callee8$(_context8) {
         while (1) {
-          switch (_context7.prev = _context7.next) {
+          switch (_context8.prev = _context8.next) {
             case 0:
               throw new Error('The method is not implemented');
 
             case 1:
             case 'end':
-              return _context7.stop();
+              return _context8.stop();
           }
         }
-      }, _callee7, _this2);
+      }, _callee8, _this2);
     }));
 
     _this.updateByID = function () {
-      var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(productDeviceID, productDevice) {
-        return _regenerator2.default.wrap(function _callee8$(_context8) {
+      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(productDeviceID, productDevice) {
+        return _regenerator2.default.wrap(function _callee9$(_context9) {
           while (1) {
-            switch (_context8.prev = _context8.next) {
+            switch (_context9.prev = _context9.next) {
               case 0:
-                _context8.next = 2;
+                _context9.next = 2;
                 return _this._database.findAndModify(_this._collectionName, { _id: productDeviceID }, { $set: (0, _extends3.default)({}, productDevice) });
 
               case 2:
-                return _context8.abrupt('return', _context8.sent);
+                return _context9.abrupt('return', _context9.sent);
 
               case 3:
               case 'end':
-                return _context8.stop();
+                return _context9.stop();
             }
           }
-        }, _callee8, _this2);
+        }, _callee9, _this2);
       }));
 
-      return function (_x9, _x10) {
-        return _ref8.apply(this, arguments);
+      return function (_x10, _x11) {
+        return _ref9.apply(this, arguments);
       };
     }();
 

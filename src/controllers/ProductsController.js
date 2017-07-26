@@ -2,6 +2,7 @@
 /* eslint-disable */
 
 import type { File } from 'express';
+import type DeviceManager from '../managers/DeviceManager';
 import type {
   IDeviceAttributeRepository,
   IOrganizationRepository,
@@ -32,6 +33,7 @@ type ProductFirmwareUpload = {
 
 class ProductsController extends Controller {
   _deviceAttributeRepository: IDeviceAttributeRepository;
+  _deviceManager: DeviceManager;
   _organizationRepository: IOrganizationRepository;
   _productConfigRepository: IProductConfigRepository;
   _productDeviceRepository: IProductDeviceRepository;
@@ -39,6 +41,7 @@ class ProductsController extends Controller {
   _productRepository: IProductRepository;
 
   constructor(
+    deviceManager: DeviceManager,
     deviceAttributeRepository: IDeviceAttributeRepository,
     organizationRepository: IOrganizationRepository,
     productRepository: IProductRepository,
@@ -308,6 +311,9 @@ class ProductsController extends Controller {
       title: body.title,
       version: version,
     });
+
+    this._deviceManager.flashProductFirmware(product.product_id, body.binary);
+
     const { data, id, ...output } = firmware;
     return this.ok(output);
   }
@@ -423,7 +429,6 @@ class ProductsController extends Controller {
         quarantined,
       };
     });
-    console.log(totalDevices, per_page);
     return this.ok({
       accounts: [],
       devices,
@@ -452,9 +457,9 @@ class ProductsController extends Controller {
       return this.bad(`Device ${deviceID} doesn't exist.`);
     }
 
-    const productDevice = (await this._productDeviceRepository.getManyFromDeviceIDs(
-      [deviceID],
-    ))[0];
+    const productDevice = await this._productDeviceRepository.getFromDeviceID(
+      deviceID,
+    );
 
     if (!productDevice) {
       return this.bad(`Device ${deviceID} hasn't been assigned to a product`);
@@ -581,9 +586,20 @@ class ProductsController extends Controller {
   async updateDeviceProduct(
     productIDOrSlug: string,
     deviceID: string,
-    body: { desired_firmware_version?: number, notes?: string },
+    {
+      denied,
+      desired_firmware_version,
+      development,
+      notes,
+      quarantined,
+    }: {
+      denied?: boolean,
+      desired_firmware_version?: ?number,
+      development?: boolean,
+      notes?: string,
+      quarantined?: boolean,
+    },
   ): Promise<*> {
-    const { desired_firmware_version, notes } = body;
     const product = await this._productRepository.getByIDOrSlug(
       productIDOrSlug,
     );
@@ -599,24 +615,29 @@ class ProductsController extends Controller {
       return this.bad(`Device ${deviceID} doesn't exist.`);
     }
 
-    const productDevice = (await this._productDeviceRepository.getManyFromDeviceIDs(
-      [deviceID],
-    ))[0];
+    const productDevice = await this._productDeviceRepository.getFromDeviceID(
+      deviceID,
+    );
 
-    let output = { id: productDevice.id, updated: new Date() };
-    if (desired_firmware_version) {
+    if (!productDevice) {
+      return this.bad(`Device ${deviceID} is not associated with a product`);
+    }
+
+    let output = { id: productDevice.id, updated_at: new Date() };
+    if (desired_firmware_version !== undefined) {
       const deviceFirmwares = await this._productFirmwareRepository.getAllByProductID(
         product.product_id,
       );
-      console.log(deviceFirmwares);
 
-      const parsedFirmware = parseInt(desired_firmware_version, 10);
+      const parsedFirmware =
+        desired_firmware_version !== null
+          ? parseInt(desired_firmware_version, 10)
+          : null;
       if (
+        parsedFirmware !== null &&
         !deviceFirmwares.find(firmware => firmware.version === parsedFirmware)
       ) {
-        return this.bad(
-          `Firmware version ${desired_firmware_version} does not exist`,
-        );
+        return this.bad(`Firmware version ${parsedFirmware} does not exist`);
       }
 
       productDevice.lockedFirmwareVersion = parsedFirmware;
@@ -626,6 +647,21 @@ class ProductsController extends Controller {
     if (notes !== undefined) {
       productDevice.notes = notes;
       output = { ...output, notes };
+    }
+
+    if (development !== undefined) {
+      productDevice.development = development;
+      output = { ...output, development };
+    }
+
+    if (denied !== undefined) {
+      productDevice.denied = denied;
+      output = { ...output, denied };
+    }
+
+    if (quarantined !== undefined) {
+      productDevice.quarantined = quarantined;
+      output = { ...output, quarantined };
     }
 
     const updatedProductDevice = await this._productDeviceRepository.updateByID(

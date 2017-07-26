@@ -160,14 +160,17 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
       };
     }();
 
-    _this.getByID = function () {
-      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(id) {
+    _this.getByVersionForProduct = function () {
+      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(productID, version) {
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
                 _context5.next = 2;
-                return _this._database.findOne(_this._collectionName, { _id: id });
+                return _this._database.findOne(_this._collectionName, {
+                  product_id: productID,
+                  version: version
+                });
 
               case 2:
                 return _context5.abrupt('return', _context5.sent);
@@ -180,19 +183,22 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
         }, _callee5, _this2);
       }));
 
-      return function (_x5) {
+      return function (_x5, _x6) {
         return _ref5.apply(this, arguments);
       };
     }();
 
-    _this.updateByID = function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(productFirmwareID, productFirmware) {
+    _this.getCurrentForProduct = function () {
+      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(productID) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
                 _context6.next = 2;
-                return _this._database.findAndModify(_this._collectionName, { _id: productFirmwareID }, { $set: (0, _extends3.default)({}, productFirmware, { updated_at: new Date() }) });
+                return _this._database.findOne(_this._collectionName, {
+                  current: true,
+                  product_id: productID
+                });
 
               case 2:
                 return _context6.abrupt('return', _context6.sent);
@@ -205,8 +211,58 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
         }, _callee6, _this2);
       }));
 
-      return function (_x6, _x7) {
+      return function (_x7) {
         return _ref6.apply(this, arguments);
+      };
+    }();
+
+    _this.getByID = function () {
+      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(id) {
+        return _regenerator2.default.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                _context7.next = 2;
+                return _this._database.findOne(_this._collectionName, { _id: id });
+
+              case 2:
+                return _context7.abrupt('return', _context7.sent);
+
+              case 3:
+              case 'end':
+                return _context7.stop();
+            }
+          }
+        }, _callee7, _this2);
+      }));
+
+      return function (_x8) {
+        return _ref7.apply(this, arguments);
+      };
+    }();
+
+    _this.updateByID = function () {
+      var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(productFirmwareID, productFirmware) {
+        return _regenerator2.default.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _context8.next = 2;
+                return _this._database.findAndModify(_this._collectionName, { _id: productFirmwareID }, { $set: (0, _extends3.default)({}, productFirmware, { updated_at: new Date() }) });
+
+              case 2:
+                return _context8.abrupt('return', _context8.sent);
+
+              case 3:
+              case 'end':
+                return _context8.stop();
+            }
+          }
+        }, _callee8, _this2);
+      }));
+
+      return function (_x9, _x10) {
+        return _ref8.apply(this, arguments);
       };
     }();
 

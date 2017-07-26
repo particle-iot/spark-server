@@ -48,6 +48,11 @@ class ProductDeviceDatabaseRepository extends BaseRepository
   getByID = async (id: string): Promise<?ProductDevice> =>
     await this._database.findOne(this._collectionName, { _id: id });
 
+  getFromDeviceID = async (deviceID: string): Promise<?ProductDevice> =>
+    await this._database.findOne(this._collectionName, {
+      deviceID,
+    });
+
   getManyFromDeviceIDs = async (
     deviceIDs: Array<string>,
   ): Promise<Array<ProductDevice>> =>
