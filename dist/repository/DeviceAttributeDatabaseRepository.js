@@ -174,9 +174,13 @@ var DeviceAttributeDatabaseRepository = function DeviceAttributeDatabaseReposito
 
     var variables = attributesFromDB.variables;
 
-    return (0, _extends3.default)({}, attributesFromDB, {
-      variables: variables ? JSON.parse(variables) : undefined
-    });
+    try {
+      return (0, _extends3.default)({}, attributesFromDB, {
+        variables: variables ? JSON.parse(variables) : undefined
+      });
+    } catch (ignore) {
+      return attributesFromDB;
+    }
   };
 
   this._database = database;
