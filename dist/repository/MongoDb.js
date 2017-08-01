@@ -235,7 +235,7 @@ var _initialiseProps = function _initialiseProps() {
                           }
 
                           _context6.next = 5;
-                          return result;
+                          return result.toArray();
 
                         case 5:
                           resultItems = _context6.sent;

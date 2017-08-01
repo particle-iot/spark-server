@@ -147,11 +147,9 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
 
               case 2:
                 products = _context.sent;
-
-                console.log(products);
                 return _context.abrupt('return', this.ok({ products: products.map(this._formatProduct) }));
 
-              case 5:
+              case 4:
               case 'end':
                 return _context.stop();
             }

@@ -51,7 +51,7 @@ class MongoDb extends BaseMongoDb implements IBaseDatabase {
           result = result.skip((page - 1) * pageSize).limit(pageSize);
         }
 
-        const resultItems = await result;
+        const resultItems = await result.toArray();
         return resultItems.map(this.__translateResultItem);
       },
     );

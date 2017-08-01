@@ -63,7 +63,6 @@ class ProductsController extends Controller {
   @route('/v1/products')
   async getProducts(): Promise<*> {
     const products = await this._productRepository.getAll();
-    console.log(products);
     return this.ok({ products: products.map(this._formatProduct) });
   }
 
