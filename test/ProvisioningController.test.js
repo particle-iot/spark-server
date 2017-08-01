@@ -39,7 +39,7 @@ test.before(async () => {
     .send(USER_CREDENTIALS);
 
   testUser = await container
-    .constitute('UserRepository')
+    .constitute('IUserRepository')
     .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)
@@ -91,7 +91,9 @@ test('should throw an error if public key is not provided', async t => {
 });
 
 test.after.always(async (): Promise<void> => {
-  await container.constitute('UserRepository').deleteByID(testUser.id);
-  await container.constitute('DeviceAttributeRepository').deleteByID(DEVICE_ID);
-  await container.constitute('DeviceKeyRepository').deleteByID(DEVICE_ID);
+  await container.constitute('IUserRepository').deleteByID(testUser.id);
+  await container
+    .constitute('IDeviceAttributeRepository')
+    .deleteByID(DEVICE_ID);
+  await container.constitute('IDeviceKeyRepository').deleteByID(DEVICE_ID);
 });

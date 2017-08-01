@@ -45,7 +45,11 @@ class DeviceManager {
     const attributes = await this._deviceAttributeRepository.getByID(deviceID);
 
     if (!attributes) {
-      throw new HttpError('No device found', 404);
+      return await this._deviceAttributeRepository.updateByID(deviceID, {
+        deviceID,
+        ownerID: userID,
+        registrar: userID,
+      });
     }
     if (attributes.ownerID && attributes.ownerID !== userID) {
       throw new HttpError('The device belongs to someone else.');
@@ -95,13 +99,14 @@ class DeviceManager {
       },
     );
 
-    const attributes = !connectedDeviceAttributes.error &&
+    const attributes =
+      !connectedDeviceAttributes.error &&
       this._permissionManager.doesUserHaveAccess(connectedDeviceAttributes)
-      ? connectedDeviceAttributes
-      : await this._permissionManager.getEntityByID(
-          'deviceAttributes',
-          deviceID,
-        );
+        ? connectedDeviceAttributes
+        : await this._permissionManager.getEntityByID(
+            'deviceAttributes',
+            deviceID,
+          );
 
     if (!attributes) {
       throw new HttpError('No device found', 404);
@@ -235,6 +240,13 @@ class DeviceManager {
     return flashResponse;
   };
 
+  flashProductFirmware = (productID: string, file: File) => {
+    this._eventPublisher.publish({
+      context: { fileBuffer: file.buffer, productID },
+      name: SPARK_SERVER_EVENTS.FLASH_PRODUCT_FIRMWARE,
+    });
+  };
+
   provision = async (
     deviceID: string,
     userID: string,
@@ -271,7 +283,6 @@ class DeviceManager {
     await this._deviceAttributeRepository.updateByID(deviceID, {
       ownerID: userID,
       registrar: userID,
-      timestamp: new Date(),
     });
     return await this.getByID(deviceID);
   };

@@ -2,6 +2,7 @@
 
 import type {
   IDeviceAttributeRepository,
+  IOrganizationRepository,
   IUserRepository,
   IWebhookRepository,
   ProtectedEntityName,
@@ -15,16 +16,19 @@ import Logger from '../lib/logger';
 const logger = Logger.createModuleLogger(module);
 
 class PermissionManager {
+  _organizationRepository: IOrganizationRepository;
   _userRepository: IUserRepository;
   _repositoriesByEntityName: Map<string, Object> = new Map();
   _oauthServer: Object;
 
   constructor(
     deviceAttributeRepository: IDeviceAttributeRepository,
+    organizationRepository: IOrganizationRepository,
     userRepository: IUserRepository,
     webhookRepository: IWebhookRepository,
     oauthServer: Object,
   ) {
+    this._organizationRepository = organizationRepository;
     this._userRepository = userRepository;
     this._repositoriesByEntityName.set(
       'deviceAttributes',
@@ -122,7 +126,7 @@ class PermissionManager {
   };
 
   _init = async (): Promise<void> => {
-    const defaultAdminUser = await this._userRepository.getByUsername(
+    let defaultAdminUser = await this._userRepository.getByUsername(
       settings.DEFAULT_ADMIN_USERNAME,
     );
     if (defaultAdminUser) {
@@ -132,6 +136,18 @@ class PermissionManager {
       );
     } else {
       await this._createDefaultAdminUser();
+      defaultAdminUser = await this._userRepository.getByUsername(
+        settings.DEFAULT_ADMIN_USERNAME,
+      );
+    }
+
+    // Set up the organization
+    const organizations = await this._organizationRepository.getAll();
+    if (!organizations.length && defaultAdminUser) {
+      await this._organizationRepository.create({
+        name: 'DEFAULT ORG',
+        user_ids: [defaultAdminUser.id],
+      });
     }
   };
 }

@@ -9,7 +9,7 @@ class WebhookLogger implements IWebhookLogger {
 
   log(...args: Array<any>) {
     this._lastLog = args;
-    logger.info({ ...args }, 'webhook');
+    logger.info([...args], 'webhook');
   }
 }
 

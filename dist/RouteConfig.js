@@ -68,7 +68,7 @@ var injectUserMiddleware = function injectUserMiddleware(container) {
       var user = token && token.user;
       // eslint-disable-next-line no-param-reassign
       request.user = user;
-      container.constitute('UserRepository').setCurrentUser(user);
+      container.constitute('IUserRepository').setCurrentUser(user);
     }
     next();
   };
@@ -148,55 +148,71 @@ exports.default = function (app, container, controllers, settings) {
                   // Take access token out if it's posted.
                   _request$body = request.body, access_token = _request$body.access_token, body = (0, _objectWithoutProperties3.default)(_request$body, ['access_token']);
                   _context.prev = 8;
+
+                  (allowedUploads || []).forEach(function (_ref2) {
+                    var maxCount = _ref2.maxCount,
+                        name = _ref2.name;
+
+                    if (!name || !request.files) {
+                      return;
+                    }
+                    var file = request.files[name];
+                    if (!file) {
+                      return;
+                    }
+                    body[name] = maxCount === 1 ? file[0] : file;
+                  });
                   functionResult = mappedFunction.call.apply(mappedFunction, [controllerInstance].concat((0, _toConsumableArray3.default)(values), [body]));
 
                   if (!functionResult.then) {
-                    _context.next = 24;
+                    _context.next = 25;
                     break;
                   }
 
                   if (serverSentEvents) {
-                    _context.next = 17;
+                    _context.next = 18;
                     break;
                   }
 
-                  _context.next = 14;
+                  _context.next = 15;
                   return _promise2.default.race([functionResult, new _promise2.default(function (resolve, reject) {
                     return setTimeout(function () {
                       return reject(new Error('timeout'));
                     }, settings.API_TIMEOUT);
                   })]);
 
-                case 14:
+                case 15:
                   _context.t0 = _context.sent;
-                  _context.next = 20;
+                  _context.next = 21;
                   break;
 
-                case 17:
-                  _context.next = 19;
+                case 18:
+                  _context.next = 20;
                   return functionResult;
 
-                case 19:
+                case 20:
                   _context.t0 = _context.sent;
 
-                case 20:
+                case 21:
                   result = _context.t0;
 
 
                   response.status((0, _nullthrows2.default)(result).status).json((0, _nullthrows2.default)(result).data);
-                  _context.next = 25;
+                  _context.next = 26;
                   break;
-
-                case 24:
-                  response.status(functionResult.status).json(functionResult.data);
 
                 case 25:
-                  _context.next = 31;
+                  response.status(functionResult.status).json(functionResult.data);
+
+                case 26:
+                  _context.next = 33;
                   break;
 
-                case 27:
-                  _context.prev = 27;
+                case 28:
+                  _context.prev = 28;
                   _context.t1 = _context['catch'](8);
+
+                  console.log(_context.t1);
                   httpError = new _HttpError2.default(_context.t1);
 
                   response.status(httpError.status).json({
@@ -204,12 +220,12 @@ exports.default = function (app, container, controllers, settings) {
                     ok: false
                   });
 
-                case 31:
+                case 33:
                 case 'end':
                   return _context.stop();
               }
             }
-          }, _callee, undefined, [[8, 27]]);
+          }, _callee, undefined, [[8, 28]]);
         }));
 
         return function (_x2, _x3) {

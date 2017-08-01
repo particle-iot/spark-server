@@ -20,6 +20,15 @@ class MongoDb extends BaseMongoDb implements IBaseDatabase {
     (async (): Promise<void> => await this._init(url, options))();
   }
 
+  count = async (collectionName: string, query: Object): Promise<number> =>
+    (await this.__runForCollection(
+      collectionName,
+      async (collection: Object): Promise<number> =>
+        await collection.count(this.__translateQuery(query), {
+          timeout: false,
+        }),
+    )) || 0;
+
   insertOne = async (collectionName: string, entity: Object): Promise<*> =>
     await this.__runForCollection(
       collectionName,
@@ -33,10 +42,16 @@ class MongoDb extends BaseMongoDb implements IBaseDatabase {
     await this.__runForCollection(
       collectionName,
       async (collection: Object): Promise<*> => {
-        const resultItems = await collection
-          .find(this.__translateQuery(query), { timeout: false })
-          .toArray();
+        const { page, pageSize = 25, ...otherQuery } = query;
+        let result = collection.find(this.__translateQuery(otherQuery), {
+          timeout: false,
+        });
 
+        if (page) {
+          result = result.skip((page - 1) * pageSize).limit(pageSize);
+        }
+
+        const resultItems = await result;
         return resultItems.map(this.__translateResultItem);
       },
     );

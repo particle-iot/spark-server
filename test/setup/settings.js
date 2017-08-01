@@ -15,6 +15,7 @@ export default {
     __dirname,
     '../__test_data__/firmware',
   ),
+  LOG_LEVEL: (process.env.LOG_LEVEL: any) || 'info',
   SERVER_KEY_FILENAME: 'default_key.pem',
   SERVER_KEYS_DIRECTORY: path.join(__dirname, '../__test_data__'),
   USERS_DIRECTORY: path.join(__dirname, '../__test_data__/users'),

@@ -26,7 +26,7 @@ test.before(async () => {
     .send(USER_CREDENTIALS);
 
   testUser = await container
-    .constitute('UserRepository')
+    .constitute('IUserRepository')
     .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)
@@ -145,6 +145,6 @@ test.serial('should delete webhook', async t => {
 });
 
 test.after.always(async (): Promise<void> => {
-  await container.constitute('WebhookRepository').deleteByID(testWebhook.id);
-  await container.constitute('UserRepository').deleteByID(testUser.id);
+  await container.constitute('IWebhookRepository').deleteByID(testWebhook.id);
+  await container.constitute('IUserRepository').deleteByID(testUser.id);
 });

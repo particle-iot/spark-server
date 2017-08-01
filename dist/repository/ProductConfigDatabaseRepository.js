@@ -42,17 +42,17 @@ var _BaseRepository3 = _interopRequireDefault(_BaseRepository2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var WebhookDatabaseRepository = function (_BaseRepository) {
-  (0, _inherits3.default)(WebhookDatabaseRepository, _BaseRepository);
+var ProductConfigDatabaseRepository = function (_BaseRepository) {
+  (0, _inherits3.default)(ProductConfigDatabaseRepository, _BaseRepository);
 
-  function WebhookDatabaseRepository(database) {
+  function ProductConfigDatabaseRepository(database) {
     var _this2 = this;
 
-    (0, _classCallCheck3.default)(this, WebhookDatabaseRepository);
+    (0, _classCallCheck3.default)(this, ProductConfigDatabaseRepository);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (WebhookDatabaseRepository.__proto__ || (0, _getPrototypeOf2.default)(WebhookDatabaseRepository)).call(this, database, _collectionNames2.default.WEBHOOKS));
+    var _this = (0, _possibleConstructorReturn3.default)(this, (ProductConfigDatabaseRepository.__proto__ || (0, _getPrototypeOf2.default)(ProductConfigDatabaseRepository)).call(this, database, _collectionNames2.default.PRODUCT_CONFIGS));
 
-    _this._collectionName = _collectionNames2.default.WEBHOOKS;
+    _this._collectionName = _collectionNames2.default.PRODUCT_CONFIGS;
 
     _this.create = function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(model) {
@@ -61,9 +61,7 @@ var WebhookDatabaseRepository = function (_BaseRepository) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return _this._database.insertOne(_this._collectionName, (0, _extends3.default)({}, model, {
-                  created_at: new Date()
-                }));
+                return _this._database.insertOne(_this._collectionName, (0, _extends3.default)({}, model));
 
               case 2:
                 return _context.abrupt('return', _context.sent);
@@ -114,6 +112,7 @@ var WebhookDatabaseRepository = function (_BaseRepository) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
+                // TODO - this should probably just query the organization
                 query = userID ? { ownerID: userID } : {};
                 _context3.next = 3;
                 return _this._database.find(_this._collectionName, query);
@@ -134,14 +133,16 @@ var WebhookDatabaseRepository = function (_BaseRepository) {
       };
     }();
 
-    _this.getByID = function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(id) {
+    _this.getByProductID = function () {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(productID) {
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return _this._database.findOne(_this._collectionName, { _id: id });
+                return _this._database.findOne(_this._collectionName, {
+                  product_id: productID
+                });
 
               case 2:
                 return _context4.abrupt('return', _context4.sent);
@@ -159,26 +160,51 @@ var WebhookDatabaseRepository = function (_BaseRepository) {
       };
     }();
 
-    _this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5() {
-      return _regenerator2.default.wrap(function _callee5$(_context5) {
+    _this.getByID = function () {
+      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(id) {
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                _context5.next = 2;
+                return _this._database.findOne(_this._collectionName, { _id: id });
+
+              case 2:
+                return _context5.abrupt('return', _context5.sent);
+
+              case 3:
+              case 'end':
+                return _context5.stop();
+            }
+          }
+        }, _callee5, _this2);
+      }));
+
+      return function (_x5) {
+        return _ref5.apply(this, arguments);
+      };
+    }();
+
+    _this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6() {
+      return _regenerator2.default.wrap(function _callee6$(_context6) {
         while (1) {
-          switch (_context5.prev = _context5.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
               throw new Error('The method is not implemented');
 
             case 1:
             case 'end':
-              return _context5.stop();
+              return _context6.stop();
           }
         }
-      }, _callee5, _this2);
+      }, _callee6, _this2);
     }));
 
     _this._database = database;
     return _this;
   }
 
-  return WebhookDatabaseRepository;
+  return ProductConfigDatabaseRepository;
 }(_BaseRepository3.default);
 
-exports.default = WebhookDatabaseRepository;
+exports.default = ProductConfigDatabaseRepository;
