@@ -196,9 +196,7 @@ var DeviceAttributeDatabaseRepository = function (_BaseRepository) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                attributesToSave = (0, _extends3.default)({}, props, {
-                  variables: variables ? (0, _stringify2.default)(variables) : undefined
-                });
+                attributesToSave = (0, _extends3.default)({}, props, variables ? { variables: (0, _stringify2.default)(variables) } : {});
                 _context6.next = 3;
                 return _this._database.findAndModify(_this._collectionName, { deviceID: deviceID }, { $set: (0, _extends3.default)({}, attributesToSave, { timestamp: new Date() }) });
 
