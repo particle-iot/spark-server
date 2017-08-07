@@ -57,7 +57,7 @@ class DeviceAttributeDatabaseRepository extends BaseRepository
   ): Promise<DeviceAttributes> => {
     const attributesToSave = {
       ...props,
-      variables: variables ? JSON.stringify(variables) : undefined,
+      ...(variables ? { variables: JSON.stringify(variables) } : {}),
     };
 
     return await this._database.findAndModify(
