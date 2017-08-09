@@ -55,7 +55,6 @@ class NeDb extends BaseMongoDb implements IBaseDatabase {
         const { page, pageSize = 25, ...otherQuery } = query;
         let boundFunction = collection.find(otherQuery);
         if (page) {
-          console.log(page, pageSize);
           boundFunction = boundFunction
             .skip((page - 1) * pageSize)
             .limit(pageSize);

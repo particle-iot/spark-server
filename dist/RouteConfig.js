@@ -205,14 +205,12 @@ exports.default = function (app, container, controllers, settings) {
                   response.status(functionResult.status).json(functionResult.data);
 
                 case 26:
-                  _context.next = 33;
+                  _context.next = 32;
                   break;
 
                 case 28:
                   _context.prev = 28;
                   _context.t1 = _context['catch'](8);
-
-                  console.log(_context.t1);
                   httpError = new _HttpError2.default(_context.t1);
 
                   response.status(httpError.status).json({
@@ -220,7 +218,7 @@ exports.default = function (app, container, controllers, settings) {
                     ok: false
                   });
 
-                case 33:
+                case 32:
                 case 'end':
                   return _context.stop();
               }

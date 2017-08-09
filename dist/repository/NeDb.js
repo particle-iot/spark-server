@@ -201,7 +201,6 @@ var NeDb = function (_BaseMongoDb) {
                             boundFunction = collection.find(otherQuery);
 
                             if (page) {
-                              console.log(page, pageSize);
                               boundFunction = boundFunction.skip((page - 1) * pageSize).limit(pageSize);
                             }
                             _context5.next = 5;

@@ -178,7 +178,6 @@ export default (
               response.status(functionResult.status).json(functionResult.data);
             }
           } catch (error) {
-            console.log(error);
             const httpError = new HttpError(error);
             response.status(httpError.status).json({
               error: httpError.message,
