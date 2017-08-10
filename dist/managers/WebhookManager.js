@@ -366,10 +366,7 @@ var WebhookManager = function WebhookManager(eventPublisher, permissionManager, 
                 });
               });
 
-              _this._webhookLogger.log(event,
-              // webhook,
-              // requestOptions,
-              _responseBody, responseEventData);
+              _this._webhookLogger.log(event, webhook, requestOptions, _responseBody, responseEventData);
               _context6.next = 28;
               break;
 

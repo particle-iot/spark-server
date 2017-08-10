@@ -292,8 +292,8 @@ class WebhookManager {
 
       this._webhookLogger.log(
         event,
-        // webhook,
-        // requestOptions,
+        webhook,
+        requestOptions,
         responseBody,
         responseEventData,
       );
