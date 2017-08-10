@@ -160,7 +160,7 @@ exports.default = function (container, newSettings) {
   container.bindClass('EventsController', _EventsController2.default, ['EventManager']);
   container.bindClass('PermissionManager', _PermissionManager2.default, ['IDeviceAttributeRepository', 'IOrganizationRepository', 'IUserRepository', 'IWebhookRepository', 'OAuthServer']);
   container.bindClass('OauthClientsController', _OauthClientsController2.default, []);
-  container.bindClass('ProductsController', _ProductsController2.default, ['IDeviceAttributeRepository', 'IOrganizationRepository', 'IProductRepository', 'IProductConfigRepository', 'IProductDeviceRepository', 'IProductFirmwareRepository']);
+  container.bindClass('ProductsController', _ProductsController2.default, ['DeviceManager', 'IDeviceAttributeRepository', 'IOrganizationRepository', 'IProductRepository', 'IProductConfigRepository', 'IProductDeviceRepository', 'IProductFirmwareRepository']);
   container.bindClass('ProvisioningController', _ProvisioningController2.default, ['DeviceManager']);
   container.bindClass('UsersController', _UsersController2.default, ['IUserRepository']);
   container.bindClass('WebhooksController', _WebhooksController2.default, ['WebhookManager']);
