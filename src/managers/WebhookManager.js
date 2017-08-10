@@ -225,22 +225,28 @@ class WebhookManager {
         webhookVariablesObject,
       );
 
+      const isGetRequest = requestType === 'GET';
+
       const requestOptions = {
         auth: (requestAuth: any),
-        body: requestJson
-          ? this._getRequestData(requestJson, event, webhook.noDefaults)
-          : undefined,
-        form: !requestJson
-          ? this._getRequestData(
-              requestFormData || null,
-              event,
-              webhook.noDefaults,
-            ) || event.data
-          : undefined,
+        body:
+          requestJson && !isGetRequest
+            ? this._getRequestData(requestJson, event, webhook.noDefaults)
+            : undefined,
+        form:
+          !requestJson && !isGetRequest
+            ? this._getRequestData(
+                requestFormData || null,
+                event,
+                webhook.noDefaults,
+              ) || event.data
+            : undefined,
         headers: requestHeaders,
         json: true,
         method: validateRequestType(nullthrows(requestType)),
-        qs: requestQuery,
+        qs: isGetRequest
+          ? this._getRequestData(requestQuery, event, webhook.noDefaults)
+          : requestQuery,
         strictSSL: webhook.rejectUnauthorized,
         url: nullthrows(requestUrl),
       };
@@ -286,8 +292,8 @@ class WebhookManager {
 
       this._webhookLogger.log(
         event,
-        webhook,
-        requestOptions,
+        // webhook,
+        // requestOptions,
         responseBody,
         responseEventData,
       );
