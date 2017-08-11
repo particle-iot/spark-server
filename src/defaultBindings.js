@@ -86,6 +86,7 @@ export default (container: Container, newSettings: Settings) => {
   ]);
   container.bindClass('OauthClientsController', OauthClientsController, []);
   container.bindClass('ProductsController', ProductsController, [
+    'DeviceManager',
     'IDeviceAttributeRepository',
     'IOrganizationRepository',
     'IProductRepository',

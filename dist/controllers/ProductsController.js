@@ -124,6 +124,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (ProductsController.__proto__ || (0, _getPrototypeOf2.default)(ProductsController)).call(this));
 
+    _this._deviceManager = deviceManager;
     _this._deviceAttributeRepository = deviceAttributeRepository;
     _this._organizationRepository = organizationRepository;
     _this._productConfigRepository = productConfigRepository;
