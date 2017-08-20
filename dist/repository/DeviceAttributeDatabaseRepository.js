@@ -8,13 +8,13 @@ var _stringify = require('babel-runtime/core-js/json/stringify');
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
-var _extends2 = require('babel-runtime/helpers/extends');
-
-var _extends3 = _interopRequireDefault(_extends2);
-
 var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
 
 var _regenerator = require('babel-runtime/regenerator');
 
@@ -165,10 +165,9 @@ var DeviceAttributeDatabaseRepository = function (_BaseRepository) {
             switch (_context5.prev = _context5.next) {
               case 0:
                 _context5.next = 2;
-                return _this._database.find(_this._collectionName, {
-                  deviceID: { $in: deviceIDs },
-                  ownerID: ownerID
-                });
+                return _this._database.find(_this._collectionName, (0, _extends3.default)({
+                  deviceID: { $in: deviceIDs }
+                }, ownerID ? { ownerID: ownerID } : {}));
 
               case 2:
                 _context5.t0 = _this._parseVariables;

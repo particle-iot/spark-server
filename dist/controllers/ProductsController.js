@@ -849,7 +849,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
                   return productDevice.deviceID;
                 });
                 _context12.next = 16;
-                return this._deviceAttributeRepository.getManyFromIDs(deviceIDs, this.user.id);
+                return this._deviceAttributeRepository.getManyFromIDs(deviceIDs);
 
               case 16:
                 _context12.t0 = function (device) {
