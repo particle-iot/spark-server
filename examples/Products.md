@@ -160,7 +160,7 @@ device, it will be automatically quarantined. You will need to update the
   Example cURL:
   ```
   curl -X PUT \
-    http://172.20.8.40:8080/v1/products \
+    http://172.20.8.40:8080/v1/products/test-device-2-v101 \
     -H 'authorization: Bearer d2fafe627086dc56472aa0d8cc13ae9c20293371' \
     -H 'cache-control: no-cache' \
     -H 'content-type: application/json' \

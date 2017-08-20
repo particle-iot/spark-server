@@ -146,7 +146,6 @@ class ProductsController extends Controller {
     if (!product) {
       return this.bad(`Product ${productIDOrSlug} doesn't exist`);
     }
-
     product = await this._productRepository.updateByID(product.id, {
       ...product,
       ...model.product,
@@ -415,7 +414,6 @@ class ProductsController extends Controller {
 
     const devices = (await this._deviceAttributeRepository.getManyFromIDs(
       deviceIDs,
-      this.user.id,
     )).map(device => {
       const { denied, development, quarantined } = nullthrows(
         productDevices.find(
