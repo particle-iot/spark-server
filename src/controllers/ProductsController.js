@@ -80,7 +80,7 @@ class ProductsController extends Controller {
       'name',
       'platform_id',
       'type',
-    ].filter(key => !model.product[key]);
+    ].filter(key => !model.product[key] && model.product[key] !== 0);
     if (missingFields.length) {
       return this.bad(`Missing fields: ${missingFields.join(', ')}`);
     }
@@ -137,7 +137,7 @@ class ProductsController extends Controller {
       'organization',
       'platform_id',
       'type',
-    ].filter(key => !model.product[key]);
+    ].filter(key => !model.product[key] && model.product[key] !== 0);
     if (missingFields.length) {
       return this.bad(`Missing fields: ${missingFields.join(', ')}`);
     }
