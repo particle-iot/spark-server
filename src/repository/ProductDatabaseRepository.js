@@ -6,6 +6,13 @@ import type { IBaseDatabase, IProductRepository, Product } from '../types';
 import COLLECTION_NAMES from './collectionNames';
 import BaseRepository from './BaseRepository';
 
+const getProductIDFromIDOrSlug = (IDOrSlug: string): ?number => {
+  const numericStringValue = IDOrSlug.replace(/[^0-9]/g, '');
+  return numericStringValue.length === IDOrSlug.length
+    ? parseInt(numericStringValue, 10)
+    : null;
+};
+
 class ProductDatabaseRepository extends BaseRepository
   implements IProductRepository {
   _database: IBaseDatabase;
@@ -20,9 +27,7 @@ class ProductDatabaseRepository extends BaseRepository
     await this._database.insertOne(this._collectionName, {
       ...(await this._formatProduct(model)),
       created_at: new Date(),
-      // save it as string to be able to search in getByIDOrSlug() method
-      product_id: ((await this._database.count(this._collectionName)) +
-        1).toString(),
+      product_id: (await this._database.count(this._collectionName)) + 1,
     });
 
   deleteByID = async (id: string): Promise<void> =>
@@ -39,13 +44,16 @@ class ProductDatabaseRepository extends BaseRepository
 
   getByIDOrSlug = async (productIDOrSlug: string): Promise<?Product> =>
     await this._database.findOne(this._collectionName, {
-      $or: [{ product_id: productIDOrSlug }, { slug: productIDOrSlug }],
+      $or: [
+        { product_id: getProductIDFromIDOrSlug(productIDOrSlug) },
+        { slug: productIDOrSlug },
+      ],
     });
 
-  updateByID = async (productID: string, product: Product): Promise<Product> =>
+  updateByID = async (id: string, product: Product): Promise<Product> =>
     await this._database.findAndModify(
       this._collectionName,
-      { _id: productID },
+      { _id: id },
       { $set: { ...(await this._formatProduct(product)) } },
     );
 
