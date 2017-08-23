@@ -208,7 +208,7 @@ class ProductsController extends Controller {
   @route('/v1/products/:productIDOrSlug/firmware/:version')
   async getSingleFirmware(
     productIDOrSlug: string,
-    version: number,
+    version: string,
   ): Promise<*> {
     const product = await this._productRepository.getByIDOrSlug(
       productIDOrSlug,
@@ -221,7 +221,7 @@ class ProductsController extends Controller {
     );
 
     const existingFirmware = firmwareList.find(
-      firmware => firmware.version === version,
+      firmware => firmware.version === parseInt(version, 10),
     );
     if (!existingFirmware) {
       return this.bad(`Firmware version ${version} does not exist`);
@@ -322,7 +322,7 @@ class ProductsController extends Controller {
   @route('/v1/products/:productIDOrSlug/firmware/:version')
   async updateFirmware(
     productIDOrSlug: string,
-    version: number,
+    version: string,
     body: $Shape<ProductFirmware>,
   ): Promise<*> {
     const { current, description, title } = body;
@@ -342,7 +342,7 @@ class ProductsController extends Controller {
     );
 
     const existingFirmware = firmwareList.find(
-      firmware => firmware.version === version,
+      firmware => firmware.version === parseInt(version, 10),
     );
     if (!existingFirmware) {
       return this.bad(`Firmware version ${version} does not exist`);
@@ -361,7 +361,7 @@ class ProductsController extends Controller {
 
   @httpVerb('delete')
   @route('/v1/products/:productIDOrSlug/firmware/:version')
-  async deleteFirmware(productIDOrSlug: string, version: number): Promise<*> {
+  async deleteFirmware(productIDOrSlug: string, version: string): Promise<*> {
     const product = await this._productRepository.getByIDOrSlug(
       productIDOrSlug,
     );
@@ -373,7 +373,7 @@ class ProductsController extends Controller {
     );
 
     const existingFirmware = firmwareList.find(
-      firmware => firmware.version === version,
+      firmware => firmware.version === parseInt(version, 10),
     );
     if (!existingFirmware) {
       return this.bad(`Firmware version ${version} does not exist`);
@@ -437,10 +437,7 @@ class ProductsController extends Controller {
 
   @httpVerb('get')
   @route('/v1/products/:productIDOrSlug/devices/:deviceID')
-  async getSingleDevices(
-    productIDOrSlug: string,
-    deviceID: string,
-  ): Promise<*> {
+  async getSingleDevice(productIDOrSlug: string, deviceID: string): Promise<*> {
     const product = await this._productRepository.getByIDOrSlug(
       productIDOrSlug,
     );
