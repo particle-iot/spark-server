@@ -75,7 +75,7 @@ var ProductDatabaseRepository = function (_BaseRepository) {
 
               case 10:
                 _context.t6 = _context.sent;
-                _context.t7 = (_context.t6 + 1).toString();
+                _context.t7 = _context.t6 + 1;
                 _context.t8 = {
                   created_at: _context.t5,
                   product_id: _context.t7
@@ -187,7 +187,7 @@ var ProductDatabaseRepository = function (_BaseRepository) {
               case 0:
                 _context5.next = 2;
                 return _this._database.findOne(_this._collectionName, {
-                  $or: [{ product_id: productIDOrSlug }, { slug: productIDOrSlug }]
+                  $or: [{ product_id: !isNaN(productIDOrSlug) ? parseInt(productIDOrSlug, 10) : null }, { slug: productIDOrSlug }]
                 });
 
               case 2:
@@ -207,14 +207,14 @@ var ProductDatabaseRepository = function (_BaseRepository) {
     }();
 
     _this.updateByID = function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(productID, product) {
+      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(id, product) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
                 _context6.t0 = _this._database;
                 _context6.t1 = _this._collectionName;
-                _context6.t2 = { _id: productID };
+                _context6.t2 = { _id: id };
                 _context6.t3 = _extends3.default;
                 _context6.t4 = {};
                 _context6.next = 7;
@@ -266,7 +266,7 @@ var ProductDatabaseRepository = function (_BaseRepository) {
               case 3:
                 existingProduct = _context7.sent;
 
-                if (!(existingProduct && existingProduct.product_id !== product.id)) {
+                if (!(existingProduct && existingProduct.id !== product.id)) {
                   _context7.next = 6;
                   break;
                 }
