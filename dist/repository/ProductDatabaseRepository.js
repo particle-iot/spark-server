@@ -42,11 +42,6 @@ var _BaseRepository3 = _interopRequireDefault(_BaseRepository2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var getProductIDFromIDOrSlug = function getProductIDFromIDOrSlug(IDOrSlug) {
-  var numericStringValue = IDOrSlug.replace(/[^0-9]/g, '');
-  return numericStringValue.length === IDOrSlug.length ? parseInt(numericStringValue, 10) : null;
-};
-
 var ProductDatabaseRepository = function (_BaseRepository) {
   (0, _inherits3.default)(ProductDatabaseRepository, _BaseRepository);
 
@@ -192,7 +187,7 @@ var ProductDatabaseRepository = function (_BaseRepository) {
               case 0:
                 _context5.next = 2;
                 return _this._database.findOne(_this._collectionName, {
-                  $or: [{ product_id: getProductIDFromIDOrSlug(productIDOrSlug) }, { slug: productIDOrSlug }]
+                  $or: [{ product_id: !isNaN(productIDOrSlug) ? parseInt(productIDOrSlug, 10) : null }, { slug: productIDOrSlug }]
                 });
 
               case 2:

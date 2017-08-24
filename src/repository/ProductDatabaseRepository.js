@@ -6,13 +6,6 @@ import type { IBaseDatabase, IProductRepository, Product } from '../types';
 import COLLECTION_NAMES from './collectionNames';
 import BaseRepository from './BaseRepository';
 
-const getProductIDFromIDOrSlug = (IDOrSlug: string): ?number => {
-  const numericStringValue = IDOrSlug.replace(/[^0-9]/g, '');
-  return numericStringValue.length === IDOrSlug.length
-    ? parseInt(numericStringValue, 10)
-    : null;
-};
-
 class ProductDatabaseRepository extends BaseRepository
   implements IProductRepository {
   _database: IBaseDatabase;
@@ -45,7 +38,11 @@ class ProductDatabaseRepository extends BaseRepository
   getByIDOrSlug = async (productIDOrSlug: string): Promise<?Product> =>
     await this._database.findOne(this._collectionName, {
       $or: [
-        { product_id: getProductIDFromIDOrSlug(productIDOrSlug) },
+        {
+          product_id: !isNaN(productIDOrSlug)
+            ? parseInt(productIDOrSlug, 10)
+            : null,
+        },
         { slug: productIDOrSlug },
       ],
     });
