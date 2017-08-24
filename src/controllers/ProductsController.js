@@ -22,6 +22,7 @@ import httpVerb from '../decorators/httpVerb';
 import nullthrows from 'nullthrows';
 import route from '../decorators/route';
 import HttpError from '../lib/HttpError';
+import formatDeviceAttributesToApi from '../lib/deviceToAPI';
 
 type ProductFirmwareUpload = {
   current: boolean,
@@ -414,17 +415,17 @@ class ProductsController extends Controller {
 
     const devices = (await this._deviceAttributeRepository.getManyFromIDs(
       deviceIDs,
-    )).map(device => {
-      const { denied, development, quarantined } = nullthrows(
+    )).map(deviceAttributes => {
+      const { denied, development, productID, quarantined } = nullthrows(
         productDevices.find(
-          productDevice => productDevice.deviceID === device.deviceID,
+          productDevice => productDevice.deviceID === deviceAttributes.deviceID,
         ),
       );
-
       return {
-        ...device,
+        ...formatDeviceAttributesToApi(deviceAttributes),
         denied,
         development,
+        product_id: product.product_id,
         quarantined,
       };
     });
@@ -464,9 +465,10 @@ class ProductsController extends Controller {
     const { denied, development, quarantined } = productDevice;
 
     return this.ok({
-      ...deviceAttributes,
+      ...formatDeviceAttributesToApi(deviceAttributes),
       denied,
       development,
+      product_id: product.product_id,
       quarantined,
     });
   }
