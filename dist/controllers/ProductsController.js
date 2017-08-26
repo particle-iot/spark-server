@@ -659,14 +659,10 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
 
               case 31:
                 firmware = _context9.sent;
-
-
-                this._deviceManager.flashProductFirmware(product.product_id, body.binary);
-
                 data = firmware.data, id = firmware.id, output = (0, _objectWithoutProperties3.default)(firmware, ['data', 'id']);
                 return _context9.abrupt('return', this.ok(output));
 
-              case 35:
+              case 34:
               case 'end':
                 return _context9.stop();
             }
@@ -734,9 +730,14 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
               case 15:
                 firmware = _context10.sent;
                 data = firmware.data, id = firmware.id, output = (0, _objectWithoutProperties3.default)(firmware, ['data', 'id']);
+
+
+                if (current) {
+                  this._deviceManager.flashProductFirmware(product.id, firmware.data);
+                }
                 return _context10.abrupt('return', this.ok(output));
 
-              case 18:
+              case 19:
               case 'end':
                 return _context10.stop();
             }
@@ -996,7 +997,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
                 ids = null;
 
                 if (!(body.import_method === 'many')) {
-                  _context14.next = 21;
+                  _context14.next = 23;
                   break;
                 }
 
@@ -1020,48 +1021,59 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
                 return _context14.abrupt('return', this.bad('File must be csv or txt file.'));
 
               case 13:
-                records = _csv2.default.parse(_file.buffer.toString('utf8'));
+                _context14.next = 15;
+                return new _promise2.default(function (resolve, reject) {
+                  return _csv2.default.parse(_file.buffer.toString('utf8'), function (error, data) {
+                    if (error) {
+                      reject(error);
+                    }
+                    resolve(data);
+                  });
+                });
+
+              case 15:
+                records = _context14.sent;
 
                 if (records.length) {
-                  _context14.next = 16;
+                  _context14.next = 18;
                   break;
                 }
 
                 return _context14.abrupt('return', this.bad('File didn\'t have any ids'));
 
-              case 16:
+              case 18:
                 if (!records.some(function (record) {
                   return record.length !== 1;
                 })) {
-                  _context14.next = 18;
+                  _context14.next = 20;
                   break;
                 }
 
                 return _context14.abrupt('return', this.bad('File should only have a single column of device ids'));
 
-              case 18:
+              case 20:
 
                 ids = [].concat.apply([], records);
-                _context14.next = 24;
+                _context14.next = 26;
                 break;
 
-              case 21:
+              case 23:
                 if (body.id) {
-                  _context14.next = 23;
+                  _context14.next = 25;
                   break;
                 }
 
                 return _context14.abrupt('return', this.bad('You must pass an id for a device'));
 
-              case 23:
+              case 25:
 
                 ids = [body.id];
 
-              case 24:
-                _context14.next = 26;
+              case 26:
+                _context14.next = 28;
                 return this._deviceAttributeRepository.getManyFromIDs(ids, this.user.id);
 
-              case 26:
+              case 28:
                 deviceAttributes = _context14.sent;
                 incorrectPlatformDeviceIDs = deviceAttributes.filter(function (deviceAttribute) {
                   return deviceAttribute.particleProductId !== product.platform_id;
@@ -1071,10 +1083,10 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
                 deviceAttributeIDs = deviceAttributes.map(function (deviceAttribute) {
                   return deviceAttribute.deviceID;
                 });
-                _context14.next = 31;
+                _context14.next = 33;
                 return this._productDeviceRepository.getManyFromDeviceIDs(ids);
 
-              case 31:
+              case 33:
                 _context14.t0 = function (productDevice) {
                   return productDevice.deviceID;
                 };
@@ -1086,7 +1098,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
                 });
 
                 if (!invalidDeviceIds.length) {
-                  _context14.next = 37;
+                  _context14.next = 39;
                   break;
                 }
 
@@ -1099,11 +1111,11 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
                   status: 400
                 });
 
-              case 37:
+              case 39:
                 idsToCreate = ids.filter(function (id) {
                   return !invalidDeviceIds.includes(id) && !existingProductDeviceIDs.includes(id);
                 });
-                _context14.next = 40;
+                _context14.next = 42;
                 return _promise2.default.all(idsToCreate.map(function (id) {
                   return _this2._productDeviceRepository.create({
                     denied: false,
@@ -1115,14 +1127,14 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
                   });
                 }));
 
-              case 40:
+              case 42:
                 return _context14.abrupt('return', this.ok({
                   updated: idsToCreate.length,
                   nonmemberDeviceIds: nonmemberDeviceIds,
                   invalidDeviceIds: invalidDeviceIds
                 }));
 
-              case 41:
+              case 43:
               case 'end':
                 return _context14.stop();
             }
@@ -1137,7 +1149,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
       return addDevice;
     }()
   }, {
-    key: 'updateDeviceProduct',
+    key: 'updateProductDevice',
     value: function () {
       var _ref16 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee15(productIDOrSlug, deviceID, _ref17) {
         var denied = _ref17.denied,
@@ -1257,11 +1269,11 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
         }, _callee15, this);
       }));
 
-      function updateDeviceProduct(_x23, _x24, _x25) {
+      function updateProductDevice(_x23, _x24, _x25) {
         return _ref16.apply(this, arguments);
       }
 
-      return updateDeviceProduct;
+      return updateProductDevice;
     }()
   }, {
     key: 'removeDeviceFromProduct',
@@ -1393,6 +1405,6 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
     }
   }]);
   return ProductsController;
-}(_Controller3.default), (_applyDecoratedDescriptor(_class.prototype, 'getProducts', [_dec, _dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getProducts'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'createProduct', [_dec3, _dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'createProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getProduct', [_dec5, _dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'updateProduct', [_dec7, _dec8], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'updateProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteProduct', [_dec9, _dec10], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getConfig', [_dec11, _dec12], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getConfig'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getFirmware', [_dec13, _dec14], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getSingleFirmware', [_dec15, _dec16], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getSingleFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'addFirmware', [_dec17, _dec18, _dec19], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'addFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'updateFirmware', [_dec20, _dec21], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'updateFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteFirmware', [_dec22, _dec23], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getDevices', [_dec24, _dec25], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getDevices'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getSingleDevice', [_dec26, _dec27], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getSingleDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'addDevice', [_dec28, _dec29, _dec30], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'addDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'updateDeviceProduct', [_dec31, _dec32], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'updateDeviceProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'removeDeviceFromProduct', [_dec33, _dec34], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'removeDeviceFromProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getEvents', [_dec35, _dec36], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'removeTeamMember', [_dec37, _dec38], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'removeTeamMember'), _class.prototype)), _class));
+}(_Controller3.default), (_applyDecoratedDescriptor(_class.prototype, 'getProducts', [_dec, _dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getProducts'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'createProduct', [_dec3, _dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'createProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getProduct', [_dec5, _dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'updateProduct', [_dec7, _dec8], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'updateProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteProduct', [_dec9, _dec10], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getConfig', [_dec11, _dec12], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getConfig'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getFirmware', [_dec13, _dec14], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getSingleFirmware', [_dec15, _dec16], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getSingleFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'addFirmware', [_dec17, _dec18, _dec19], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'addFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'updateFirmware', [_dec20, _dec21], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'updateFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'deleteFirmware', [_dec22, _dec23], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'deleteFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getDevices', [_dec24, _dec25], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getDevices'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getSingleDevice', [_dec26, _dec27], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getSingleDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'addDevice', [_dec28, _dec29, _dec30], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'addDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'updateProductDevice', [_dec31, _dec32], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'updateProductDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'removeDeviceFromProduct', [_dec33, _dec34], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'removeDeviceFromProduct'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getEvents', [_dec35, _dec36], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'removeTeamMember', [_dec37, _dec38], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'removeTeamMember'), _class.prototype)), _class));
 exports.default = ProductsController;
 /* eslint-enable */

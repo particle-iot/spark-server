@@ -187,7 +187,9 @@ var ProductDatabaseRepository = function (_BaseRepository) {
               case 0:
                 _context5.next = 2;
                 return _this._database.findOne(_this._collectionName, {
-                  $or: [{ product_id: !isNaN(productIDOrSlug) ? parseInt(productIDOrSlug, 10) : null }, { slug: productIDOrSlug }]
+                  $or: [{
+                    product_id: !isNaN(productIDOrSlug) ? parseInt(productIDOrSlug, 10) : null
+                  }, { slug: productIDOrSlug }]
                 });
 
               case 2:
