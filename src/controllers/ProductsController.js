@@ -313,8 +313,6 @@ class ProductsController extends Controller {
       version: version,
     });
 
-    this._deviceManager.flashProductFirmware(product.product_id, body.binary);
-
     const { data, id, ...output } = firmware;
     return this.ok(output);
   }
@@ -357,6 +355,10 @@ class ProductsController extends Controller {
       },
     );
     const { data, id, ...output } = firmware;
+
+    if (current) {
+      this._deviceManager.flashProductFirmware(product.id, firmware.data);
+    }
     return this.ok(output);
   }
 
@@ -499,7 +501,19 @@ class ProductsController extends Controller {
         return this.bad('File must be csv or txt file.');
       }
 
-      const records = csv.parse(file.buffer.toString('utf8'));
+      const records = await new Promise(
+        (resolve: (data: any) => void, reject: (error: Error) => void) =>
+          csv.parse(
+            file.buffer.toString('utf8'),
+            (error: ?Error, data: any) => {
+              if (error) {
+                reject(error);
+              }
+              resolve(data);
+            },
+          ),
+      );
+
       if (!records.length) {
         return this.bad(`File didn't have any ids`);
       }
@@ -581,7 +595,7 @@ class ProductsController extends Controller {
 
   @httpVerb('put')
   @route('/v1/products/:productIDOrSlug/devices/:deviceID')
-  async updateDeviceProduct(
+  async updateProductDevice(
     productIDOrSlug: string,
     deviceID: string,
     {

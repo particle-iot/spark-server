@@ -491,9 +491,9 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
     };
   }();
 
-  this.flashProductFirmware = function (productID, file) {
-    _this._eventPublisher.publish({
-      context: { fileBuffer: file.buffer, productID: productID },
+  this.flashProductFirmware = function (productID, fileBuffer) {
+    return _this._eventPublisher.publish({
+      context: { fileBuffer: fileBuffer, productID: productID },
       name: _sparkProtocol.SPARK_SERVER_EVENTS.FLASH_PRODUCT_FIRMWARE
     });
   };
