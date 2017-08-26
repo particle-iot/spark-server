@@ -8,10 +8,6 @@ var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _extends2 = require('babel-runtime/helpers/extends');
-
-var _extends3 = _interopRequireDefault(_extends2);
-
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -32,6 +28,10 @@ var _inherits2 = require('babel-runtime/helpers/inherits');
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _collectionNames = require('./collectionNames');
 
 var _collectionNames2 = _interopRequireDefault(_collectionNames);
@@ -41,6 +41,12 @@ var _BaseRepository2 = require('./BaseRepository');
 var _BaseRepository3 = _interopRequireDefault(_BaseRepository2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var formatProductFirmwareFromDb = function formatProductFirmwareFromDb(productFirmware) {
+  return (0, _extends3.default)({}, productFirmware, {
+    data: Buffer.from(productFirmware.data)
+  });
+};
 
 var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
   (0, _inherits3.default)(ProductFirmwareDatabaseRepository, _BaseRepository);
@@ -62,6 +68,7 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
               case 0:
                 _context.next = 2;
                 return _this._database.insertOne(_this._collectionName, (0, _extends3.default)({}, model, {
+                  data: model.data.toString(),
                   updated_at: new Date()
                 }));
 
@@ -120,9 +127,10 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
                 return _this._database.find(_this._collectionName, query);
 
               case 3:
-                return _context3.abrupt('return', _context3.sent);
+                _context3.t0 = formatProductFirmwareFromDb;
+                return _context3.abrupt('return', _context3.sent.map(_context3.t0));
 
-              case 4:
+              case 5:
               case 'end':
                 return _context3.stop();
             }
@@ -145,9 +153,10 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
                 return _this._database.find(_this._collectionName, { product_id: productID });
 
               case 2:
-                return _context4.abrupt('return', _context4.sent);
+                _context4.t0 = formatProductFirmwareFromDb;
+                return _context4.abrupt('return', _context4.sent.map(_context4.t0));
 
-              case 3:
+              case 4:
               case 'end':
                 return _context4.stop();
             }
@@ -162,6 +171,7 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
 
     _this.getByVersionForProduct = function () {
       var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(productID, version) {
+        var productFirmware;
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
@@ -173,9 +183,10 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
                 });
 
               case 2:
-                return _context5.abrupt('return', _context5.sent);
+                productFirmware = _context5.sent;
+                return _context5.abrupt('return', productFirmware ? formatProductFirmwareFromDb(productFirmware) : null);
 
-              case 3:
+              case 4:
               case 'end':
                 return _context5.stop();
             }
@@ -190,6 +201,7 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
 
     _this.getCurrentForProduct = function () {
       var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(productID) {
+        var productFirmware;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
@@ -201,9 +213,10 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
                 });
 
               case 2:
-                return _context6.abrupt('return', _context6.sent);
+                productFirmware = _context6.sent;
+                return _context6.abrupt('return', productFirmware ? formatProductFirmwareFromDb(productFirmware) : null);
 
-              case 3:
+              case 4:
               case 'end':
                 return _context6.stop();
             }
@@ -218,6 +231,7 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
 
     _this.getByID = function () {
       var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(id) {
+        var productFirmware;
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
@@ -226,9 +240,10 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
                 return _this._database.findOne(_this._collectionName, { _id: id });
 
               case 2:
-                return _context7.abrupt('return', _context7.sent);
+                productFirmware = _context7.sent;
+                return _context7.abrupt('return', productFirmware ? formatProductFirmwareFromDb(productFirmware) : null);
 
-              case 3:
+              case 4:
               case 'end':
                 return _context7.stop();
             }
@@ -248,7 +263,10 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
             switch (_context8.prev = _context8.next) {
               case 0:
                 _context8.next = 2;
-                return _this._database.findAndModify(_this._collectionName, { _id: productFirmwareID }, { $set: (0, _extends3.default)({}, productFirmware, { updated_at: new Date() }) });
+                return _this._database.findAndModify(_this._collectionName, { _id: productFirmwareID }, { $set: (0, _extends3.default)({}, productFirmware, productFirmware.data ? { data: productFirmware.data.toString() } : {}, {
+                    updated_at: new Date()
+                  })
+                }).then(formatProductFirmwareFromDb);
 
               case 2:
                 return _context8.abrupt('return', _context8.sent);
