@@ -240,7 +240,7 @@ class DeviceManager {
     return flashResponse;
   };
 
-  flashProductFirmware = (productID: string, fileBuffer: Buffer): void =>
+  flashProductFirmware = (productID: number, fileBuffer: Buffer): void =>
     this._eventPublisher.publish({
       context: { fileBuffer, productID },
       name: SPARK_SERVER_EVENTS.FLASH_PRODUCT_FIRMWARE,

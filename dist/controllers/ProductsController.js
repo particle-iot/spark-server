@@ -733,7 +733,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
 
 
                 if (current) {
-                  this._deviceManager.flashProductFirmware(product.id, firmware.data);
+                  this._deviceManager.flashProductFirmware(product.product_id, firmware.data);
                 }
                 return _context10.abrupt('return', this.ok(output));
 
@@ -840,13 +840,13 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
                 page = query.page, _query$per_page = query.per_page, per_page = _query$per_page === undefined ? 25 : _query$per_page;
                 _context12.next = 9;
                 return this._productDeviceRepository.count({
-                  productID: product.id
+                  productID: product.product_id
                 });
 
               case 9:
                 totalDevices = _context12.sent;
                 _context12.next = 12;
-                return this._productDeviceRepository.getAllByProductID(product.id, page, per_page);
+                return this._productDeviceRepository.getAllByProductID(product.product_id, page, per_page);
 
               case 12:
                 productDevices = _context12.sent;
@@ -1122,7 +1122,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
                     development: false,
                     deviceID: id,
                     lockedFirmwareVersion: null,
-                    productID: product.id,
+                    productID: product.product_id,
                     quarantined: nonmemberDeviceIds.includes(id)
                   });
                 }));
