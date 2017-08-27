@@ -182,7 +182,7 @@ class ProductsController extends Controller {
     }
 
     const config = await this._productConfigRepository.getByProductID(
-      product.id,
+      product.product_id,
     );
 
     return this.ok({ product_configuration: config });

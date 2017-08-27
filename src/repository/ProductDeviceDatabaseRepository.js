@@ -35,7 +35,7 @@ class ProductDeviceDatabaseRepository extends BaseRepository
   };
 
   getAllByProductID = async (
-    productID: string,
+    productID: number,
     page: number,
     pageSize: number,
   ): Promise<Array<ProductDevice>> =>

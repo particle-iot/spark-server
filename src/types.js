@@ -171,7 +171,7 @@ export type Settings = {
 export type RequestOptions = {
   auth?: { password: string, username: string },
   body: ?Object,
-  form: ?Object,
+  form: ?Object | ?string,
   headers: ?Object,
   json: boolean,
   method: RequestType,
@@ -196,7 +196,7 @@ export type Product = {|
   name: string,
   organization: string,
   platform_id: PlatformType,
-  product_id: string,
+  product_id: number,
   slug: string,
   type: 'Consumer' | 'Hobbyist' | 'Industrial',
 |};
@@ -208,7 +208,7 @@ export type ProductFirmware = {|
   device_count: number,
   id: string,
   name: string,
-  product_id: string,
+  product_id: number,
   size: number,
   title: string,
   updated_at: Date,
@@ -234,7 +234,7 @@ export type ProductDevice = {|
   id: string,
   lockedFirmwareVersion: ?number,
   notes: string,
-  productID: string,
+  productID: number,
   quarantined: boolean,
 |};
 
@@ -255,13 +255,13 @@ export interface IProductRepository extends IBaseRepository<Product> {
 
 export interface IProductConfigRepository
   extends IBaseRepository<ProductConfig> {
-  getByProductID(productID: string): Promise<?ProductConfig>,
+  getByProductID(productID: number): Promise<?ProductConfig>,
 }
 
 export interface IProductDeviceRepository
   extends IBaseRepository<ProductDevice> {
   getAllByProductID(
-    productID: string,
+    productID: number,
     page: number,
     perPage: number,
   ): Promise<Array<ProductDevice>>,
@@ -271,12 +271,12 @@ export interface IProductDeviceRepository
 
 export interface IProductFirmwareRepository
   extends IBaseRepository<ProductFirmware> {
-  getAllByProductID(productID: string): Promise<Array<ProductFirmware>>,
+  getAllByProductID(productID: number): Promise<Array<ProductFirmware>>,
   getByVersionForProduct(
-    productID: string,
+    productID: number,
     version: number,
   ): Promise<?ProductFirmware>,
-  getCurrentForProduct(productID: string): Promise<?ProductFirmware>,
+  getCurrentForProduct(productID: number): Promise<?ProductFirmware>,
 }
 
 export interface IOrganizationRepository extends IBaseRepository<Organization> {

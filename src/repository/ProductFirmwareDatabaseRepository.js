@@ -47,14 +47,14 @@ class ProductFirmwareDatabaseRepository extends BaseRepository
   };
 
   getAllByProductID = async (
-    productID: string,
+    productID: number,
   ): Promise<Array<ProductFirmware>> =>
     (await this._database.find(this._collectionName, {
       product_id: productID,
     })).map(formatProductFirmwareFromDb);
 
   getByVersionForProduct = async (
-    productID: string,
+    productID: number,
     version: number,
   ): Promise<?ProductFirmware> => {
     const productFirmware = await this._database.findOne(this._collectionName, {
@@ -67,7 +67,7 @@ class ProductFirmwareDatabaseRepository extends BaseRepository
   };
 
   getCurrentForProduct = async (
-    productID: string,
+    productID: number,
   ): Promise<?ProductFirmware> => {
     const productFirmware = await this._database.findOne(this._collectionName, {
       current: true,
