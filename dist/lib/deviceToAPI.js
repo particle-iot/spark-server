@@ -17,6 +17,7 @@ var deviceToAPI = function deviceToAPI(device, result) {
     last_ip_address: device.ip,
     name: device.name,
     platform_id: device.particleProductId,
+    product_firmware_version: device.productFirmwareVersion,
     product_id: device.particleProductId,
     return_value: result,
     status: 'normal',

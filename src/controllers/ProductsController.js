@@ -357,7 +357,10 @@ class ProductsController extends Controller {
     const { data, id, ...output } = firmware;
 
     if (current) {
-      this._deviceManager.flashProductFirmware(product.id, firmware.data);
+      this._deviceManager.flashProductFirmware(
+        product.product_id,
+        firmware.data,
+      );
     }
     return this.ok(output);
   }
@@ -403,10 +406,10 @@ class ProductsController extends Controller {
     query.page = Math.max(1, query.page);
     const { page, per_page = 25 } = query;
     const totalDevices = await this._productDeviceRepository.count({
-      productID: product.id,
+      productID: product.product_id,
     });
     const productDevices = await this._productDeviceRepository.getAllByProductID(
-      product.id,
+      product.product_id,
       page,
       per_page,
     );
@@ -580,7 +583,7 @@ class ProductsController extends Controller {
           development: false,
           deviceID: id,
           lockedFirmwareVersion: null,
-          productID: product.id,
+          productID: product.product_id,
           quarantined: nonmemberDeviceIds.includes(id),
         }),
       ),
