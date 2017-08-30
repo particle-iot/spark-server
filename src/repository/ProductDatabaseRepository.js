@@ -69,7 +69,7 @@ class ProductDatabaseRepository extends BaseRepository
       slug,
     });
 
-    if (existingProduct && existingProduct.id !== product.id) {
+    if (existingProduct && existingProduct.product_id !== product.product_id) {
       throw new Error('Product name or version already in use');
     }
 

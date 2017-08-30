@@ -15,7 +15,10 @@ const formatProductFirmwareFromDb = (
 ): ProductFirmware =>
   ({
     ...productFirmware,
-    data: Buffer.from(productFirmware.data),
+    // todo right now its hack for getting right buffer from different dbs
+    data: productFirmware.data.buffer
+      ? productFirmware.data.buffer // for mongo
+      : Buffer.from(Object.values(productFirmware.data)), // for nedb,
   }: any);
 
 class ProductFirmwareDatabaseRepository extends BaseRepository
@@ -31,7 +34,6 @@ class ProductFirmwareDatabaseRepository extends BaseRepository
   create = async (model: $Shape<ProductFirmware>): Promise<ProductFirmware> =>
     await this._database.insertOne(this._collectionName, {
       ...model,
-      data: model.data.toString(),
       updated_at: new Date(),
     });
 
@@ -98,9 +100,6 @@ class ProductFirmwareDatabaseRepository extends BaseRepository
         {
           $set: {
             ...productFirmware,
-            ...(productFirmware.data
-              ? { data: productFirmware.data.toString() }
-              : {}),
             updated_at: new Date(),
           },
         },
