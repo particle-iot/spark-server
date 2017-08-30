@@ -40,7 +40,7 @@ var _inherits2 = require('babel-runtime/helpers/inherits');
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _desc, _value, _class;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _desc, _value, _class;
 
 var _nullthrows = require('nullthrows');
 
@@ -111,7 +111,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 
 var logger = _logger2.default.createModuleLogger(module);
 
-var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _route2.default)('/v1/devices'), _dec3 = (0, _httpVerb2.default)('get'), _dec4 = (0, _route2.default)('/v1/binaries/:binaryID'), _dec5 = (0, _httpVerb2.default)('post'), _dec6 = (0, _route2.default)('/v1/binaries'), _dec7 = (0, _allowUpload2.default)(), _dec8 = (0, _httpVerb2.default)('delete'), _dec9 = (0, _route2.default)('/v1/devices/:deviceID'), _dec10 = (0, _httpVerb2.default)('get'), _dec11 = (0, _route2.default)('/v1/devices'), _dec12 = (0, _httpVerb2.default)('get'), _dec13 = (0, _route2.default)('/v1/devices/:deviceID'), _dec14 = (0, _httpVerb2.default)('get'), _dec15 = (0, _route2.default)('/v1/devices/:deviceID/:varName/'), _dec16 = (0, _httpVerb2.default)('put'), _dec17 = (0, _route2.default)('/v1/devices/:deviceID'), _dec18 = (0, _allowUpload2.default)('file', 1), _dec19 = (0, _httpVerb2.default)('post'), _dec20 = (0, _route2.default)('/v1/devices/:deviceID/:functionName'), (_class = function (_Controller) {
+var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _route2.default)('/v1/devices'), _dec3 = (0, _httpVerb2.default)('get'), _dec4 = (0, _route2.default)('/v1/binaries/:binaryID'), _dec5 = (0, _httpVerb2.default)('post'), _dec6 = (0, _route2.default)('/v1/binaries'), _dec7 = (0, _allowUpload2.default)(), _dec8 = (0, _httpVerb2.default)('delete'), _dec9 = (0, _route2.default)('/v1/devices/:deviceID'), _dec10 = (0, _httpVerb2.default)('get'), _dec11 = (0, _route2.default)('/v1/devices'), _dec12 = (0, _httpVerb2.default)('get'), _dec13 = (0, _route2.default)('/v1/devices/:deviceID'), _dec14 = (0, _httpVerb2.default)('get'), _dec15 = (0, _route2.default)('/v1/devices/:deviceID/:varName/'), _dec16 = (0, _httpVerb2.default)('put'), _dec17 = (0, _route2.default)('/v1/devices/:deviceID'), _dec18 = (0, _allowUpload2.default)('file', 1), _dec19 = (0, _httpVerb2.default)('post'), _dec20 = (0, _route2.default)('/v1/devices/:deviceID/:functionName'), _dec21 = (0, _httpVerb2.default)('put'), _dec22 = (0, _route2.default)('/v1/devices/:deviceID/ping'), (_class = function (_Controller) {
   (0, _inherits3.default)(DevicesController, _Controller);
 
   function DevicesController(deviceManager) {
@@ -126,7 +126,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
   (0, _createClass3.default)(DevicesController, [{
     key: 'claimDevice',
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(postBody) {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(postBody) {
         var deviceID;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -156,7 +156,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
   }, {
     key: 'getAppFirmware',
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(binaryID) {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(binaryID) {
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -180,7 +180,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
   }, {
     key: 'compileSources',
     value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(postBody) {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(postBody) {
         var response;
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
@@ -222,7 +222,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
   }, {
     key: 'unclaimDevice',
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(deviceID) {
+      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(deviceID) {
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
@@ -250,7 +250,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
   }, {
     key: 'getDevices',
     value: function () {
-      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5() {
+      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
         var devices;
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
@@ -292,7 +292,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
   }, {
     key: 'getDevice',
     value: function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(deviceID) {
+      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(deviceID) {
         var device;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
@@ -322,7 +322,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
   }, {
     key: 'getVariableValue',
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(deviceID, varName) {
+      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(deviceID, varName) {
         var varValue, errorMessage;
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
@@ -368,7 +368,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
   }, {
     key: 'updateDevice',
     value: function () {
-      var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(deviceID, postBody) {
+      var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(deviceID, postBody) {
         var updatedAttributes, flashResult, file, _flashResult;
 
         return _regenerator2.default.wrap(function _callee8$(_context8) {
@@ -465,7 +465,7 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
   }, {
     key: 'callDeviceFunction',
     value: function () {
-      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(deviceID, functionName, postBody) {
+      var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(deviceID, functionName, postBody) {
         var result, device, errorMessage;
         return _regenerator2.default.wrap(function _callee9$(_context9) {
           while (1) {
@@ -513,7 +513,37 @@ var DevicesController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _ro
 
       return callDeviceFunction;
     }()
+  }, {
+    key: 'pingDevice',
+    value: function () {
+      var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(deviceID) {
+        return _regenerator2.default.wrap(function _callee10$(_context10) {
+          while (1) {
+            switch (_context10.prev = _context10.next) {
+              case 0:
+                _context10.t0 = this;
+                _context10.next = 3;
+                return this._deviceManager.ping(deviceID);
+
+              case 3:
+                _context10.t1 = _context10.sent;
+                return _context10.abrupt('return', _context10.t0.ok.call(_context10.t0, _context10.t1));
+
+              case 5:
+              case 'end':
+                return _context10.stop();
+            }
+          }
+        }, _callee10, this);
+      }));
+
+      function pingDevice(_x13) {
+        return _ref10.apply(this, arguments);
+      }
+
+      return pingDevice;
+    }()
   }]);
   return DevicesController;
-}(_Controller3.default), (_applyDecoratedDescriptor(_class.prototype, 'claimDevice', [_dec, _dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'claimDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAppFirmware', [_dec3, _dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAppFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'compileSources', [_dec5, _dec6, _dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'compileSources'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'unclaimDevice', [_dec8, _dec9], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'unclaimDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getDevices', [_dec10, _dec11], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getDevices'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getDevice', [_dec12, _dec13], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getVariableValue', [_dec14, _dec15], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getVariableValue'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'updateDevice', [_dec16, _dec17, _dec18], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'updateDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'callDeviceFunction', [_dec19, _dec20], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'callDeviceFunction'), _class.prototype)), _class));
+}(_Controller3.default), (_applyDecoratedDescriptor(_class.prototype, 'claimDevice', [_dec, _dec2], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'claimDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getAppFirmware', [_dec3, _dec4], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getAppFirmware'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'compileSources', [_dec5, _dec6, _dec7], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'compileSources'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'unclaimDevice', [_dec8, _dec9], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'unclaimDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getDevices', [_dec10, _dec11], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getDevices'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getDevice', [_dec12, _dec13], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getVariableValue', [_dec14, _dec15], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getVariableValue'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'updateDevice', [_dec16, _dec17, _dec18], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'updateDevice'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'callDeviceFunction', [_dec19, _dec20], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'callDeviceFunction'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'pingDevice', [_dec21, _dec22], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'pingDevice'), _class.prototype)), _class));
 exports.default = DevicesController;

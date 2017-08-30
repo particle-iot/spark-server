@@ -246,6 +246,17 @@ class DeviceManager {
       name: SPARK_SERVER_EVENTS.FLASH_PRODUCT_FIRMWARE,
     });
 
+  ping = async (deviceID: string): void => {
+    await this._permissionManager.checkPermissionsForEntityByID(
+      'deviceAttributes',
+      deviceID,
+    );
+    return await this._eventPublisher.publishAndListenForResponse({
+      context: { deviceID },
+      name: SPARK_SERVER_EVENTS.PING_DEVICE,
+    });
+  };
+
   provision = async (
     deviceID: string,
     userID: string,
