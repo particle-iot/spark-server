@@ -204,6 +204,12 @@ class DevicesController extends Controller {
       throw error;
     }
   }
+
+  @httpVerb('put')
+  @route('/v1/devices/:deviceID/ping')
+  async pingDevice(deviceID: string): Promise<*> {
+    return this.ok(await this._deviceManager.ping(deviceID));
+  }
 }
 
 export default DevicesController;
