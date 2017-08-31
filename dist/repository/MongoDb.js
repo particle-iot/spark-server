@@ -69,7 +69,7 @@ var MongoDb = function (_BaseMongoDb) {
 
     _initialiseProps.call(_this);
 
-    (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+    (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
       return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -100,14 +100,15 @@ var _initialiseProps = function _initialiseProps() {
   this._statusEventEmitter = new _events2.default();
 
   this.count = function () {
-    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(collectionName, query) {
+    var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(collectionName) {
+      var query = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       return _regenerator2.default.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
               return _this3.__runForCollection(collectionName, function () {
-                var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(collection) {
+                var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(collection) {
                   return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
                       switch (_context2.prev = _context2.next) {
@@ -154,20 +155,20 @@ var _initialiseProps = function _initialiseProps() {
       }, _callee3, _this3);
     }));
 
-    return function (_x2, _x3) {
+    return function (_x2) {
       return _ref2.apply(this, arguments);
     };
   }();
 
   this.insertOne = function () {
-    var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(collectionName, entity) {
+    var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(collectionName, entity) {
       return _regenerator2.default.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
               _context5.next = 2;
               return _this3.__runForCollection(collectionName, function () {
-                var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(collection) {
+                var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(collection) {
                   var insertResult;
                   return _regenerator2.default.wrap(function _callee4$(_context4) {
                     while (1) {
@@ -210,14 +211,14 @@ var _initialiseProps = function _initialiseProps() {
   }();
 
   this.find = function () {
-    var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(collectionName, query) {
+    var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(collectionName, query) {
       return _regenerator2.default.wrap(function _callee7$(_context7) {
         while (1) {
           switch (_context7.prev = _context7.next) {
             case 0:
               _context7.next = 2;
               return _this3.__runForCollection(collectionName, function () {
-                var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(collection) {
+                var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(collection) {
                   var page, _query$pageSize, pageSize, otherQuery, result, resultItems;
 
                   return _regenerator2.default.wrap(function _callee6$(_context6) {
@@ -271,14 +272,14 @@ var _initialiseProps = function _initialiseProps() {
   }();
 
   this.findAndModify = function () {
-    var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(collectionName, query, updateQuery) {
+    var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(collectionName, query, updateQuery) {
       return _regenerator2.default.wrap(function _callee9$(_context9) {
         while (1) {
           switch (_context9.prev = _context9.next) {
             case 0:
               _context9.next = 2;
               return _this3.__runForCollection(collectionName, function () {
-                var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(collection) {
+                var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(collection) {
                   var modifyResult;
                   return _regenerator2.default.wrap(function _callee8$(_context8) {
                     while (1) {
@@ -321,14 +322,14 @@ var _initialiseProps = function _initialiseProps() {
   }();
 
   this.findOne = function () {
-    var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(collectionName, query) {
+    var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(collectionName, query) {
       return _regenerator2.default.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
             case 0:
               _context11.next = 2;
               return _this3.__runForCollection(collectionName, function () {
-                var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(collection) {
+                var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(collection) {
                   var resultItem;
                   return _regenerator2.default.wrap(function _callee10$(_context10) {
                     while (1) {
@@ -371,14 +372,14 @@ var _initialiseProps = function _initialiseProps() {
   }();
 
   this.remove = function () {
-    var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee13(collectionName, query) {
+    var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13(collectionName, query) {
       return _regenerator2.default.wrap(function _callee13$(_context13) {
         while (1) {
           switch (_context13.prev = _context13.next) {
             case 0:
               _context13.next = 2;
               return _this3.__runForCollection(collectionName, function () {
-                var _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(collection) {
+                var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(collection) {
                   return _regenerator2.default.wrap(function _callee12$(_context12) {
                     while (1) {
                       switch (_context12.prev = _context12.next) {
@@ -419,7 +420,7 @@ var _initialiseProps = function _initialiseProps() {
   }();
 
   this.__runForCollection = function () {
-    var _ref14 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee14(collectionName, callback) {
+    var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee14(collectionName, callback) {
       return _regenerator2.default.wrap(function _callee14$(_context14) {
         while (1) {
           switch (_context14.prev = _context14.next) {
@@ -454,7 +455,7 @@ var _initialiseProps = function _initialiseProps() {
   }();
 
   this._init = function () {
-    var _ref15 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee15(url, options) {
+    var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee15(url, options) {
       var database;
       return _regenerator2.default.wrap(function _callee15$(_context15) {
         while (1) {
@@ -495,7 +496,7 @@ var _initialiseProps = function _initialiseProps() {
     };
   }();
 
-  this._isDbReady = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee16() {
+  this._isDbReady = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee16() {
     return _regenerator2.default.wrap(function _callee16$(_context16) {
       while (1) {
         switch (_context16.prev = _context16.next) {
