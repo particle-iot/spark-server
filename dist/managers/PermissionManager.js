@@ -49,7 +49,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, or
   this._repositoriesByEntityName = new _map2.default();
 
   this.checkPermissionsForEntityByID = function () {
-    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(entityName, id) {
+    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(entityName, id) {
       return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -74,20 +74,16 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, or
   }();
 
   this.getAllEntitiesForCurrentUser = function () {
-    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(entityName) {
+    var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(entityName) {
       var currentUser;
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
               currentUser = _this._userRepository.getCurrentUser();
-              _context2.next = 3;
-              return (0, _nullthrows2.default)(_this._repositoriesByEntityName.get(entityName)).getAll(currentUser.id);
+              return _context2.abrupt('return', (0, _nullthrows2.default)(_this._repositoriesByEntityName.get(entityName)).getAll(currentUser.id));
 
-            case 3:
-              return _context2.abrupt('return', _context2.sent);
-
-            case 4:
+            case 2:
             case 'end':
               return _context2.stop();
           }
@@ -101,7 +97,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, or
   }();
 
   this.getEntityByID = function () {
-    var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(entityName, id) {
+    var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(entityName, id) {
       var entity;
       return _regenerator2.default.wrap(function _callee3$(_context3) {
         while (1) {
@@ -144,7 +140,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, or
     };
   }();
 
-  this._createDefaultAdminUser = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
+  this._createDefaultAdminUser = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
     var token;
     return _regenerator2.default.wrap(function _callee4$(_context4) {
       while (1) {
@@ -190,7 +186,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, or
     return currentUser.role === 'administrator' || currentUser.id === ownerID;
   };
 
-  this._generateAdminToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5() {
+  this._generateAdminToken = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
     var request, response, tokenPayload;
     return _regenerator2.default.wrap(function _callee5$(_context5) {
       while (1) {
@@ -229,7 +225,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, or
       }
     }, _callee5, _this);
   }));
-  this._init = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6() {
+  this._init = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6() {
     var defaultAdminUser, organizations;
     return _regenerator2.default.wrap(function _callee6$(_context6) {
       while (1) {
@@ -293,18 +289,14 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, or
   this._repositoriesByEntityName.set('webhook', webhookRepository);
   this._oauthServer = oauthServer;
 
-  (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7() {
+  (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7() {
     return _regenerator2.default.wrap(function _callee7$(_context7) {
       while (1) {
         switch (_context7.prev = _context7.next) {
           case 0:
-            _context7.next = 2;
-            return _this._init();
+            return _context7.abrupt('return', _this._init());
 
-          case 2:
-            return _context7.abrupt('return', _context7.sent);
-
-          case 3:
+          case 1:
           case 'end':
             return _context7.stop();
         }

@@ -97,7 +97,7 @@ var DeviceClaimsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0
   (0, _createClass3.default)(DeviceClaimsController, [{
     key: 'createClaimCode',
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
         var claimCode, devices, deviceIDs;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {

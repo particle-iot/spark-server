@@ -141,7 +141,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   (0, _createClass3.default)(ProductsController, [{
     key: 'getProducts',
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
         var products;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -171,7 +171,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'createProduct',
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(model) {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(model) {
         var missingFields, organizations, organizationID, product, config;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
@@ -252,7 +252,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'getProduct',
     value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(productIDOrSlug) {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(productIDOrSlug) {
         var product;
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
@@ -291,7 +291,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'updateProduct',
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(productIDOrSlug, model) {
+      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(productIDOrSlug, model) {
         var missingFields, product;
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
@@ -355,7 +355,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'deleteProduct',
     value: function () {
-      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(productIDOrSlug) {
+      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(productIDOrSlug) {
         var product;
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
@@ -398,7 +398,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'getConfig',
     value: function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(productIDOrSlug) {
+      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(productIDOrSlug) {
         var product, config;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
@@ -419,7 +419,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
 
               case 5:
                 _context6.next = 7;
-                return this._productConfigRepository.getByProductID(product.id);
+                return this._productConfigRepository.getByProductID(product.product_id);
 
               case 7:
                 config = _context6.sent;
@@ -442,7 +442,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'getFirmware',
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(productIDOrSlug) {
+      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(productIDOrSlug) {
         var product, firmwares;
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
@@ -490,7 +490,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'getSingleFirmware',
     value: function () {
-      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(productIDOrSlug, version) {
+      var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(productIDOrSlug, version) {
         var product, firmwareList, existingFirmware, data, id, output;
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
@@ -547,7 +547,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'addFirmware',
     value: function () {
-      var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(productIDOrSlug, body) {
+      var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(productIDOrSlug, body) {
         var missingFields, product, parser, moduleInfo, firmwarePlatformID, _moduleInfo$suffixInf, productId, productVersion, version, firmwareList, maxExistingFirmwareVersion, firmware, data, id, output;
 
         return _regenerator2.default.wrap(function _callee9$(_context9) {
@@ -679,7 +679,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'updateFirmware',
     value: function () {
-      var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(productIDOrSlug, version, body) {
+      var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(productIDOrSlug, version, body) {
         var _body, current, description, title, product, firmwareList, existingFirmware, firmware, data, id, output;
 
         return _regenerator2.default.wrap(function _callee10$(_context10) {
@@ -754,7 +754,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'deleteFirmware',
     value: function () {
-      var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(productIDOrSlug, version) {
+      var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(productIDOrSlug, version) {
         var product, firmwareList, existingFirmware;
         return _regenerator2.default.wrap(function _callee11$(_context11) {
           while (1) {
@@ -814,7 +814,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'getDevices',
     value: function () {
-      var _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(productIDOrSlug, query) {
+      var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(productIDOrSlug, query) {
         var product, page, _query$per_page, per_page, totalDevices, productDevices, deviceIDs, devices;
 
         return _regenerator2.default.wrap(function _callee12$(_context12) {
@@ -898,7 +898,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'getSingleDevice',
     value: function () {
-      var _ref14 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee13(productIDOrSlug, deviceID) {
+      var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13(productIDOrSlug, deviceID) {
         var product, deviceAttributes, productDevice, denied, development, quarantined;
         return _regenerator2.default.wrap(function _callee13$(_context13) {
           while (1) {
@@ -971,7 +971,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'addDevice',
     value: function () {
-      var _ref15 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee14(productIDOrSlug, body) {
+      var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee14(productIDOrSlug, body) {
         var _this2 = this;
 
         var product, ids, _file, originalname, records, deviceAttributes, incorrectPlatformDeviceIDs, deviceAttributeIDs, existingProductDeviceIDs, invalidDeviceIds, nonmemberDeviceIds, idsToCreate;
@@ -1151,7 +1151,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'updateProductDevice',
     value: function () {
-      var _ref16 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee15(productIDOrSlug, deviceID, _ref17) {
+      var _ref16 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee15(productIDOrSlug, deviceID, _ref17) {
         var denied = _ref17.denied,
             desired_firmware_version = _ref17.desired_firmware_version,
             development = _ref17.development,
@@ -1278,7 +1278,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'removeDeviceFromProduct',
     value: function () {
-      var _ref18 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee16(productIDOrSlug, deviceID) {
+      var _ref18 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee16(productIDOrSlug, deviceID) {
         var product, deviceAttributes, productDevice;
         return _regenerator2.default.wrap(function _callee16$(_context16) {
           while (1) {
@@ -1349,7 +1349,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'getEvents',
     value: function () {
-      var _ref19 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee17(productIdOrSlug, eventName) {
+      var _ref19 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee17(productIdOrSlug, eventName) {
         return _regenerator2.default.wrap(function _callee17$(_context17) {
           while (1) {
             switch (_context17.prev = _context17.next) {
@@ -1373,7 +1373,7 @@ var ProductsController = (_dec = (0, _httpVerb2.default)('get'), _dec2 = (0, _ro
   }, {
     key: 'removeTeamMember',
     value: function () {
-      var _ref20 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee18(productIdOrSlug, username) {
+      var _ref20 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee18(productIdOrSlug, username) {
         return _regenerator2.default.wrap(function _callee18$(_context18) {
           while (1) {
             switch (_context18.prev = _context18.next) {

@@ -96,7 +96,7 @@ var OauthClientsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0
   (0, _createClass3.default)(OauthClientsController, [{
     key: 'createClient',
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -120,7 +120,7 @@ var OauthClientsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0
   }, {
     key: 'editClient',
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2() {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -144,7 +144,7 @@ var OauthClientsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0
   }, {
     key: 'deleteClient',
     value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {

@@ -63,53 +63,45 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               attributes = _context.sent;
 
               if (attributes) {
-                _context.next = 7;
+                _context.next = 5;
                 break;
               }
 
-              _context.next = 6;
-              return _this._deviceAttributeRepository.updateByID(deviceID, {
+              return _context.abrupt('return', _this._deviceAttributeRepository.updateByID(deviceID, {
                 deviceID: deviceID,
                 ownerID: userID,
                 registrar: userID
-              });
+              }));
 
-            case 6:
-              return _context.abrupt('return', _context.sent);
-
-            case 7:
+            case 5:
               if (!(attributes.ownerID && attributes.ownerID !== userID)) {
-                _context.next = 9;
+                _context.next = 7;
                 break;
               }
 
               throw new _HttpError2.default('The device belongs to someone else.');
 
-            case 9:
+            case 7:
               if (!(attributes.ownerID && attributes.ownerID === userID)) {
-                _context.next = 11;
+                _context.next = 9;
                 break;
               }
 
               throw new _HttpError2.default('The device is already claimed.');
 
-            case 11:
-              _context.next = 13;
+            case 9:
+              _context.next = 11;
               return _this._eventPublisher.publishAndListenForResponse({
                 context: { attributes: { ownerID: userID }, deviceID: deviceID },
                 name: _sparkProtocol.SPARK_SERVER_EVENTS.UPDATE_DEVICE_ATTRIBUTES
               });
 
-            case 13:
-              _context.next = 15;
-              return _this._deviceAttributeRepository.updateByID(deviceID, {
+            case 11:
+              return _context.abrupt('return', _this._deviceAttributeRepository.updateByID(deviceID, {
                 ownerID: userID
-              });
+              }));
 
-            case 15:
-              return _context.abrupt('return', _context.sent);
-
-            case 16:
+            case 12:
             case 'end':
               return _context.stop();
           }
@@ -139,15 +131,11 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               });
 
             case 4:
-              _context2.next = 6;
-              return _this._deviceAttributeRepository.updateByID(deviceID, {
+              return _context2.abrupt('return', _this._deviceAttributeRepository.updateByID(deviceID, {
                 ownerID: null
-              });
+              }));
 
-            case 6:
-              return _context2.abrupt('return', _context2.sent);
-
-            case 7:
+            case 5:
             case 'end':
               return _context2.stop();
           }
@@ -508,16 +496,12 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               return _this._permissionManager.checkPermissionsForEntityByID('deviceAttributes', deviceID);
 
             case 2:
-              _context11.next = 4;
-              return _this._eventPublisher.publishAndListenForResponse({
+              return _context11.abrupt('return', _this._eventPublisher.publishAndListenForResponse({
                 context: { deviceID: deviceID },
                 name: _sparkProtocol.SPARK_SERVER_EVENTS.PING_DEVICE
-              });
+              }));
 
-            case 4:
-              return _context11.abrupt('return', _context11.sent);
-
-            case 5:
+            case 3:
             case 'end':
               return _context11.stop();
           }
@@ -586,28 +570,20 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               throw new _HttpError2.default('Key error ' + _context12.t1);
 
             case 21:
-              _context12.next = 23;
-              return _this._deviceKeyRepository.updateByID(deviceID, {
+
+              _this._deviceKeyRepository.updateByID(deviceID, {
                 algorithm: algorithm,
                 deviceID: deviceID,
                 key: publicKey
               });
 
-            case 23:
-              _context12.next = 25;
-              return _this._deviceAttributeRepository.updateByID(deviceID, {
+              _this._deviceAttributeRepository.updateByID(deviceID, {
                 ownerID: userID,
                 registrar: userID
               });
+              return _context12.abrupt('return', _this.getByID(deviceID));
 
-            case 25:
-              _context12.next = 27;
-              return _this.getByID(deviceID);
-
-            case 27:
-              return _context12.abrupt('return', _context12.sent);
-
-            case 28:
+            case 24:
             case 'end':
               return _context12.stop();
           }
@@ -683,13 +659,9 @@ var DeviceManager = function DeviceManager(deviceAttributeRepository, deviceFirm
               });
 
             case 5:
-              _context14.next = 7;
-              return _this._deviceAttributeRepository.updateByID(deviceID, { name: name });
+              return _context14.abrupt('return', _this._deviceAttributeRepository.updateByID(deviceID, { name: name }));
 
-            case 7:
-              return _context14.abrupt('return', _context14.sent);
-
-            case 8:
+            case 6:
             case 'end':
               return _context14.stop();
           }

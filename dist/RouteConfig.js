@@ -116,7 +116,7 @@ exports.default = function (app, container, controllers, settings) {
         return;
       }
       app[httpVerb](route, maybe(oauth.authenticate(), !anonymous), maybe(serverSentEventsMiddleware(), serverSentEvents), injectUserMiddleware(container), maybe(filesMiddleware(allowedUploads), allowedUploads), function () {
-        var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(request, response) {
+        var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(request, response) {
           var argumentNames, values, controllerInstance, _request$body, access_token, body, functionResult, result, httpError;
 
           return _regenerator2.default.wrap(function _callee$(_context) {

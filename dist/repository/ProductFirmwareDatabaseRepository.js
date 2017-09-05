@@ -72,15 +72,11 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
-                return _this._database.insertOne(_this._collectionName, (0, _extends3.default)({}, model, {
+                return _context.abrupt('return', _this._database.insertOne(_this._collectionName, (0, _extends3.default)({}, model, {
                   updated_at: new Date()
-                }));
+                })));
 
-              case 2:
-                return _context.abrupt('return', _context.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context.stop();
             }
@@ -99,13 +95,9 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.next = 2;
-                return _this._database.remove(_this._collectionName, { _id: id });
+                return _context2.abrupt('return', _this._database.remove(_this._collectionName, { _id: id }));
 
-              case 2:
-                return _context2.abrupt('return', _context2.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context2.stop();
             }
@@ -271,17 +263,13 @@ var ProductFirmwareDatabaseRepository = function (_BaseRepository) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
-                _context8.next = 2;
-                return _this._database.findAndModify(_this._collectionName, { _id: productFirmwareID }, {
+                return _context8.abrupt('return', _this._database.findAndModify(_this._collectionName, { _id: productFirmwareID }, {
                   $set: (0, _extends3.default)({}, productFirmware, {
                     updated_at: new Date()
                   })
-                }).then(formatProductFirmwareFromDb);
+                }).then(formatProductFirmwareFromDb));
 
-              case 2:
-                return _context8.abrupt('return', _context8.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context8.stop();
             }

@@ -107,7 +107,7 @@ if (useSSL) {
   }, expressConfig);
   _https2.default.createServer(options, app).listen(NODE_PORT, onServerStartListen);
 } else {
-  _http2.default.createServer(app).listen(NODE_PORT, onServerStartListen);
+  _http2.default.createServer(app).listen(NODE_PORT, onServerStartListen).timeout = 0;
 }
 
 var addresses = (0, _arrayFlatten2.default)((0, _entries2.default)(_os2.default.networkInterfaces()).map(

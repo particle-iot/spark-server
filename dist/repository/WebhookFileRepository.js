@@ -76,7 +76,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
     var _this = this;
 
     (0, _classCallCheck3.default)(this, WebhookFileRepository);
-    this.count = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+    this.count = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
       return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -92,7 +92,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
     }));
 
     this.getAll = function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2() {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
         var userID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
         var allData;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
@@ -130,7 +130,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
       };
     }();
 
-    this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+    this.updateByID = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
       return _regenerator2.default.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
@@ -151,7 +151,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
   (0, _createClass3.default)(WebhookFileRepository, [{
     key: 'create',
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(model) {
+      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(model) {
         var id, modelToSave;
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
@@ -159,21 +159,10 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
               case 0:
                 id = (0, _uuid2.default)();
 
-              case 1:
-                _context4.next = 3;
-                return this._fileManager.hasFile(id + '.json');
-
-              case 3:
-                if (!_context4.sent) {
-                  _context4.next = 7;
-                  break;
+                while (this._fileManager.hasFile(id + '.json')) {
+                  id = (0, _uuid2.default)();
                 }
 
-                id = (0, _uuid2.default)();
-                _context4.next = 1;
-                break;
-
-              case 7:
                 modelToSave = (0, _extends3.default)({}, model, {
                   created_at: new Date(),
                   id: id
@@ -183,7 +172,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
                 this._fileManager.createFile(modelToSave.id + '.json', modelToSave);
                 return _context4.abrupt('return', modelToSave);
 
-              case 10:
+              case 5:
               case 'end':
                 return _context4.stop();
             }
@@ -200,7 +189,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
   }, {
     key: 'deleteByID',
     value: function () {
-      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(id) {
+      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(id) {
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
@@ -224,7 +213,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
   }, {
     key: 'getByID',
     value: function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(id) {
+      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(id) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
@@ -251,7 +240,7 @@ var WebhookFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0
   }, {
     key: '_getAll',
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7() {
+      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7() {
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {

@@ -28,7 +28,7 @@ var BaseRepository = function BaseRepository(database, collectionName) {
   (0, _classCallCheck3.default)(this, BaseRepository);
 
   this.count = function () {
-    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
       var _database;
 
       for (var _len = arguments.length, filters = Array(_len), _key = 0; _key < _len; _key++) {
@@ -39,13 +39,9 @@ var BaseRepository = function BaseRepository(database, collectionName) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              _context.next = 2;
-              return (_database = _this._database).count.apply(_database, [_this._collectionName].concat((0, _toConsumableArray3.default)(filters.length ? filters : [{}])));
+              return _context.abrupt('return', (_database = _this._database).count.apply(_database, [_this._collectionName].concat((0, _toConsumableArray3.default)(filters.length ? filters : [{}]))));
 
-            case 2:
-              return _context.abrupt('return', _context.sent);
-
-            case 3:
+            case 1:
             case 'end':
               return _context.stop();
           }

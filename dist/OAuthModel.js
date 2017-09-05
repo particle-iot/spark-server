@@ -34,7 +34,7 @@ var OauthModel = function OauthModel(userRepository) {
   (0, _classCallCheck3.default)(this, OauthModel);
 
   this.getAccessToken = function () {
-    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(bearerToken) {
+    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(bearerToken) {
       var user, userTokenObject;
       return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
@@ -90,18 +90,14 @@ var OauthModel = function OauthModel(userRepository) {
   };
 
   this.getUser = function () {
-    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(username, password) {
+    var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(username, password) {
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              _context2.next = 2;
-              return _this._userRepository.validateLogin(username, password);
+              return _context2.abrupt('return', _this._userRepository.validateLogin(username, password));
 
-            case 2:
-              return _context2.abrupt('return', _context2.sent);
-
-            case 3:
+            case 1:
             case 'end':
               return _context2.stop();
           }

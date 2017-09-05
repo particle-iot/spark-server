@@ -114,7 +114,7 @@ FirmwareCompilationManager.getBinaryForID = function (id) {
 };
 
 FirmwareCompilationManager.compileSource = function () {
-  var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(platformID, files) {
+  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(platformID, files) {
     var platformName, appFolder, appPath, id, binPath, makeProcess, errors, sizeInfo, date, config;
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {

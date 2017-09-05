@@ -108,7 +108,7 @@ var UsersController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _rout
   (0, _createClass3.default)(UsersController, [{
     key: 'createUser',
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(userCredentials) {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(userCredentials) {
         var isUserNameInUse;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -157,7 +157,7 @@ var UsersController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _rout
   }, {
     key: 'deleteAccessToken',
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(token) {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(token) {
         var _basicAuthParser, username, password, user;
 
         return _regenerator2.default.wrap(function _callee2$(_context2) {
@@ -193,7 +193,7 @@ var UsersController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _rout
   }, {
     key: 'getAccessTokens',
     value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
         var _basicAuthParser2, username, password, user;
 
         return _regenerator2.default.wrap(function _callee3$(_context3) {

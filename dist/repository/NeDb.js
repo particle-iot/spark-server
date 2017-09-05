@@ -75,25 +75,21 @@ var NeDb = function (_BaseMongoDb) {
     var _this = (0, _possibleConstructorReturn3.default)(this, (NeDb.__proto__ || (0, _getPrototypeOf2.default)(NeDb)).call(this));
 
     _this.count = function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(collectionName, query) {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(collectionName, query) {
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
                 return _this.__runForCollection(collectionName, function () {
-                  var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(collection) {
+                  var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(collection) {
                     return _regenerator2.default.wrap(function _callee$(_context) {
                       while (1) {
                         switch (_context.prev = _context.next) {
                           case 0:
-                            _context.next = 2;
-                            return (0, _promisify.promisify)(collection, 'count', query);
+                            return _context.abrupt('return', (0, _promisify.promisify)(collection, 'count', query));
 
-                          case 2:
-                            return _context.abrupt('return', _context.sent);
-
-                          case 3:
+                          case 1:
                           case 'end':
                             return _context.stop();
                         }
@@ -133,14 +129,13 @@ var NeDb = function (_BaseMongoDb) {
     }();
 
     _this.insertOne = function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(collectionName, entity) {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(collectionName, entity) {
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                _context4.next = 2;
-                return _this.__runForCollection(collectionName, function () {
-                  var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(collection) {
+                return _context4.abrupt('return', _this.__runForCollection(collectionName, function () {
+                  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(collection) {
                     var insertResult;
                     return _regenerator2.default.wrap(function _callee3$(_context3) {
                       while (1) {
@@ -164,12 +159,9 @@ var NeDb = function (_BaseMongoDb) {
                   return function (_x6) {
                     return _ref4.apply(this, arguments);
                   };
-                }());
+                }()));
 
-              case 2:
-                return _context4.abrupt('return', _context4.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context4.stop();
             }
@@ -183,14 +175,13 @@ var NeDb = function (_BaseMongoDb) {
     }();
 
     _this.find = function () {
-      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(collectionName, query) {
+      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(collectionName, query) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                _context6.next = 2;
-                return _this.__runForCollection(collectionName, function () {
-                  var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(collection) {
+                return _context6.abrupt('return', _this.__runForCollection(collectionName, function () {
+                  var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(collection) {
                     var page, _query$pageSize, pageSize, otherQuery, boundFunction, resultItems;
 
                     return _regenerator2.default.wrap(function _callee5$(_context5) {
@@ -221,12 +212,9 @@ var NeDb = function (_BaseMongoDb) {
                   return function (_x9) {
                     return _ref6.apply(this, arguments);
                   };
-                }());
+                }()));
 
-              case 2:
-                return _context6.abrupt('return', _context6.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context6.stop();
             }
@@ -240,14 +228,13 @@ var NeDb = function (_BaseMongoDb) {
     }();
 
     _this.findAndModify = function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(collectionName, query, updateQuery) {
+      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(collectionName, query, updateQuery) {
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
-                _context8.next = 2;
-                return _this.__runForCollection(collectionName, function () {
-                  var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(collection) {
+                return _context8.abrupt('return', _this.__runForCollection(collectionName, function () {
+                  var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(collection) {
                     var _ref9, _ref10, count, resultItem;
 
                     return _regenerator2.default.wrap(function _callee7$(_context7) {
@@ -279,12 +266,9 @@ var NeDb = function (_BaseMongoDb) {
                   return function (_x13) {
                     return _ref8.apply(this, arguments);
                   };
-                }());
+                }()));
 
-              case 2:
-                return _context8.abrupt('return', _context8.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context8.stop();
             }
@@ -298,14 +282,13 @@ var NeDb = function (_BaseMongoDb) {
     }();
 
     _this.findOne = function () {
-      var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(collectionName, query) {
+      var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(collectionName, query) {
         return _regenerator2.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
-                _context10.next = 2;
-                return _this.__runForCollection(collectionName, function () {
-                  var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(collection) {
+                return _context10.abrupt('return', _this.__runForCollection(collectionName, function () {
+                  var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(collection) {
                     var resultItem;
                     return _regenerator2.default.wrap(function _callee9$(_context9) {
                       while (1) {
@@ -329,12 +312,9 @@ var NeDb = function (_BaseMongoDb) {
                   return function (_x16) {
                     return _ref12.apply(this, arguments);
                   };
-                }());
+                }()));
 
-              case 2:
-                return _context10.abrupt('return', _context10.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context10.stop();
             }
@@ -348,25 +328,20 @@ var NeDb = function (_BaseMongoDb) {
     }();
 
     _this.remove = function () {
-      var _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(collectionName, query) {
+      var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(collectionName, query) {
         return _regenerator2.default.wrap(function _callee12$(_context12) {
           while (1) {
             switch (_context12.prev = _context12.next) {
               case 0:
-                _context12.next = 2;
-                return _this.__runForCollection(collectionName, function () {
-                  var _ref14 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(collection) {
+                return _context12.abrupt('return', _this.__runForCollection(collectionName, function () {
+                  var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(collection) {
                     return _regenerator2.default.wrap(function _callee11$(_context11) {
                       while (1) {
                         switch (_context11.prev = _context11.next) {
                           case 0:
-                            _context11.next = 2;
-                            return (0, _promisify.promisify)(collection, 'remove', query);
+                            return _context11.abrupt('return', (0, _promisify.promisify)(collection, 'remove', query));
 
-                          case 2:
-                            return _context11.abrupt('return', _context11.sent);
-
-                          case 3:
+                          case 1:
                           case 'end':
                             return _context11.stop();
                         }
@@ -377,12 +352,9 @@ var NeDb = function (_BaseMongoDb) {
                   return function (_x19) {
                     return _ref14.apply(this, arguments);
                   };
-                }());
+                }()));
 
-              case 2:
-                return _context12.abrupt('return', _context12.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context12.stop();
             }
@@ -396,7 +368,7 @@ var NeDb = function (_BaseMongoDb) {
     }();
 
     _this.__runForCollection = function () {
-      var _ref15 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee13(collectionName, callback) {
+      var _ref15 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13(collectionName, callback) {
         return _regenerator2.default.wrap(function _callee13$(_context13) {
           while (1) {
             switch (_context13.prev = _context13.next) {

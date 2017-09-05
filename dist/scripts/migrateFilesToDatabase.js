@@ -51,7 +51,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var DATABASE_TYPE = process.argv[2];
 
 var setupDatabase = function () {
-  var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -159,18 +159,14 @@ var deepDateCast = function deepDateCast(node) {
 
 var insertItem = function insertItem(database, collectionName) {
   return function () {
-    var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(item) {
+    var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(item) {
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              _context2.next = 2;
-              return database.insertOne(collectionName, item);
+              return _context2.abrupt('return', database.insertOne(collectionName, item));
 
-            case 2:
-              return _context2.abrupt('return', _context2.sent);
-
-            case 3:
+            case 1:
             case 'end':
               return _context2.stop();
           }
@@ -185,7 +181,7 @@ var insertItem = function insertItem(database, collectionName) {
 };
 
 var insertUsers = function () {
-  var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(database, users) {
+  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(database, users) {
     var userIDsMap;
     return _regenerator2.default.wrap(function _callee4$(_context4) {
       while (1) {
@@ -194,7 +190,7 @@ var insertUsers = function () {
             userIDsMap = new _map2.default();
             _context4.next = 3;
             return _promise2.default.all(users.map(deepDateCast).map(function () {
-              var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(user) {
+              var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(user) {
                 var insertedUser;
                 return _regenerator2.default.wrap(function _callee3$(_context3) {
                   while (1) {
@@ -237,7 +233,7 @@ var insertUsers = function () {
   };
 }();
 
-(0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5() {
+(0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
   var database, users, userIDsMap;
   return _regenerator2.default.wrap(function _callee5$(_context5) {
     while (1) {

@@ -81,13 +81,9 @@ var ProductDatabaseRepository = function (_BaseRepository) {
                   product_id: _context.t7
                 };
                 _context.t9 = (0, _context.t2)(_context.t3, _context.t4, _context.t8);
-                _context.next = 16;
-                return _context.t0.insertOne.call(_context.t0, _context.t1, _context.t9);
+                return _context.abrupt('return', _context.t0.insertOne.call(_context.t0, _context.t1, _context.t9));
 
-              case 16:
-                return _context.abrupt('return', _context.sent);
-
-              case 17:
+              case 15:
               case 'end':
                 return _context.stop();
             }
@@ -106,13 +102,9 @@ var ProductDatabaseRepository = function (_BaseRepository) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.next = 2;
-                return _this._database.remove(_this._collectionName, { _id: id });
+                return _context2.abrupt('return', _this._database.remove(_this._collectionName, { _id: id }));
 
-              case 2:
-                return _context2.abrupt('return', _context2.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context2.stop();
             }
@@ -135,13 +127,9 @@ var ProductDatabaseRepository = function (_BaseRepository) {
               case 0:
                 // TODO - this should probably just query the organization
                 query = userID ? { ownerID: userID } : {};
-                _context3.next = 3;
-                return _this._database.find(_this._collectionName, query);
+                return _context3.abrupt('return', _this._database.find(_this._collectionName, query));
 
-              case 3:
-                return _context3.abrupt('return', _context3.sent);
-
-              case 4:
+              case 2:
               case 'end':
                 return _context3.stop();
             }
@@ -160,13 +148,9 @@ var ProductDatabaseRepository = function (_BaseRepository) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                _context4.next = 2;
-                return _this._database.findOne(_this._collectionName, { _id: id });
+                return _context4.abrupt('return', _this._database.findOne(_this._collectionName, { _id: id }));
 
-              case 2:
-                return _context4.abrupt('return', _context4.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context4.stop();
             }
@@ -185,17 +169,13 @@ var ProductDatabaseRepository = function (_BaseRepository) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                _context5.next = 2;
-                return _this._database.findOne(_this._collectionName, {
+                return _context5.abrupt('return', _this._database.findOne(_this._collectionName, {
                   $or: [{
                     product_id: !isNaN(productIDOrSlug) ? parseInt(productIDOrSlug, 10) : null
                   }, { slug: productIDOrSlug }]
-                });
+                }));
 
-              case 2:
-                return _context5.abrupt('return', _context5.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context5.stop();
             }
@@ -228,13 +208,9 @@ var ProductDatabaseRepository = function (_BaseRepository) {
                 _context6.t7 = {
                   $set: _context6.t6
                 };
-                _context6.next = 12;
-                return _context6.t0.findAndModify.call(_context6.t0, _context6.t1, _context6.t2, _context6.t7);
+                return _context6.abrupt('return', _context6.t0.findAndModify.call(_context6.t0, _context6.t1, _context6.t2, _context6.t7));
 
-              case 12:
-                return _context6.abrupt('return', _context6.sent);
-
-              case 13:
+              case 11:
               case 'end':
                 return _context6.stop();
             }

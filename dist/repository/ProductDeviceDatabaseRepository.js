@@ -55,18 +55,14 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
     _this._collectionName = _collectionNames2.default.PRODUCT_DEVICES;
 
     _this.create = function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(model) {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(model) {
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
-                return _this._database.insertOne(_this._collectionName, (0, _extends3.default)({}, model));
+                return _context.abrupt('return', _this._database.insertOne(_this._collectionName, (0, _extends3.default)({}, model)));
 
-              case 2:
-                return _context.abrupt('return', _context.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context.stop();
             }
@@ -80,18 +76,14 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
     }();
 
     _this.deleteByID = function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(id) {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(id) {
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.next = 2;
-                return _this._database.remove(_this._collectionName, { _id: id });
+                return _context2.abrupt('return', _this._database.remove(_this._collectionName, { _id: id }));
 
-              case 2:
-                return _context2.abrupt('return', _context2.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context2.stop();
             }
@@ -105,7 +97,7 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
     }();
 
     _this.getAll = function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
         var userID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
         var query;
         return _regenerator2.default.wrap(function _callee3$(_context3) {
@@ -114,13 +106,9 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
               case 0:
                 // TODO - this should probably just query the organization
                 query = userID ? { ownerID: userID } : {};
-                _context3.next = 3;
-                return _this._database.find(_this._collectionName, query);
+                return _context3.abrupt('return', _this._database.find(_this._collectionName, query));
 
-              case 3:
-                return _context3.abrupt('return', _context3.sent);
-
-              case 4:
+              case 2:
               case 'end':
                 return _context3.stop();
             }
@@ -134,22 +122,18 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
     }();
 
     _this.getAllByProductID = function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(productID, page, pageSize) {
+      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(productID, page, pageSize) {
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                _context4.next = 2;
-                return _this._database.find(_this._collectionName, {
+                return _context4.abrupt('return', _this._database.find(_this._collectionName, {
                   page: page,
                   pageSize: pageSize,
                   productID: productID
-                });
+                }));
 
-              case 2:
-                return _context4.abrupt('return', _context4.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context4.stop();
             }
@@ -163,18 +147,14 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
     }();
 
     _this.getByID = function () {
-      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(id) {
+      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(id) {
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                _context5.next = 2;
-                return _this._database.findOne(_this._collectionName, { _id: id });
+                return _context5.abrupt('return', _this._database.findOne(_this._collectionName, { _id: id }));
 
-              case 2:
-                return _context5.abrupt('return', _context5.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context5.stop();
             }
@@ -188,20 +168,16 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
     }();
 
     _this.getFromDeviceID = function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(deviceID) {
+      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(deviceID) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                _context6.next = 2;
-                return _this._database.findOne(_this._collectionName, {
+                return _context6.abrupt('return', _this._database.findOne(_this._collectionName, {
                   deviceID: deviceID
-                });
+                }));
 
-              case 2:
-                return _context6.abrupt('return', _context6.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context6.stop();
             }
@@ -215,20 +191,16 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
     }();
 
     _this.getManyFromDeviceIDs = function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(deviceIDs) {
+      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(deviceIDs) {
         return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
-                _context7.next = 2;
-                return _this._database.find(_this._collectionName, {
+                return _context7.abrupt('return', _this._database.find(_this._collectionName, {
                   deviceID: { $in: deviceIDs }
-                });
+                }));
 
-              case 2:
-                return _context7.abrupt('return', _context7.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context7.stop();
             }
@@ -241,7 +213,7 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
       };
     }();
 
-    _this.updateByID = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8() {
+    _this.updateByID = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8() {
       return _regenerator2.default.wrap(function _callee8$(_context8) {
         while (1) {
           switch (_context8.prev = _context8.next) {
@@ -257,18 +229,14 @@ var ProductDeviceDatabaseRepository = function (_BaseRepository) {
     }));
 
     _this.updateByID = function () {
-      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(productDeviceID, productDevice) {
+      var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(productDeviceID, productDevice) {
         return _regenerator2.default.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
-                _context9.next = 2;
-                return _this._database.findAndModify(_this._collectionName, { _id: productDeviceID }, { $set: (0, _extends3.default)({}, productDevice) });
+                return _context9.abrupt('return', _this._database.findAndModify(_this._collectionName, { _id: productDeviceID }, { $set: (0, _extends3.default)({}, productDevice) }));
 
-              case 2:
-                return _context9.abrupt('return', _context9.sent);
-
-              case 3:
+              case 1:
               case 'end':
                 return _context9.stop();
             }

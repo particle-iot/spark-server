@@ -74,13 +74,9 @@ var MongoDb = function (_BaseMongoDb) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              _context.next = 2;
-              return _this._init(url, options);
+              return _context.abrupt('return', _this._init(url, options));
 
-            case 2:
-              return _context.abrupt('return', _context.sent);
-
-            case 3:
+            case 1:
             case 'end':
               return _context.stop();
           }
@@ -113,15 +109,11 @@ var _initialiseProps = function _initialiseProps() {
                     while (1) {
                       switch (_context2.prev = _context2.next) {
                         case 0:
-                          _context2.next = 2;
-                          return collection.count(_this3.__translateQuery(query), {
+                          return _context2.abrupt('return', collection.count(_this3.__translateQuery(query), {
                             timeout: false
-                          });
+                          }));
 
-                        case 2:
-                          return _context2.abrupt('return', _context2.sent);
-
-                        case 3:
+                        case 1:
                         case 'end':
                           return _context2.stop();
                       }
@@ -166,8 +158,7 @@ var _initialiseProps = function _initialiseProps() {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              _context5.next = 2;
-              return _this3.__runForCollection(collectionName, function () {
+              return _context5.abrupt('return', _this3.__runForCollection(collectionName, function () {
                 var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(collection) {
                   var insertResult;
                   return _regenerator2.default.wrap(function _callee4$(_context4) {
@@ -192,12 +183,9 @@ var _initialiseProps = function _initialiseProps() {
                 return function (_x7) {
                   return _ref5.apply(this, arguments);
                 };
-              }());
+              }()));
 
-            case 2:
-              return _context5.abrupt('return', _context5.sent);
-
-            case 3:
+            case 1:
             case 'end':
               return _context5.stop();
           }
@@ -216,8 +204,7 @@ var _initialiseProps = function _initialiseProps() {
         while (1) {
           switch (_context7.prev = _context7.next) {
             case 0:
-              _context7.next = 2;
-              return _this3.__runForCollection(collectionName, function () {
+              return _context7.abrupt('return', _this3.__runForCollection(collectionName, function () {
                 var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(collection) {
                   var page, _query$pageSize, pageSize, otherQuery, result, resultItems;
 
@@ -253,12 +240,9 @@ var _initialiseProps = function _initialiseProps() {
                 return function (_x10) {
                   return _ref7.apply(this, arguments);
                 };
-              }());
+              }()));
 
-            case 2:
-              return _context7.abrupt('return', _context7.sent);
-
-            case 3:
+            case 1:
             case 'end':
               return _context7.stop();
           }
@@ -277,8 +261,7 @@ var _initialiseProps = function _initialiseProps() {
         while (1) {
           switch (_context9.prev = _context9.next) {
             case 0:
-              _context9.next = 2;
-              return _this3.__runForCollection(collectionName, function () {
+              return _context9.abrupt('return', _this3.__runForCollection(collectionName, function () {
                 var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(collection) {
                   var modifyResult;
                   return _regenerator2.default.wrap(function _callee8$(_context8) {
@@ -303,12 +286,9 @@ var _initialiseProps = function _initialiseProps() {
                 return function (_x14) {
                   return _ref9.apply(this, arguments);
                 };
-              }());
+              }()));
 
-            case 2:
-              return _context9.abrupt('return', _context9.sent);
-
-            case 3:
+            case 1:
             case 'end':
               return _context9.stop();
           }
@@ -327,8 +307,7 @@ var _initialiseProps = function _initialiseProps() {
         while (1) {
           switch (_context11.prev = _context11.next) {
             case 0:
-              _context11.next = 2;
-              return _this3.__runForCollection(collectionName, function () {
+              return _context11.abrupt('return', _this3.__runForCollection(collectionName, function () {
                 var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(collection) {
                   var resultItem;
                   return _regenerator2.default.wrap(function _callee10$(_context10) {
@@ -353,12 +332,9 @@ var _initialiseProps = function _initialiseProps() {
                 return function (_x17) {
                   return _ref11.apply(this, arguments);
                 };
-              }());
+              }()));
 
-            case 2:
-              return _context11.abrupt('return', _context11.sent);
-
-            case 3:
+            case 1:
             case 'end':
               return _context11.stop();
           }
@@ -377,20 +353,15 @@ var _initialiseProps = function _initialiseProps() {
         while (1) {
           switch (_context13.prev = _context13.next) {
             case 0:
-              _context13.next = 2;
-              return _this3.__runForCollection(collectionName, function () {
+              return _context13.abrupt('return', _this3.__runForCollection(collectionName, function () {
                 var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(collection) {
                   return _regenerator2.default.wrap(function _callee12$(_context12) {
                     while (1) {
                       switch (_context12.prev = _context12.next) {
                         case 0:
-                          _context12.next = 2;
-                          return collection.remove(_this3.__translateQuery(query));
+                          return _context12.abrupt('return', collection.remove(_this3.__translateQuery(query)));
 
-                        case 2:
-                          return _context12.abrupt('return', _context12.sent);
-
-                        case 3:
+                        case 1:
                         case 'end':
                           return _context12.stop();
                       }
@@ -401,12 +372,9 @@ var _initialiseProps = function _initialiseProps() {
                 return function (_x20) {
                   return _ref13.apply(this, arguments);
                 };
-              }());
+              }()));
 
-            case 2:
-              return _context13.abrupt('return', _context13.sent);
-
-            case 3:
+            case 1:
             case 'end':
               return _context13.stop();
           }
