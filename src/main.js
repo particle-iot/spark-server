@@ -65,7 +65,9 @@ if (useSSL) {
     .createServer(options, (app: any))
     .listen(NODE_PORT, onServerStartListen);
 } else {
-  http.createServer((app: any)).listen(NODE_PORT, onServerStartListen);
+  http
+    .createServer((app: any))
+    .listen(NODE_PORT, onServerStartListen).timeout = 0;
 }
 
 const addresses = arrayFlatten(
@@ -73,9 +75,9 @@ const addresses = arrayFlatten(
     // eslint-disable-next-line no-unused-vars
     ([name, nic]: [string, mixed]): Array<string> =>
       (nic: any)
-       .filter((address: Object): boolean =>
-          address.family === 'IPv4' &&
-          address.address !== '127.0.0.1',
+        .filter(
+          (address: Object): boolean =>
+            address.family === 'IPv4' && address.address !== '127.0.0.1',
         )
         .map((address: Object): boolean => address.address),
   ),
