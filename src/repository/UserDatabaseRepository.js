@@ -10,22 +10,24 @@ import type {
   UserRole,
 } from '../types';
 
+import BaseRepository from './BaseRepository';
 import COLLECTION_NAMES from './collectionNames';
 import PasswordHasher from '../lib/PasswordHasher';
 import HttpError from '../lib/HttpError';
 
-class UserDatabaseRepository implements IUserRepository {
+class UserDatabaseRepository extends BaseRepository implements IUserRepository {
   _database: IBaseDatabase;
   _collectionName: CollectionName = COLLECTION_NAMES.USERS;
   _currentUser: User;
 
   constructor(database: IBaseDatabase) {
+    super(database, COLLECTION_NAMES.USERS);
     this._database = database;
   }
 
   // eslint-disable-next-line no-unused-vars
   create = async (user: $Shape<User>): Promise<User> =>
-    await this._database.insertOne(this._collectionName, user);
+    this._database.insertOne(this._collectionName, user);
 
   createWithCredentials = async (
     userCredentials: UserCredentials,
@@ -44,21 +46,21 @@ class UserDatabaseRepository implements IUserRepository {
       username,
     };
 
-    return await this._database.insertOne(this._collectionName, modelToSave);
+    return this._database.insertOne(this._collectionName, modelToSave);
   };
 
   deleteAccessToken = async (
     userID: string,
     accessToken: string,
   ): Promise<User> =>
-    await this._database.findAndModify(
+    this._database.findAndModify(
       this._collectionName,
       { _id: userID },
       { $pull: { accessTokens: { accessToken } } },
     );
 
   deleteByID = async (id: string): Promise<void> =>
-    await this._database.remove(this._collectionName, { _id: id });
+    this._database.remove(this._collectionName, { _id: id });
 
   getAll = async (): Promise<Array<User>> => {
     throw new Error('The method is not implemented');
@@ -85,7 +87,7 @@ class UserDatabaseRepository implements IUserRepository {
   };
 
   getByUsername = async (username: string): Promise<?User> =>
-    await this._database.findOne(this._collectionName, { username });
+    this._database.findOne(this._collectionName, { username });
 
   getCurrentUser = (): User => this._currentUser;
 
@@ -96,7 +98,7 @@ class UserDatabaseRepository implements IUserRepository {
     userID: string,
     tokenObject: TokenObject,
   ): Promise<*> =>
-    await this._database.findAndModify(
+    this._database.findAndModify(
       this._collectionName,
       { _id: userID },
       { $push: { accessTokens: tokenObject } },
@@ -107,7 +109,7 @@ class UserDatabaseRepository implements IUserRepository {
   };
 
   updateByID = async (id: string, props: $Shape<User>): Promise<User> =>
-    await this._database.findAndModify(
+    this._database.findAndModify(
       this._collectionName,
       { _id: id },
       { $set: { ...props } },

@@ -101,7 +101,7 @@ test.before(async () => {
     .send(USER_CREDENTIALS);
 
   testUser = await container
-    .constitute('UserRepository')
+    .constitute('IUserRepository')
     .getByUsername(USER_CREDENTIALS.username);
 
   const tokenResponse = await request(app)
@@ -260,7 +260,7 @@ test.serial(
   'should throw an error if device belongs to somebody else',
   async t => {
     const deviceAttributesStub = sinon
-      .stub(container.constitute('DeviceAttributeRepository'), 'getByID')
+      .stub(container.constitute('IDeviceAttributeRepository'), 'getByID')
       .returns({ ownerID: TestData.getID() });
 
     const claimDeviceResponse = await request(app)
@@ -375,7 +375,7 @@ test.serial(
     const knownAppBuffer = new Buffer(knownAppName);
 
     const deviceFirmwareStub = sinon
-      .stub(container.constitute('DeviceFirmwareRepository'), 'getByName')
+      .stub(container.constitute('IDeviceFirmwareRepository'), 'getByName')
       .returns(knownAppBuffer);
 
     const flashKnownAppResponse = await request(app)
@@ -457,17 +457,17 @@ test.serial(
 
 test.after.always(async (): Promise<void> => {
   await TestData.deleteCustomFirmwareBinary(customFirmwareFilePath);
-  await container.constitute('UserRepository').deleteByID(testUser.id);
+  await container.constitute('IUserRepository').deleteByID(testUser.id);
   await container
-    .constitute('DeviceAttributeRepository')
+    .constitute('IDeviceAttributeRepository')
     .deleteByID(CONNECTED_DEVICE_ID);
   await container
-    .constitute('DeviceKeyRepository')
+    .constitute('IDeviceKeyRepository')
     .deleteByID(CONNECTED_DEVICE_ID);
   await container
-    .constitute('DeviceAttributeRepository')
+    .constitute('IDeviceAttributeRepository')
     .deleteByID(DISCONNECTED_DEVICE_ID);
   await container
-    .constitute('DeviceKeyRepository')
+    .constitute('IDeviceKeyRepository')
     .deleteByID(DISCONNECTED_DEVICE_ID);
 });

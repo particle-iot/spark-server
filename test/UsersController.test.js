@@ -18,7 +18,7 @@ test.serial('should create new user', async t => {
   const response = await request(app).post('/v1/users').send(USER_CREDENTIALS);
 
   user = await container
-    .constitute('UserRepository')
+    .constitute('IUserRepository')
     .getByUsername(USER_CREDENTIALS.username);
 
   t.is(response.status, 200);
@@ -82,5 +82,5 @@ test.serial('should delete the access token for the user', async t => {
 });
 
 test.after.always(async (): Promise<void> => {
-  await container.constitute('UserRepository').deleteByID(user.id);
+  await container.constitute('IUserRepository').deleteByID(user.id);
 });

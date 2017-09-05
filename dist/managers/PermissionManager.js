@@ -42,7 +42,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var logger = _logger2.default.createModuleLogger(module);
 
-var PermissionManager = function PermissionManager(deviceAttributeRepository, userRepository, webhookRepository, oauthServer) {
+var PermissionManager = function PermissionManager(deviceAttributeRepository, organizationRepository, userRepository, webhookRepository, oauthServer) {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, PermissionManager);
@@ -230,7 +230,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
     }, _callee5, _this);
   }));
   this._init = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6() {
-    var defaultAdminUser;
+    var defaultAdminUser, organizations;
     return _regenerator2.default.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
@@ -247,7 +247,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
             }
 
             logger.info({ token: defaultAdminUser.accessTokens[0].accessToken }, 'Default Admin token');
-            _context6.next = 9;
+            _context6.next = 12;
             break;
 
           case 7:
@@ -255,6 +255,31 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
             return _this._createDefaultAdminUser();
 
           case 9:
+            _context6.next = 11;
+            return _this._userRepository.getByUsername(_settings2.default.DEFAULT_ADMIN_USERNAME);
+
+          case 11:
+            defaultAdminUser = _context6.sent;
+
+          case 12:
+            _context6.next = 14;
+            return _this._organizationRepository.getAll();
+
+          case 14:
+            organizations = _context6.sent;
+
+            if (!(!organizations.length && defaultAdminUser)) {
+              _context6.next = 18;
+              break;
+            }
+
+            _context6.next = 18;
+            return _this._organizationRepository.create({
+              name: 'DEFAULT ORG',
+              user_ids: [defaultAdminUser.id]
+            });
+
+          case 18:
           case 'end':
             return _context6.stop();
         }
@@ -262,6 +287,7 @@ var PermissionManager = function PermissionManager(deviceAttributeRepository, us
     }, _callee6, _this);
   }));
 
+  this._organizationRepository = organizationRepository;
   this._userRepository = userRepository;
   this._repositoriesByEntityName.set('deviceAttributes', deviceAttributeRepository);
   this._repositoriesByEntityName.set('webhook', webhookRepository);

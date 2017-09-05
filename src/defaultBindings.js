@@ -23,6 +23,11 @@ import DeviceFirmwareFileRepository from './repository/DeviceFirmwareFileReposit
 import NeDb from './repository/NeDb';
 import DeviceAttributeDatabaseRepository from './repository/DeviceAttributeDatabaseRepository';
 import DeviceKeyDatabaseRepository from './repository/DeviceKeyDatabaseRepository';
+import OrganizationDatabaseRepository from './repository/OrganizationDatabaseRepository';
+import ProductDatabaseRepository from './repository/ProductDatabaseRepository';
+import ProductConfigDatabaseRepository from './repository/ProductConfigDatabaseRepository';
+import ProductDeviceDatabaseRepository from './repository/ProductDeviceDatabaseRepository';
+import ProductFirmwareDatabaseRepository from './repository/ProductFirmwareDatabaseRepository';
 import UserDatabaseRepository from './repository/UserDatabaseRepository';
 import WebhookDatabaseRepository from './repository/WebhookDatabaseRepository';
 import settings from './settings';
@@ -54,11 +59,11 @@ export default (container: Container, newSettings: Settings) => {
     ['OAuthModel'],
   );
 
-  container.bindClass('OAuthModel', OAuthModel, ['UserRepository']);
+  container.bindClass('OAuthModel', OAuthModel, ['IUserRepository']);
 
   container.bindClass('OAuthServer', OAuthServer, ['OAUTH_SETTINGS']);
 
-  container.bindClass('Database', NeDb, ['DATABASE_PATH']);
+  container.bindClass('IDatabase', NeDb, ['DATABASE_PATH']);
 
   // lib
   container.bindClass('WebhookLogger', WebhookLogger, []);
@@ -73,26 +78,35 @@ export default (container: Container, newSettings: Settings) => {
   ]);
   container.bindClass('EventsController', EventsController, ['EventManager']);
   container.bindClass('PermissionManager', PermissionManager, [
-    'DeviceAttributeRepository',
-    'UserRepository',
-    'WebhookRepository',
+    'IDeviceAttributeRepository',
+    'IOrganizationRepository',
+    'IUserRepository',
+    'IWebhookRepository',
     'OAuthServer',
   ]);
   container.bindClass('OauthClientsController', OauthClientsController, []);
-  container.bindClass('ProductsController', ProductsController, []);
+  container.bindClass('ProductsController', ProductsController, [
+    'DeviceManager',
+    'IDeviceAttributeRepository',
+    'IOrganizationRepository',
+    'IProductRepository',
+    'IProductConfigRepository',
+    'IProductDeviceRepository',
+    'IProductFirmwareRepository',
+  ]);
   container.bindClass('ProvisioningController', ProvisioningController, [
     'DeviceManager',
   ]);
-  container.bindClass('UsersController', UsersController, ['UserRepository']);
+  container.bindClass('UsersController', UsersController, ['IUserRepository']);
   container.bindClass('WebhooksController', WebhooksController, [
     'WebhookManager',
   ]);
 
   // managers
   container.bindClass('DeviceManager', DeviceManager, [
-    'DeviceAttributeRepository',
-    'DeviceFirmwareRepository',
-    'DeviceKeyRepository',
+    'IDeviceAttributeRepository',
+    'IDeviceFirmwareRepository',
+    'IDeviceKeyRepository',
     'PermissionManager',
     'EventPublisher',
   ]);
@@ -101,25 +115,49 @@ export default (container: Container, newSettings: Settings) => {
     'EventPublisher',
     'PermissionManager',
     'WebhookLogger',
-    'WebhookRepository',
+    'IWebhookRepository',
   ]);
 
   // Repositories
   container.bindClass(
-    'DeviceAttributeRepository',
+    'IDeviceAttributeRepository',
     DeviceAttributeDatabaseRepository,
-    ['Database'],
+    ['IDatabase'],
   );
   container.bindClass(
-    'DeviceFirmwareRepository',
+    'IDeviceFirmwareRepository',
     DeviceFirmwareFileRepository,
     ['FIRMWARE_DIRECTORY'],
   );
-  container.bindClass('DeviceKeyRepository', DeviceKeyDatabaseRepository, [
-    'Database',
+  container.bindClass('IDeviceKeyRepository', DeviceKeyDatabaseRepository, [
+    'IDatabase',
   ]);
-  container.bindClass('UserRepository', UserDatabaseRepository, ['Database']);
-  container.bindClass('WebhookRepository', WebhookDatabaseRepository, [
-    'Database',
+  container.bindClass(
+    'IOrganizationRepository',
+    OrganizationDatabaseRepository,
+    ['IDatabase'],
+  );
+  container.bindClass('IProductRepository', ProductDatabaseRepository, [
+    'IDatabase',
+  ]);
+  container.bindClass(
+    'IProductConfigRepository',
+    ProductConfigDatabaseRepository,
+    ['IDatabase'],
+  );
+  container.bindClass(
+    'IProductDeviceRepository',
+    ProductDeviceDatabaseRepository,
+    ['IDatabase'],
+  );
+  container.bindClass(
+    'IProductFirmwareRepository',
+    ProductFirmwareDatabaseRepository,
+    ['IDatabase'],
+  );
+
+  container.bindClass('IUserRepository', UserDatabaseRepository, ['IDatabase']);
+  container.bindClass('IWebhookRepository', WebhookDatabaseRepository, [
+    'IDatabase',
   ]);
 };

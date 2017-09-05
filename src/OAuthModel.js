@@ -41,7 +41,7 @@ class OauthModel {
     );
 
   getUser = async (username: string, password: string): Promise<User> =>
-    await this._userRepository.validateLogin(username, password);
+    this._userRepository.validateLogin(username, password);
 
   saveToken = (
     tokenObject: TokenObject,

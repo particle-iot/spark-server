@@ -86,6 +86,26 @@ var _DeviceKeyDatabaseRepository = require('./repository/DeviceKeyDatabaseReposi
 
 var _DeviceKeyDatabaseRepository2 = _interopRequireDefault(_DeviceKeyDatabaseRepository);
 
+var _OrganizationDatabaseRepository = require('./repository/OrganizationDatabaseRepository');
+
+var _OrganizationDatabaseRepository2 = _interopRequireDefault(_OrganizationDatabaseRepository);
+
+var _ProductDatabaseRepository = require('./repository/ProductDatabaseRepository');
+
+var _ProductDatabaseRepository2 = _interopRequireDefault(_ProductDatabaseRepository);
+
+var _ProductConfigDatabaseRepository = require('./repository/ProductConfigDatabaseRepository');
+
+var _ProductConfigDatabaseRepository2 = _interopRequireDefault(_ProductConfigDatabaseRepository);
+
+var _ProductDeviceDatabaseRepository = require('./repository/ProductDeviceDatabaseRepository');
+
+var _ProductDeviceDatabaseRepository2 = _interopRequireDefault(_ProductDeviceDatabaseRepository);
+
+var _ProductFirmwareDatabaseRepository = require('./repository/ProductFirmwareDatabaseRepository');
+
+var _ProductFirmwareDatabaseRepository2 = _interopRequireDefault(_ProductFirmwareDatabaseRepository);
+
 var _UserDatabaseRepository = require('./repository/UserDatabaseRepository');
 
 var _UserDatabaseRepository2 = _interopRequireDefault(_UserDatabaseRepository);
@@ -125,11 +145,11 @@ exports.default = function (container, newSettings) {
     };
   }, ['OAuthModel']);
 
-  container.bindClass('OAuthModel', _OAuthModel2.default, ['UserRepository']);
+  container.bindClass('OAuthModel', _OAuthModel2.default, ['IUserRepository']);
 
   container.bindClass('OAuthServer', _expressOauthServer2.default, ['OAUTH_SETTINGS']);
 
-  container.bindClass('Database', _NeDb2.default, ['DATABASE_PATH']);
+  container.bindClass('IDatabase', _NeDb2.default, ['DATABASE_PATH']);
 
   // lib
   container.bindClass('WebhookLogger', _WebhookLogger2.default, []);
@@ -138,22 +158,28 @@ exports.default = function (container, newSettings) {
   container.bindClass('DeviceClaimsController', _DeviceClaimsController2.default, ['DeviceManager', 'ClaimCodeManager']);
   container.bindClass('DevicesController', _DevicesController2.default, ['DeviceManager']);
   container.bindClass('EventsController', _EventsController2.default, ['EventManager']);
-  container.bindClass('PermissionManager', _PermissionManager2.default, ['DeviceAttributeRepository', 'UserRepository', 'WebhookRepository', 'OAuthServer']);
+  container.bindClass('PermissionManager', _PermissionManager2.default, ['IDeviceAttributeRepository', 'IOrganizationRepository', 'IUserRepository', 'IWebhookRepository', 'OAuthServer']);
   container.bindClass('OauthClientsController', _OauthClientsController2.default, []);
-  container.bindClass('ProductsController', _ProductsController2.default, []);
+  container.bindClass('ProductsController', _ProductsController2.default, ['DeviceManager', 'IDeviceAttributeRepository', 'IOrganizationRepository', 'IProductRepository', 'IProductConfigRepository', 'IProductDeviceRepository', 'IProductFirmwareRepository']);
   container.bindClass('ProvisioningController', _ProvisioningController2.default, ['DeviceManager']);
-  container.bindClass('UsersController', _UsersController2.default, ['UserRepository']);
+  container.bindClass('UsersController', _UsersController2.default, ['IUserRepository']);
   container.bindClass('WebhooksController', _WebhooksController2.default, ['WebhookManager']);
 
   // managers
-  container.bindClass('DeviceManager', _DeviceManager2.default, ['DeviceAttributeRepository', 'DeviceFirmwareRepository', 'DeviceKeyRepository', 'PermissionManager', 'EventPublisher']);
+  container.bindClass('DeviceManager', _DeviceManager2.default, ['IDeviceAttributeRepository', 'IDeviceFirmwareRepository', 'IDeviceKeyRepository', 'PermissionManager', 'EventPublisher']);
   container.bindClass('EventManager', _EventManager2.default, ['EventPublisher']);
-  container.bindClass('WebhookManager', _WebhookManager2.default, ['EventPublisher', 'PermissionManager', 'WebhookLogger', 'WebhookRepository']);
+  container.bindClass('WebhookManager', _WebhookManager2.default, ['EventPublisher', 'PermissionManager', 'WebhookLogger', 'IWebhookRepository']);
 
   // Repositories
-  container.bindClass('DeviceAttributeRepository', _DeviceAttributeDatabaseRepository2.default, ['Database']);
-  container.bindClass('DeviceFirmwareRepository', _DeviceFirmwareFileRepository2.default, ['FIRMWARE_DIRECTORY']);
-  container.bindClass('DeviceKeyRepository', _DeviceKeyDatabaseRepository2.default, ['Database']);
-  container.bindClass('UserRepository', _UserDatabaseRepository2.default, ['Database']);
-  container.bindClass('WebhookRepository', _WebhookDatabaseRepository2.default, ['Database']);
+  container.bindClass('IDeviceAttributeRepository', _DeviceAttributeDatabaseRepository2.default, ['IDatabase']);
+  container.bindClass('IDeviceFirmwareRepository', _DeviceFirmwareFileRepository2.default, ['FIRMWARE_DIRECTORY']);
+  container.bindClass('IDeviceKeyRepository', _DeviceKeyDatabaseRepository2.default, ['IDatabase']);
+  container.bindClass('IOrganizationRepository', _OrganizationDatabaseRepository2.default, ['IDatabase']);
+  container.bindClass('IProductRepository', _ProductDatabaseRepository2.default, ['IDatabase']);
+  container.bindClass('IProductConfigRepository', _ProductConfigDatabaseRepository2.default, ['IDatabase']);
+  container.bindClass('IProductDeviceRepository', _ProductDeviceDatabaseRepository2.default, ['IDatabase']);
+  container.bindClass('IProductFirmwareRepository', _ProductFirmwareDatabaseRepository2.default, ['IDatabase']);
+
+  container.bindClass('IUserRepository', _UserDatabaseRepository2.default, ['IDatabase']);
+  container.bindClass('IWebhookRepository', _WebhookDatabaseRepository2.default, ['IDatabase']);
 };

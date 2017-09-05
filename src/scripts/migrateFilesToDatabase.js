@@ -91,7 +91,7 @@ const insertItem = (
   database: Object,
   collectionName: string,
 ): ((item: Object) => Promise<void>) => async (item: Object): Promise<void> =>
-  await database.insertOne(collectionName, item);
+  database.insertOne(collectionName, item);
 
 const insertUsers = async (
   database: Object,

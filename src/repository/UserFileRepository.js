@@ -21,6 +21,8 @@ class UserFileRepository implements IUserRepository {
     this._fileManager = new JSONFileManager(path);
   }
 
+  count = async (): Promise<number> => this._fileManager.count();
+
   createWithCredentials = async (
     userCredentials: UserCredentials,
     userRole: ?UserRole = null,
@@ -37,13 +39,13 @@ class UserFileRepository implements IUserRepository {
       username,
     };
 
-    return await this.create(modelToSave);
+    return this.create(modelToSave);
   };
 
   @memoizeSet()
   async create(user: $Shape<User>): Promise<User> {
     let id = uuid();
-    while (await this._fileManager.hasFile(`${id}.json`)) {
+    while (this._fileManager.hasFile(`${id}.json`)) {
       id = uuid();
     }
 
@@ -64,7 +66,7 @@ class UserFileRepository implements IUserRepository {
       throw new Error("User doesn't exist");
     }
 
-    return await this.updateByID(userID, {
+    return this.updateByID(userID, {
       accessTokens: user.accessTokens.filter(
         (tokenObject: TokenObject): boolean =>
           tokenObject.accessToken !== token,
@@ -123,7 +125,7 @@ class UserFileRepository implements IUserRepository {
       throw new HttpError('Could not find user for user ID');
     }
 
-    return await this.updateByID(userID, {
+    return this.updateByID(userID, {
       accessTokens: [...user.accessTokens, tokenObject],
     });
   };

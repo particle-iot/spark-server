@@ -84,26 +84,40 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
     var _this = this;
 
     (0, _classCallCheck3.default)(this, UserFileRepository);
+    this.count = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+      return _regenerator2.default.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              return _context.abrupt('return', _this._fileManager.count());
+
+            case 1:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, _callee, _this);
+    }));
 
     this.createWithCredentials = function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(userCredentials) {
+      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(userCredentials) {
         var userRole = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
         var username, password, salt, passwordHash, modelToSave;
-        return _regenerator2.default.wrap(function _callee$(_context) {
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 username = userCredentials.username, password = userCredentials.password;
-                _context.next = 3;
+                _context2.next = 3;
                 return _PasswordHasher2.default.generateSalt();
 
               case 3:
-                salt = _context.sent;
-                _context.next = 6;
+                salt = _context2.sent;
+                _context2.next = 6;
                 return _PasswordHasher2.default.hash(password, salt);
 
               case 6:
-                passwordHash = _context.sent;
+                passwordHash = _context2.sent;
                 modelToSave = {
                   accessTokens: [],
                   passwordHash: passwordHash,
@@ -111,57 +125,13 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
                   salt: salt,
                   username: username
                 };
-                _context.next = 10;
+                _context2.next = 10;
                 return _this.create(modelToSave);
 
               case 10:
-                return _context.abrupt('return', _context.sent);
-
-              case 11:
-              case 'end':
-                return _context.stop();
-            }
-          }
-        }, _callee, _this);
-      }));
-
-      return function (_x) {
-        return _ref.apply(this, arguments);
-      };
-    }();
-
-    this.deleteAccessToken = function () {
-      var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(userID, token) {
-        var user;
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                _context2.next = 2;
-                return _this.getByID(userID);
-
-              case 2:
-                user = _context2.sent;
-
-                if (user) {
-                  _context2.next = 5;
-                  break;
-                }
-
-                throw new Error("User doesn't exist");
-
-              case 5:
-                _context2.next = 7;
-                return _this.updateByID(userID, {
-                  accessTokens: user.accessTokens.filter(function (tokenObject) {
-                    return tokenObject.accessToken !== token;
-                  })
-                });
-
-              case 7:
                 return _context2.abrupt('return', _context2.sent);
 
-              case 8:
+              case 11:
               case 'end':
                 return _context2.stop();
             }
@@ -169,30 +139,43 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee2, _this);
       }));
 
-      return function (_x3, _x4) {
+      return function (_x) {
         return _ref2.apply(this, arguments);
       };
     }();
 
-    this.getByAccessToken = function () {
-      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(accessToken) {
+    this.deleteAccessToken = function () {
+      var _ref3 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3(userID, token) {
+        var user;
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.next = 2;
-                return _this.getAll();
+                return _this.getByID(userID);
 
               case 2:
-                _context3.t0 = function (user) {
-                  return user.accessTokens.some(function (tokenObject) {
-                    return tokenObject.accessToken === accessToken;
-                  });
-                };
+                user = _context3.sent;
 
-                return _context3.abrupt('return', _context3.sent.find(_context3.t0));
+                if (user) {
+                  _context3.next = 5;
+                  break;
+                }
 
-              case 4:
+                throw new Error("User doesn't exist");
+
+              case 5:
+                _context3.next = 7;
+                return _this.updateByID(userID, {
+                  accessTokens: user.accessTokens.filter(function (tokenObject) {
+                    return tokenObject.accessToken !== token;
+                  })
+                });
+
+              case 7:
+                return _context3.abrupt('return', _context3.sent);
+
+              case 8:
               case 'end':
                 return _context3.stop();
             }
@@ -200,8 +183,39 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee3, _this);
       }));
 
-      return function (_x5) {
+      return function (_x3, _x4) {
         return _ref3.apply(this, arguments);
+      };
+    }();
+
+    this.getByAccessToken = function () {
+      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(accessToken) {
+        return _regenerator2.default.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.next = 2;
+                return _this.getAll();
+
+              case 2:
+                _context4.t0 = function (user) {
+                  return user.accessTokens.some(function (tokenObject) {
+                    return tokenObject.accessToken === accessToken;
+                  });
+                };
+
+                return _context4.abrupt('return', _context4.sent.find(_context4.t0));
+
+              case 4:
+              case 'end':
+                return _context4.stop();
+            }
+          }
+        }, _callee4, _this);
+      }));
+
+      return function (_x5) {
+        return _ref4.apply(this, arguments);
       };
     }();
 
@@ -210,44 +224,44 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
     };
 
     this.saveAccessToken = function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(userID, tokenObject) {
+      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(userID, tokenObject) {
         var user;
-        return _regenerator2.default.wrap(function _callee4$(_context4) {
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
-                _context4.next = 2;
+                _context5.next = 2;
                 return _this.getByID(userID);
 
               case 2:
-                user = _context4.sent;
+                user = _context5.sent;
 
                 if (user) {
-                  _context4.next = 5;
+                  _context5.next = 5;
                   break;
                 }
 
                 throw new _HttpError2.default('Could not find user for user ID');
 
               case 5:
-                _context4.next = 7;
+                _context5.next = 7;
                 return _this.updateByID(userID, {
                   accessTokens: [].concat((0, _toConsumableArray3.default)(user.accessTokens), [tokenObject])
                 });
 
               case 7:
-                return _context4.abrupt('return', _context4.sent);
+                return _context5.abrupt('return', _context5.sent);
 
               case 8:
               case 'end':
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, _this);
+        }, _callee5, _this);
       }));
 
       return function (_x6, _x7) {
-        return _ref4.apply(this, arguments);
+        return _ref5.apply(this, arguments);
       };
     }();
 
@@ -256,58 +270,58 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
     };
 
     this.validateLogin = function () {
-      var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(username, password) {
+      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(username, password) {
         var user, hash;
-        return _regenerator2.default.wrap(function _callee5$(_context5) {
+        return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
-                _context5.prev = 0;
-                _context5.next = 3;
+                _context6.prev = 0;
+                _context6.next = 3;
                 return _this.getByUsername(username);
 
               case 3:
-                user = _context5.sent;
+                user = _context6.sent;
 
                 if (user) {
-                  _context5.next = 6;
+                  _context6.next = 6;
                   break;
                 }
 
                 throw new Error("User doesn't exist");
 
               case 6:
-                _context5.next = 8;
+                _context6.next = 8;
                 return _PasswordHasher2.default.hash(password, user.salt);
 
               case 8:
-                hash = _context5.sent;
+                hash = _context6.sent;
 
                 if (!(hash !== user.passwordHash)) {
-                  _context5.next = 11;
+                  _context6.next = 11;
                   break;
                 }
 
                 throw new Error('Wrong password');
 
               case 11:
-                return _context5.abrupt('return', user);
+                return _context6.abrupt('return', user);
 
               case 14:
-                _context5.prev = 14;
-                _context5.t0 = _context5['catch'](0);
-                throw _context5.t0;
+                _context6.prev = 14;
+                _context6.t0 = _context6['catch'](0);
+                throw _context6.t0;
 
               case 17:
               case 'end':
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, _this, [[0, 14]]);
+        }, _callee6, _this, [[0, 14]]);
       }));
 
       return function (_x8, _x9) {
-        return _ref5.apply(this, arguments);
+        return _ref6.apply(this, arguments);
       };
     }();
 
@@ -317,26 +331,26 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
   (0, _createClass3.default)(UserFileRepository, [{
     key: 'create',
     value: function () {
-      var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(user) {
+      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(user) {
         var id, modelToSave;
-        return _regenerator2.default.wrap(function _callee6$(_context6) {
+        return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
-            switch (_context6.prev = _context6.next) {
+            switch (_context7.prev = _context7.next) {
               case 0:
                 id = (0, _uuid2.default)();
 
               case 1:
-                _context6.next = 3;
+                _context7.next = 3;
                 return this._fileManager.hasFile(id + '.json');
 
               case 3:
-                if (!_context6.sent) {
-                  _context6.next = 7;
+                if (!_context7.sent) {
+                  _context7.next = 7;
                   break;
                 }
 
                 id = (0, _uuid2.default)();
-                _context6.next = 1;
+                _context7.next = 1;
                 break;
 
               case 7:
@@ -348,33 +362,9 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
 
 
                 this._fileManager.createFile(modelToSave.id + '.json', modelToSave);
-                return _context6.abrupt('return', modelToSave);
+                return _context7.abrupt('return', modelToSave);
 
               case 10:
-              case 'end':
-                return _context6.stop();
-            }
-          }
-        }, _callee6, this);
-      }));
-
-      function create(_x10) {
-        return _ref6.apply(this, arguments);
-      }
-
-      return create;
-    }()
-  }, {
-    key: 'deleteByID',
-    value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(id) {
-        return _regenerator2.default.wrap(function _callee7$(_context7) {
-          while (1) {
-            switch (_context7.prev = _context7.next) {
-              case 0:
-                this._fileManager.deleteFile(id + '.json');
-
-              case 1:
               case 'end':
                 return _context7.stop();
             }
@@ -382,21 +372,21 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee7, this);
       }));
 
-      function deleteByID(_x11) {
+      function create(_x10) {
         return _ref7.apply(this, arguments);
       }
 
-      return deleteByID;
+      return create;
     }()
   }, {
-    key: 'getAll',
+    key: 'deleteByID',
     value: function () {
-      var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8() {
+      var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(id) {
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
-                return _context8.abrupt('return', this._fileManager.getAllData());
+                this._fileManager.deleteFile(id + '.json');
 
               case 1:
               case 'end':
@@ -406,8 +396,32 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee8, this);
       }));
 
-      function getAll() {
+      function deleteByID(_x11) {
         return _ref8.apply(this, arguments);
+      }
+
+      return deleteByID;
+    }()
+  }, {
+    key: 'getAll',
+    value: function () {
+      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9() {
+        return _regenerator2.default.wrap(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                return _context9.abrupt('return', this._fileManager.getAllData());
+
+              case 1:
+              case 'end':
+                return _context9.stop();
+            }
+          }
+        }, _callee9, this);
+      }));
+
+      function getAll() {
+        return _ref9.apply(this, arguments);
       }
 
       return getAll;
@@ -419,46 +433,14 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
   }, {
     key: 'getByID',
     value: function () {
-      var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(id) {
-        return _regenerator2.default.wrap(function _callee9$(_context9) {
-          while (1) {
-            switch (_context9.prev = _context9.next) {
-              case 0:
-                return _context9.abrupt('return', this._fileManager.getFile(id + '.json'));
-
-              case 1:
-              case 'end':
-                return _context9.stop();
-            }
-          }
-        }, _callee9, this);
-      }));
-
-      function getByID(_x12) {
-        return _ref9.apply(this, arguments);
-      }
-
-      return getByID;
-    }()
-  }, {
-    key: 'getByUsername',
-    value: function () {
-      var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(username) {
+      var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(id) {
         return _regenerator2.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
-                _context10.next = 2;
-                return this.getAll();
+                return _context10.abrupt('return', this._fileManager.getFile(id + '.json'));
 
-              case 2:
-                _context10.t0 = function (user) {
-                  return user.username === username;
-                };
-
-                return _context10.abrupt('return', _context10.sent.find(_context10.t0));
-
-              case 4:
+              case 1:
               case 'end':
                 return _context10.stop();
             }
@@ -466,14 +448,14 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee10, this);
       }));
 
-      function getByUsername(_x13) {
+      function getByID(_x12) {
         return _ref10.apply(this, arguments);
       }
 
-      return getByUsername;
+      return getByID;
     }()
   }, {
-    key: 'isUserNameInUse',
+    key: 'getByUsername',
     value: function () {
       var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(username) {
         return _regenerator2.default.wrap(function _callee11$(_context11) {
@@ -488,7 +470,7 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
                   return user.username === username;
                 };
 
-                return _context11.abrupt('return', _context11.sent.some(_context11.t0));
+                return _context11.abrupt('return', _context11.sent.find(_context11.t0));
 
               case 4:
               case 'end':
@@ -498,33 +480,31 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee11, this);
       }));
 
-      function isUserNameInUse(_x14) {
+      function getByUsername(_x13) {
         return _ref11.apply(this, arguments);
       }
 
-      return isUserNameInUse;
+      return getByUsername;
     }()
   }, {
-    key: 'updateByID',
+    key: 'isUserNameInUse',
     value: function () {
-      var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(id, props) {
-        var user, modelToSave;
+      var _ref12 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee12(username) {
         return _regenerator2.default.wrap(function _callee12$(_context12) {
           while (1) {
             switch (_context12.prev = _context12.next) {
               case 0:
                 _context12.next = 2;
-                return this.getByID(id);
+                return this.getAll();
 
               case 2:
-                user = _context12.sent;
-                modelToSave = (0, _extends3.default)({}, user || {}, props);
+                _context12.t0 = function (user) {
+                  return user.username === username;
+                };
 
+                return _context12.abrupt('return', _context12.sent.some(_context12.t0));
 
-                this._fileManager.writeFile(id + '.json', modelToSave);
-                return _context12.abrupt('return', modelToSave);
-
-              case 6:
+              case 4:
               case 'end':
                 return _context12.stop();
             }
@@ -532,8 +512,42 @@ var UserFileRepository = (_dec = (0, _sparkProtocol.memoizeSet)(), _dec2 = (0, _
         }, _callee12, this);
       }));
 
-      function updateByID(_x15, _x16) {
+      function isUserNameInUse(_x14) {
         return _ref12.apply(this, arguments);
+      }
+
+      return isUserNameInUse;
+    }()
+  }, {
+    key: 'updateByID',
+    value: function () {
+      var _ref13 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee13(id, props) {
+        var user, modelToSave;
+        return _regenerator2.default.wrap(function _callee13$(_context13) {
+          while (1) {
+            switch (_context13.prev = _context13.next) {
+              case 0:
+                _context13.next = 2;
+                return this.getByID(id);
+
+              case 2:
+                user = _context13.sent;
+                modelToSave = (0, _extends3.default)({}, user || {}, props);
+
+
+                this._fileManager.writeFile(id + '.json', modelToSave);
+                return _context13.abrupt('return', modelToSave);
+
+              case 6:
+              case 'end':
+                return _context13.stop();
+            }
+          }
+        }, _callee13, this);
+      }));
+
+      function updateByID(_x15, _x16) {
+        return _ref13.apply(this, arguments);
       }
 
       return updateByID;

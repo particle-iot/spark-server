@@ -1,6 +1,7 @@
 // @flow
 
 import type DeviceManager from '../managers/DeviceManager';
+import type { File } from 'express';
 import type { Device } from '../types';
 import type { DeviceAPIType } from '../lib/deviceToAPI';
 
@@ -123,8 +124,9 @@ class DevicesController extends Controller {
     deviceID: string,
     postBody: {
       app_id?: string,
-      name?: string,
+      file?: File,
       file_type?: 'binary',
+      name?: string,
       signal?: '1' | '0',
     },
   ): Promise<*> {
@@ -164,16 +166,12 @@ class DevicesController extends Controller {
     }
 
     // 4 flash device with custom application
-    if (this.request.files && !(this.request.files: any).file) {
+    const file = postBody.file;
+    if (!file) {
       throw new Error('Firmware file not provided');
     }
 
-    const file = this.request.files && (this.request.files: any).file[0];
-
-    if (
-      file &&
-      (file.originalname === 'binary' || file.originalname.endsWith('.bin'))
-    ) {
+    if (file.originalname === 'binary' || file.originalname.endsWith('.bin')) {
       const flashResult = await this._deviceManager.flashBinary(deviceID, file);
 
       return this.ok({ id: deviceID, status: flashResult.status });
@@ -205,6 +203,12 @@ class DevicesController extends Controller {
       }
       throw error;
     }
+  }
+
+  @httpVerb('put')
+  @route('/v1/devices/:deviceID/ping')
+  async pingDevice(deviceID: string): Promise<*> {
+    return this.ok(await this._deviceManager.ping(deviceID));
   }
 }
 
