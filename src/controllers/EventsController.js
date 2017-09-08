@@ -62,7 +62,7 @@ class EventsController extends Controller {
     const subscriptionID = this._eventManager.subscribe(
       eventNamePrefix,
       this._pipeEvent.bind(this),
-      { userID: this.user.id },
+      ...this._getUserFilter(),
     );
 
     await this._closeStream(subscriptionID);
@@ -78,7 +78,7 @@ class EventsController extends Controller {
       this._pipeEvent.bind(this),
       {
         mydevices: true,
-        userID: this.user.id,
+        ...this._getUserFilter(),
       },
     );
 
@@ -98,7 +98,7 @@ class EventsController extends Controller {
       this._pipeEvent.bind(this),
       {
         deviceID,
-        userID: this.user.id,
+        ...this._getUserFilter(),
       },
     );
 
@@ -119,11 +119,15 @@ class EventsController extends Controller {
       isPublic: !postBody.private,
       name: postBody.name,
       ttl: postBody.ttl,
-      userID: this.user.id,
+      ...this._getUserFilter(),
     };
 
     this._eventManager.publish(eventData);
     return this.ok({ ok: true });
+  }
+
+  _getUserFilter(): Object {
+    return this.user.role === 'administrator' ? {} : { userID: this.user.id };
   }
 }
 
