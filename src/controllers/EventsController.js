@@ -12,37 +12,17 @@ import eventToApi from '../lib/eventToApi';
 import Logger from '../lib/logger';
 const logger = Logger.createModuleLogger(module);
 
+const KEEP_ALIVE_INTERVAL = 9000;
+
 class EventsController extends Controller {
   _eventManager: EventManager;
+  _keepAliveIntervalID: ?string = null;
+  _lastEventDate: Date = new Date();
 
   constructor(eventManager: EventManager) {
     super();
 
     this._eventManager = eventManager;
-  }
-
-  _closeStream(subscriptionID: string): Promise<void> {
-    return new Promise((resolve: () => void) => {
-      const closeStreamHandler = () => {
-        this._eventManager.unsubscribe(subscriptionID);
-        resolve();
-      };
-
-      this.request.on('close', closeStreamHandler);
-      this.request.on('end', closeStreamHandler);
-      this.response.on('finish', closeStreamHandler);
-      this.response.on('end', closeStreamHandler);
-    });
-  }
-
-  _pipeEvent(event: Event) {
-    try {
-      this.response.write(`event: ${event.name}\n`);
-      this.response.write(`data: ${JSON.stringify(eventToApi(event))}\n\n`);
-    } catch (error) {
-      logger.error({ err: error }, 'pipeEvents - write error');
-      throw error;
-    }
   }
 
   @httpVerb('post')
@@ -64,8 +44,9 @@ class EventsController extends Controller {
       this._pipeEvent.bind(this),
       ...this._getUserFilter(),
     );
+    const keepAliveIntervalID = this._startKeepAlive();
 
-    await this._closeStream(subscriptionID);
+    await this._closeStream(subscriptionID, keepAliveIntervalID);
     return this.ok();
   }
 
@@ -81,8 +62,9 @@ class EventsController extends Controller {
         ...this._getUserFilter(),
       },
     );
+    const keepAliveIntervalID = this._startKeepAlive();
 
-    await this._closeStream(subscriptionID);
+    await this._closeStream(subscriptionID, keepAliveIntervalID);
     return this.ok();
   }
 
@@ -101,8 +83,9 @@ class EventsController extends Controller {
         ...this._getUserFilter(),
       },
     );
+    const keepAliveIntervalID = this._startKeepAlive();
 
-    await this._closeStream(subscriptionID);
+    await this._closeStream(subscriptionID, keepAliveIntervalID);
     return this.ok();
   }
 
@@ -126,8 +109,50 @@ class EventsController extends Controller {
     return this.ok({ ok: true });
   }
 
+  _closeStream(
+    subscriptionID: string,
+    keepAliveIntervalID: Object,
+  ): Promise<void> {
+    return new Promise((resolve: () => void) => {
+      const closeStreamHandler = () => {
+        this._eventManager.unsubscribe(subscriptionID);
+        clearInterval(keepAliveIntervalID);
+        resolve();
+      };
+
+      this.request.on('close', closeStreamHandler);
+      this.request.on('end', closeStreamHandler);
+      this.response.on('finish', closeStreamHandler);
+      this.response.on('end', closeStreamHandler);
+    });
+  }
+
   _getUserFilter(): Object {
     return this.user.role === 'administrator' ? {} : { userID: this.user.id };
+  }
+
+  _startKeepAlive(): Object {
+    return setInterval(() => {
+      if (new Date() - this._lastEventDate >= KEEP_ALIVE_INTERVAL) {
+        this.response.write('\n');
+        this._updateLastEventDate();
+      }
+    }, KEEP_ALIVE_INTERVAL);
+  }
+
+  _pipeEvent(event: Event) {
+    try {
+      this.response.write(`event: ${event.name}\n`);
+      this.response.write(`data: ${JSON.stringify(eventToApi(event))}\n\n`);
+      this._updateLastEventDate();
+    } catch (error) {
+      logger.error({ err: error }, 'pipeEvents - write error');
+      throw error;
+    }
+  }
+
+  _updateLastEventDate() {
+    this._lastEventDate = new Date();
   }
 }
 
