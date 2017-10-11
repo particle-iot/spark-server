@@ -74,10 +74,6 @@ var injectUserMiddleware = function injectUserMiddleware(container) {
   };
 };
 
-// in old codebase there was _keepAlive() function in controllers , which
-// prevents of closing server-sent-events stream if there aren't events for
-// a long time, but according to the docs sse keep connection alive automatically.
-// if there will be related issues in the future, we can return _keepAlive() back.
 var serverSentEventsMiddleware = function serverSentEventsMiddleware() {
   return function (request, response, next) {
     request.socket.setNoDelay();

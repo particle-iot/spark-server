@@ -8,6 +8,18 @@ var _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-pr
 
 var _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
 
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -19,14 +31,6 @@ var _extends3 = _interopRequireDefault(_extends2);
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
-
-var _stringify = require('babel-runtime/core-js/json/stringify');
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
 
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
@@ -111,6 +115,8 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 
 var logger = _logger2.default.createModuleLogger(module);
 
+var KEEP_ALIVE_INTERVAL = 9000;
+
 var EventsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _route2.default)('/v1/ping'), _dec3 = (0, _anonymous2.default)(), _dec4 = (0, _httpVerb2.default)('get'), _dec5 = (0, _route2.default)('/v1/events/:eventNamePrefix?*'), _dec6 = (0, _serverSentEvents2.default)(), _dec7 = (0, _httpVerb2.default)('get'), _dec8 = (0, _route2.default)('/v1/devices/events/:eventNamePrefix?*'), _dec9 = (0, _serverSentEvents2.default)(), _dec10 = (0, _httpVerb2.default)('get'), _dec11 = (0, _route2.default)('/v1/devices/:deviceID/events/:eventNamePrefix?*'), _dec12 = (0, _serverSentEvents2.default)(), _dec13 = (0, _httpVerb2.default)('post'), _dec14 = (0, _route2.default)('/v1/devices/events'), (_class = function (_Controller) {
   (0, _inherits3.default)(EventsController, _Controller);
 
@@ -119,39 +125,15 @@ var EventsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _rou
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (EventsController.__proto__ || (0, _getPrototypeOf2.default)(EventsController)).call(this));
 
+    _this._keepAliveIntervalID = null;
+    _this._lastEventDate = new Date();
+
+
     _this._eventManager = eventManager;
     return _this;
   }
 
   (0, _createClass3.default)(EventsController, [{
-    key: '_closeStream',
-    value: function _closeStream(subscriptionID) {
-      var _this2 = this;
-
-      return new _promise2.default(function (resolve) {
-        var closeStreamHandler = function closeStreamHandler() {
-          _this2._eventManager.unsubscribe(subscriptionID);
-          resolve();
-        };
-
-        _this2.request.on('close', closeStreamHandler);
-        _this2.request.on('end', closeStreamHandler);
-        _this2.response.on('finish', closeStreamHandler);
-        _this2.response.on('end', closeStreamHandler);
-      });
-    }
-  }, {
-    key: '_pipeEvent',
-    value: function _pipeEvent(event) {
-      try {
-        this.response.write('event: ' + event.name + '\n');
-        this.response.write('data: ' + (0, _stringify2.default)((0, _eventToApi2.default)(event)) + '\n\n');
-      } catch (error) {
-        logger.error({ err: error }, 'pipeEvents - write error');
-        throw error;
-      }
-    }
-  }, {
     key: 'ping',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(payload) {
@@ -181,19 +163,22 @@ var EventsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _rou
     key: 'getEvents',
     value: function () {
       var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(eventNamePrefix) {
-        var subscriptionID;
+        var _eventManager;
+
+        var subscriptionID, keepAliveIntervalID;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), { userID: this.user.id });
-                _context2.next = 3;
-                return this._closeStream(subscriptionID);
-
-              case 3:
-                return _context2.abrupt('return', this.ok());
+                subscriptionID = (_eventManager = this._eventManager).subscribe.apply(_eventManager, [eventNamePrefix, this._pipeEvent.bind(this)].concat((0, _toConsumableArray3.default)(this._getUserFilter())));
+                keepAliveIntervalID = this._startKeepAlive();
+                _context2.next = 4;
+                return this._closeStream(subscriptionID, keepAliveIntervalID);
 
               case 4:
+                return _context2.abrupt('return', this.ok());
+
+              case 5:
               case 'end':
                 return _context2.stop();
             }
@@ -211,22 +196,22 @@ var EventsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _rou
     key: 'getMyEvents',
     value: function () {
       var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(eventNamePrefix) {
-        var subscriptionID;
+        var subscriptionID, keepAliveIntervalID;
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), {
-                  mydevices: true,
-                  userID: this.user.id
-                });
-                _context3.next = 3;
-                return this._closeStream(subscriptionID);
-
-              case 3:
-                return _context3.abrupt('return', this.ok());
+                subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), (0, _extends3.default)({
+                  mydevices: true
+                }, this._getUserFilter()));
+                keepAliveIntervalID = this._startKeepAlive();
+                _context3.next = 4;
+                return this._closeStream(subscriptionID, keepAliveIntervalID);
 
               case 4:
+                return _context3.abrupt('return', this.ok());
+
+              case 5:
               case 'end':
                 return _context3.stop();
             }
@@ -244,22 +229,22 @@ var EventsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _rou
     key: 'getDeviceEvents',
     value: function () {
       var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(deviceID, eventNamePrefix) {
-        var subscriptionID;
+        var subscriptionID, keepAliveIntervalID;
         return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), {
-                  deviceID: deviceID,
-                  userID: this.user.id
-                });
-                _context4.next = 3;
-                return this._closeStream(subscriptionID);
-
-              case 3:
-                return _context4.abrupt('return', this.ok());
+                subscriptionID = this._eventManager.subscribe(eventNamePrefix, this._pipeEvent.bind(this), (0, _extends3.default)({
+                  deviceID: deviceID
+                }, this._getUserFilter()));
+                keepAliveIntervalID = this._startKeepAlive();
+                _context4.next = 4;
+                return this._closeStream(subscriptionID, keepAliveIntervalID);
 
               case 4:
+                return _context4.abrupt('return', this.ok());
+
+              case 5:
               case 'end':
                 return _context4.stop();
             }
@@ -282,13 +267,12 @@ var EventsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _rou
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                eventData = {
+                eventData = (0, _extends3.default)({
                   data: postBody.data,
                   isPublic: !postBody.private,
                   name: postBody.name,
-                  ttl: postBody.ttl,
-                  userID: this.user.id
-                };
+                  ttl: postBody.ttl
+                }, this._getUserFilter());
 
 
                 this._eventManager.publish(eventData);
@@ -308,6 +292,58 @@ var EventsController = (_dec = (0, _httpVerb2.default)('post'), _dec2 = (0, _rou
 
       return publish;
     }()
+  }, {
+    key: '_closeStream',
+    value: function _closeStream(subscriptionID, keepAliveIntervalID) {
+      var _this2 = this;
+
+      return new _promise2.default(function (resolve) {
+        var closeStreamHandler = function closeStreamHandler() {
+          _this2._eventManager.unsubscribe(subscriptionID);
+          clearInterval(keepAliveIntervalID);
+          resolve();
+        };
+
+        _this2.request.on('close', closeStreamHandler);
+        _this2.request.on('end', closeStreamHandler);
+        _this2.response.on('finish', closeStreamHandler);
+        _this2.response.on('end', closeStreamHandler);
+      });
+    }
+  }, {
+    key: '_getUserFilter',
+    value: function _getUserFilter() {
+      return this.user.role === 'administrator' ? {} : { userID: this.user.id };
+    }
+  }, {
+    key: '_startKeepAlive',
+    value: function _startKeepAlive() {
+      var _this3 = this;
+
+      return setInterval(function () {
+        if (new Date() - _this3._lastEventDate >= KEEP_ALIVE_INTERVAL) {
+          _this3.response.write('\n');
+          _this3._updateLastEventDate();
+        }
+      }, KEEP_ALIVE_INTERVAL);
+    }
+  }, {
+    key: '_pipeEvent',
+    value: function _pipeEvent(event) {
+      try {
+        this.response.write('event: ' + event.name + '\n');
+        this.response.write('data: ' + (0, _stringify2.default)((0, _eventToApi2.default)(event)) + '\n\n');
+        this._updateLastEventDate();
+      } catch (error) {
+        logger.error({ err: error }, 'pipeEvents - write error');
+        throw error;
+      }
+    }
+  }, {
+    key: '_updateLastEventDate',
+    value: function _updateLastEventDate() {
+      this._lastEventDate = new Date();
+    }
   }]);
   return EventsController;
 }(_Controller3.default), (_applyDecoratedDescriptor(_class.prototype, 'ping', [_dec, _dec2, _dec3], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'ping'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getEvents', [_dec4, _dec5, _dec6], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getMyEvents', [_dec7, _dec8, _dec9], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getMyEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getDeviceEvents', [_dec10, _dec11, _dec12], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getDeviceEvents'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'publish', [_dec13, _dec14], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'publish'), _class.prototype)), _class));
