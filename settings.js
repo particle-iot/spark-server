@@ -13,7 +13,7 @@
 *    You should have received a copy of the GNU Affero General Public License
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
-*    You can download the source here: https://github.com/spark/spark-server
+*    You can download the source here: https://github.com/particle-iot/spark-server
 */
 
 var path = require('path');

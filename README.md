@@ -1,7 +1,7 @@
 spark-server
 ============
 
-An API compatible open source server for interacting with devices speaking the [spark-protocol](https://github.com/spark/spark-protocol)
+An API compatible open source server for interacting with devices speaking the [spark-protocol](https://github.com/particle-iot/spark-protocol)
 
 *Photon users:* This application has not been rigorously tested with the Photon. We will be reviewing and testing it shortly, but in the meantime, YMMV. If you do attempt to use the Photon with this library and run into problems, please open an issue.
 
@@ -18,7 +18,7 @@ Quick Install
 ==============
 
 ```
-git clone https://github.com/spark/spark-server.git
+git clone https://github.com/particle-iot/spark-server.git
 cd spark-server
 npm install
 node main.js
@@ -43,7 +43,7 @@ Your server IP address is: 192.168.1.10
 ```
 
 
-3.) Load your server public key and IP address onto your cores with the [Spark-CLI](https://github.com/spark/spark-cli)
+3.) Load your server public key and IP address onto your cores with the [Spark-CLI](https://github.com/particle-iot/spark-cli)
 
 First, put your Core in DFU mode by holding the MODE and RESET buttons on the Core, then releasing RESET while continuing to hold MODE for 3 seconds until the LED starts blinking yellow.
 

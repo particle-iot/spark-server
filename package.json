@@ -4,10 +4,10 @@
 	"license": "AGPL-3.0",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/spark/spark-server"
+		"url": "https://github.com/particle-iot/spark-server"
 	},
-	"homepage": "https://github.com/spark/spark-server",
-	"bugs": "https://github.com/spark/spark-server/issues",
+	"homepage": "https://github.com/particle-iot/spark-server",
+	"bugs": "https://github.com/particle-iot/spark-server/issues",
 	"author": {
 		"name": "David Middlecamp",
 		"email": "david@spark.io",

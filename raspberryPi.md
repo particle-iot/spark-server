@@ -61,7 +61,7 @@ If you're already familiar with the command line, or you are comfortable setting
 	sudo chgrp pi /spark
 	cd /spark
 
-	git clone https://github.com/spark/spark-server.git
+	git clone https://github.com/particle-iot/spark-server.git
 	cd spark-server/js
 	npm install
 	node main.js
